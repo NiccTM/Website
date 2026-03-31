@@ -1,6 +1,6 @@
 import { useRef, useEffect, Suspense, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, useTexture } from '@react-three/drei'
+import { OrbitControls, useTexture, Environment } from '@react-three/drei'
 import * as THREE from 'three'
 import { motion } from 'framer-motion'
 
@@ -9,69 +9,46 @@ function proxied(url) {
   return `/api/image-proxy?url=${encodeURIComponent(url)}`
 }
 
-// ─── Coordinate system ────────────────────────────────────────────────────────
-// Plinth top surface  = Y  0.000
-// Record base         = Y  0.001  (clears Z-fighting)
-// Record top          = Y  0.041  (0.001 + 0.04 thickness)
-// Label face          = Y  0.043  (just above record top)
-// Spindle base        = Y  0.001
-// Tonearm pivot       = Y  0.041  (stylus sits on record surface)
+// ─── Y-Stack (all positions relative to plinth top = 0.000) ──────────────────
+// Plinth top surface : Y = 0.000
+// Record disc base   : Y = 0.002  (group center = 0.022)
+// Record top surface : Y = 0.042
+// Label face         : Y = 0.043
+// Tonearm pivot      : Y = 0.043
 
-// ─── Procedural groove textures ───────────────────────────────────────────────
-function useGrooveTextures(size = 1024, grooveCount = 90) {
+// ─── Procedural groove normal map ─────────────────────────────────────────────
+// Uses canvas arc() to draw ~200 concentric rings — sharp enough for SpotLight
+// to produce V-shaped shimmer highlights as the disc rotates.
+function useGrooveNormalMap(size = 1024, grooves = 200) {
   return useMemo(() => {
-    const cx = size / 2, cy = size / 2, maxR = size / 2
+    const canvas = document.createElement('canvas')
+    canvas.width = canvas.height = size
+    const ctx = canvas.getContext('2d')
+    const cx = size / 2, cy = size / 2
 
-    // Normal map — radial sine wave encoded as tangent-space normals
-    const nCanvas = document.createElement('canvas')
-    nCanvas.width = nCanvas.height = size
-    const nCtx = nCanvas.getContext('2d')
-    const nImg = nCtx.createImageData(size, size)
+    // Flat normal base — rgb(128,128,255) = pointing straight up
+    ctx.fillStyle = 'rgb(128,128,255)'
+    ctx.fillRect(0, 0, size, size)
 
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        const dx = x - cx, dy = y - cy
-        const r = Math.sqrt(dx * dx + dy * dy)
-        const normR = r / maxR
-        const phase = normR * grooveCount * Math.PI * 2
-        const slope = Math.cos(phase)
-        const len = Math.max(r, 0.001)
-        const nx = (dx / len) * slope * 0.55
-        const nz = (dy / len) * slope * 0.55
-        const ny = Math.sqrt(Math.max(0, 1 - nx * nx - nz * nz))
-        const i = (y * size + x) * 4
-        nImg.data[i]     = Math.round((nx * 0.5 + 0.5) * 255)
-        nImg.data[i + 1] = Math.round((ny * 0.5 + 0.5) * 255)
-        nImg.data[i + 2] = Math.round((nz * 0.5 + 0.5) * 255)
-        nImg.data[i + 3] = 255
-      }
+    // Draw concentric arcs alternating between peak and valley normals
+    // Peak  (ridge top)  → rgb(150,150,255) — tilts slightly outward
+    // Valley (groove bottom) → rgb(100,100,255) — tilts slightly inward
+    const step = (size / 2) / grooves
+    for (let i = 0; i < grooves; i++) {
+      const r = i * step
+      const isPeak = i % 2 === 0
+      ctx.beginPath()
+      ctx.arc(cx, cy, r, 0, Math.PI * 2)
+      ctx.strokeStyle = isPeak ? 'rgb(155,155,255)' : 'rgb(100,100,255)'
+      ctx.lineWidth = step * 0.7
+      ctx.stroke()
     }
-    nCtx.putImageData(nImg, 0, 0)
-    const normalMap = new THREE.CanvasTexture(nCanvas)
 
-    // Roughness map — ridge tops smooth, valleys rough
-    const rCanvas = document.createElement('canvas')
-    rCanvas.width = rCanvas.height = size
-    const rCtx = rCanvas.getContext('2d')
-    const rImg = rCtx.createImageData(size, size)
-
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        const dx = x - cx, dy = y - cy
-        const r = Math.sqrt(dx * dx + dy * dy)
-        const normR = r / maxR
-        const phase = normR * grooveCount * Math.PI * 2
-        const val = Math.round((Math.sin(phase) * 0.5 + 0.5) * 55 + 100)
-        const i = (y * size + x) * 4
-        rImg.data[i] = rImg.data[i+1] = rImg.data[i+2] = val
-        rImg.data[i+3] = 255
-      }
-    }
-    rCtx.putImageData(rImg, 0, 0)
-    const roughnessMap = new THREE.CanvasTexture(rCanvas)
-
-    return { normalMap, roughnessMap }
-  }, [size, grooveCount])
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+    tex.needsUpdate = true
+    return tex
+  }, [size, grooves])
 }
 
 // ─── Album label ──────────────────────────────────────────────────────────────
@@ -79,56 +56,47 @@ function AlbumLabel({ coverUrl }) {
   const texture = useTexture(coverUrl)
   texture.colorSpace = THREE.SRGBColorSpace
   return (
-    <mesh position={[0, 0.043, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <circleGeometry args={[0.48, 128]} />
-      <meshStandardMaterial map={texture} roughness={0.5} metalness={0.0} />
+    <mesh position={[0, 0.021, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <circleGeometry args={[0.6, 128]} />
+      <meshStandardMaterial map={texture} roughness={0.55} metalness={0.0} />
     </mesh>
   )
 }
 
 function PlainLabel() {
   return (
-    <mesh position={[0, 0.043, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <circleGeometry args={[0.48, 128]} />
-      <meshStandardMaterial color="#111122" roughness={0.6} />
+    <mesh position={[0, 0.021, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <circleGeometry args={[0.6, 128]} />
+      <meshStandardMaterial color="#0d0d1a" roughness={0.6} />
     </mesh>
   )
 }
 
-// ─── Rotating record group ────────────────────────────────────────────────────
+// ─── Vinyl record + label (rotates together) ──────────────────────────────────
 function VinylRecord({ coverUrl }) {
-  const groupRef = useRef()
-  const { normalMap, roughnessMap } = useGrooveTextures()
-  const proxyUrl = proxied(coverUrl)
+  const groupRef  = useRef()
+  const normalMap = useGrooveNormalMap(1024, 200)
+  const proxyUrl  = proxied(coverUrl)
 
   useFrame((_, delta) => {
     if (groupRef.current) groupRef.current.rotation.y += delta * 3.49
   })
 
   return (
-    // Record base sits at Y=0.001, center of 0.04-thick disc at Y=0.021
-    <group ref={groupRef} position={[0, 0.021, 0]}>
-      <mesh name="Record_Disc" castShadow receiveShadow>
+    // Group center at Y=0.022 → base at 0.002, top at 0.042
+    <group ref={groupRef} position={[0, 0.022, 0]}>
+      <mesh name="Vinyl_Disc" castShadow receiveShadow>
         <cylinderGeometry args={[1.5, 1.5, 0.04, 128]} />
-        <meshPhysicalMaterial
-          color="#090909"
+        <meshStandardMaterial
+          color="#020202"
           normalMap={normalMap}
-          normalScale={new THREE.Vector2(1.2, 1.2)}
-          roughnessMap={roughnessMap}
-          roughness={0.4}
-          metalness={0.2}
-          clearcoat={0.55}
-          clearcoatRoughness={0.12}
+          normalScale={new THREE.Vector2(1.5, 1.5)}
+          roughness={0.35}
+          metalness={0.7}
         />
       </mesh>
 
-      {/* Spindle */}
-      <mesh position={[0, 0.033, 0]}>
-        <cylinderGeometry args={[0.028, 0.028, 0.065, 32]} />
-        <meshStandardMaterial color="#333" metalness={0.95} roughness={0.05} />
-      </mesh>
-
-      {/* Label rendered at Y=0.043 in world space (group center at 0.021, local offset 0.022) */}
+      {/* Label — local Y=0.021 → world Y=0.043 ✓ */}
       {proxyUrl ? (
         <Suspense fallback={<PlainLabel />}>
           <AlbumLabel coverUrl={proxyUrl} />
@@ -140,112 +108,102 @@ function VinylRecord({ coverUrl }) {
   )
 }
 
-// ─── Plinth — top surface exactly at Y=0 ─────────────────────────────────────
+// ─── Plinth — top surface at Y=0.000 ─────────────────────────────────────────
 function Plinth() {
-  // Plinth box height 0.12, center at Y=-0.06 → top at Y=0.000 ✓
   return (
     <group>
-      <mesh name="Plinth_Base" position={[0, -0.06, 0]} receiveShadow castShadow>
+      {/* Box: height 0.12, center Y=-0.06 → top at Y=0.000 */}
+      <mesh position={[0, -0.06, 0]} receiveShadow castShadow>
         <boxGeometry args={[3.8, 0.12, 3.2]} />
-        <meshStandardMaterial color="#0d0d0d" roughness={0.9} metalness={0.05} />
+        <meshStandardMaterial color="#0d0d0d" roughness={0.88} metalness={0.06} />
       </mesh>
 
-      {/* Platter well ring — flush with plinth top */}
+      {/* Platter well — sits flush at plinth top */}
       <mesh position={[0, 0.001, 0]}>
         <cylinderGeometry args={[1.53, 1.53, 0.004, 128]} />
         <meshStandardMaterial color="#161616" roughness={0.8} metalness={0.12} />
       </mesh>
 
-      {/*
-        Tonearm pivot at X=1.72, Z=-0.55
-        Y=0.041 so stylus tip is level with record top surface
-      */}
-      <mesh position={[1.72, 0.12, -0.55]}>
-        <cylinderGeometry args={[0.042, 0.042, 0.24, 16]} />
+      {/* Tonearm bearing post */}
+      <mesh position={[1.72, 0.14, -0.55]}>
+        <cylinderGeometry args={[0.042, 0.042, 0.28, 16]} />
         <meshStandardMaterial color="#777" metalness={0.88} roughness={0.12} />
       </mesh>
 
-      {/* Tonearm — pivot origin at record surface height (Y=0.041) */}
-      <group position={[1.72, 0.041, -0.55]} rotation={[0, 0.28, 0]}>
-        {/* Arm tube — rotated on Z to slope slightly downward toward stylus */}
+      {/* Tonearm group — pivot at Y=0.043 (record top) */}
+      <group position={[1.72, 0.043, -0.55]} rotation={[0, 0.3, 0]}>
         <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.014, 0.008, 1.55, 16]} />
+          <cylinderGeometry args={[0.013, 0.007, 1.5, 16]} />
           <meshStandardMaterial color="#999" metalness={0.9} roughness={0.1} />
         </mesh>
-        {/* Headshell */}
-        <mesh position={[-0.8, 0, 0.02]} rotation={[0.08, 0, 0.15]}>
-          <boxGeometry args={[0.13, 0.03, 0.062]} />
+        <mesh position={[-0.77, 0, 0.02]} rotation={[0.08, 0, 0.12]}>
+          <boxGeometry args={[0.12, 0.028, 0.058]} />
           <meshStandardMaterial color="#bbb" metalness={0.85} roughness={0.15} />
         </mesh>
-        {/* Stylus — tip at Y=0.041 world, pointing straight down */}
-        <mesh position={[-0.87, -0.032, 0.02]} rotation={[0, 0, 0.3]}>
-          <cylinderGeometry args={[0.004, 0.001, 0.065, 8]} />
-          <meshStandardMaterial color="#222" metalness={0.9} roughness={0.1} />
+        {/* Stylus tip at record surface — rotation angles it down */}
+        <mesh position={[-0.84, -0.028, 0.02]} rotation={[0, 0, 0.28]}>
+          <cylinderGeometry args={[0.003, 0.001, 0.058, 8]} />
+          <meshStandardMaterial color="#1a1a1a" metalness={0.9} roughness={0.1} />
         </mesh>
       </group>
 
       {/* Speed LED */}
       <mesh position={[-1.5, 0.003, 1.1]}>
-        <cylinderGeometry args={[0.05, 0.05, 0.014, 32]} />
-        <meshStandardMaterial color="#6ee7b7" emissive="#6ee7b7" emissiveIntensity={0.9} roughness={0.3} />
+        <cylinderGeometry args={[0.045, 0.045, 0.012, 32]} />
+        <meshStandardMaterial color="#6ee7b7" emissive="#6ee7b7" emissiveIntensity={1.0} roughness={0.3} />
       </mesh>
     </group>
   )
 }
 
-// ─── Scene — no Drei SpotLight (removes visible cone mesh) ───────────────────
+// ─── Scene ────────────────────────────────────────────────────────────────────
 function TurntableScene({ release }) {
-  // Spotlight targets need a ref'd object at world origin
-  const target = useMemo(() => {
-    const obj = new THREE.Object3D()
-    obj.position.set(0, 0, 0)
-    return obj
-  }, [])
-
   return (
     <>
-      <primitive object={target} />
+      {/* Studio environment — provides clean IBL reflections on the disc */}
+      <Environment preset="studio" />
 
-      {/* Ambient */}
-      <ambientLight intensity={0.18} />
+      <ambientLight intensity={0.15} />
 
-      {/* Key — general scene fill */}
-      <directionalLight position={[4, 7, 5]} intensity={1.1} castShadow
+      {/* Key light */}
+      <directionalLight position={[4, 7, 5]} intensity={0.9} castShadow
         shadow-mapSize={[1024, 1024]} />
 
-      {/* Fill */}
-      <directionalLight position={[-3, 3, -4]} intensity={0.18} />
-
       {/*
-        Groove spotlights — plain R3F spotLight primitives (no visible mesh).
-        Low angle (position Y≈1.8) maximises grazing incidence on groove normals.
+        Primary groove spotlight — grazing angle critical for V-shaped shimmer.
+        Position Y=3 keeps angle low enough to rake across groove normals.
+        angle=0.15, penumbra=1 → soft-edged cone per spec.
       */}
       <spotLight
-        position={[2.8, 1.8, 2.2]}
-        target={target}
-        angle={0.3}
-        penumbra={0.35}
-        intensity={22}
-        distance={12}
+        position={[5, 10, 5]}
+        angle={0.15}
+        penumbra={1}
+        intensity={120}
+        distance={20}
+        decay={2}
         color="#ffffff"
         castShadow={false}
-      />
-      <spotLight
-        position={[-2.6, 1.6, -1.8]}
-        target={target}
-        angle={0.26}
-        penumbra={0.45}
-        intensity={12}
-        distance={12}
-        color="#ffe0a0"
-        castShadow={false}
+        target-position={[0, 0, 0]}
       />
 
-      {/* Label top light — tight point directly above */}
-      <pointLight position={[0, 2.4, 0]} intensity={2.2} distance={3.2} decay={2} color="#ffffff" />
+      {/* Second groove light — opposite side, warm tint */}
+      <spotLight
+        position={[-4, 6, -3]}
+        angle={0.18}
+        penumbra={0.8}
+        intensity={60}
+        distance={16}
+        decay={2}
+        color="#ffd580"
+        castShadow={false}
+        target-position={[0, 0, 0]}
+      />
+
+      {/* Label fill — tight overhead, no plinth hotspot (distance=2 keeps it local) */}
+      <pointLight position={[0, 2, 0]} intensity={1.8} distance={2} decay={2} color="#ffffff" />
 
       {/* Accent */}
-      <pointLight position={[-2, 1, 2]} intensity={0.35} color="#6ee7b7" />
+      <pointLight position={[-2, 1, 2]} intensity={0.3} color="#6ee7b7" decay={2} />
 
       <VinylRecord coverUrl={release?.cover_image} />
       <Plinth />
@@ -318,11 +276,11 @@ export default function InteractiveTurntable({ release, onClose }) {
         style={{ height: '64vh', minHeight: '380px' }}
       >
         <Canvas
+          shadows
           dpr={[1, 1.5]}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
           camera={{ position: [0, 5, 4.5], fov: 40 }}
           style={{ background: 'transparent' }}
-          shadows
         >
           <Suspense fallback={null}>
             <TurntableScene release={release} />
