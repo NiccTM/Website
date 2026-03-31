@@ -4,43 +4,42 @@ import { OrbitControls, Environment, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import { motion } from 'framer-motion'
 
-// ─── Proxy URL — bypasses Discogs CDN CORS for TextureLoader ─────────────────
 function proxied(url) {
   if (!url) return null
   return `/api/image-proxy?url=${encodeURIComponent(url)}`
 }
 
-// ─── Label with album art ─────────────────────────────────────────────────────
-// Separate component so Suspense can catch the useTexture load
+// ─── Album label — useTexture integrates with Suspense ────────────────────────
 function AlbumLabel({ coverUrl }) {
-  // useTexture integrates with R3F Suspense — no manual state needed
   const texture = useTexture(coverUrl)
   texture.colorSpace = THREE.SRGBColorSpace
 
   return (
-    // CircleGeometry has perfect radial UVs — image maps cleanly onto the disc
-    <mesh position={[0, 0.024, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh position={[0, 0.022, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <circleGeometry args={[0.5, 128]} />
       <meshStandardMaterial
         map={texture}
-        metalness={0.05}
-        roughness={0.55}
+        // Emissive ensures art shows regardless of lighting angle
+        emissiveMap={texture}
+        emissiveIntensity={0.55}
+        emissive="#ffffff"
+        roughness={0.4}
+        metalness={0.0}
       />
     </mesh>
   )
 }
 
-// Plain label fallback when no texture / during load
 function PlainLabel() {
   return (
-    <mesh position={[0, 0.024, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh position={[0, 0.022, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <circleGeometry args={[0.5, 128]} />
       <meshStandardMaterial color="#1a1a2e" roughness={0.6} />
     </mesh>
   )
 }
 
-// ─── Vinyl disc + spinning group ──────────────────────────────────────────────
+// ─── Spinning disc group ──────────────────────────────────────────────────────
 function VinylDisc({ coverUrl }) {
   const groupRef = useRef()
 
@@ -50,34 +49,33 @@ function VinylDisc({ coverUrl }) {
 
   const proxyUrl = proxied(coverUrl)
 
+  // Groove radii — using TorusGeometry so they look correct at any angle
+  const grooveRadii = [0.65, 0.85, 1.05, 1.25]
+
   return (
-    <group ref={groupRef}>
-      {/* Main platter — near-black vinyl */}
+    // Disc sits ON the plinth — plinth top surface is at y=0, disc center at y=0.02
+    <group ref={groupRef} position={[0, 0.02, 0]}>
+      {/* Main vinyl platter */}
       <mesh castShadow receiveShadow>
         <cylinderGeometry args={[1.5, 1.5, 0.04, 128]} />
-        <meshStandardMaterial color="#080808" metalness={0.0} roughness={0.9} />
+        <meshStandardMaterial color="#090909" metalness={0.0} roughness={0.92} />
       </mesh>
 
-      {/* Groove area — slightly lighter ring, creates depth illusion */}
+      {/* Groove area — darker fill between label and edge */}
       <mesh position={[0, 0.021, 0]}>
-        <cylinderGeometry args={[1.48, 0.54, 0.002, 128]} />
-        <meshStandardMaterial color="#131313" metalness={0.0} roughness={0.95} />
+        <cylinderGeometry args={[1.48, 0.52, 0.002, 128]} />
+        <meshStandardMaterial color="#0f0f0f" roughness={0.95} />
       </mesh>
 
-      {/* Groove rings — 4 subtle rings for detail */}
-      {[0.7, 0.9, 1.1, 1.3].map((r) => (
-        <mesh key={r} position={[0, 0.022, 0]}>
-          <ringGeometry args={[r, r + 0.012, 128]} />
-          <meshStandardMaterial
-            color="#0f0f0f"
-            side={THREE.DoubleSide}
-            roughness={1.0}
-            metalness={0.0}
-          />
+      {/* Groove rings — TorusGeometry renders correctly at all camera angles */}
+      {grooveRadii.map((r) => (
+        <mesh key={r} position={[0, 0.022, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[r, 0.006, 6, 128]} />
+          <meshStandardMaterial color="#161616" roughness={1.0} metalness={0.0} />
         </mesh>
       ))}
 
-      {/* Label — cover art via Suspense/useTexture */}
+      {/* Album art label */}
       {proxyUrl ? (
         <Suspense fallback={<PlainLabel />}>
           <AlbumLabel coverUrl={proxyUrl} />
@@ -87,58 +85,64 @@ function VinylDisc({ coverUrl }) {
       )}
 
       {/* Spindle */}
-      <mesh position={[0, 0.055, 0]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.07, 32]} />
-        <meshStandardMaterial color="#444" metalness={0.95} roughness={0.05} />
+      <mesh position={[0, 0.052, 0]}>
+        <cylinderGeometry args={[0.028, 0.028, 0.065, 32]} />
+        <meshStandardMaterial color="#333" metalness={0.95} roughness={0.05} />
       </mesh>
     </group>
   )
 }
 
-// ─── Plinth ───────────────────────────────────────────────────────────────────
+// ─── Plinth — disc sits at y=0 on top surface ─────────────────────────────────
 function Plinth() {
+  // Plinth box: height 0.12, center at y=-0.06 → top surface at y=0 ✓
   return (
     <group>
-      {/* Base — dark walnut-like */}
-      <mesh position={[0, -0.08, 0]} receiveShadow castShadow>
-        <boxGeometry args={[3.8, 0.1, 3.2]} />
-        <meshStandardMaterial color="#0c0c0c" metalness={0.05} roughness={0.9} />
+      {/* Base */}
+      <mesh position={[0, -0.06, 0]} receiveShadow castShadow>
+        <boxGeometry args={[3.8, 0.12, 3.2]} />
+        <meshStandardMaterial color="#0b0b0b" metalness={0.05} roughness={0.9} />
       </mesh>
 
-      {/* Platter bearing ring */}
-      <mesh position={[0, 0.005, 0]}>
-        <cylinderGeometry args={[1.52, 1.52, 0.01, 128]} />
-        <meshStandardMaterial color="#1a1a1a" metalness={0.3} roughness={0.7} />
+      {/* Recessed platter well — slightly inset circle on top */}
+      <mesh position={[0, 0.001, 0]}>
+        <cylinderGeometry args={[1.53, 1.53, 0.008, 128]} />
+        <meshStandardMaterial color="#141414" metalness={0.15} roughness={0.8} />
       </mesh>
 
       {/* Tonearm bearing post */}
-      <mesh position={[1.72, 0.2, -0.55]}>
-        <cylinderGeometry args={[0.045, 0.045, 0.3, 16]} />
-        <meshStandardMaterial color="#777" metalness={0.85} roughness={0.15} />
+      <mesh position={[1.72, 0.18, -0.55]}>
+        <cylinderGeometry args={[0.042, 0.042, 0.28, 16]} />
+        <meshStandardMaterial color="#666" metalness={0.88} roughness={0.12} />
       </mesh>
 
-      {/* Tonearm — angled toward center groove */}
+      {/* Tonearm tube */}
       <group position={[1.72, 0.28, -0.55]} rotation={[0, 0.28, -0.06]}>
         <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.016, 0.01, 1.6, 16]} />
+          <cylinderGeometry args={[0.015, 0.009, 1.6, 16]} />
           <meshStandardMaterial color="#999" metalness={0.9} roughness={0.1} />
         </mesh>
         {/* Headshell */}
         <mesh position={[-0.82, -0.01, 0.02]} rotation={[0.1, 0, 0.18]}>
-          <boxGeometry args={[0.13, 0.032, 0.065]} />
+          <boxGeometry args={[0.13, 0.03, 0.062]} />
           <meshStandardMaterial color="#bbb" metalness={0.85} roughness={0.15} />
         </mesh>
-        {/* Stylus cantilever */}
-        <mesh position={[-0.9, -0.044, 0.02]} rotation={[0, 0, 0.45]}>
-          <cylinderGeometry args={[0.005, 0.001, 0.075, 8]} />
+        {/* Stylus */}
+        <mesh position={[-0.9, -0.042, 0.02]} rotation={[0, 0, 0.45]}>
+          <cylinderGeometry args={[0.004, 0.001, 0.072, 8]} />
           <meshStandardMaterial color="#222" metalness={0.9} roughness={0.1} />
         </mesh>
       </group>
 
-      {/* 33/45 speed selector button — detail */}
-      <mesh position={[-1.5, 0.005, 1.1]}>
-        <cylinderGeometry args={[0.055, 0.055, 0.02, 32]} />
-        <meshStandardMaterial color="#6ee7b7" emissive="#6ee7b7" emissiveIntensity={0.4} roughness={0.4} />
+      {/* Speed selector LED */}
+      <mesh position={[-1.5, 0.004, 1.1]}>
+        <cylinderGeometry args={[0.05, 0.05, 0.018, 32]} />
+        <meshStandardMaterial
+          color="#6ee7b7"
+          emissive="#6ee7b7"
+          emissiveIntensity={0.8}
+          roughness={0.3}
+        />
       </mesh>
     </group>
   )
@@ -148,14 +152,17 @@ function Plinth() {
 function TurntableScene({ release }) {
   return (
     <>
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[4, 8, 4]} intensity={1.8} castShadow
+      <ambientLight intensity={0.4} />
+      {/* Key light */}
+      <directionalLight position={[3, 8, 4]} intensity={1.6} castShadow
         shadow-mapSize={[1024, 1024]} />
+      {/* Fill */}
       <directionalLight position={[-3, 4, -4]} intensity={0.3} />
-      {/* Accent rim light — green tint matches site palette */}
-      <pointLight position={[-2, 2, 2]} intensity={0.6} color="#6ee7b7" />
-      {/* Under-glow */}
-      <pointLight position={[0, -1, 0]} intensity={0.15} color="#6ee7b7" />
+      {/* Dedicated label light — straight down so art is always bright */}
+      <pointLight position={[0, 3.5, 0]} intensity={1.2} color="#ffffff" />
+      {/* Accent rim */}
+      <pointLight position={[-2, 1.5, 2]} intensity={0.5} color="#6ee7b7" />
+
       <Environment preset="studio" />
 
       <VinylDisc coverUrl={release?.cover_image} />
@@ -198,7 +205,6 @@ export default function InteractiveTurntable({ release, onClose }) {
       role="dialog"
       aria-modal="true"
     >
-      {/* Header */}
       <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-4 sm:px-10">
         <div>
           <p className="font-sans text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
@@ -221,7 +227,6 @@ export default function InteractiveTurntable({ release, onClose }) {
         </button>
       </div>
 
-      {/* Canvas */}
       <motion.div
         initial={{ scale: 0.93, y: 18 }}
         animate={{ scale: 1, y: 0 }}
