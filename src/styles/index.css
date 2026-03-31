@@ -3,16 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --bg-base: #0a0a0a;
-  --bg-surface-1: #111111;
-  --bg-surface-2: #1a1a1a;
-  --bg-surface-3: #242424;
-  --text-primary: #f5f5f5;
-  --text-secondary: #a3a3a3;
-  --text-muted: #525252;
-  --accent: #6ee7b7;
-  --accent-dim: #34d399;
-  --border: #262626;
+  --bg-base:      #030712;   /* neutral-950 */
+  --bg-surface-1: #0f0f0f;
+  --bg-surface-2: #171717;
+  --bg-surface-3: #222222;
+  --text-primary:   #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted:     #4b5563;
+  --accent:         #6ee7b7;
+  --accent-dim:     #34d399;
+  --border:         #1f2937;
+  --border-accent:  #065f46;
 }
 
 * {
@@ -21,9 +22,7 @@
   padding: 0;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   background-color: var(--bg-base);
@@ -34,32 +33,35 @@ body {
   overflow-x: hidden;
 }
 
-/* Material Symbols config */
+/* Material Symbols */
 .material-symbols-rounded {
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 300,
-    'GRAD' 0,
-    'opsz' 24;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
   user-select: none;
   line-height: 1;
 }
 
+/* React Flow overrides — dark theme */
+.react-flow__background { background: transparent !important; }
+.react-flow__edge-path  { stroke: var(--border-accent) !important; }
+.react-flow__attribution { display: none; }
+.react-flow__handle {
+  background: var(--accent) !important;
+  border-color: var(--bg-base) !important;
+  width: 8px !important;
+  height: 8px !important;
+}
+
 @layer utilities {
-  .text-gradient {
-    background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .border-subtle {
-    border: 1px solid var(--border);
-  }
-
+  .border-subtle   { border: 1px solid var(--border); }
+  .border-accent   { border: 1px solid var(--border-accent); }
   .glass {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255,255,255,0.02);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+  }
+  .font-mono-data {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.6;
   }
 }

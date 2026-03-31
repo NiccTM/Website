@@ -1,7 +1,7 @@
 {
   "name": "nic-piraino-portfolio",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,7 +14,9 @@
     "framer-motion": "^11.3.0",
     "@react-three/fiber": "^8.17.0",
     "@react-three/drei": "^9.109.0",
-    "three": "^0.166.0"
+    "@react-three/xr": "^6.3.0",
+    "three": "^0.166.0",
+    "reactflow": "^11.11.4"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
