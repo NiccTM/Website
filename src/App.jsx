@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react'
+import ErrorBoundary      from './components/ui/ErrorBoundary'
 import ProfileHeader    from './components/ui/ProfileHeader'
 import ProjectGallery   from './components/ui/ProjectGallery'
 import SocialLinks      from './components/ui/SocialLinks'
@@ -32,13 +33,26 @@ function Divider() {
   )
 }
 
+// Wraps lazy sections with both Suspense and ErrorBoundary
+function Section({ children }) {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<SectionFallback />}>
+        {children}
+      </Suspense>
+    </ErrorBoundary>
+  )
+}
+
 export default function App() {
   return (
     <div className="relative min-h-screen w-full" style={{ background: 'var(--bg-base)' }}>
-      {/* Particle background — fully isolated, never blocks UI */}
-      <Suspense fallback={null}>
-        <CanvasBackground />
-      </Suspense>
+      {/* Particle background — isolated, silent failure */}
+      <ErrorBoundary silent>
+        <Suspense fallback={null}>
+          <CanvasBackground />
+        </Suspense>
+      </ErrorBoundary>
 
       <main className="relative flex flex-col max-w-7xl mx-auto">
         {/* ── Core identity ── */}
@@ -54,57 +68,47 @@ export default function App() {
         <Divider />
 
         {/* ── React Flow diagrams ── */}
-        <Suspense fallback={<SectionFallback />}>
-          <AudioSignalChain />
-        </Suspense>
-
+        <Section><AudioSignalChain /></Section>
         <Divider />
-
-        <Suspense fallback={<SectionFallback />}>
-          <SystemArchitecture />
-        </Suspense>
+        <Section><SystemArchitecture /></Section>
 
         <Divider />
 
         {/* ── DeLorean video showcase ── */}
-        <Suspense fallback={<SectionFallback />}>
+        <Section>
           <ProjectVideo
             src="/videos/APSC 171-2024-T1C4-16-SW.mp4"
             poster="/videos/delorean-poster.jpg"
             title="APSC 171 DeLorean — SolidWorks Showcase"
           />
-        </Suspense>
+        </Section>
 
         <Divider />
 
         {/* ── DeLorean engine — explodable 3D model ── */}
-        <Suspense fallback={<SectionFallback />}>
+        <Section>
           <ModelViewer
             modelPath="/models/delorean-engine.glb"
             label="DeLorean Engine Assembly"
           />
-        </Suspense>
+        </Section>
 
         <Divider />
 
         {/* ── BLDC Motor 3D model ── */}
-        <Suspense fallback={<SectionFallback />}>
+        <Section>
           <ModelViewer label="Custom BLDC Motor" />
-        </Suspense>
+        </Section>
 
         <Divider />
 
         {/* ── WebXR inspection ── */}
-        <Suspense fallback={<SectionFallback />}>
-          <XRCanvas label="VR Inspection Mode" />
-        </Suspense>
+        <Section><XRCanvas label="VR Inspection Mode" /></Section>
 
         <Divider />
 
         {/* ── ML demo ── */}
-        <Suspense fallback={<SectionFallback />}>
-          <EcoSortDemo />
-        </Suspense>
+        <Section><EcoSortDemo /></Section>
 
         {/* Footer */}
         <footer className="px-6 py-10 sm:px-10 md:px-16 lg:px-24">
