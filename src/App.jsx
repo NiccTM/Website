@@ -13,6 +13,7 @@ const ModelViewer        = lazy(() => import('./components/3d/ModelViewer'))
 const XRCanvas           = lazy(() => import('./components/3d/XRCanvas'))
 const EcoSortDemo        = lazy(() => import('./components/ml/EcoSortDemo'))
 const ProjectVideo       = lazy(() => import('./components/media/ProjectVideo'))
+const VinylArchive       = lazy(() => import('./components/audio/VinylArchive'))
 
 function SectionFallback() {
   return (
@@ -104,6 +105,11 @@ export default function App() {
 
         {/* ── WebXR inspection ── */}
         <Section><XRCanvas label="VR Inspection Mode" /></Section>
+
+        <Divider />
+
+        {/* ── Vinyl archive ── */}
+        <Section><VinylArchive /></Section>
 
         <Divider />
 
