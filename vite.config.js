@@ -14,6 +14,28 @@ function discogsDevPlugin(env) {
   return {
     name: 'discogs-dev-proxy',
     configureServer(server) {
+      // Image proxy — bypasses CORS on Discogs CDN for TextureLoader
+      server.middlewares.use('/api/image-proxy', async (req, res) => {
+        const url = new URL(req.url, 'http://localhost').searchParams.get('url')
+        if (!url) {
+          res.writeHead(400); res.end('Missing url param'); return
+        }
+        try {
+          const img = await fetch(url, {
+            headers: { 'User-Agent': 'NicPirainoPortfolio/1.0 +https://github.com/NiccTM' },
+          })
+          const buf = await img.arrayBuffer()
+          res.writeHead(200, {
+            'Content-Type': img.headers.get('content-type') ?? 'image/jpeg',
+            'Cache-Control': 's-maxage=86400',
+            'Access-Control-Allow-Origin': '*',
+          })
+          res.end(Buffer.from(buf))
+        } catch {
+          res.writeHead(502); res.end('Proxy error')
+        }
+      })
+
       server.middlewares.use('/api/discogs', async (req, res) => {
         const token = env.DISCOGS_PAT
         if (!token || token === 'your_token_here') {

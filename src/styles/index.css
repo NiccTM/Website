@@ -40,15 +40,49 @@ body {
   line-height: 1;
 }
 
-/* React Flow overrides — dark theme */
-.react-flow__background { background: transparent !important; }
-.react-flow__edge-path  { stroke: var(--border-accent) !important; }
+/* React Flow overrides — full dark theme */
+.react-flow__background  { background: transparent !important; }
+.react-flow__edge-path   { stroke: var(--border-accent) !important; }
 .react-flow__attribution { display: none; }
+
 .react-flow__handle {
   background: var(--accent) !important;
   border-color: var(--bg-base) !important;
   width: 8px !important;
   height: 8px !important;
+}
+
+/* Controls panel */
+.react-flow__controls {
+  background: var(--bg-surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+.react-flow__controls-button {
+  background: var(--bg-surface-2) !important;
+  border-bottom: 1px solid var(--border) !important;
+  fill: var(--text-secondary) !important;
+}
+.react-flow__controls-button:hover {
+  background: var(--bg-surface-3) !important;
+  fill: var(--accent) !important;
+}
+.react-flow__controls-button svg {
+  fill: inherit !important;
+}
+
+/* MiniMap */
+.react-flow__minimap {
+  background: var(--bg-surface-2) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* Node selection outline */
+.react-flow__node.selected > div,
+.react-flow__node:focus > div {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px;
 }
 
 @layer utilities {
