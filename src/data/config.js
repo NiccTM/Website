@@ -307,7 +307,7 @@ export const projects = [
     title: 'Feeble Presence',
     description: 'Discord Rich Presence integration for MediaMonkey 5.',
     tags: ['Python', 'Discord API', 'MediaMonkey'],
-    github: 'https://github.com/NiccTM/FeeblePresence',
+    github: 'https://github.com/NiccTM/Feeble_Presence',
     demo: 'architecture',
   },
   {
@@ -315,7 +315,7 @@ export const projects = [
     title: 'EcoSort',
     description: 'ML-based waste classifier (CMPE246). Roboflow object detection with drag-and-drop image inference.',
     tags: ['Python', 'ML', 'Roboflow', 'Computer Vision'],
-    github: null,
+    github: 'https://github.com/NiccTM/CMPE246_G16_Trash_Organizer',
     demo: 'ml',
   },
   {
@@ -348,5 +348,17 @@ export const socialLinks = [
     label: 'GitHub',
     icon: 'code',
     url: 'https://github.com/NiccTM',
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    icon: 'person',
+    url: 'https://www.linkedin.com/in/nic-piraino/',
+  },
+  {
+    id: 'discogs',
+    label: 'Discogs',
+    icon: 'album',
+    url: 'https://www.discogs.com/user/NiccTM',
   },
 ]
