@@ -2,7 +2,7 @@
 export const profile = {
   name: 'Nic Piraino',
   tagline: 'Electrical Engineering Student & Vinyl Collector',
-  location: 'Ontario, CA',
+  location: 'Kelowna, BC',
   academics: {
     institution: 'UBCO',
     program: 'Electrical Engineering',
