@@ -58,7 +58,7 @@ function AlbumLabel({ coverUrl }) {
   return (
     <mesh position={[0, 0.021, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <circleGeometry args={[0.6, 128]} />
-      <meshStandardMaterial map={texture} roughness={0.55} metalness={0.0} />
+      <meshStandardMaterial map={texture} roughness={0.6} metalness={0.0} emissive="#ffffff" emissiveMap={texture} emissiveIntensity={0.18} />
     </mesh>
   )
 }
@@ -160,26 +160,22 @@ function Plinth() {
 function TurntableScene({ release }) {
   return (
     <>
-      {/* Studio environment — provides clean IBL reflections on the disc */}
-      <Environment preset="studio" />
+      {/* Studio IBL — dialed way down so it only adds subtle reflections, not flat diffuse */}
+      <Environment preset="studio" environmentIntensity={0.18} />
 
-      <ambientLight intensity={0.15} />
+      {/* Very low ambient — scene should be primarily lit by spots */}
+      <ambientLight intensity={0.04} />
 
-      {/* Key light */}
-      <directionalLight position={[4, 7, 5]} intensity={0.9} castShadow
-        shadow-mapSize={[1024, 1024]} />
+      {/* Key directional — fills shadow side of plinth softly */}
+      <directionalLight position={[4, 7, 5]} intensity={0.4} />
 
-      {/*
-        Primary groove spotlight — grazing angle critical for V-shaped shimmer.
-        Position Y=3 keeps angle low enough to rake across groove normals.
-        angle=0.15, penumbra=1 → soft-edged cone per spec.
-      */}
+      {/* Primary groove spotlight — grazing angle for V-shaped shimmer on normal map */}
       <spotLight
-        position={[5, 10, 5]}
-        angle={0.15}
-        penumbra={1}
-        intensity={120}
-        distance={20}
+        position={[5, 8, 5]}
+        angle={0.14}
+        penumbra={0.9}
+        intensity={180}
+        distance={22}
         decay={2}
         color="#ffffff"
         castShadow={false}
@@ -191,19 +187,19 @@ function TurntableScene({ release }) {
         position={[-4, 6, -3]}
         angle={0.18}
         penumbra={0.8}
-        intensity={60}
-        distance={16}
+        intensity={80}
+        distance={18}
         decay={2}
         color="#ffd580"
         castShadow={false}
         target-position={[0, 0, 0]}
       />
 
-      {/* Label fill — tight overhead, no plinth hotspot (distance=2 keeps it local) */}
-      <pointLight position={[0, 2, 0]} intensity={1.8} distance={2} decay={2} color="#ffffff" />
+      {/* Label fill — strong overhead point, distance=2.5 keeps hotspot on label only */}
+      <pointLight position={[0, 2, 0]} intensity={6} distance={2.5} decay={2} color="#ffffff" />
 
-      {/* Accent */}
-      <pointLight position={[-2, 1, 2]} intensity={0.3} color="#6ee7b7" decay={2} />
+      {/* Accent rim */}
+      <pointLight position={[-2, 1, 2]} intensity={0.4} color="#6ee7b7" decay={2} />
 
       <VinylRecord coverUrl={release?.cover_image} />
       <Plinth />
