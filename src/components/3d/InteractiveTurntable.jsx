@@ -58,7 +58,7 @@ function AlbumLabel({ coverUrl }) {
   return (
     <mesh position={[0, 0.021, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <circleGeometry args={[0.6, 128]} />
-      <meshStandardMaterial map={texture} roughness={0.5} metalness={0.0} emissive="#ffffff" emissiveMap={texture} emissiveIntensity={0.55} />
+      <meshStandardMaterial map={texture} roughness={0.5} metalness={0.0} emissive="#ffffff" emissiveMap={texture} emissiveIntensity={0.22} />
     </mesh>
   )
 }
@@ -196,7 +196,7 @@ function TurntableScene({ release }) {
       />
 
       {/* Label fill — strong overhead point, distance=2.5 keeps hotspot on label only */}
-      <pointLight position={[0, 2, 0]} intensity={14} distance={2.5} decay={2} color="#ffffff" />
+      <pointLight position={[0, 2, 0]} intensity={7} distance={2.5} decay={2} color="#ffffff" />
 
       {/* Accent rim */}
       <pointLight position={[-2, 1, 2]} intensity={0.4} color="#6ee7b7" decay={2} />
