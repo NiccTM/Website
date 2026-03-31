@@ -85,6 +85,11 @@ body {
   outline-offset: 2px;
 }
 
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
 @layer utilities {
   .border-subtle   { border: 1px solid var(--border); }
   .border-accent   { border: 1px solid var(--border-accent); }

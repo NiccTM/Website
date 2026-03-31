@@ -158,9 +158,9 @@ function FlowSection({ title, chain }) {
   )
 }
 
-export default function AudioSignalChain() {
+export default function AudioSignalChain({ sectionId }) {
   return (
-    <section className="relative z-10 px-6 py-10 sm:px-10 md:px-16 lg:px-24">
+    <section id={sectionId} className="relative z-10 px-6 py-10 sm:px-10 md:px-16 lg:px-24">
       <motion.h2
         initial={{ opacity: 0, x: -8 }}
         whileInView={{ opacity: 1, x: 0 }}

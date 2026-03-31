@@ -3,6 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Environment, Center, Text, useGLTF } from '@react-three/drei'
 import { motion } from 'framer-motion'
 import * as THREE from 'three'
+import { useUI } from '../../context/UIContext'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const EXPLODE_SCALE  = 1.8   // how far parts spread (multiplier on centroid offset)
@@ -156,11 +157,20 @@ export default function ModelViewer({
   modelPath,
   label = 'Custom BLDC Motor',
   height = 420,
+  sectionId,
 }) {
   const [exploded, setExploded] = useState(false)
+  const { command } = useUI()
+
+  // React to terminal EXPLODE commands scoped to this model's section
+  useEffect(() => {
+    if (!command) return
+    if (command.type === 'EXPLODE') setExploded(command.payload)
+  }, [command])
 
   return (
     <motion.section
+      id={sectionId}
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

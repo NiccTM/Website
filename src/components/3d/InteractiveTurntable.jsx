@@ -1,6 +1,6 @@
-import { useRef, useEffect, Suspense, useMemo } from 'react'
+import { useRef, useEffect, useState, Suspense, useMemo } from 'react'
 import { createPortal } from 'react-dom'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, useTexture, Environment } from '@react-three/drei'
 import * as THREE from 'three'
 import { motion } from 'framer-motion'
@@ -17,9 +17,16 @@ function proxied(url) {
 // Label face         : Y = 0.043
 // Tonearm pivot      : Y = 0.043
 
+// ─── Tonearm rotation constants ───────────────────────────────────────────────
+// Pivot at world (1.72, 0.043, -0.55). Stylus tip at local [-0.84, -0.028, 0.02].
+// At REST_Y=0.75 → stylus R≈1.58 from origin (parked outside record edge 1.5).
+// At PLAY_Y=0.60 → stylus R≈1.44 (outer groove).
+const TONEARM_REST = 0.75
+const TONEARM_PLAY = 0.60
+
 // ─── Procedural groove normal map ─────────────────────────────────────────────
-// Uses canvas arc() to draw ~200 concentric rings — sharp enough for SpotLight
-// to produce V-shaped shimmer highlights as the disc rotates.
+// canvas arc() draws 200 concentric rings — sharp normal transitions produce
+// V-shaped shimmer highlights when light rakes across the anisotropic disc.
 function useGrooveNormalMap(size = 1024, grooves = 200) {
   return useMemo(() => {
     const canvas = document.createElement('canvas')
@@ -27,21 +34,18 @@ function useGrooveNormalMap(size = 1024, grooves = 200) {
     const ctx = canvas.getContext('2d')
     const cx = size / 2, cy = size / 2
 
-    // Flat normal base — rgb(128,128,255) = pointing straight up
+    // Base normal — rgb(128,128,255) = pointing straight up
     ctx.fillStyle = 'rgb(128,128,255)'
     ctx.fillRect(0, 0, size, size)
 
-    // Draw concentric arcs alternating between peak and valley normals
-    // Peak  (ridge top)  → rgb(150,150,255) — tilts slightly outward
-    // Valley (groove bottom) → rgb(100,100,255) — tilts slightly inward
     const step = (size / 2) / grooves
     for (let i = 0; i < grooves; i++) {
       const r = i * step
       const isPeak = i % 2 === 0
       ctx.beginPath()
       ctx.arc(cx, cy, r, 0, Math.PI * 2)
-      ctx.strokeStyle = isPeak ? 'rgb(155,155,255)' : 'rgb(100,100,255)'
-      ctx.lineWidth = step * 0.7
+      ctx.strokeStyle = isPeak ? 'rgb(158,158,255)' : 'rgb(98,98,255)'
+      ctx.lineWidth = step * 0.75
       ctx.stroke()
     }
 
@@ -59,7 +63,14 @@ function AlbumLabel({ coverUrl }) {
   return (
     <mesh position={[0, 0.021, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <circleGeometry args={[0.6, 128]} />
-      <meshStandardMaterial map={texture} roughness={0.5} metalness={0.0} emissive="#ffffff" emissiveMap={texture} emissiveIntensity={0.22} />
+      <meshStandardMaterial
+        map={texture}
+        roughness={0.5}
+        metalness={0.0}
+        emissive="#ffffff"
+        emissiveMap={texture}
+        emissiveIntensity={0.22}
+      />
     </mesh>
   )
 }
@@ -73,11 +84,19 @@ function PlainLabel() {
   )
 }
 
-// ─── Vinyl record + label (rotates together) ──────────────────────────────────
+// ─── Vinyl record — anisotropic PBR disc + rotating label ────────────────────
 function VinylRecord({ coverUrl }) {
   const groupRef  = useRef()
   const normalMap = useGrooveNormalMap(1024, 200)
   const proxyUrl  = proxied(coverUrl)
+  const { gl }    = useThree()
+
+  // Maximise texture anisotropy so grooves stay sharp at oblique angles
+  useEffect(() => {
+    const maxAniso = gl.capabilities.getMaxAnisotropy()
+    normalMap.anisotropy = maxAniso
+    normalMap.needsUpdate = true
+  }, [normalMap, gl])
 
   useFrame((_, delta) => {
     if (groupRef.current) groupRef.current.rotation.y += delta * 3.49
@@ -88,16 +107,24 @@ function VinylRecord({ coverUrl }) {
     <group ref={groupRef} position={[0, 0.022, 0]}>
       <mesh name="Vinyl_Disc" castShadow receiveShadow>
         <cylinderGeometry args={[1.5, 1.5, 0.04, 128]} />
-        <meshStandardMaterial
+        {/*
+          MeshPhysicalMaterial anisotropy — r161+ feature.
+          anisotropy=1 + low roughness creates the characteristic
+          radial highlight band that rotates with the disc under directional light.
+          anisotropyRotation=Math.PI/2 aligns highlight perpendicular to grooves.
+        */}
+        <meshPhysicalMaterial
           color="#020202"
+          roughness={0.12}
+          metalness={0.85}
+          anisotropy={1.0}
+          anisotropyRotation={Math.PI / 2}
           normalMap={normalMap}
-          normalScale={new THREE.Vector2(1.5, 1.5)}
-          roughness={0.35}
-          metalness={0.7}
+          normalScale={new THREE.Vector2(2.0, 2.0)}
         />
       </mesh>
 
-      {/* Label — local Y=0.021 → world Y=0.043 ✓ */}
+      {/* Label — local Y=0.021 → world Y=0.043 */}
       {proxyUrl ? (
         <Suspense fallback={<PlainLabel />}>
           <AlbumLabel coverUrl={proxyUrl} />
@@ -109,8 +136,42 @@ function VinylRecord({ coverUrl }) {
   )
 }
 
+// ─── Tonearm — pivot-point rotation animation ─────────────────────────────────
+// Arm lerps from rest (parked off disc) to play (outer groove) on mount.
+// Speed 2.0 → settles in ~2 s, which reads as a mechanical drop.
+function Tonearm({ isPlaying }) {
+  const groupRef = useRef()
+  const target   = isPlaying ? TONEARM_PLAY : TONEARM_REST
+
+  useFrame((_, delta) => {
+    if (!groupRef.current) return
+    const curr = groupRef.current.rotation.y
+    groupRef.current.rotation.y += (target - curr) * Math.min(1, delta * 2.0)
+  })
+
+  return (
+    <group ref={groupRef} position={[1.72, 0.043, -0.55]} rotation={[0, TONEARM_REST, 0]}>
+      {/* Arm tube */}
+      <mesh rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.013, 0.007, 1.5, 16]} />
+        <meshStandardMaterial color="#999" metalness={0.9} roughness={0.1} />
+      </mesh>
+      {/* Cartridge body */}
+      <mesh position={[-0.77, 0, 0.02]} rotation={[0.08, 0, 0.12]}>
+        <boxGeometry args={[0.12, 0.028, 0.058]} />
+        <meshStandardMaterial color="#bbb" metalness={0.85} roughness={0.15} />
+      </mesh>
+      {/* Stylus tip */}
+      <mesh position={[-0.84, -0.028, 0.02]} rotation={[0, 0, 0.28]}>
+        <cylinderGeometry args={[0.003, 0.001, 0.058, 8]} />
+        <meshStandardMaterial color="#1a1a1a" metalness={0.9} roughness={0.1} />
+      </mesh>
+    </group>
+  )
+}
+
 // ─── Plinth — top surface at Y=0.000 ─────────────────────────────────────────
-function Plinth() {
+function Plinth({ isPlaying }) {
   return (
     <group>
       {/* Box: height 0.12, center Y=-0.06 → top at Y=0.000 */}
@@ -119,7 +180,7 @@ function Plinth() {
         <meshStandardMaterial color="#0d0d0d" roughness={0.88} metalness={0.06} />
       </mesh>
 
-      {/* Platter well — sits flush at plinth top */}
+      {/* Platter well */}
       <mesh position={[0, 0.001, 0]}>
         <cylinderGeometry args={[1.53, 1.53, 0.004, 128]} />
         <meshStandardMaterial color="#161616" roughness={0.8} metalness={0.12} />
@@ -131,46 +192,34 @@ function Plinth() {
         <meshStandardMaterial color="#777" metalness={0.88} roughness={0.12} />
       </mesh>
 
-      {/* Tonearm group — pivot at Y=0.043 (record top) */}
-      <group position={[1.72, 0.043, -0.55]} rotation={[0, 0.3, 0]}>
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.013, 0.007, 1.5, 16]} />
-          <meshStandardMaterial color="#999" metalness={0.9} roughness={0.1} />
-        </mesh>
-        <mesh position={[-0.77, 0, 0.02]} rotation={[0.08, 0, 0.12]}>
-          <boxGeometry args={[0.12, 0.028, 0.058]} />
-          <meshStandardMaterial color="#bbb" metalness={0.85} roughness={0.15} />
-        </mesh>
-        {/* Stylus tip at record surface — rotation angles it down */}
-        <mesh position={[-0.84, -0.028, 0.02]} rotation={[0, 0, 0.28]}>
-          <cylinderGeometry args={[0.003, 0.001, 0.058, 8]} />
-          <meshStandardMaterial color="#1a1a1a" metalness={0.9} roughness={0.1} />
-        </mesh>
-      </group>
+      {/* Animated tonearm */}
+      <Tonearm isPlaying={isPlaying} />
 
       {/* Speed LED */}
       <mesh position={[-1.5, 0.003, 1.1]}>
         <cylinderGeometry args={[0.045, 0.045, 0.012, 32]} />
-        <meshStandardMaterial color="#6ee7b7" emissive="#6ee7b7" emissiveIntensity={1.0} roughness={0.3} />
+        <meshStandardMaterial
+          color="#6ee7b7"
+          emissive="#6ee7b7"
+          emissiveIntensity={1.0}
+          roughness={0.3}
+        />
       </mesh>
     </group>
   )
 }
 
 // ─── Scene ────────────────────────────────────────────────────────────────────
-function TurntableScene({ release }) {
+function TurntableScene({ release, isPlaying }) {
   return (
     <>
-      {/* Studio IBL — dialed way down so it only adds subtle reflections, not flat diffuse */}
+      {/* Studio IBL — heavily dialled down, scene driven by spots */}
       <Environment preset="studio" environmentIntensity={0.18} />
 
-      {/* Very low ambient — scene should be primarily lit by spots */}
       <ambientLight intensity={0.04} />
-
-      {/* Key directional — fills shadow side of plinth softly */}
       <directionalLight position={[4, 7, 5]} intensity={0.4} />
 
-      {/* Primary groove spotlight — grazing angle for V-shaped shimmer on normal map */}
+      {/* Primary groove spotlight — grazing angle for anisotropic shimmer */}
       <spotLight
         position={[5, 8, 5]}
         angle={0.14}
@@ -183,7 +232,7 @@ function TurntableScene({ release }) {
         target-position={[0, 0, 0]}
       />
 
-      {/* Second groove light — opposite side, warm tint */}
+      {/* Warm fill — opposite side */}
       <spotLight
         position={[-4, 6, -3]}
         angle={0.18}
@@ -196,14 +245,14 @@ function TurntableScene({ release }) {
         target-position={[0, 0, 0]}
       />
 
-      {/* Label fill — strong overhead point, distance=2.5 keeps hotspot on label only */}
+      {/* Label fill — tight overhead, distance=2.5 prevents plinth hotspot */}
       <pointLight position={[0, 2, 0]} intensity={7} distance={2.5} decay={2} color="#ffffff" />
 
-      {/* Accent rim */}
+      {/* Accent */}
       <pointLight position={[-2, 1, 2]} intensity={0.4} color="#6ee7b7" decay={2} />
 
       <VinylRecord coverUrl={release?.cover_image} />
-      <Plinth />
+      <Plinth isPlaying={isPlaying} />
 
       <OrbitControls
         enablePan={false}
@@ -228,6 +277,13 @@ export default function InteractiveTurntable({ release, onClose }) {
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
+  }, [])
+
+  // Arm drops 0.8 s after modal opens — feels like a deliberate mechanical action
+  const [isPlaying, setIsPlaying] = useState(false)
+  useEffect(() => {
+    const id = setTimeout(() => setIsPlaying(true), 800)
+    return () => clearTimeout(id)
   }, [])
 
   return createPortal(
@@ -280,7 +336,7 @@ export default function InteractiveTurntable({ release, onClose }) {
           style={{ background: 'transparent' }}
         >
           <Suspense fallback={null}>
-            <TurntableScene release={release} />
+            <TurntableScene release={release} isPlaying={isPlaying} />
           </Suspense>
         </Canvas>
       </motion.div>

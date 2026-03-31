@@ -1,9 +1,16 @@
 import { Component } from 'react'
 
+/**
+ * Props:
+ *   silent   — render nothing on error (for background WebGL canvases)
+ *   fallback — React node or render-prop fn(error, reset) for custom UI
+ *   label    — section name shown in the default error UI (e.g. "Vinyl Archive")
+ */
 export default class ErrorBoundary extends Component {
   constructor(props) {
     super(props)
     this.state = { error: null }
+    this.reset = this.reset.bind(this)
   }
 
   static getDerivedStateFromError(error) {
@@ -14,20 +21,45 @@ export default class ErrorBoundary extends Component {
     console.error('[ErrorBoundary]', error, info)
   }
 
+  reset() {
+    this.setState({ error: null })
+  }
+
   render() {
-    if (this.state.error) {
-      if (this.props.silent) return null
-      return (
-        <div className="px-6 py-6 sm:px-10 md:px-16 lg:px-24">
-          <div
-            className="rounded-xl border-subtle p-4 font-mono-data text-xs"
-            style={{ background: 'var(--bg-surface-1)', color: 'var(--text-muted)' }}
-          >
-            Section failed to load.
-          </div>
-        </div>
-      )
+    const { error } = this.state
+    if (!error) return this.props.children
+
+    if (this.props.silent) return null
+
+    // Custom fallback: render-prop or static node
+    if (this.props.fallback) {
+      return typeof this.props.fallback === 'function'
+        ? this.props.fallback(error, this.reset)
+        : this.props.fallback
     }
-    return this.props.children
+
+    // Default: minimal error tile with retry
+    return (
+      <div className="px-6 py-6 sm:px-10 md:px-16 lg:px-24">
+        <div
+          className="rounded-xl border-subtle p-5 flex flex-col gap-3"
+          style={{ background: 'var(--bg-surface-1)' }}
+        >
+          <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
+            {this.props.label
+              ? `${this.props.label} failed to load.`
+              : 'Section failed to load.'}
+          </p>
+          <button
+            onClick={this.reset}
+            className="self-start flex items-center gap-1.5 font-mono-data text-xs px-3 py-1.5 rounded-lg border-subtle transition-colors duration-150"
+            style={{ color: 'var(--accent)', background: 'var(--bg-surface-2)' }}
+          >
+            <span className="material-symbols-rounded text-sm">refresh</span>
+            Retry
+          </button>
+        </div>
+      </div>
+    )
   }
 }

@@ -38,7 +38,7 @@ function drawPredictions(canvas, img, predictions) {
   })
 }
 
-export default function EcoSortDemo() {
+export default function EcoSortDemo({ sectionId }) {
   const [status, setStatus]         = useState('idle')   // idle | loading | done | error
   const [errorMsg, setErrorMsg]     = useState('')
   const [previewSrc, setPreviewSrc] = useState(null)
@@ -117,6 +117,7 @@ export default function EcoSortDemo() {
 
   return (
     <motion.section
+      id={sectionId}
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

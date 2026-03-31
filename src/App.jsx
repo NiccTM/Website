@@ -1,9 +1,10 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import ErrorBoundary      from './components/ui/ErrorBoundary'
-import ProfileHeader    from './components/ui/ProfileHeader'
-import ProjectGallery   from './components/ui/ProjectGallery'
-import SocialLinks      from './components/ui/SocialLinks'
-import TerminalConsole  from './components/ui/TerminalConsole'
+import ProfileHeader      from './components/ui/ProfileHeader'
+import ProjectGallery     from './components/ui/ProjectGallery'
+import SocialLinks        from './components/ui/SocialLinks'
+import TerminalConsole    from './components/ui/TerminalConsole'
+import { UIProvider, useUI } from './context/UIContext'
 
 // Lazy-load everything that touches WebGL or large deps
 const CanvasBackground   = lazy(() => import('./components/CanvasBackground'))
@@ -34,10 +35,9 @@ function Divider() {
   )
 }
 
-// Wraps lazy sections with both Suspense and ErrorBoundary
-function Section({ children }) {
+function Section({ children, label }) {
   return (
-    <ErrorBoundary>
+    <ErrorBoundary label={label}>
       <Suspense fallback={<SectionFallback />}>
         {children}
       </Suspense>
@@ -45,84 +45,129 @@ function Section({ children }) {
   )
 }
 
+// ─── Section IDs used by the terminal command router ─────────────────────────
+const SECTION_IDS = {
+  audio:    'section-audio',
+  vinyl:    'section-vinyl',
+  ecosort:  'section-ecosort',
+  xr:       'section-xr',
+  delorean: 'section-delorean',
+  bldc:     'section-bldc',
+}
+
+function scrollTo(id) {
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+// ─── Command router (reads from UIContext) ────────────────────────────────────
+function CommandRouter() {
+  const { command } = useUI()
+
+  useEffect(() => {
+    if (!command || command.type !== 'SCROLL_TO') return
+    const id = SECTION_IDS[command.payload]
+    if (id) scrollTo(id)
+  }, [command])
+
+  return null
+}
+
+// ─── Main layout ──────────────────────────────────────────────────────────────
 export default function App() {
   return (
-    <div className="relative min-h-screen w-full" style={{ background: 'var(--bg-base)' }}>
-      {/* Particle background — isolated, silent failure */}
-      <ErrorBoundary silent>
-        <Suspense fallback={null}>
-          <CanvasBackground />
-        </Suspense>
-      </ErrorBoundary>
+    <UIProvider>
+      <CommandRouter />
+      <div className="relative min-h-screen w-full" style={{ background: 'var(--bg-base)' }}>
+        {/* Particle background */}
+        <ErrorBoundary silent>
+          <Suspense fallback={null}>
+            <CanvasBackground />
+          </Suspense>
+        </ErrorBoundary>
 
-      <main className="relative flex flex-col max-w-7xl mx-auto">
-        {/* ── Core identity ── */}
-        <ProfileHeader />
-        <SocialLinks />
-        <TerminalConsole />
+        <main className="relative flex flex-col max-w-7xl mx-auto">
+          {/* ── Core identity ── */}
+          <ProfileHeader />
+          <SocialLinks />
+          <TerminalConsole />
 
-        <Divider />
+          <Divider />
 
-        {/* ── Projects overview ── */}
-        <ProjectGallery />
+          {/* ── Projects overview ── */}
+          <ProjectGallery />
 
-        <Divider />
+          <Divider />
 
-        {/* ── React Flow diagrams ── */}
-        <Section><AudioSignalChain /></Section>
-        <Divider />
-        <Section><SystemArchitecture /></Section>
+          {/* ── React Flow diagrams ── */}
+          <Section label="Audio Signal Chain">
+            <AudioSignalChain sectionId="section-audio" />
+          </Section>
+          <Divider />
+          <Section label="System Architecture">
+            <SystemArchitecture />
+          </Section>
 
-        <Divider />
+          <Divider />
 
-        {/* ── DeLorean video showcase ── */}
-        <Section>
-          <ProjectVideo
-            src="/videos/APSC 171-2024-T1C4-16-SW.mp4"
-            poster="/videos/delorean-poster.jpg"
-            title="APSC 171 DeLorean — SolidWorks Showcase"
-          />
-        </Section>
+          {/* ── DeLorean video showcase ── */}
+          <div id="section-delorean">
+            <Section label="DeLorean Video">
+              <ProjectVideo
+                src="/videos/APSC 171-2024-T1C4-16-SW.mp4"
+                poster="/videos/delorean-poster.jpg"
+                title="APSC 171 DeLorean — SolidWorks Showcase"
+              />
+            </Section>
 
-        <Divider />
+            <Section label="DeLorean 3D Model">
+              <ModelViewer
+                modelPath="/models/delorean-engine.glb"
+                label="DeLorean Engine Assembly"
+                sectionId="section-delorean-model"
+              />
+            </Section>
+          </div>
 
-        {/* ── DeLorean engine — explodable 3D model ── */}
-        <Section>
-          <ModelViewer
-            modelPath="/models/delorean-engine.glb"
-            label="DeLorean Engine Assembly"
-          />
-        </Section>
+          <Divider />
 
-        <Divider />
+          {/* ── BLDC Motor 3D model ── */}
+          <Section label="BLDC Motor Model">
+            <ModelViewer
+              label="Custom BLDC Motor"
+              sectionId="section-bldc"
+            />
+          </Section>
 
-        {/* ── BLDC Motor 3D model ── */}
-        <Section>
-          <ModelViewer label="Custom BLDC Motor" />
-        </Section>
+          <Divider />
 
-        <Divider />
+          {/* ── WebXR inspection ── */}
+          <Section label="WebXR">
+            <XRCanvas label="VR Inspection Mode" sectionId="section-xr" />
+          </Section>
 
-        {/* ── WebXR inspection ── */}
-        <Section><XRCanvas label="VR Inspection Mode" /></Section>
+          <Divider />
 
-        <Divider />
+          {/* ── Vinyl archive ── */}
+          <Section label="Vinyl Archive">
+            <VinylArchive />
+          </Section>
 
-        {/* ── Vinyl archive ── */}
-        <Section><VinylArchive /></Section>
+          <Divider />
 
-        <Divider />
+          {/* ── ML demo ── */}
+          <Section label="EcoSort ML Demo">
+            <EcoSortDemo sectionId="section-ecosort" />
+          </Section>
 
-        {/* ── ML demo ── */}
-        <Section><EcoSortDemo /></Section>
-
-        {/* Footer */}
-        <footer className="px-6 py-10 sm:px-10 md:px-16 lg:px-24">
-          <p className="font-mono-data" style={{ color: 'var(--text-muted)' }}>
-            © {new Date().getFullYear()} Nic Piraino
-          </p>
-        </footer>
-      </main>
-    </div>
+          {/* Footer */}
+          <footer className="px-6 py-10 sm:px-10 md:px-16 lg:px-24">
+            <p className="font-mono-data" style={{ color: 'var(--text-muted)' }}>
+              © {new Date().getFullYear()} Nic Piraino
+            </p>
+          </footer>
+        </main>
+      </div>
+    </UIProvider>
   )
 }

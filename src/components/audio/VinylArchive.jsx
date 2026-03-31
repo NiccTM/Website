@@ -1,25 +1,40 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const InteractiveTurntable = lazy(() => import('../3d/InteractiveTurntable'))
 
-// ─── Data fetching ────────────────────────────────────────────────────────────
+// ─── Mock fallback data ───────────────────────────────────────────────────────
+// Shown when the Discogs API is unavailable (e.g. missing PAT in dev).
+const MOCK_RELEASES = [
+  { id: 1, artist: 'Pink Floyd',      title: 'The Dark Side of the Moon', year: 1973, cover_image: null },
+  { id: 2, artist: 'Led Zeppelin',    title: 'Led Zeppelin IV',           year: 1971, cover_image: null },
+  { id: 3, artist: 'Miles Davis',     title: 'Kind of Blue',              year: 1959, cover_image: null },
+  { id: 4, artist: 'The Beatles',     title: 'Abbey Road',                year: 1969, cover_image: null },
+  { id: 5, artist: 'David Bowie',     title: 'Heroes',                    year: 1977, cover_image: null },
+  { id: 6, artist: 'Radiohead',       title: 'OK Computer',               year: 1997, cover_image: null },
+]
+
+// ─── Data fetching with retry ─────────────────────────────────────────────────
 
 function useCollection() {
-  const [data,    setData]    = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState(null)
+  const [data,     setData]    = useState([])
+  const [loading,  setLoading] = useState(true)
+  const [error,    setError]   = useState(null)
+  const [isMock,   setIsMock]  = useState(false)
+  const [attempt,  setAttempt] = useState(0)
 
   useEffect(() => {
     let cancelled = false
+    setLoading(true)
+    setError(null)
 
     fetch('/api/discogs')
       .then((r) => {
-        if (!r.ok) throw new Error(`API error ${r.status}`)
+        if (!r.ok) throw new Error(`API ${r.status}`)
         return r.json()
       })
       .then((json) => {
-        if (!cancelled) setData(json)
+        if (!cancelled) { setData(json); setIsMock(false) }
       })
       .catch((err) => {
         if (!cancelled) setError(err.message)
@@ -29,20 +44,20 @@ function useCollection() {
       })
 
     return () => { cancelled = true }
-  }, [])
+  }, [attempt])
 
-  return { data, loading, error }
+  const retry    = useCallback(() => setAttempt((n) => n + 1), [])
+  const useMock  = useCallback(() => { setData(MOCK_RELEASES); setIsMock(true); setError(null) }, [])
+
+  return { data, loading, error, isMock, retry, useMock }
 }
 
 // ─── Stagger config ───────────────────────────────────────────────────────────
 
 const gridContainer = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.04 },
-  },
+  show: { transition: { staggerChildren: 0.04 } },
 }
-
 const gridItem = {
   hidden: { opacity: 0, scale: 0.92, y: 10 },
   show:   { opacity: 1, scale: 1,    y: 0, transition: { duration: 0.3, ease: 'easeOut' } },
@@ -60,13 +75,9 @@ function AlbumCard({ release, onClick }) {
       whileTap={{ scale: 0.97 }}
       onClick={() => onClick(release)}
       className="group relative aspect-square rounded-lg overflow-hidden border-subtle text-left focus:outline-none focus-visible:ring-2"
-      style={{
-        background: 'var(--bg-surface-2)',
-        '--tw-ring-color': 'var(--accent)',
-      }}
+      style={{ background: 'var(--bg-surface-2)', '--tw-ring-color': 'var(--accent)' }}
       aria-label={`${release.artist} — ${release.title}`}
     >
-      {/* Cover art */}
       {release.cover_image && !imgError ? (
         <img
           src={release.cover_image}
@@ -78,17 +89,15 @@ function AlbumCard({ release, onClick }) {
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center">
-          <span className="material-symbols-rounded text-3xl" style={{ color: 'var(--text-muted)' }}>
-            album
-          </span>
+          <span className="material-symbols-rounded text-3xl" style={{ color: 'var(--text-muted)' }}>album</span>
         </div>
       )}
 
-      {/* Hover overlay */}
-      <div className="absolute inset-0 flex flex-col justify-end p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-        style={{ background: 'linear-gradient(to top, rgba(3,7,18,0.92) 0%, transparent 60%)' }}>
-        <p className="font-sans text-xs font-medium leading-tight truncate"
-          style={{ color: 'var(--text-primary)' }}>
+      <div
+        className="absolute inset-0 flex flex-col justify-end p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        style={{ background: 'linear-gradient(to top, rgba(3,7,18,0.92) 0%, transparent 60%)' }}
+      >
+        <p className="font-sans text-xs font-medium leading-tight truncate" style={{ color: 'var(--text-primary)' }}>
           {release.title}
         </p>
         <p className="font-mono-data truncate" style={{ color: 'var(--accent)', fontSize: '0.6rem' }}>
@@ -96,7 +105,6 @@ function AlbumCard({ release, onClick }) {
         </p>
       </div>
 
-      {/* Turntable hint icon */}
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         <span className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>
           radio_button_checked
@@ -106,7 +114,7 @@ function AlbumCard({ release, onClick }) {
   )
 }
 
-// ─── Skeleton grid ────────────────────────────────────────────────────────────
+// ─── Skeleton grid — matches AlbumCard dimensions exactly ─────────────────────
 
 function SkeletonGrid() {
   return (
@@ -114,10 +122,58 @@ function SkeletonGrid() {
       {Array.from({ length: 12 }).map((_, i) => (
         <div
           key={i}
-          className="aspect-square rounded-lg animate-pulse"
+          className="aspect-square rounded-lg relative overflow-hidden border-subtle"
           style={{ background: 'var(--bg-surface-2)', animationDelay: `${i * 40}ms` }}
-        />
+        >
+          {/* Shimmer sweep */}
+          <div
+            className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite]"
+            style={{
+              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%)',
+              animationDelay: `${i * 80}ms`,
+            }}
+          />
+          {/* Fake title bar at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 p-2 space-y-1">
+            <div className="h-1.5 rounded-full w-3/4" style={{ background: 'var(--bg-surface-3)' }} />
+            <div className="h-1 rounded-full w-1/2" style={{ background: 'var(--bg-surface-3)' }} />
+          </div>
+        </div>
       ))}
+    </div>
+  )
+}
+
+// ─── Error state ──────────────────────────────────────────────────────────────
+
+function ErrorState({ message, onRetry, onMock }) {
+  return (
+    <div className="rounded-xl border-subtle p-6 flex flex-col gap-4" style={{ background: 'var(--bg-surface-1)' }}>
+      <div>
+        <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
+          {message.includes('404') || message.includes('500') || message.includes('API')
+            ? 'Discogs API unavailable — check DISCOGS_PAT environment variable.'
+            : `Collection error: ${message}`}
+        </p>
+      </div>
+      <div className="flex gap-3">
+        <button
+          onClick={onRetry}
+          className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-1.5 rounded-lg border-subtle transition-colors duration-150"
+          style={{ color: 'var(--accent)', background: 'var(--bg-surface-2)' }}
+        >
+          <span className="material-symbols-rounded text-sm">refresh</span>
+          Retry
+        </button>
+        <button
+          onClick={onMock}
+          className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-1.5 rounded-lg border-subtle transition-colors duration-150"
+          style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
+        >
+          <span className="material-symbols-rounded text-sm">library_music</span>
+          Load sample records
+        </button>
+      </div>
     </div>
   )
 }
@@ -125,11 +181,12 @@ function SkeletonGrid() {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function VinylArchive() {
-  const { data, loading, error } = useCollection()
+  const { data, loading, error, isMock, retry, useMock } = useCollection()
   const [selected, setSelected] = useState(null)
 
   return (
     <motion.section
+      id="section-vinyl"
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -139,10 +196,7 @@ export default function VinylArchive() {
       {/* Header */}
       <div className="flex items-end justify-between flex-wrap gap-3 mb-6">
         <div>
-          <h2
-            className="font-mono-data tracking-widest uppercase"
-            style={{ color: 'var(--accent)' }}
-          >
+          <h2 className="font-mono-data tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
             Vinyl Archive
           </h2>
           <p className="font-mono-data mt-1" style={{ color: 'var(--text-muted)' }}>
@@ -150,10 +204,11 @@ export default function VinylArchive() {
               ? 'Fetching collection…'
               : error
               ? 'Collection unavailable'
+              : isMock
+              ? `${data.length} sample records · Connect Discogs for your full collection`
               : `${data.length} records · Click to inspect on the platter`}
           </p>
         </div>
-
         <a
           href="https://www.discogs.com/user/NiccTM/collection"
           target="_blank"
@@ -168,21 +223,8 @@ export default function VinylArchive() {
         </a>
       </div>
 
-      {/* States */}
       {loading && <SkeletonGrid />}
-
-      {error && (
-        <div
-          className="rounded-xl border-subtle p-6 text-center"
-          style={{ background: 'var(--bg-surface-1)' }}
-        >
-          <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
-            {error.includes('404') || error.includes('500')
-              ? 'Add DISCOGS_PAT to your environment variables to enable this section.'
-              : error}
-          </p>
-        </div>
-      )}
+      {error && <ErrorState message={error} onRetry={retry} onMock={useMock} />}
 
       {!loading && !error && data.length > 0 && (
         <motion.div
