@@ -1,8 +1,8 @@
 // ─── Identity ─────────────────────────────────────────────────────────────────
 export const profile = {
   name: 'Nic Piraino',
-  tagline: 'Electrical Engineering Student & Hardware Enthusiast',
-  location: 'Kelowna, BC',
+  tagline: 'Electrical Engineering Student & Vinyl Collector',
+  location: 'Ontario, CA',
   academics: {
     institution: 'UBCO',
     program: 'Electrical Engineering',
@@ -10,9 +10,10 @@ export const profile = {
   },
   github: 'https://github.com/NiccTM',
   interests: [
-    'High-fidelity audio optimization',
-    'VR hardware tuning',
-    'Custom PC architectures',
+    'Vinyl collecting — jazz, pop, rock, R&B, rap, trap',
+    'High-fidelity audio',
+    'VR hardware',
+    'Custom PC builds',
   ],
 }
 
@@ -33,78 +34,230 @@ export const hardware = {
   },
 }
 
-// ─── Audio Signal Chain (React Flow nodes) ───────────────────────────────────
+// ─── Audio Signal Chains (React Flow — per room) ─────────────────────────────
 export const audioChain = {
-  nodes: [
+  rooms: [
+    // ── House Master ──────────────────────────────────────────────────────────
     {
-      id: 'source-vinyl',
-      label: 'Rega Planar 2',
-      type: 'source',
-      specs: { Type: 'Turntable', Cartridge: 'Ortofon 2M Red' },
-      position: { x: 0, y: 0 },
+      id: 'house-master',
+      label: 'House Master',
+      nodes: [
+        {
+          id: 'hm-beosound',
+          label: 'B&O Beosound 4',
+          type: 'streamer',
+          room: 'House Master',
+          specs: { Type: 'All-in-one CD/Radio/Streaming', Brand: 'Bang & Olufsen' },
+          position: { x: 0, y: 0 },
+        },
+        {
+          id: 'hm-beocord',
+          label: 'B&O Beocord 5500',
+          type: 'tape',
+          room: 'House Master',
+          specs: { Type: 'Cassette Deck', Brand: 'Bang & Olufsen', Heads: '3-head' },
+          position: { x: 0, y: 110 },
+        },
+        {
+          id: 'hm-amp',
+          label: 'Audiolab 8200A',
+          type: 'amp',
+          room: 'House Master',
+          specs: {
+            Power: '60W RMS @ 8Ω',
+            THD: '<0.002%',
+            'Input Impedance': '47kΩ',
+            'Damping Factor': '>200',
+          },
+          position: { x: 300, y: 55 },
+        },
+        {
+          id: 'hm-speakers',
+          label: 'Martin Logan Motion 15i',
+          type: 'output',
+          room: 'House Master',
+          specs: {
+            'Freq Response': '60Hz – 25kHz',
+            Sensitivity: '92dB',
+            Impedance: '4Ω nominal',
+            Tweeter: 'Folded Motion XT',
+          },
+          position: { x: 580, y: 0 },
+        },
+        {
+          id: 'hm-sub',
+          label: 'Martin Logan Dynamo 300',
+          type: 'sub',
+          room: 'House Master',
+          specs: {
+            Type: 'Powered Subwoofer',
+            Driver: '8" long-throw',
+            Power: '120W RMS',
+            'Freq Response': '32Hz – 120Hz',
+          },
+          position: { x: 580, y: 110 },
+        },
+        {
+          id: 'hm-headphones',
+          label: 'Sony MDR-Z7Mk2',
+          type: 'output',
+          room: 'House Master',
+          specs: {
+            Impedance: '70Ω',
+            'Freq Response': '4Hz – 100kHz',
+            Driver: '70mm HD dome',
+            Sensitivity: '100dB/mW',
+          },
+          position: { x: 580, y: 210 },
+        },
+      ],
+      edges: [
+        { id: 'hm-e1', source: 'hm-beosound', target: 'hm-amp' },
+        { id: 'hm-e2', source: 'hm-beocord',  target: 'hm-amp' },
+        { id: 'hm-e3', source: 'hm-amp',       target: 'hm-speakers' },
+        { id: 'hm-e4', source: 'hm-amp',       target: 'hm-sub' },
+        { id: 'hm-e5', source: 'hm-amp',       target: 'hm-headphones' },
+      ],
     },
+
+    // ── Bedroom ───────────────────────────────────────────────────────────────
     {
-      id: 'source-digital',
-      label: 'PC / Digital Source',
-      type: 'source',
-      specs: { Output: 'USB / Optical', 'Sample Rate': 'Up to 192kHz' },
-      position: { x: 0, y: 120 },
+      id: 'bedroom',
+      label: 'Bedroom',
+      nodes: [
+        {
+          id: 'bd-turntable',
+          label: 'Rega Planar 2',
+          type: 'source',
+          room: 'Bedroom',
+          specs: { Cartridge: 'Audio-Technica AT-VM95ML', Type: 'Belt-drive turntable' },
+          position: { x: 0, y: 0 },
+        },
+        {
+          id: 'bd-cd',
+          label: 'Creek CD43 Mk2',
+          type: 'cd',
+          room: 'Bedroom',
+          specs: { Type: 'CD Player', Output: 'RCA / S/PDIF', DAC: 'Wolfson WM8740' },
+          position: { x: 0, y: 110 },
+        },
+        {
+          id: 'bd-luxman',
+          label: 'Luxman K-205',
+          type: 'tape',
+          room: 'Bedroom',
+          specs: { Type: 'Cassette Deck', Heads: '3-head', 'Noise Reduction': 'Dolby B/C' },
+          position: { x: 0, y: 220 },
+        },
+        {
+          id: 'bd-phono',
+          label: 'Rega Fono Mini A2D',
+          type: 'preamp',
+          room: 'Bedroom',
+          specs: { Type: 'MM Phono Preamp', 'USB A/D': 'Yes', 'Input Impedance': '47kΩ' },
+          position: { x: 260, y: 0 },
+        },
+        {
+          id: 'bd-amp',
+          label: 'NAD D 3020 V2',
+          type: 'amp',
+          room: 'Bedroom',
+          specs: {
+            Power: '30W RMS @ 8Ω',
+            Connectivity: 'Bluetooth / Optical / USB',
+            THD: '<0.03%',
+          },
+          position: { x: 520, y: 90 },
+        },
+        {
+          id: 'bd-speakers',
+          label: 'KEF Q350',
+          type: 'output',
+          room: 'Bedroom',
+          specs: {
+            'Freq Response': '63Hz – 28kHz',
+            Sensitivity: '87dB',
+            Impedance: '8Ω',
+            Driver: 'Uni-Q 6.5"',
+          },
+          position: { x: 780, y: 40 },
+        },
+        {
+          id: 'bd-sub',
+          label: 'SVS 3000 Micro',
+          type: 'sub',
+          room: 'Bedroom',
+          specs: {
+            Type: 'Sealed Powered Subwoofer',
+            Driver: 'Dual 8" opposed',
+            Power: '800W RMS',
+            'Freq Response': '25Hz – 200Hz',
+          },
+          position: { x: 780, y: 150 },
+        },
+      ],
+      edges: [
+        { id: 'bd-e1', source: 'bd-turntable', target: 'bd-phono' },
+        { id: 'bd-e2', source: 'bd-phono',     target: 'bd-amp' },
+        { id: 'bd-e3', source: 'bd-cd',         target: 'bd-amp' },
+        { id: 'bd-e4', source: 'bd-luxman',     target: 'bd-amp' },
+        { id: 'bd-e5', source: 'bd-amp',        target: 'bd-speakers' },
+        { id: 'bd-e6', source: 'bd-amp',        target: 'bd-sub' },
+      ],
     },
+
+    // ── Upstairs ──────────────────────────────────────────────────────────────
     {
-      id: 'dac',
-      label: 'Topping DX3 Pro+',
-      type: 'dac',
-      specs: {
-        THD: '-120dB',
-        SNR: '130dB',
-        'Output Power': '1W @ 32Ω',
-        Connectivity: 'USB / Optical / Coax',
-      },
-      position: { x: 280, y: 60 },
+      id: 'upstairs',
+      label: 'Upstairs',
+      nodes: [
+        {
+          id: 'up-turntable',
+          label: 'AT-LP120-USB',
+          type: 'source',
+          room: 'Upstairs',
+          specs: { Type: 'Direct-drive turntable', Output: 'RCA / USB', 'Built-in Preamp': 'Yes' },
+          position: { x: 0, y: 60 },
+        },
+        {
+          id: 'up-receiver',
+          label: 'Pioneer VSX-831',
+          type: 'amp',
+          room: 'Upstairs',
+          specs: {
+            Power: '80W × 5 @ 8Ω',
+            Type: 'AV Receiver',
+            Connectivity: 'HDMI / Bluetooth / Phono',
+          },
+          position: { x: 280, y: 60 },
+        },
+        {
+          id: 'up-speakers',
+          label: 'Ruark Epilogue 2',
+          type: 'output',
+          room: 'Upstairs',
+          specs: {
+            Type: 'Bookshelf',
+            Impedance: '8Ω',
+            Sensitivity: '88dB',
+          },
+          position: { x: 560, y: 0 },
+        },
+        {
+          id: 'up-sub',
+          label: 'Polk 12" Sub',
+          type: 'sub',
+          room: 'Upstairs',
+          specs: { Driver: '12" woofer', Type: 'Powered Subwoofer' },
+          position: { x: 560, y: 120 },
+        },
+      ],
+      edges: [
+        { id: 'up-e1', source: 'up-turntable', target: 'up-receiver' },
+        { id: 'up-e2', source: 'up-receiver',  target: 'up-speakers' },
+        { id: 'up-e3', source: 'up-receiver',  target: 'up-sub' },
+      ],
     },
-    {
-      id: 'amp',
-      label: 'Audiolab 8200A',
-      type: 'amp',
-      specs: {
-        Power: '60W RMS @ 8Ω',
-        THD: '<0.002%',
-        'Input Impedance': '47kΩ',
-        'Damping Factor': '>200',
-      },
-      position: { x: 560, y: 60 },
-    },
-    {
-      id: 'speakers',
-      label: 'Martin Logan Motion 15i',
-      type: 'output',
-      specs: {
-        'Freq Response': '60Hz – 25kHz',
-        Sensitivity: '92dB',
-        Impedance: '4Ω nominal',
-        Tweeter: 'Folded Motion XT',
-      },
-      position: { x: 840, y: 0 },
-    },
-    {
-      id: 'headphones',
-      label: 'Sony MDR-Z7M2',
-      type: 'output',
-      specs: {
-        Impedance: '70Ω',
-        'Freq Response': '4Hz – 100kHz',
-        Driver: '70mm HD dome',
-        'Sensitivity': '100dB/mW',
-      },
-      position: { x: 840, y: 120 },
-    },
-  ],
-  edges: [
-    { id: 'e1', source: 'source-vinyl',   target: 'dac' },
-    { id: 'e2', source: 'source-digital', target: 'dac' },
-    { id: 'e3', source: 'dac',            target: 'amp' },
-    { id: 'e4', source: 'amp',            target: 'speakers' },
-    { id: 'e5', source: 'dac',            target: 'headphones' },
   ],
 }
 

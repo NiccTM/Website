@@ -4,6 +4,8 @@ import ReactFlow, {
   Controls,
   useNodesState,
   useEdgesState,
+  Handle,
+  Position,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -19,7 +21,7 @@ const NODE_COLORS = {
 function ArchNode({ data }) {
   return (
     <div
-      className="px-3 py-2 rounded-lg border text-xs font-mono cursor-pointer select-none min-w-[130px]"
+      className="px-3 py-2 rounded-lg border text-xs font-mono cursor-pointer select-none min-w-[140px]"
       style={{
         background: NODE_COLORS[data.type] ?? 'var(--bg-surface-2)',
         borderColor: 'var(--border-accent)',
@@ -27,8 +29,12 @@ function ArchNode({ data }) {
       }}
       onClick={() => data.onSelect(data)}
     >
+      <Handle type="target" position={Position.Left} />
       <div className="font-semibold" style={{ color: 'var(--accent)' }}>{data.label}</div>
-      <div style={{ color: 'var(--text-muted)', fontSize: '0.65rem' }}>{data.type?.toUpperCase()}</div>
+      <div style={{ color: 'var(--text-muted)', fontSize: '0.6rem', marginTop: 2 }}>
+        {data.type?.toUpperCase()}
+      </div>
+      <Handle type="source" position={Position.Right} />
     </div>
   )
 }
@@ -65,7 +71,7 @@ function SpecPanel({ node, onClose }) {
           <tbody>
             {Object.entries(node.specs).map(([k, v]) => (
               <tr key={k}>
-                <td className="font-mono-data pr-3 pb-1" style={{ color: 'var(--text-muted)' }}>{k}</td>
+                <td className="font-mono-data pr-3 pb-1 align-top" style={{ color: 'var(--text-muted)' }}>{k}</td>
                 <td className="font-mono-data pb-1" style={{ color: 'var(--text-primary)' }}>{v}</td>
               </tr>
             ))}
@@ -120,6 +126,7 @@ export default function SystemArchitecture() {
           proOptions={{ hideAttribution: true }}
           panOnDrag
           zoomOnScroll={false}
+          nodesDraggable={false}
         >
           <Background color="#1f2937" gap={24} />
           <Controls
@@ -127,13 +134,11 @@ export default function SystemArchitecture() {
             style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
           />
         </ReactFlow>
-
         <SpecPanel node={selected} onClose={() => setSelected(null)} />
       </div>
 
-      {/* Mobile fallback */}
       <div className="sm:hidden rounded-xl border-subtle p-4" style={{ background: 'var(--bg-surface-1)' }}>
-        <p className="font-mono-data text-center" style={{ color: 'var(--text-muted)' }}>
+        <p className="font-mono-data text-center text-xs" style={{ color: 'var(--text-muted)' }}>
           Architecture diagram available on desktop.
         </p>
       </div>
