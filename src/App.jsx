@@ -1,10 +1,15 @@
 import { lazy, Suspense, useEffect } from 'react'
+import { useGLTF } from '@react-three/drei'
 import ErrorBoundary      from './components/ui/ErrorBoundary'
 import ProfileHeader      from './components/ui/ProfileHeader'
 import ProjectGallery     from './components/ui/ProjectGallery'
 import SocialLinks        from './components/ui/SocialLinks'
 import TerminalConsole    from './components/ui/TerminalConsole'
 import { UIProvider, useUI } from './context/UIContext'
+
+// Preload GLB assets at module-parse time so R3F doesn't stall when the
+// ModelViewer mounts. No-ops gracefully if the file doesn't exist yet.
+useGLTF.preload('/models/delorean-engine.glb')
 
 // Lazy-load everything that touches WebGL or large deps
 const CanvasBackground   = lazy(() => import('./components/CanvasBackground'))

@@ -2,31 +2,41 @@ import { useRef, useEffect, useState, Suspense, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, useTexture, Environment } from '@react-three/drei'
+import { damp } from 'maath/easing'
 import * as THREE from 'three'
 import { motion } from 'framer-motion'
+import { useUI } from '../../context/UIContext'
 
 function proxied(url) {
   if (!url) return null
   return `/api/image-proxy?url=${encodeURIComponent(url)}`
 }
 
-// ─── Y-Stack (all positions relative to plinth top = 0.000) ──────────────────
+// ─── Y-Stack ──────────────────────────────────────────────────────────────────
 // Plinth top surface : Y = 0.000
-// Record disc base   : Y = 0.002  (group center = 0.022)
+// Record disc base   : Y = 0.002  (group center Y = 0.022)
 // Record top surface : Y = 0.042
-// Label face         : Y = 0.043
-// Tonearm pivot      : Y = 0.043
+// Label / tonearm    : Y = 0.043
 
-// ─── Tonearm rotation constants ───────────────────────────────────────────────
-// Pivot at world (1.72, 0.043, -0.55). Stylus tip at local [-0.84, -0.028, 0.02].
-// At REST_Y=0.75 → stylus R≈1.58 from origin (parked outside record edge 1.5).
-// At PLAY_Y=0.60 → stylus R≈1.44 (outer groove).
-const TONEARM_REST = 0.75
-const TONEARM_PLAY = 0.60
+// ─── Tonearm geometry constants ───────────────────────────────────────────────
+// Pivot at world (1.72, 0.043, -0.55).
+// Stylus tip in pivot-local space: [-0.84, -0.028, 0.02].
+//
+// rotation.y  →  stylus radius from origin
+//   0.75 rad  →  R ≈ 1.58  (parked, outside record edge 1.50)
+//   0.60 rad  →  R ≈ 1.44  (outer groove)
+//   0.25 rad  →  R ≈ 0.68  (inner groove, label edge)
+const TONEARM_REST     = 0.75   // parked angle (rad)
+const TONEARM_PLAY     = 0.60   // outer groove (rad)
+const TONEARM_INNER    = 0.25   // inner groove (rad)
+const RAISE_HEIGHT     = 0.14   // how far pivot lifts above Y=0.043 when cued up
+const PIVOT_BASE_Y     = 0.043  // surface-level Y for pivot
+const TRACKING_SECS    = 45     // seconds to sweep outer → inner groove (demo speed)
+
+// Arm state machine
+const ARM = { PARKED: 0, SWINGING: 1, DROPPING: 2, PLAYING: 3 }
 
 // ─── Procedural groove normal map ─────────────────────────────────────────────
-// canvas arc() draws 200 concentric rings — sharp normal transitions produce
-// V-shaped shimmer highlights when light rakes across the anisotropic disc.
 function useGrooveNormalMap(size = 1024, grooves = 200) {
   return useMemo(() => {
     const canvas = document.createElement('canvas')
@@ -34,17 +44,15 @@ function useGrooveNormalMap(size = 1024, grooves = 200) {
     const ctx = canvas.getContext('2d')
     const cx = size / 2, cy = size / 2
 
-    // Base normal — rgb(128,128,255) = pointing straight up
     ctx.fillStyle = 'rgb(128,128,255)'
     ctx.fillRect(0, 0, size, size)
 
     const step = (size / 2) / grooves
     for (let i = 0; i < grooves; i++) {
       const r = i * step
-      const isPeak = i % 2 === 0
       ctx.beginPath()
       ctx.arc(cx, cy, r, 0, Math.PI * 2)
-      ctx.strokeStyle = isPeak ? 'rgb(158,158,255)' : 'rgb(98,98,255)'
+      ctx.strokeStyle = i % 2 === 0 ? 'rgb(158,158,255)' : 'rgb(98,98,255)'
       ctx.lineWidth = step * 0.75
       ctx.stroke()
     }
@@ -84,35 +92,29 @@ function PlainLabel() {
   )
 }
 
-// ─── Vinyl record — anisotropic PBR disc + rotating label ────────────────────
+// ─── Vinyl disc — anisotropic PBR, RPM-linked rotation ───────────────────────
 function VinylRecord({ coverUrl }) {
   const groupRef  = useRef()
   const normalMap = useGrooveNormalMap(1024, 200)
   const proxyUrl  = proxied(coverUrl)
   const { gl }    = useThree()
+  const { rpm }   = useUI()
 
-  // Maximise texture anisotropy so grooves stay sharp at oblique angles
   useEffect(() => {
-    const maxAniso = gl.capabilities.getMaxAnisotropy()
-    normalMap.anisotropy = maxAniso
+    normalMap.anisotropy = gl.capabilities.getMaxAnisotropy()
     normalMap.needsUpdate = true
   }, [normalMap, gl])
 
   useFrame((_, delta) => {
-    if (groupRef.current) groupRef.current.rotation.y += delta * 3.49
+    if (!groupRef.current) return
+    // rpm → rad/s: (rpm / 60) × 2π
+    groupRef.current.rotation.y += delta * (rpm / 60) * Math.PI * 2
   })
 
   return (
-    // Group center at Y=0.022 → base at 0.002, top at 0.042
     <group ref={groupRef} position={[0, 0.022, 0]}>
       <mesh name="Vinyl_Disc" castShadow receiveShadow>
         <cylinderGeometry args={[1.5, 1.5, 0.04, 128]} />
-        {/*
-          MeshPhysicalMaterial anisotropy — r161+ feature.
-          anisotropy=1 + low roughness creates the characteristic
-          radial highlight band that rotates with the disc under directional light.
-          anisotropyRotation=Math.PI/2 aligns highlight perpendicular to grooves.
-        */}
         <meshPhysicalMaterial
           color="#020202"
           roughness={0.12}
@@ -124,7 +126,6 @@ function VinylRecord({ coverUrl }) {
         />
       </mesh>
 
-      {/* Label — local Y=0.021 → world Y=0.043 */}
       {proxyUrl ? (
         <Suspense fallback={<PlainLabel />}>
           <AlbumLabel coverUrl={proxyUrl} />
@@ -136,21 +137,79 @@ function VinylRecord({ coverUrl }) {
   )
 }
 
-// ─── Tonearm — pivot-point rotation animation ─────────────────────────────────
-// Arm lerps from rest (parked off disc) to play (outer groove) on mount.
-// Speed 2.0 → settles in ~2 s, which reads as a mechanical drop.
+// ─── Tonearm — arc pivot + needle drop state machine ─────────────────────────
+//
+// States:
+//   PARKED   — arm at REST angle, pivot raised RAISE_HEIGHT above surface
+//   SWINGING — arm rotating toward play angle, still raised
+//   DROPPING — arm reached angle, pivot damping down to surface
+//   PLAYING  — pivot at surface, tracking inward over TRACKING_SECS
+//
+// maath/easing `damp(obj, key, target, smoothTime, delta)` produces a
+// critically-damped spring — organic deceleration with no overshoot.
 function Tonearm({ isPlaying }) {
-  const groupRef = useRef()
-  const target   = isPlaying ? TONEARM_PLAY : TONEARM_REST
+  const groupRef    = useRef()
+  const stateRef    = useRef(ARM.PARKED)
+  const progressRef = useRef(0)   // 0 = outer groove, 1 = inner groove
+
+  // Transition PARKED → SWINGING when isPlaying fires
+  useEffect(() => {
+    if (isPlaying && stateRef.current === ARM.PARKED) {
+      stateRef.current = ARM.SWINGING
+    }
+    if (!isPlaying) {
+      stateRef.current = ARM.PARKED
+      progressRef.current = 0
+    }
+  }, [isPlaying])
 
   useFrame((_, delta) => {
-    if (!groupRef.current) return
-    const curr = groupRef.current.rotation.y
-    groupRef.current.rotation.y += (target - curr) * Math.min(1, delta * 2.0)
+    const arm = groupRef.current
+    if (!arm) return
+
+    // Current groove angle from playback progress
+    const targetAngle = TONEARM_PLAY + (TONEARM_INNER - TONEARM_PLAY) * progressRef.current
+
+    switch (stateRef.current) {
+      case ARM.PARKED:
+        // Return to rest — fast enough to feel snappy, not instant
+        damp(arm.rotation, 'y', TONEARM_REST, 0.35, delta)
+        damp(arm.position, 'y', PIVOT_BASE_Y + RAISE_HEIGHT, 0.25, delta)
+        break
+
+      case ARM.SWINGING:
+        // Swing slowly, stay raised — smoothTime=0.9 gives deliberate mechanical feel
+        arm.position.y = PIVOT_BASE_Y + RAISE_HEIGHT
+        damp(arm.rotation, 'y', targetAngle, 0.9, delta)
+        // Transition once angle is settled (< 0.004 rad ≈ 0.23°)
+        if (Math.abs(arm.rotation.y - targetAngle) < 0.004) {
+          stateRef.current = ARM.DROPPING
+        }
+        break
+
+      case ARM.DROPPING:
+        // Hold angle precisely, drop pivot to surface
+        arm.rotation.y = targetAngle
+        damp(arm.position, 'y', PIVOT_BASE_Y, 0.4, delta)
+        // Transition once close enough to surface
+        if (Math.abs(arm.position.y - PIVOT_BASE_Y) < 0.0008) {
+          arm.position.y = PIVOT_BASE_Y
+          stateRef.current = ARM.PLAYING
+        }
+        break
+
+      case ARM.PLAYING:
+        // Track inward — update progress, damp rotation to follow
+        progressRef.current = Math.min(1, progressRef.current + delta / TRACKING_SECS)
+        damp(arm.rotation, 'y', targetAngle, 0.08, delta)
+        arm.position.y = PIVOT_BASE_Y
+        break
+    }
   })
 
   return (
-    <group ref={groupRef} position={[1.72, 0.043, -0.55]} rotation={[0, TONEARM_REST, 0]}>
+    // Initial position: raised. The useFrame damp drives it from here.
+    <group ref={groupRef} position={[1.72, PIVOT_BASE_Y + RAISE_HEIGHT, -0.55]} rotation={[0, TONEARM_REST, 0]}>
       {/* Arm tube */}
       <mesh rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.013, 0.007, 1.5, 16]} />
@@ -170,40 +229,28 @@ function Tonearm({ isPlaying }) {
   )
 }
 
-// ─── Plinth — top surface at Y=0.000 ─────────────────────────────────────────
+// ─── Plinth ────────────────────────────────────────────────────────────────────
 function Plinth({ isPlaying }) {
   return (
     <group>
-      {/* Box: height 0.12, center Y=-0.06 → top at Y=0.000 */}
       <mesh position={[0, -0.06, 0]} receiveShadow castShadow>
         <boxGeometry args={[3.8, 0.12, 3.2]} />
         <meshStandardMaterial color="#0d0d0d" roughness={0.88} metalness={0.06} />
       </mesh>
-
-      {/* Platter well */}
       <mesh position={[0, 0.001, 0]}>
         <cylinderGeometry args={[1.53, 1.53, 0.004, 128]} />
         <meshStandardMaterial color="#161616" roughness={0.8} metalness={0.12} />
       </mesh>
-
-      {/* Tonearm bearing post */}
+      {/* Bearing post */}
       <mesh position={[1.72, 0.14, -0.55]}>
         <cylinderGeometry args={[0.042, 0.042, 0.28, 16]} />
         <meshStandardMaterial color="#777" metalness={0.88} roughness={0.12} />
       </mesh>
-
-      {/* Animated tonearm */}
       <Tonearm isPlaying={isPlaying} />
-
       {/* Speed LED */}
       <mesh position={[-1.5, 0.003, 1.1]}>
         <cylinderGeometry args={[0.045, 0.045, 0.012, 32]} />
-        <meshStandardMaterial
-          color="#6ee7b7"
-          emissive="#6ee7b7"
-          emissiveIntensity={1.0}
-          roughness={0.3}
-        />
+        <meshStandardMaterial color="#6ee7b7" emissive="#6ee7b7" emissiveIntensity={1.0} roughness={0.3} />
       </mesh>
     </group>
   )
@@ -213,13 +260,9 @@ function Plinth({ isPlaying }) {
 function TurntableScene({ release, isPlaying }) {
   return (
     <>
-      {/* Studio IBL — heavily dialled down, scene driven by spots */}
       <Environment preset="studio" environmentIntensity={0.18} />
-
       <ambientLight intensity={0.04} />
       <directionalLight position={[4, 7, 5]} intensity={0.4} />
-
-      {/* Primary groove spotlight — grazing angle for anisotropic shimmer */}
       <spotLight
         position={[5, 8, 5]}
         angle={0.14}
@@ -231,8 +274,6 @@ function TurntableScene({ release, isPlaying }) {
         castShadow={false}
         target-position={[0, 0, 0]}
       />
-
-      {/* Warm fill — opposite side */}
       <spotLight
         position={[-4, 6, -3]}
         angle={0.18}
@@ -244,11 +285,7 @@ function TurntableScene({ release, isPlaying }) {
         castShadow={false}
         target-position={[0, 0, 0]}
       />
-
-      {/* Label fill — tight overhead, distance=2.5 prevents plinth hotspot */}
       <pointLight position={[0, 2, 0]} intensity={7} distance={2.5} decay={2} color="#ffffff" />
-
-      {/* Accent */}
       <pointLight position={[-2, 1, 2]} intensity={0.4} color="#6ee7b7" decay={2} />
 
       <VinylRecord coverUrl={release?.cover_image} />
@@ -268,6 +305,8 @@ function TurntableScene({ release, isPlaying }) {
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
 export default function InteractiveTurntable({ release, onClose }) {
+  const [isPlaying, setIsPlaying] = useState(false)
+
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
@@ -279,8 +318,7 @@ export default function InteractiveTurntable({ release, onClose }) {
     return () => { document.body.style.overflow = '' }
   }, [])
 
-  // Arm drops 0.8 s after modal opens — feels like a deliberate mechanical action
-  const [isPlaying, setIsPlaying] = useState(false)
+  // Arm drops 0.8 s after modal opens — deliberate mechanical cue
   useEffect(() => {
     const id = setTimeout(() => setIsPlaying(true), 800)
     return () => clearTimeout(id)
