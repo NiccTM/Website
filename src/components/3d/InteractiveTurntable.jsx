@@ -1,161 +1,184 @@
-import { useRef, useEffect, useState, Suspense } from 'react'
-import { Canvas, useFrame, useLoader } from '@react-three/fiber'
-import { OrbitControls, Environment } from '@react-three/drei'
-import { TextureLoader } from 'three'
+import { useRef, useEffect, Suspense } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { OrbitControls, Environment, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import { motion } from 'framer-motion'
 
-// ─── Proxied texture URL — bypasses Discogs CDN CORS ─────────────────────────
-function proxiedUrl(url) {
+// ─── Proxy URL — bypasses Discogs CDN CORS for TextureLoader ─────────────────
+function proxied(url) {
   if (!url) return null
   return `/api/image-proxy?url=${encodeURIComponent(url)}`
 }
 
-// ─── Vinyl disc ───────────────────────────────────────────────────────────────
-
-function VinylDisc({ coverUrl }) {
-  const groupRef = useRef()
-  const [texture, setTexture] = useState(null)
-
-  useEffect(() => {
-    const src = proxiedUrl(coverUrl)
-    if (!src) return
-
-    const loader = new TextureLoader()
-    loader.load(
-      src,
-      (t) => {
-        t.colorSpace = THREE.SRGBColorSpace
-        // Square crop — center-fit onto the circular label
-        t.center.set(0.5, 0.5)
-        t.repeat.set(1, 1)
-        setTexture(t)
-      },
-      undefined,
-      (err) => console.warn('Texture load failed:', err)
-    )
-
-    return () => { texture?.dispose() }
-  }, [coverUrl])
-
-  // Spin around Y axis — disc lies flat in XZ plane
-  useFrame((_, delta) => {
-    if (groupRef.current) groupRef.current.rotation.y += delta * 1.745  // ~33⅓ RPM
-  })
+// ─── Label with album art ─────────────────────────────────────────────────────
+// Separate component so Suspense can catch the useTexture load
+function AlbumLabel({ coverUrl }) {
+  // useTexture integrates with R3F Suspense — no manual state needed
+  const texture = useTexture(coverUrl)
+  texture.colorSpace = THREE.SRGBColorSpace
 
   return (
-    // Entire disc group rotates — camera looks down from above
+    // CircleGeometry has perfect radial UVs — image maps cleanly onto the disc
+    <mesh position={[0, 0.024, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <circleGeometry args={[0.5, 128]} />
+      <meshStandardMaterial
+        map={texture}
+        metalness={0.05}
+        roughness={0.55}
+      />
+    </mesh>
+  )
+}
+
+// Plain label fallback when no texture / during load
+function PlainLabel() {
+  return (
+    <mesh position={[0, 0.024, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <circleGeometry args={[0.5, 128]} />
+      <meshStandardMaterial color="#1a1a2e" roughness={0.6} />
+    </mesh>
+  )
+}
+
+// ─── Vinyl disc + spinning group ──────────────────────────────────────────────
+function VinylDisc({ coverUrl }) {
+  const groupRef = useRef()
+
+  useFrame((_, delta) => {
+    if (groupRef.current) groupRef.current.rotation.y += delta * 1.745
+  })
+
+  const proxyUrl = proxied(coverUrl)
+
+  return (
     <group ref={groupRef}>
-      {/* Vinyl platter — flat black disc, grooves via roughness */}
+      {/* Main platter — near-black vinyl */}
       <mesh castShadow receiveShadow>
-        <cylinderGeometry args={[1.5, 1.5, 0.045, 128, 1]} />
-        <meshStandardMaterial
-          color="#0a0a0a"
-          metalness={0.15}
-          roughness={0.85}
-        />
+        <cylinderGeometry args={[1.5, 1.5, 0.04, 128]} />
+        <meshStandardMaterial color="#080808" metalness={0.0} roughness={0.9} />
       </mesh>
 
-      {/* Groove ring — subtle dark ring between label and outer edge */}
-      <mesh position={[0, 0.023, 0]}>
-        <cylinderGeometry args={[1.49, 0.54, 0.002, 128, 1]} />
-        <meshStandardMaterial color="#111" metalness={0.05} roughness={0.95} />
+      {/* Groove area — slightly lighter ring, creates depth illusion */}
+      <mesh position={[0, 0.021, 0]}>
+        <cylinderGeometry args={[1.48, 0.54, 0.002, 128]} />
+        <meshStandardMaterial color="#131313" metalness={0.0} roughness={0.95} />
       </mesh>
 
-      {/* Label — cover art texture */}
-      <mesh position={[0, 0.025, 0]}>
-        <cylinderGeometry args={[0.52, 0.52, 0.006, 128, 1]} />
-        <meshStandardMaterial
-          map={texture ?? undefined}
-          color={texture ? '#ffffff' : '#1a1a2e'}
-          metalness={0.05}
-          roughness={0.5}
-        />
-      </mesh>
+      {/* Groove rings — 4 subtle rings for detail */}
+      {[0.7, 0.9, 1.1, 1.3].map((r) => (
+        <mesh key={r} position={[0, 0.022, 0]}>
+          <ringGeometry args={[r, r + 0.012, 128]} />
+          <meshStandardMaterial
+            color="#0f0f0f"
+            side={THREE.DoubleSide}
+            roughness={1.0}
+            metalness={0.0}
+          />
+        </mesh>
+      ))}
+
+      {/* Label — cover art via Suspense/useTexture */}
+      {proxyUrl ? (
+        <Suspense fallback={<PlainLabel />}>
+          <AlbumLabel coverUrl={proxyUrl} />
+        </Suspense>
+      ) : (
+        <PlainLabel />
+      )}
 
       {/* Spindle */}
-      <mesh position={[0, 0.06, 0]}>
-        <cylinderGeometry args={[0.035, 0.035, 0.07, 32]} />
-        <meshStandardMaterial color="#555" metalness={0.9} roughness={0.1} />
+      <mesh position={[0, 0.055, 0]}>
+        <cylinderGeometry args={[0.03, 0.03, 0.07, 32]} />
+        <meshStandardMaterial color="#444" metalness={0.95} roughness={0.05} />
       </mesh>
     </group>
   )
 }
 
-// ─── Static plinth + tonearm ─────────────────────────────────────────────────
-
+// ─── Plinth ───────────────────────────────────────────────────────────────────
 function Plinth() {
   return (
     <group>
-      {/* Base */}
-      <mesh position={[0, -0.1, 0]} receiveShadow>
+      {/* Base — dark walnut-like */}
+      <mesh position={[0, -0.08, 0]} receiveShadow castShadow>
         <boxGeometry args={[3.8, 0.1, 3.2]} />
-        <meshStandardMaterial color="#0e0e0e" metalness={0.2} roughness={0.85} />
+        <meshStandardMaterial color="#0c0c0c" metalness={0.05} roughness={0.9} />
       </mesh>
 
-      {/* Tonearm pivot post */}
-      <mesh position={[1.75, 0.18, -0.5]}>
-        <cylinderGeometry args={[0.04, 0.04, 0.28, 16]} />
-        <meshStandardMaterial color="#666" metalness={0.8} roughness={0.2} />
+      {/* Platter bearing ring */}
+      <mesh position={[0, 0.005, 0]}>
+        <cylinderGeometry args={[1.52, 1.52, 0.01, 128]} />
+        <meshStandardMaterial color="#1a1a1a" metalness={0.3} roughness={0.7} />
       </mesh>
 
-      {/* Tonearm tube */}
-      <group position={[1.75, 0.22, -0.5]} rotation={[0, 0.35, -0.08]}>
+      {/* Tonearm bearing post */}
+      <mesh position={[1.72, 0.2, -0.55]}>
+        <cylinderGeometry args={[0.045, 0.045, 0.3, 16]} />
+        <meshStandardMaterial color="#777" metalness={0.85} roughness={0.15} />
+      </mesh>
+
+      {/* Tonearm — angled toward center groove */}
+      <group position={[1.72, 0.28, -0.55]} rotation={[0, 0.28, -0.06]}>
         <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.018, 0.012, 1.55, 16]} />
-          <meshStandardMaterial color="#888" metalness={0.85} roughness={0.15} />
+          <cylinderGeometry args={[0.016, 0.01, 1.6, 16]} />
+          <meshStandardMaterial color="#999" metalness={0.9} roughness={0.1} />
         </mesh>
         {/* Headshell */}
-        <mesh position={[-0.76, 0, 0]} rotation={[0, 0, 0.15]}>
-          <boxGeometry args={[0.14, 0.035, 0.07]} />
-          <meshStandardMaterial color="#aaa" metalness={0.8} roughness={0.2} />
+        <mesh position={[-0.82, -0.01, 0.02]} rotation={[0.1, 0, 0.18]}>
+          <boxGeometry args={[0.13, 0.032, 0.065]} />
+          <meshStandardMaterial color="#bbb" metalness={0.85} roughness={0.15} />
         </mesh>
-        {/* Stylus */}
-        <mesh position={[-0.83, -0.04, 0]} rotation={[0, 0, 0.4]}>
-          <cylinderGeometry args={[0.006, 0.002, 0.08, 8]} />
-          <meshStandardMaterial color="#333" metalness={0.9} roughness={0.1} />
+        {/* Stylus cantilever */}
+        <mesh position={[-0.9, -0.044, 0.02]} rotation={[0, 0, 0.45]}>
+          <cylinderGeometry args={[0.005, 0.001, 0.075, 8]} />
+          <meshStandardMaterial color="#222" metalness={0.9} roughness={0.1} />
         </mesh>
       </group>
+
+      {/* 33/45 speed selector button — detail */}
+      <mesh position={[-1.5, 0.005, 1.1]}>
+        <cylinderGeometry args={[0.055, 0.055, 0.02, 32]} />
+        <meshStandardMaterial color="#6ee7b7" emissive="#6ee7b7" emissiveIntensity={0.4} roughness={0.4} />
+      </mesh>
     </group>
   )
 }
 
 // ─── Scene ────────────────────────────────────────────────────────────────────
-
 function TurntableScene({ release }) {
   return (
     <>
-      <ambientLight intensity={0.35} />
-      <directionalLight position={[3, 6, 4]} intensity={1.6} castShadow />
-      <directionalLight position={[-4, 3, -3]} intensity={0.25} />
-      <pointLight position={[0, 3, 0]} intensity={0.4} color="#6ee7b7" />
+      <ambientLight intensity={0.3} />
+      <directionalLight position={[4, 8, 4]} intensity={1.8} castShadow
+        shadow-mapSize={[1024, 1024]} />
+      <directionalLight position={[-3, 4, -4]} intensity={0.3} />
+      {/* Accent rim light — green tint matches site palette */}
+      <pointLight position={[-2, 2, 2]} intensity={0.6} color="#6ee7b7" />
+      {/* Under-glow */}
+      <pointLight position={[0, -1, 0]} intensity={0.15} color="#6ee7b7" />
       <Environment preset="studio" />
 
-      <Suspense fallback={null}>
-        <VinylDisc coverUrl={release?.cover_image} />
-      </Suspense>
+      <VinylDisc coverUrl={release?.cover_image} />
       <Plinth />
 
       <OrbitControls
         enablePan={false}
         minDistance={3}
         maxDistance={8}
-        minPolarAngle={Math.PI / 8}   // can't go below the platter
-        maxPolarAngle={Math.PI / 2.2}
-        autoRotate={false}
+        minPolarAngle={Math.PI / 10}
+        maxPolarAngle={Math.PI / 2.1}
         target={[0, 0, 0]}
       />
     </>
   )
 }
 
-// ─── Modal overlay ────────────────────────────────────────────────────────────
-
+// ─── Modal ────────────────────────────────────────────────────────────────────
 export default function InteractiveTurntable({ release, onClose }) {
   useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
   useEffect(() => {
@@ -168,9 +191,9 @@ export default function InteractiveTurntable({ release, onClose }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.22 }}
       className="fixed inset-0 z-50 flex flex-col items-center justify-center"
-      style={{ background: 'rgba(3,7,18,0.93)', backdropFilter: 'blur(14px)' }}
+      style={{ background: 'rgba(3,7,18,0.94)', backdropFilter: 'blur(16px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
       role="dialog"
       aria-modal="true"
@@ -185,7 +208,6 @@ export default function InteractiveTurntable({ release, onClose }) {
             {release.artist}{release.year ? ` · ${release.year}` : ''}
           </p>
         </div>
-
         <button
           onClick={onClose}
           aria-label="Close"
@@ -201,25 +223,27 @@ export default function InteractiveTurntable({ release, onClose }) {
 
       {/* Canvas */}
       <motion.div
-        initial={{ scale: 0.94, y: 16 }}
-        animate={{ scale: 1,    y: 0 }}
-        exit={{ scale: 0.94, y: 16 }}
+        initial={{ scale: 0.93, y: 18 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.93, y: 18 }}
         transition={{ duration: 0.28, ease: 'easeOut' }}
         className="w-full max-w-2xl"
-        style={{ height: '62vh', minHeight: '360px' }}
+        style={{ height: '64vh', minHeight: '380px' }}
       >
         <Canvas
           dpr={[1, 1.5]}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-          camera={{ position: [0, 4.5, 4], fov: 42 }}
+          camera={{ position: [0, 5, 4.5], fov: 40 }}
           shadows
         >
-          <TurntableScene release={release} />
+          <Suspense fallback={null}>
+            <TurntableScene release={release} />
+          </Suspense>
         </Canvas>
       </motion.div>
 
       <p className="absolute bottom-6 font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
-        Drag to orbit · cover art on label
+        Drag to orbit · Scroll to zoom
       </p>
     </motion.div>
   )
