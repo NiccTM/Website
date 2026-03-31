@@ -178,8 +178,8 @@ export const projects = [
     title: 'APSC 171 DeLorean',
     role: 'Mechanical Team',
     description:
-      'Complete SolidWorks recreation of the Back to the Future DeLorean. Focus on mechanical assembly, engine breakdown, and drivetrain modeling.',
-    tags: ['SolidWorks', 'CAD', 'Mechanical Assembly', 'Drivetrain'],
+      'SolidWorks recreation of the Back to the Future DeLorean. Responsible for V6 engine assembly, component research, and all rendering in SolidWorks Visualize.',
+    tags: ['SolidWorks', 'SolidWorks Visualize', 'CAD', 'V6 Engine', 'Research'],
     github: null,
     demo: 'video',
     video: '/videos/APSC 171-2024-T1C4-16-SW.mp4',

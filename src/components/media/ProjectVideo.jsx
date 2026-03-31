@@ -120,9 +120,9 @@ export default function ProjectVideo({
       {/* Metadata strip */}
       <div className="flex flex-wrap gap-4 mt-3">
         {[
-          { icon: 'engineering', label: 'Mechanical Assembly' },
-          { icon: 'settings',    label: 'Engine Breakdown' },
-          { icon: 'sync_alt',    label: 'Drivetrain Modeling' },
+          { icon: 'settings',      label: 'V6 Engine Assembly' },
+          { icon: 'search',        label: 'Component Research' },
+          { icon: 'photo_camera',  label: 'SolidWorks Visualize' },
         ].map(({ icon, label }) => (
           <div
             key={label}
