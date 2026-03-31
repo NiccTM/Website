@@ -1,6 +1,6 @@
-import { useRef, useEffect, Suspense } from 'react'
+import { useRef, useEffect, Suspense, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, useTexture } from '@react-three/drei'
+import { OrbitControls, useTexture, SpotLight } from '@react-three/drei'
 import * as THREE from 'three'
 import { motion } from 'framer-motion'
 
@@ -9,65 +9,126 @@ function proxied(url) {
   return `/api/image-proxy?url=${encodeURIComponent(url)}`
 }
 
+// ─── Procedural groove textures ───────────────────────────────────────────────
+// Generates a radial normal map + roughness map via CanvasTexture.
+// Concentric rings encode surface normals: bright ring edge = outward XZ tilt.
+
+function useGrooveTextures(size = 1024, grooveCount = 80) {
+  return useMemo(() => {
+    // ── Normal map ───────────────────────────────────────────────────────────
+    const normalCanvas = document.createElement('canvas')
+    normalCanvas.width = normalCanvas.height = size
+    const nCtx = normalCanvas.getContext('2d')
+    const nImg = nCtx.createImageData(size, size)
+    const cx = size / 2, cy = size / 2, maxR = size / 2
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const dx = x - cx, dy = y - cy
+        const r = Math.sqrt(dx * dx + dy * dy)
+        const normR = r / maxR                        // 0..1 from centre
+
+        // Concentric groove wave — sine wave along radial direction
+        // Phase controls which groove ring we're on
+        const phase = normR * grooveCount * Math.PI * 2
+        const slope = Math.cos(phase)                 // -1..1, groove slope
+
+        // Encode normal: tangent tilts in radial direction
+        // Normal map convention: R=+X, G=+Y (tangent space)
+        // Radial direction unit vector
+        const len = Math.max(r, 0.001)
+        const nx = (dx / len) * slope * 0.6           // radial X tilt
+        const nz = (dy / len) * slope * 0.6           // radial Z tilt (stored in G)
+        const ny = Math.sqrt(Math.max(0, 1 - nx * nx - nz * nz))
+
+        const i = (y * size + x) * 4
+        nImg.data[i]     = Math.round((nx * 0.5 + 0.5) * 255)  // R
+        nImg.data[i + 1] = Math.round((ny * 0.5 + 0.5) * 255)  // G
+        nImg.data[i + 2] = Math.round((nz * 0.5 + 0.5) * 255)  // B
+        nImg.data[i + 3] = 255
+      }
+    }
+    nCtx.putImageData(nImg, 0, 0)
+    const normalMap = new THREE.CanvasTexture(normalCanvas)
+    normalMap.wrapS = normalMap.wrapT = THREE.RepeatWrapping
+
+    // ── Roughness map ────────────────────────────────────────────────────────
+    // Groove valleys are slightly rougher (darker = smoother in R3F convention)
+    const roughCanvas = document.createElement('canvas')
+    roughCanvas.width = roughCanvas.height = size
+    const rCtx = roughCanvas.getContext('2d')
+    const rImg = rCtx.createImageData(size, size)
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const dx = x - cx, dy = y - cy
+        const r = Math.sqrt(dx * dx + dy * dy)
+        const normR = r / maxR
+        const phase = normR * grooveCount * Math.PI * 2
+        // Ridge tops = low roughness (shiny), valleys = higher roughness
+        const val = Math.round((Math.sin(phase) * 0.5 + 0.5) * 60 + 100)
+        const i = (y * size + x) * 4
+        rImg.data[i] = rImg.data[i+1] = rImg.data[i+2] = val
+        rImg.data[i+3] = 255
+      }
+    }
+    rCtx.putImageData(rImg, 0, 0)
+    const roughnessMap = new THREE.CanvasTexture(roughCanvas)
+    roughnessMap.wrapS = roughnessMap.wrapT = THREE.RepeatWrapping
+
+    return { normalMap, roughnessMap }
+  }, [size, grooveCount])
+}
+
 // ─── Album label ──────────────────────────────────────────────────────────────
 function AlbumLabel({ coverUrl }) {
   const texture = useTexture(coverUrl)
   texture.colorSpace = THREE.SRGBColorSpace
 
   return (
-    <mesh position={[0, 0.022, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh position={[0, 0.026, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <circleGeometry args={[0.48, 128]} />
-      {/* No emissive — a dedicated rect-area/point light above handles brightness */}
-      <meshStandardMaterial
-        map={texture}
-        roughness={0.5}
-        metalness={0.0}
-      />
+      <meshStandardMaterial map={texture} roughness={0.5} metalness={0.0} />
     </mesh>
   )
 }
 
 function PlainLabel() {
   return (
-    <mesh position={[0, 0.022, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh position={[0, 0.026, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <circleGeometry args={[0.48, 128]} />
       <meshStandardMaterial color="#111122" roughness={0.6} />
     </mesh>
   )
 }
 
-// ─── Spinning disc ────────────────────────────────────────────────────────────
-function VinylDisc({ coverUrl }) {
+// ─── PBR vinyl disc ───────────────────────────────────────────────────────────
+function VinylRecord({ coverUrl }) {
   const groupRef = useRef()
+  const { normalMap, roughnessMap } = useGrooveTextures(1024, 90)
+  const proxyUrl = proxied(coverUrl)
 
-  // 33⅓ RPM = 3.49 rad/s — keep it readable, not frantic
   useFrame((_, delta) => {
     if (groupRef.current) groupRef.current.rotation.y += delta * 3.49
   })
 
-  const proxyUrl = proxied(coverUrl)
-
   return (
     <group ref={groupRef} position={[0, 0.02, 0]}>
-      {/* Vinyl platter */}
-      <mesh castShadow receiveShadow>
+      {/* Grooved disc — MeshPhysicalMaterial for clearcoat sheen */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[1.5, 1.5, 0.04, 128]} />
-        <meshStandardMaterial color="#090909" roughness={0.92} metalness={0.0} />
+        <meshPhysicalMaterial
+          color="#0d0d0d"
+          normalMap={normalMap}
+          normalScale={new THREE.Vector2(1.2, 1.2)}
+          roughnessMap={roughnessMap}
+          roughness={0.28}
+          metalness={0.08}
+          clearcoat={0.6}
+          clearcoatRoughness={0.15}
+          reflectivity={0.5}
+        />
       </mesh>
-
-      {/* Groove fill — slightly lighter disc between label and edge */}
-      <mesh position={[0, 0.021, 0]}>
-        <cylinderGeometry args={[1.48, 0.51, 0.002, 128]} />
-        <meshStandardMaterial color="#0f0f0f" roughness={0.95} />
-      </mesh>
-
-      {/* Groove rings — thin torus, tube radius 0.003 keeps them subtle */}
-      {[0.65, 0.82, 1.0, 1.18, 1.35].map((r) => (
-        <mesh key={r} position={[0, 0.022, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[r, 0.003, 4, 128]} />
-          <meshStandardMaterial color="#1a1a1a" roughness={1.0} metalness={0.0} />
-        </mesh>
-      ))}
 
       {/* Label */}
       {proxyUrl ? (
@@ -87,17 +148,16 @@ function VinylDisc({ coverUrl }) {
   )
 }
 
-// ─── Static plinth ────────────────────────────────────────────────────────────
+// ─── Plinth ───────────────────────────────────────────────────────────────────
 function Plinth() {
   return (
     <group>
-      {/* Base — top surface at y=0 */}
       <mesh position={[0, -0.06, 0]} receiveShadow castShadow>
         <boxGeometry args={[3.8, 0.12, 3.2]} />
         <meshStandardMaterial color="#0d0d0d" roughness={0.9} metalness={0.05} />
       </mesh>
 
-      {/* Platter well ring */}
+      {/* Platter well */}
       <mesh position={[0, 0.001, 0]}>
         <cylinderGeometry args={[1.53, 1.53, 0.006, 128]} />
         <meshStandardMaterial color="#161616" roughness={0.8} metalness={0.1} />
@@ -109,7 +169,7 @@ function Plinth() {
         <meshStandardMaterial color="#777" metalness={0.88} roughness={0.12} />
       </mesh>
 
-      {/* Tonearm */}
+      {/* Tonearm — pivoted to sit stylus near inner groove */}
       <group position={[1.72, 0.28, -0.55]} rotation={[0, 0.28, -0.06]}>
         <mesh rotation={[0, 0, Math.PI / 2]}>
           <cylinderGeometry args={[0.014, 0.008, 1.6, 16]} />
@@ -119,13 +179,14 @@ function Plinth() {
           <boxGeometry args={[0.13, 0.03, 0.062]} />
           <meshStandardMaterial color="#bbb" metalness={0.85} roughness={0.15} />
         </mesh>
+        {/* Stylus angled down into groove */}
         <mesh position={[-0.9, -0.042, 0.02]} rotation={[0, 0, 0.45]}>
           <cylinderGeometry args={[0.004, 0.001, 0.072, 8]} />
           <meshStandardMaterial color="#222" metalness={0.9} roughness={0.1} />
         </mesh>
       </group>
 
-      {/* Speed selector LED */}
+      {/* Speed LED */}
       <mesh position={[-1.5, 0.004, 1.1]}>
         <cylinderGeometry args={[0.05, 0.05, 0.016, 32]} />
         <meshStandardMaterial color="#6ee7b7" emissive="#6ee7b7" emissiveIntensity={0.9} roughness={0.3} />
@@ -138,27 +199,50 @@ function Plinth() {
 function TurntableScene({ release }) {
   return (
     <>
-      {/* Ambient — low, keeps scene dark */}
-      <ambientLight intensity={0.25} />
+      <ambientLight intensity={0.2} />
 
-      {/* Key light — angled for plinth shadow */}
-      <directionalLight position={[4, 7, 5]} intensity={1.4} castShadow
+      {/* Key light */}
+      <directionalLight position={[4, 7, 5]} intensity={1.2} castShadow
         shadow-mapSize={[1024, 1024]} />
 
-      {/* Fill — opposite side */}
-      <directionalLight position={[-3, 3, -4]} intensity={0.25} />
+      {/* Fill */}
+      <directionalLight position={[-3, 3, -4]} intensity={0.2} />
 
       {/*
-        Label light — small point directly above centre, no emissive needed.
-        Low decay so it illuminates the 0.48r circle cleanly.
+        Groove spotlight — low angle, high intensity.
+        Critical for catching V-shape highlights in the groove normal map.
+        Angle ~18° keeps the cone tight to the disc surface.
       */}
-      <pointLight position={[0, 2.5, 0]} intensity={3.0} distance={4} decay={2} color="#ffffff" />
+      <SpotLight
+        position={[2.5, 1.8, 2.5]}
+        target-position={[0, 0, 0]}
+        angle={0.32}
+        penumbra={0.4}
+        intensity={18}
+        distance={10}
+        color="#ffffff"
+        castShadow={false}
+      />
+
+      {/* Second groove light from opposite side for symmetry */}
+      <SpotLight
+        position={[-2.5, 1.6, -1.5]}
+        target-position={[0, 0, 0]}
+        angle={0.28}
+        penumbra={0.5}
+        intensity={10}
+        distance={10}
+        color="#ffe8c0"
+        castShadow={false}
+      />
+
+      {/* Label fill — straight down, tight distance */}
+      <pointLight position={[0, 2.5, 0]} intensity={2.5} distance={3.5} decay={2} color="#ffffff" />
 
       {/* Accent rim */}
       <pointLight position={[-2, 1, 2]} intensity={0.4} color="#6ee7b7" />
 
-
-      <VinylDisc coverUrl={release?.cover_image} />
+      <VinylRecord coverUrl={release?.cover_image} />
       <Plinth />
 
       <OrbitControls
