@@ -157,8 +157,6 @@ function TurntableScene({ release }) {
       {/* Accent rim */}
       <pointLight position={[-2, 1, 2]} intensity={0.4} color="#6ee7b7" />
 
-      {/* Subtle environment — no preset so it doesn't interfere with label */}
-      <color attach="background" args={['#00000000']} />
 
       <VinylDisc coverUrl={release?.cover_image} />
       <Plinth />
@@ -227,13 +225,14 @@ export default function InteractiveTurntable({ release, onClose }) {
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.93, y: 18 }}
         transition={{ duration: 0.28, ease: 'easeOut' }}
-        className="w-full max-w-2xl"
+        className="relative w-full max-w-2xl bg-transparent"
         style={{ height: '64vh', minHeight: '380px' }}
       >
         <Canvas
           dpr={[1, 1.5]}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
           camera={{ position: [0, 5, 4.5], fov: 40 }}
+          style={{ background: 'transparent' }}
           shadows
         >
           <Suspense fallback={null}>
