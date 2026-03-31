@@ -2,14 +2,14 @@ import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 
 /**
- * ProjectVideo — local .mp4 player with poster, custom controls hint,
+ * ProjectVideo — local .mp4 player with poster, custom overlay controls,
  * and aspect-ratio lock to prevent layout shift.
  *
  * Props:
- *   src     — path to video file, e.g. "/videos/APSC 171-2024-T1C4-16-SW.mp4"
- *   poster  — path to poster image (shown before play, prevents layout shift)
- *   title   — accessible label and overlay heading
- *   ratio   — 'wide' (16/9) | 'cinema' (2.39:1) — default 'wide'
+ *   src    — video path under /public, e.g. "/videos/APSC 171-2024-T1C4-16-SW.mp4"
+ *   poster — poster image path (shown before first play)
+ *   title  — section heading + aria-label
+ *   ratio  — 'wide' (16/9) | 'cinema' (2.39:1) — default 'wide'
  */
 
 const RATIOS = {
@@ -23,18 +23,21 @@ export default function ProjectVideo({
   title = 'Project Video',
   ratio = 'wide',
 }) {
-  const videoRef  = useRef(null)
+  const videoRef = useRef(null)
   const [playing, setPlaying] = useState(false)
-  const [loaded,  setLoaded]  = useState(false)
+  const [ready,   setReady]   = useState(false)
+  const [error,   setError]   = useState(false)
 
   const toggle = () => {
     const v = videoRef.current
     if (!v) return
-    if (v.paused) { v.play(); setPlaying(true) }
-    else          { v.pause(); setPlaying(false) }
+    if (v.paused) {
+      v.play().then(() => setPlaying(true)).catch(() => setError(true))
+    } else {
+      v.pause()
+      setPlaying(false)
+    }
   }
-
-  const onEnded = () => setPlaying(false)
 
   return (
     <motion.section
@@ -54,80 +57,72 @@ export default function ProjectVideo({
         APSC 171 · Mechanical Team · SolidWorks assembly showcase
       </p>
 
-      {/* Aspect-ratio wrapper — zero layout shift because height is locked via padding trick */}
-      <div
-        className={`relative w-full ${RATIOS[ratio]} rounded-xl border-subtle overflow-hidden`}
-        style={{ background: 'var(--bg-surface-1)' }}
-      >
-        <video
-          ref={videoRef}
-          src={src}
-          poster={poster}
-          muted
-          playsInline
-          preload="metadata"
-          onEnded={onEnded}
-          onCanPlay={() => setLoaded(true)}
-          className="absolute inset-0 w-full h-full object-contain"
-          aria-label={title}
-        />
+      {error ? (
+        <div
+          className="rounded-xl border-subtle p-6 text-center"
+          style={{ background: 'var(--bg-surface-1)' }}
+        >
+          <span className="material-symbols-rounded text-3xl block mb-2" style={{ color: 'var(--text-muted)' }}>
+            videocam_off
+          </span>
+          <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
+            Video not found. Place the .mp4 in <code>/public/videos/</code>
+          </p>
+        </div>
+      ) : (
+        /* Aspect-ratio wrapper */
+        <div
+          className={`relative w-full ${RATIOS[ratio]} rounded-xl border-subtle overflow-hidden`}
+          style={{ background: 'var(--bg-surface-1)' }}
+        >
+          {/* Single video element — native controls always available */}
+          <video
+            ref={videoRef}
+            src={src}
+            poster={poster}
+            controls
+            muted
+            playsInline
+            preload="metadata"
+            onCanPlay={() => setReady(true)}
+            onPlay={() => setPlaying(true)}
+            onPause={() => setPlaying(false)}
+            onEnded={() => setPlaying(false)}
+            onError={() => setError(true)}
+            aria-label={title}
+            className="absolute inset-0 w-full h-full object-contain"
+          />
 
-        {/* Play/pause overlay — only shown when not playing */}
-        {!playing && (
-          <button
-            onClick={toggle}
-            aria-label={playing ? 'Pause' : 'Play'}
-            className="absolute inset-0 flex flex-col items-center justify-center gap-3 w-full h-full transition-opacity duration-200"
-            style={{ background: 'rgba(3,7,18,0.55)' }}
-          >
-            <span
-              className="material-symbols-rounded text-5xl transition-transform duration-200 hover:scale-110"
-              style={{ color: 'var(--accent)' }}
+          {/* Custom play overlay — only before first play */}
+          {!playing && (
+            <button
+              onClick={toggle}
+              aria-label="Play"
+              className="absolute inset-0 flex flex-col items-center justify-center gap-2 w-full h-full transition-opacity duration-200 hover:bg-black/10"
+              style={{ background: 'rgba(3,7,18,0.45)' }}
             >
-              play_circle
-            </span>
-            {!loaded && (
-              <span className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
-                Loading…
+              <span
+                className="material-symbols-rounded text-6xl transition-transform duration-150 hover:scale-110"
+                style={{ color: 'var(--accent)' }}
+              >
+                play_circle
               </span>
-            )}
-          </button>
-        )}
-
-        {/* Pause button (visible on hover while playing) */}
-        {playing && (
-          <button
-            onClick={toggle}
-            aria-label="Pause"
-            className="absolute inset-0 flex items-center justify-center w-full h-full opacity-0 hover:opacity-100 transition-opacity duration-200"
-            style={{ background: 'rgba(3,7,18,0.3)' }}
-          >
-            <span
-              className="material-symbols-rounded text-5xl"
-              style={{ color: 'var(--accent)' }}
-            >
-              pause_circle
-            </span>
-          </button>
-        )}
-
-        {/* Native controls as fallback — hidden visually but accessible */}
-        <video
-          src={src}
-          controls
-          muted
-          playsInline
-          className="sr-only"
-          aria-label={`${title} (accessible player)`}
-        />
-      </div>
+              {!ready && (
+                <span className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
+                  Loading…
+                </span>
+              )}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Metadata strip */}
       <div className="flex flex-wrap gap-4 mt-3">
         {[
-          { icon: 'engineering',  label: 'Mechanical Assembly' },
-          { icon: 'settings',     label: 'Engine Breakdown' },
-          { icon: 'sync_alt',     label: 'Drivetrain Modeling' },
+          { icon: 'engineering', label: 'Mechanical Assembly' },
+          { icon: 'settings',    label: 'Engine Breakdown' },
+          { icon: 'sync_alt',    label: 'Drivetrain Modeling' },
         ].map(({ icon, label }) => (
           <div
             key={label}
