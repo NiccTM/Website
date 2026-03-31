@@ -11,6 +11,7 @@ const SystemArchitecture = lazy(() => import('./components/diagrams/SystemArchit
 const ModelViewer        = lazy(() => import('./components/3d/ModelViewer'))
 const XRCanvas           = lazy(() => import('./components/3d/XRCanvas'))
 const EcoSortDemo        = lazy(() => import('./components/ml/EcoSortDemo'))
+const ProjectVideo       = lazy(() => import('./components/media/ProjectVideo'))
 
 function SectionFallback() {
   return (
@@ -65,7 +66,28 @@ export default function App() {
 
         <Divider />
 
-        {/* ── 3D model viewer ── */}
+        {/* ── DeLorean video showcase ── */}
+        <Suspense fallback={<SectionFallback />}>
+          <ProjectVideo
+            src="/videos/APSC 171-2024-T1C4-16-SW.mp4"
+            poster="/videos/delorean-poster.jpg"
+            title="APSC 171 DeLorean — SolidWorks Showcase"
+          />
+        </Suspense>
+
+        <Divider />
+
+        {/* ── DeLorean engine — explodable 3D model ── */}
+        <Suspense fallback={<SectionFallback />}>
+          <ModelViewer
+            modelPath="/models/delorean-engine.glb"
+            label="DeLorean Engine Assembly"
+          />
+        </Suspense>
+
+        <Divider />
+
+        {/* ── BLDC Motor 3D model ── */}
         <Suspense fallback={<SectionFallback />}>
           <ModelViewer label="Custom BLDC Motor" />
         </Suspense>

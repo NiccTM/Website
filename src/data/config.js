@@ -173,6 +173,19 @@ export const projects = [
     github: null,
     demo: '3d',
   },
+  {
+    id: 'delorean-apsc171',
+    title: 'APSC 171 DeLorean',
+    role: 'Mechanical Team',
+    description:
+      'Complete SolidWorks recreation of the Back to the Future DeLorean. Focus on mechanical assembly, engine breakdown, and drivetrain modeling.',
+    tags: ['SolidWorks', 'CAD', 'Mechanical Assembly', 'Drivetrain'],
+    github: null,
+    demo: 'video',
+    video: '/videos/APSC 171-2024-T1C4-16-SW.mp4',
+    poster: '/videos/delorean-poster.jpg',
+    model: '/models/delorean-engine.glb',  // drop exported GLB here
+  },
 ]
 
 // ─── Social / External Links ──────────────────────────────────────────────────
