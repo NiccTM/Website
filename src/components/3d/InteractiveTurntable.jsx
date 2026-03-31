@@ -1,4 +1,5 @@
 import { useRef, useEffect, Suspense, useMemo } from 'react'
+import { createPortal } from 'react-dom'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, useTexture, Environment } from '@react-three/drei'
 import * as THREE from 'three'
@@ -229,13 +230,13 @@ export default function InteractiveTurntable({ release, onClose }) {
     return () => { document.body.style.overflow = '' }
   }, [])
 
-  return (
+  return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.22 }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
       style={{ background: 'rgba(3,7,18,0.94)', backdropFilter: 'blur(16px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
       role="dialog"
@@ -287,6 +288,7 @@ export default function InteractiveTurntable({ release, onClose }) {
       <p className="absolute bottom-6 font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
         Drag to orbit · Scroll to zoom
       </p>
-    </motion.div>
+    </motion.div>,
+    document.body
   )
 }
