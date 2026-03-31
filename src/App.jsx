@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { useGLTF } from '@react-three/drei'
 import ErrorBoundary      from './components/ui/ErrorBoundary'
 import ProfileHeader      from './components/ui/ProfileHeader'
 import ProjectGallery     from './components/ui/ProjectGallery'
@@ -7,15 +6,10 @@ import SocialLinks        from './components/ui/SocialLinks'
 import TerminalConsole    from './components/ui/TerminalConsole'
 import { UIProvider, useUI } from './context/UIContext'
 
-// Preload GLB assets at module-parse time so R3F doesn't stall when the
-// ModelViewer mounts. No-ops gracefully if the file doesn't exist yet.
-useGLTF.preload('/models/delorean-engine.glb')
-
 // Lazy-load everything that touches WebGL or large deps
 const CanvasBackground   = lazy(() => import('./components/CanvasBackground'))
 const AudioSignalChain   = lazy(() => import('./components/diagrams/AudioSignalChain'))
 const SystemArchitecture = lazy(() => import('./components/diagrams/SystemArchitecture'))
-const ModelViewer        = lazy(() => import('./components/3d/ModelViewer'))
 const XRCanvas           = lazy(() => import('./components/3d/XRCanvas'))
 const EcoSortDemo        = lazy(() => import('./components/ml/EcoSortDemo'))
 const ProjectVideo       = lazy(() => import('./components/media/ProjectVideo'))
@@ -124,25 +118,7 @@ export default function App() {
                 title="APSC 171 DeLorean — SolidWorks Showcase"
               />
             </Section>
-
-            <Section label="DeLorean 3D Model">
-              <ModelViewer
-                modelPath="/models/delorean-engine.glb"
-                label="DeLorean Engine Assembly"
-                sectionId="section-delorean-model"
-              />
-            </Section>
           </div>
-
-          <Divider />
-
-          {/* ── BLDC Motor 3D model ── */}
-          <Section label="BLDC Motor Model">
-            <ModelViewer
-              label="Custom BLDC Motor"
-              sectionId="section-bldc"
-            />
-          </Section>
 
           <Divider />
 
