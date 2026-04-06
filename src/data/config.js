@@ -368,7 +368,7 @@ export const projects = [
     tags: ['SolidWorks', 'SolidWorks Visualize', 'CAD', 'V6 Engine', 'Research'],
     github: null,
     demo: 'video',
-    video: '/videos/APSC 171-2024-T1C4-16-SW.mp4',
+    video: '/videos/APSC 171-2024-T1C4-16-SW_cmp.mp4',
     poster: '/videos/delorean-poster.jpg',
     model: '/models/delorean-engine.glb',
     awards: [

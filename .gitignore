@@ -6,7 +6,10 @@ dist
 *.local
 
 # Large video files — exceed GitHub's 100 MB limit
-# Host these on YouTube, Vimeo, or GitHub Releases instead
+# Compressed (_cmp) versions are tracked; originals are not
 *.mp4
 *.mov
 *.webm
+!*_cmp.mp4
+!*_cmp.mov
+!*_cmp.webm
