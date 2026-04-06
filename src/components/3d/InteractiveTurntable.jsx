@@ -106,6 +106,11 @@ function VinylRecord({ coverUrl }) {
     normalMap.needsUpdate = true
   }, [normalMap, gl])
 
+  // Dispose the procedural CanvasTexture when the component unmounts
+  useEffect(() => {
+    return () => { normalMap.dispose() }
+  }, [normalMap])
+
   useFrame((_, delta) => {
     if (!groupRef.current) return
     // rpm → rad/s: (rpm / 60) × 2π
