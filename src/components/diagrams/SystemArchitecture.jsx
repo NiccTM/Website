@@ -11,27 +11,23 @@ import 'reactflow/dist/style.css'
 import { motion, AnimatePresence } from 'framer-motion'
 import { feeblePresenceArch } from '../../data/config'
 
-const NODE_COLORS = {
-  app:    '#1e2a3a',
-  plugin: '#1e3a2a',
-  ipc:    '#3a3a1e',
-  output: '#2a1e3a',
-}
-
 function ArchNode({ data }) {
   return (
     <div
-      className="px-3 py-2 rounded-lg border text-sm font-mono cursor-pointer select-none min-w-[140px]"
+      className="px-3 py-2 rounded-xl cursor-pointer select-none min-w-[130px]"
       style={{
-        background: NODE_COLORS[data.type] ?? 'var(--bg-surface-2)',
-        borderColor: 'var(--border-accent)',
+        background: 'var(--flow-node-bg)',
+        backdropFilter: 'blur(16px) saturate(120%)',
+        WebkitBackdropFilter: 'blur(16px) saturate(120%)',
+        border: '1px solid var(--flow-node-border)',
+        boxShadow: 'inset 0 0 10px var(--flow-node-inset), 0 4px 12px rgba(0,0,0,0.07)',
         color: 'var(--text-primary)',
       }}
       onClick={() => data.onSelect(data)}
     >
       <Handle type="target" position={Position.Left} />
-      <div className="font-semibold" style={{ color: 'var(--accent)' }}>{data.label}</div>
-      <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: 2 }}>
+      <div className="font-sans font-semibold leading-snug text-sm" style={{ color: 'var(--accent)' }}>{data.label}</div>
+      <div className="font-sans mt-0.5" style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
         {data.type?.toUpperCase()}
       </div>
       <Handle type="source" position={Position.Right} />
@@ -41,10 +37,16 @@ function ArchNode({ data }) {
 
 const nodeTypes = { archNode: ArchNode }
 
+const edgeStyle = {
+  stroke: '#00E5FF',
+  strokeWidth: 2,
+  filter: 'drop-shadow(0 0 4px rgba(0,229,255,0.8)) drop-shadow(0 0 2px #00E5FF)',
+}
+
 const initialEdges = feeblePresenceArch.edges.map((e) => ({
   ...e,
   animated: true,
-  style: { stroke: '#065f46', strokeWidth: 2 },
+  style: edgeStyle,
 }))
 
 function SpecPanel({ node, onClose }) {
@@ -114,8 +116,15 @@ export default function SystemArchitecture() {
       </p>
 
       <div
-        className="relative hidden sm:block rounded-xl border-subtle overflow-hidden"
-        style={{ height: '240px', background: 'var(--bg-surface-1)' }}
+        className="relative hidden sm:block rounded-xl overflow-hidden"
+        style={{
+          height: '240px',
+          background: 'var(--flow-bg)',
+          backdropFilter: 'blur(16px) saturate(120%)',
+          WebkitBackdropFilter: 'blur(16px) saturate(120%)',
+          border: '1px solid var(--flow-bg-border)',
+          boxShadow: 'inset 0 0 12px var(--flow-node-inset), 0 4px 16px rgba(0,0,0,0.06)',
+        }}
       >
         <ReactFlow
           nodes={nodes}
