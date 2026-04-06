@@ -3,7 +3,6 @@ import { useEffect } from 'react'
 import NavBar from './NavBar'
 import MeshBackground from './MeshBackground'
 import { useAppStore } from '../../store/useAppStore'
-import { contact } from '../../data/config'
 
 export default function AppShell() {
   const overclock = useAppStore((s) => s.overclock)
@@ -38,23 +37,12 @@ export default function AppShell() {
 
       {/* ── Global footer ── */}
       <footer
-        className="relative z-10 flex flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-8 md:px-14 lg:px-20 xl:px-28"
+        className="relative z-10 flex items-center px-5 py-5 sm:px-8 md:px-14 lg:px-20 xl:px-28"
         style={{ borderTop: '1px solid var(--border)' }}
       >
         <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
           © {new Date().getFullYear()} Nic Piraino
         </p>
-        <a
-          href={`mailto:${contact.email}`}
-          className="flex items-center gap-1.5 font-mono-data text-xs transition-colors duration-200"
-          style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-          aria-label="Send email"
-        >
-          <span className="material-symbols-rounded text-sm">mail</span>
-          {contact.email}
-        </a>
       </footer>
     </div>
   )
