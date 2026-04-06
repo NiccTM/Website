@@ -197,16 +197,6 @@ export default function HomePage() {
             >
               Photography
             </Link>
-            <a
-              href="/NicPiraino_CV.pdf"
-              download="NicPiraino_CV.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-outline font-sans text-sm px-6 py-2.5 flex items-center gap-2"
-            >
-              <span className="material-symbols-rounded text-base">download</span>
-              Download CV
-            </a>
           </div>
 
           <SocialLinks />
