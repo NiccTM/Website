@@ -21,7 +21,7 @@ const NODE_COLORS = {
 function ArchNode({ data }) {
   return (
     <div
-      className="px-3 py-2 rounded-lg border text-xs font-mono cursor-pointer select-none min-w-[140px]"
+      className="px-3 py-2 rounded-lg border text-sm font-mono cursor-pointer select-none min-w-[140px]"
       style={{
         background: NODE_COLORS[data.type] ?? 'var(--bg-surface-2)',
         borderColor: 'var(--border-accent)',
@@ -31,7 +31,7 @@ function ArchNode({ data }) {
     >
       <Handle type="target" position={Position.Left} />
       <div className="font-semibold" style={{ color: 'var(--accent)' }}>{data.label}</div>
-      <div style={{ color: 'var(--text-muted)', fontSize: '0.6rem', marginTop: 2 }}>
+      <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: 2 }}>
         {data.type?.toUpperCase()}
       </div>
       <Handle type="source" position={Position.Right} />
@@ -60,7 +60,7 @@ function SpecPanel({ node, onClose }) {
         style={{ background: 'var(--bg-surface-2)' }}
       >
         <div className="flex items-center justify-between mb-3">
-          <span className="font-sans text-xs font-medium" style={{ color: 'var(--accent)' }}>
+          <span className="font-sans text-sm font-medium" style={{ color: 'var(--accent)' }}>
             {node.label}
           </span>
           <button onClick={onClose} style={{ color: 'var(--text-muted)' }} aria-label="Close">
@@ -96,7 +96,7 @@ export default function SystemArchitecture() {
   const [edges, , onEdgesChange] = useEdgesState(initialEdges)
 
   return (
-    <section className="relative z-10 px-6 py-10 sm:px-10 md:px-16 lg:px-24">
+    <section className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
       <motion.h2
         initial={{ opacity: 0, x: -8 }}
         whileInView={{ opacity: 1, x: 0 }}
@@ -126,7 +126,6 @@ export default function SystemArchitecture() {
           proOptions={{ hideAttribution: true }}
           panOnDrag
           zoomOnScroll={false}
-          nodesDraggable={false}
         >
           <Background color="#1f2937" gap={24} />
           <Controls
@@ -138,7 +137,7 @@ export default function SystemArchitecture() {
       </div>
 
       <div className="sm:hidden rounded-xl border-subtle p-4" style={{ background: 'var(--bg-surface-1)' }}>
-        <p className="font-mono-data text-center text-xs" style={{ color: 'var(--text-muted)' }}>
+        <p className="font-mono-data text-center text-sm" style={{ color: 'var(--text-muted)' }}>
           Architecture diagram available on desktop.
         </p>
       </div>

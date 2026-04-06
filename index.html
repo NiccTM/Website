@@ -3,12 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Nic Piraino — Electrical Engineering Student & Hardware Enthusiast" />
-    <title>Nic Piraino</title>
+    <meta name="description" content="Nic Piraino — Hardware Engineering & System Design. Embedded systems, PCB design, audio electronics, and full-stack engineering." />
+    <title>Nic Piraino | Hardware Engineering & System Design</title>
+
+    <!-- Open Graph -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content="Nic Piraino | Hardware Engineering & System Design" />
+    <meta property="og:description" content="Embedded systems, PCB design, audio electronics, and full-stack engineering." />
+    <meta property="og:image"       content="https://nicpiraino.com/Remastered%20Photos/Kelowna%20Mountains.jpg" />
+    <meta property="og:image:alt"   content="Kelowna Mountains — photography by Nic Piraino" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="Nic Piraino | Hardware Engineering & System Design" />
+    <meta name="twitter:description" content="Embedded systems, PCB design, audio electronics, and full-stack engineering." />
+    <meta name="twitter:image"       content="https://nicpiraino.com/Remastered%20Photos/Kelowna%20Mountains.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap"
       rel="stylesheet"
     />
     <link
@@ -17,6 +32,13 @@
     />
   </head>
   <body>
+    <!-- Sync theme before React mounts — prevents flash of wrong theme -->
+    <script>
+      try {
+        var t = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch(e) {}
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

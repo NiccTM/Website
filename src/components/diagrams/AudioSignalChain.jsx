@@ -11,34 +11,25 @@ import 'reactflow/dist/style.css'
 import { motion, AnimatePresence } from 'framer-motion'
 import { audioChain } from '../../data/config'
 
-const NODE_COLORS = {
-  source:   '#1e3a5f',
-  preamp:   '#1a2a3a',
-  dac:      '#1e3a2f',
-  amp:      '#3a2a1e',
-  streamer: '#2a1e2a',
-  tape:     '#2a2a1e',
-  cd:       '#1e2a3a',
-  output:   '#2a1e3a',
-  sub:      '#2a1a2a',
-}
-
 function AudioNode({ data }) {
   return (
     <div
-      className="px-3 py-2 rounded-lg border text-xs font-mono cursor-pointer select-none min-w-[130px]"
+      className="px-3 py-2 rounded-xl cursor-pointer select-none min-w-[130px]"
       style={{
-        background: NODE_COLORS[data.type] ?? 'var(--bg-surface-2)',
-        borderColor: 'var(--border-accent)',
+        background: 'var(--flow-node-bg)',
+        backdropFilter: 'blur(16px) saturate(120%)',
+        WebkitBackdropFilter: 'blur(16px) saturate(120%)',
+        border: '1px solid var(--flow-node-border)',
+        boxShadow: 'inset 0 0 10px var(--flow-node-inset), 0 4px 12px rgba(0,0,0,0.07)',
         color: 'var(--text-primary)',
       }}
       onClick={() => data.onSelect(data)}
     >
       <Handle type="target" position={Position.Left} />
-      <div className="font-semibold leading-snug" style={{ color: 'var(--accent)' }}>
+      <div className="font-sans font-semibold leading-snug text-sm" style={{ color: 'var(--accent)' }}>
         {data.label}
       </div>
-      <div style={{ color: 'var(--text-muted)', fontSize: '0.6rem', marginTop: 2 }}>
+      <div className="font-sans mt-0.5" style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
         {data.room} · {data.type?.toUpperCase()}
       </div>
       <Handle type="source" position={Position.Right} />
@@ -57,7 +48,11 @@ function buildNodes(chain, onSelect) {
   }))
 }
 
-const edgeStyle = { stroke: '#065f46', strokeWidth: 2 }
+const edgeStyle = {
+  stroke: '#00E5FF',
+  strokeWidth: 2,
+  filter: 'drop-shadow(0 0 4px rgba(0,229,255,0.8)) drop-shadow(0 0 2px #00E5FF)',
+}
 
 function buildEdges(chain) {
   return chain.edges.map((e) => ({
@@ -76,11 +71,17 @@ function SpecPanel({ node, onClose }) {
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 16 }}
         transition={{ duration: 0.2 }}
-        className="absolute top-3 right-3 z-20 w-60 rounded-xl border-subtle p-4"
-        style={{ background: 'var(--bg-surface-2)' }}
+        className="absolute top-3 right-3 z-20 w-60 rounded-xl p-4"
+        style={{
+          background: 'var(--flow-panel-bg)',
+          backdropFilter: 'blur(20px) saturate(120%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(120%)',
+          border: '1px solid var(--flow-panel-border)',
+          boxShadow: 'inset 0 0 12px var(--flow-node-inset), 0 8px 24px rgba(0,0,0,0.08)',
+        }}
       >
         <div className="flex items-center justify-between mb-3">
-          <span className="font-sans text-xs font-medium" style={{ color: 'var(--accent)' }}>
+          <span className="font-sans text-sm font-medium" style={{ color: 'var(--accent)' }}>
             {node.label}
           </span>
           <button onClick={onClose} style={{ color: 'var(--text-muted)' }} aria-label="Close">
@@ -110,7 +111,7 @@ function FlowSection({ title, chain }) {
   return (
     <div className="mb-10">
       <h3
-        className="font-mono-data text-xs tracking-widest uppercase mb-3"
+        className="font-mono-data text-sm tracking-widest uppercase mb-3"
         style={{ color: 'var(--text-secondary)' }}
       >
         {title}
@@ -118,8 +119,15 @@ function FlowSection({ title, chain }) {
 
       {/* Desktop */}
       <div
-        className="relative hidden sm:block rounded-xl border-subtle overflow-hidden"
-        style={{ height: '220px', background: 'var(--bg-surface-1)' }}
+        className="relative hidden sm:block rounded-xl overflow-hidden"
+        style={{
+          height: 'clamp(180px, 20vh, 320px)',
+          background: 'var(--flow-bg)',
+          backdropFilter: 'blur(16px) saturate(120%)',
+          WebkitBackdropFilter: 'blur(16px) saturate(120%)',
+          border: '1px solid var(--flow-bg-border)',
+          boxShadow: 'inset 0 0 12px var(--flow-node-inset), 0 4px 16px rgba(0,0,0,0.06)',
+        }}
       >
         <ReactFlow
           nodes={nodes}
@@ -132,7 +140,6 @@ function FlowSection({ title, chain }) {
           proOptions={{ hideAttribution: true }}
           panOnDrag
           zoomOnScroll={false}
-          nodesDraggable={false}
         >
           <Background color="#1f2937" gap={24} />
           <Controls
@@ -147,7 +154,7 @@ function FlowSection({ title, chain }) {
       <div className="sm:hidden rounded-xl border-subtle p-4" style={{ background: 'var(--bg-surface-1)' }}>
         <div className="flex flex-col gap-1">
           {chain.nodes.map((n) => (
-            <div key={n.id} className="font-mono-data flex gap-2 text-xs">
+            <div key={n.id} className="font-mono-data flex gap-2 text-sm">
               <span style={{ color: 'var(--accent)' }}>{n.label}</span>
               <span style={{ color: 'var(--text-muted)' }}>— {n.type}</span>
             </div>
@@ -160,7 +167,7 @@ function FlowSection({ title, chain }) {
 
 export default function AudioSignalChain({ sectionId }) {
   return (
-    <section id={sectionId} className="relative z-10 px-6 py-10 sm:px-10 md:px-16 lg:px-24">
+    <section id={sectionId} className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
       <motion.h2
         initial={{ opacity: 0, x: -8 }}
         whileInView={{ opacity: 1, x: 0 }}

@@ -7,7 +7,7 @@ export default function SocialLinks() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.7, duration: 0.4 }}
-      className="relative z-10 flex items-center gap-5 px-6 pb-8 sm:px-10 md:px-16 lg:px-24"
+      className="relative z-10 flex items-center gap-5"
       aria-label="Social links"
     >
       {socialLinks.map((link) => (

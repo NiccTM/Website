@@ -95,12 +95,12 @@ function AlbumCard({ release, onClick }) {
 
       <div
         className="absolute inset-0 flex flex-col justify-end p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-        style={{ background: 'linear-gradient(to top, rgba(3,7,18,0.92) 0%, transparent 60%)' }}
+        style={{ background: 'linear-gradient(to top, rgba(0,20,60,0.75) 0%, transparent 60%)' }}
       >
-        <p className="font-sans text-xs font-medium leading-tight truncate" style={{ color: 'var(--text-primary)' }}>
+        <p className="font-sans text-sm font-medium leading-tight truncate" style={{ color: 'var(--text-primary)' }}>
           {release.title}
         </p>
-        <p className="font-mono-data truncate" style={{ color: 'var(--accent)', fontSize: '0.6rem' }}>
+        <p className="font-mono-data truncate" style={{ color: 'var(--accent)', fontSize: '0.875rem' }}>
           {release.artist}{release.year ? ` · ${release.year}` : ''}
         </p>
       </div>
@@ -150,7 +150,7 @@ function ErrorState({ message, onRetry, onMock }) {
   return (
     <div className="rounded-xl border-subtle p-6 flex flex-col gap-4" style={{ background: 'var(--bg-surface-1)' }}>
       <div>
-        <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
+        <p className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
           {message.includes('404') || message.includes('500') || message.includes('API')
             ? 'Discogs API unavailable — check DISCOGS_PAT environment variable.'
             : `Collection error: ${message}`}
@@ -159,7 +159,7 @@ function ErrorState({ message, onRetry, onMock }) {
       <div className="flex gap-3">
         <button
           onClick={onRetry}
-          className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-1.5 rounded-lg border-subtle transition-colors duration-150"
+          className="flex items-center gap-1.5 font-mono-data text-sm px-3 py-1.5 rounded-lg border-subtle transition-colors duration-150"
           style={{ color: 'var(--accent)', background: 'var(--bg-surface-2)' }}
         >
           <span className="material-symbols-rounded text-sm">refresh</span>
@@ -167,7 +167,7 @@ function ErrorState({ message, onRetry, onMock }) {
         </button>
         <button
           onClick={onMock}
-          className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-1.5 rounded-lg border-subtle transition-colors duration-150"
+          className="flex items-center gap-1.5 font-mono-data text-sm px-3 py-1.5 rounded-lg border-subtle transition-colors duration-150"
           style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
         >
           <span className="material-symbols-rounded text-sm">library_music</span>
@@ -191,7 +191,7 @@ export default function VinylArchive() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.45 }}
-      className="relative z-10 px-6 py-10 sm:px-10 md:px-16 lg:px-24"
+      className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
     >
       {/* Header */}
       <div className="flex items-end justify-between flex-wrap gap-3 mb-6">
@@ -213,7 +213,7 @@ export default function VinylArchive() {
           href="https://www.discogs.com/user/NiccTM/collection"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 font-mono-data text-xs transition-colors duration-150"
+          className="flex items-center gap-1.5 font-mono-data text-sm transition-colors duration-150"
           style={{ color: 'var(--text-muted)' }}
           onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
           onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}

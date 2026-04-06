@@ -36,6 +36,37 @@ function discogsDevPlugin(env) {
         }
       })
 
+      // Classify proxy — keeps ROBOFLOW_API_KEY off the client in dev
+      server.middlewares.use('/api/classify', async (req, res) => {
+        if (req.method !== 'POST') {
+          res.writeHead(405, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ error: 'Method not allowed' }))
+          return
+        }
+        const apiKey   = env.ROBOFLOW_API_KEY
+        const modelId  = env.ROBOFLOW_MODEL_ID ?? 'ecosort/1'
+        if (!apiKey) {
+          res.writeHead(500, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ error: 'ROBOFLOW_API_KEY not set in .env' }))
+          return
+        }
+        try {
+          const chunks = []
+          for await (const chunk of req) chunks.push(chunk)
+          const { image, confidence = 35, overlap = 30 } = JSON.parse(Buffer.concat(chunks).toString())
+          const rfRes = await fetch(
+            `https://detect.roboflow.com/${modelId}?api_key=${apiKey}&confidence=${confidence}&overlap=${overlap}&labels=true`,
+            { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: image }
+          )
+          const data = await rfRes.json()
+          res.writeHead(rfRes.status, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
+          res.end(JSON.stringify(data))
+        } catch (err) {
+          res.writeHead(500, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ error: err.message }))
+        }
+      })
+
       server.middlewares.use('/api/discogs', async (req, res) => {
         const token = env.DISCOGS_PAT
         if (!token || token === 'your_token_here') {
@@ -93,6 +124,17 @@ export default defineConfig(({ mode }) => {
     build: {
       target: 'esnext',
       minify: 'esbuild',
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react':   ['react', 'react-dom', 'react-router-dom'],
+            'vendor-three':   ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing', '@react-three/xr'],
+            'vendor-flow':    ['reactflow'],
+            'vendor-motion':  ['framer-motion'],
+            'vendor-store':   ['zustand'],
+          },
+        },
+      },
     },
   }
 })
