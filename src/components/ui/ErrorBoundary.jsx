@@ -40,7 +40,7 @@ export default class ErrorBoundary extends Component {
 
     // Default: minimal error tile with retry
     return (
-      <div className="px-6 py-6 sm:px-10 md:px-16 lg:px-24">
+      <div className="px-5 py-6 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40">
         <div
           className="rounded-xl border-subtle p-5 flex flex-col gap-3"
           style={{ background: 'var(--bg-surface-1)' }}

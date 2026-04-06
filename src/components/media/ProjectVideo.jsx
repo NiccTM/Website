@@ -45,7 +45,7 @@ export default function ProjectVideo({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.45 }}
-      className="relative z-10 px-6 py-10 sm:px-10 md:px-16 lg:px-24"
+      className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
     >
       <h2
         className="font-mono-data tracking-widest uppercase mb-2"

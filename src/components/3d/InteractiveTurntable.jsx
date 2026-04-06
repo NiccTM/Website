@@ -6,6 +6,7 @@ import { damp } from 'maath/easing'
 import * as THREE from 'three'
 import { motion } from 'framer-motion'
 import { useUI } from '../../context/UIContext'
+import ErrorBoundary from '../ui/ErrorBoundary'
 
 function proxied(url) {
   if (!url) return null
@@ -20,18 +21,18 @@ function proxied(url) {
 
 // ─── Tonearm geometry constants ───────────────────────────────────────────────
 // Pivot at world (1.72, 0.043, -0.55).
-// Stylus tip in pivot-local space: [-0.84, -0.028, 0.02].
+// Stylus tip in pivot-local space: approx [-1.368, ...] (new longer arm).
 //
-// rotation.y  →  stylus radius from origin
-//   0.75 rad  →  R ≈ 1.58  (parked, outside record edge 1.50)
-//   0.60 rad  →  R ≈ 1.44  (outer groove)
-//   0.25 rad  →  R ≈ 0.68  (inner groove, label edge)
-const TONEARM_REST     = 0.75   // parked angle (rad)
-const TONEARM_PLAY     = 0.60   // outer groove (rad)
-const TONEARM_INNER    = 0.25   // inner groove (rad)
-const RAISE_HEIGHT     = 0.14   // how far pivot lifts above Y=0.043 when cued up
-const PIVOT_BASE_Y     = 0.043  // surface-level Y for pivot
-const TRACKING_SECS    = 45     // seconds to sweep outer → inner groove (demo speed)
+// rotation.y  →  stylus lands on record (recalculated for stylus at local [-1.368, _, 0.018])
+//   1.25 rad  →  parked (R≈1.51, just outside record edge)
+//   1.18 rad  →  outer groove (R≈1.41, near vinyl edge)
+//   0.50 rad  →  inner groove (R≈0.54, near label)
+const TONEARM_REST     = 1.25   // parked angle (rad) — just off the record edge
+const TONEARM_PLAY     = 1.22   // outer groove — drops here first
+const TONEARM_INNER    = 0.62   // inner groove — R≈0.67, stops just outside label edge (R=0.60)
+const RAISE_HEIGHT     = 0.14   // how far pivot lifts when cued up
+const PIVOT_BASE_Y     = 0.110  // pivot Y when playing: stylus tip (local -0.068) lands at vinyl surface Y=0.042
+const TRACKING_SECS    = 120    // seconds to sweep outer → inner (slow, realistic)
 
 // Arm state machine
 const ARM = { PARKED: 0, SWINGING: 1, DROPPING: 2, PLAYING: 3 }
@@ -73,11 +74,11 @@ function AlbumLabel({ coverUrl }) {
       <circleGeometry args={[0.6, 128]} />
       <meshStandardMaterial
         map={texture}
-        roughness={0.5}
+        roughness={0.92}
         metalness={0.0}
         emissive="#ffffff"
         emissiveMap={texture}
-        emissiveIntensity={0.22}
+        emissiveIntensity={0.08}
       />
     </mesh>
   )
@@ -116,13 +117,16 @@ function VinylRecord({ coverUrl }) {
       <mesh name="Vinyl_Disc" castShadow receiveShadow>
         <cylinderGeometry args={[1.5, 1.5, 0.04, 128]} />
         <meshPhysicalMaterial
-          color="#020202"
-          roughness={0.12}
-          metalness={0.85}
+          color="#010101"
+          roughness={0.06}
+          metalness={0.92}
           anisotropy={1.0}
           anisotropyRotation={Math.PI / 2}
           normalMap={normalMap}
-          normalScale={new THREE.Vector2(2.0, 2.0)}
+          normalScale={new THREE.Vector2(2.8, 2.8)}
+          clearcoat={0.6}
+          clearcoatRoughness={0.04}
+          reflectivity={1.0}
         />
       </mesh>
 
@@ -149,7 +153,7 @@ function VinylRecord({ coverUrl }) {
 // critically-damped spring — organic deceleration with no overshoot.
 function Tonearm({ isPlaying }) {
   const groupRef    = useRef()
-  const stateRef    = useRef(ARM.PARKED)
+  const stateRef    = useRef(ARM.DROPPING)  // skip swing, drop straight down at outer groove
   const progressRef = useRef(0)   // 0 = outer groove, 1 = inner groove
 
   // Transition PARKED → SWINGING when isPlaying fires
@@ -208,23 +212,66 @@ function Tonearm({ isPlaying }) {
   })
 
   return (
-    // Initial position: raised. The useFrame damp drives it from here.
-    <group ref={groupRef} position={[1.72, PIVOT_BASE_Y + RAISE_HEIGHT, -0.55]} rotation={[0, TONEARM_REST, 0]}>
-      {/* Arm tube */}
-      <mesh rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.013, 0.007, 1.5, 16]} />
-        <meshStandardMaterial color="#999" metalness={0.9} roughness={0.1} />
+    <group ref={groupRef} position={[1.72, PIVOT_BASE_Y + RAISE_HEIGHT, -0.55]} rotation={[0, TONEARM_PLAY, 0]}>
+
+      {/* ── Bearing housing (pivot cup) — Rega matte black ── */}
+      <mesh position={[0, 0, 0]}>
+        <cylinderGeometry args={[0.045, 0.05, 0.06, 24]} />
+        <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
       </mesh>
-      {/* Cartridge body */}
-      <mesh position={[-0.77, 0, 0.02]} rotation={[0.08, 0, 0.12]}>
-        <boxGeometry args={[0.12, 0.028, 0.058]} />
-        <meshStandardMaterial color="#bbb" metalness={0.85} roughness={0.15} />
+
+      {/* ── Main arm tube — Rega straight matte black tube ── */}
+      <mesh position={[-0.62, 0.005, 0]} rotation={[0, 0, Math.PI / 2 - 0.04]}>
+        <cylinderGeometry args={[0.010, 0.014, 1.24, 20]} />
+        <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.32} />
       </mesh>
-      {/* Stylus tip */}
-      <mesh position={[-0.84, -0.028, 0.02]} rotation={[0, 0, 0.28]}>
-        <cylinderGeometry args={[0.003, 0.001, 0.058, 8]} />
-        <meshStandardMaterial color="#1a1a1a" metalness={0.9} roughness={0.1} />
+
+      {/* ── Rear stub (counterweight arm) ── */}
+      <mesh position={[0.28, 0.003, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.011, 0.013, 0.46, 16]} />
+        <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
       </mesh>
+
+      {/* ── Counterweight — Rega grey/silver cylinder ── */}
+      <mesh position={[0.54, 0, 0]}>
+        <cylinderGeometry args={[0.046, 0.046, 0.072, 28]} />
+        <meshStandardMaterial color="#666666" metalness={0.85} roughness={0.18} />
+      </mesh>
+      {/* Counterweight threading ring */}
+      <mesh position={[0.54, 0, 0]}>
+        <cylinderGeometry args={[0.048, 0.048, 0.014, 28]} />
+        <meshStandardMaterial color="#888888" metalness={0.9} roughness={0.1} />
+      </mesh>
+
+      {/* ── Headshell offset group — ~22° Y rotation so cartridge runs tangent to groove ── */}
+      <group position={[-1.20, 0, 0]} rotation={[0, -0.38, 0]}>
+
+        {/* Headshell connector — matte black */}
+        <mesh position={[-0.04, -0.012, 0]} rotation={[0.10, 0, -0.10]}>
+          <boxGeometry args={[0.115, 0.018, 0.038]} />
+          <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
+        </mesh>
+
+        {/* Cartridge body — dark, slight gloss */}
+        <mesh position={[-0.11, -0.026, 0]} rotation={[0.10, 0, 0]}>
+          <boxGeometry args={[0.095, 0.030, 0.052]} />
+          <meshStandardMaterial color="#1a1a1a" metalness={0.6} roughness={0.45} />
+        </mesh>
+
+        {/* Cantilever */}
+        <mesh position={[-0.16, -0.048, 0]} rotation={[0.5, 0, 0.05]}>
+          <cylinderGeometry args={[0.0018, 0.0012, 0.055, 6]} />
+          <meshStandardMaterial color="#aaaaaa" metalness={0.9} roughness={0.1} />
+        </mesh>
+
+        {/* Stylus tip */}
+        <mesh position={[-0.168, -0.068, 0]}>
+          <sphereGeometry args={[0.004, 8, 8]} />
+          <meshStandardMaterial color="#111" metalness={0.95} roughness={0.05} />
+        </mesh>
+
+      </group>
+
     </group>
   )
 }
@@ -233,25 +280,46 @@ function Tonearm({ isPlaying }) {
 function Plinth({ isPlaying }) {
   return (
     <group>
-      <mesh position={[0, -0.06, 0]} receiveShadow castShadow>
-        <boxGeometry args={[3.8, 0.12, 3.2]} />
-        <meshStandardMaterial color="#0d0d0d" roughness={0.88} metalness={0.06} />
+      {/* Plinth body — Rega P2 piano-black acrylic, more square/thick */}
+      <mesh position={[0, -0.08, 0]} receiveShadow castShadow>
+        <boxGeometry args={[3.8, 0.16, 3.7]} />
+        <meshPhysicalMaterial color="#070707" roughness={0.04} metalness={0.0} reflectivity={1.0} clearcoat={1.0} clearcoatRoughness={0.04} />
       </mesh>
-      <mesh position={[0, 0.001, 0]}>
-        <cylinderGeometry args={[1.53, 1.53, 0.004, 128]} />
-        <meshStandardMaterial color="#161616" roughness={0.8} metalness={0.12} />
+
+      {/* Glass platter — Rega's distinctive teal-tinted glass */}
+      <mesh position={[0, 0.012, 0]}>
+        <cylinderGeometry args={[1.52, 1.52, 0.024, 128]} />
+        <meshPhysicalMaterial
+          color="#4db8a8"
+          transmission={0.55}
+          roughness={0.02}
+          metalness={0.0}
+          ior={1.5}
+          thickness={0.02}
+          transparent
+          opacity={0.88}
+        />
       </mesh>
-      {/* Bearing post */}
-      <mesh position={[1.72, 0.14, -0.55]}>
-        <cylinderGeometry args={[0.042, 0.042, 0.28, 16]} />
-        <meshStandardMaterial color="#777" metalness={0.88} roughness={0.12} />
+
+      {/* Felt mat — Rega dark charcoal felt, sits on glass platter */}
+      <mesh position={[0, 0.027, 0]}>
+        <cylinderGeometry args={[1.49, 1.49, 0.008, 128]} />
+        <meshStandardMaterial color="#181818" roughness={0.97} metalness={0.0} />
       </mesh>
+
+      {/* Spindle — small pin through felt */}
+      <mesh position={[0, 0.058, 0]}>
+        <cylinderGeometry args={[0.016, 0.016, 0.055, 16]} />
+        <meshStandardMaterial color="#aaaaaa" metalness={0.9} roughness={0.15} />
+      </mesh>
+
+      {/* Tonearm bearing post — Rega style: matte black, tall pillar */}
+      <mesh position={[1.72, 0.17, -0.55]}>
+        <cylinderGeometry args={[0.048, 0.048, 0.34, 20]} />
+        <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.3} />
+      </mesh>
+
       <Tonearm isPlaying={isPlaying} />
-      {/* Speed LED */}
-      <mesh position={[-1.5, 0.003, 1.1]}>
-        <cylinderGeometry args={[0.045, 0.045, 0.012, 32]} />
-        <meshStandardMaterial color="#6ee7b7" emissive="#6ee7b7" emissiveIntensity={1.0} roughness={0.3} />
-      </mesh>
     </group>
   )
 }
@@ -260,33 +328,51 @@ function Plinth({ isPlaying }) {
 function TurntableScene({ release, isPlaying }) {
   return (
     <>
-      <Environment preset="studio" environmentIntensity={0.18} />
-      <ambientLight intensity={0.04} />
-      <directionalLight position={[4, 7, 5]} intensity={0.4} />
+      <Environment preset="apartment" environmentIntensity={0.45} />
+      <ambientLight intensity={0.18} />
+
+      {/* Key light — top-right, soft diffuse */}
       <spotLight
-        position={[5, 8, 5]}
-        angle={0.14}
-        penumbra={0.9}
-        intensity={180}
+        position={[4, 8, 3]}
+        angle={0.28}
+        penumbra={0.85}
+        intensity={75}
         distance={22}
         decay={2}
         color="#ffffff"
         castShadow={false}
         target-position={[0, 0, 0]}
       />
+
+      {/* Fill — warm, low angle, catches groove rings */}
       <spotLight
-        position={[-4, 6, -3]}
-        angle={0.18}
-        penumbra={0.8}
-        intensity={80}
+        position={[-5, 4, 4]}
+        angle={0.32}
+        penumbra={1.0}
+        intensity={38}
         distance={18}
         decay={2}
-        color="#ffd580"
+        color="#fff4e0"
         castShadow={false}
         target-position={[0, 0, 0]}
       />
-      <pointLight position={[0, 2, 0]} intensity={7} distance={2.5} decay={2} color="#ffffff" />
-      <pointLight position={[-2, 1, 2]} intensity={0.4} color="#6ee7b7" decay={2} />
+
+      {/* Rim light — back left, subtle edge on plinth + arm */}
+      <spotLight
+        position={[-3, 5, -5]}
+        angle={0.22}
+        penumbra={1.0}
+        intensity={42}
+        distance={18}
+        decay={2}
+        color="#dde8ff"
+        castShadow={false}
+        target-position={[0, 0, 0]}
+      />
+
+      {/* Center point — gentle top-down on label */}
+      <pointLight position={[0, 2.5, 0]} intensity={4} distance={3.5} decay={2} color="#ffffff" />
+      <pointLight position={[-2, 1, 2]} intensity={0.3} color="#6ee7b7" decay={2} />
 
       <VinylRecord coverUrl={release?.cover_image} />
       <Plinth isPlaying={isPlaying} />
@@ -298,6 +384,9 @@ function TurntableScene({ release, isPlaying }) {
         minPolarAngle={Math.PI / 10}
         maxPolarAngle={Math.PI / 2.1}
         target={[0, 0, 0]}
+        touches={{ ONE: 0 /* ROTATE */, TWO: 2 /* DOLLY_PAN */ }}
+        enableDamping
+        dampingFactor={0.07}
       />
     </>
   )
@@ -305,7 +394,7 @@ function TurntableScene({ release, isPlaying }) {
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
 export default function InteractiveTurntable({ release, onClose }) {
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(true)
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
@@ -318,25 +407,20 @@ export default function InteractiveTurntable({ release, onClose }) {
     return () => { document.body.style.overflow = '' }
   }, [])
 
-  // Arm drops 0.8 s after modal opens — deliberate mechanical cue
-  useEffect(() => {
-    const id = setTimeout(() => setIsPlaying(true), 800)
-    return () => clearTimeout(id)
-  }, [])
-
   return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.22 }}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
-      style={{ background: 'rgba(3,7,18,0.94)', backdropFilter: 'blur(16px)' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+      className="fixed inset-0 z-[9999] flex flex-col"
+      style={{ background: 'rgba(3,7,18,0.94)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
       role="dialog"
       aria-modal="true"
     >
-      <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-4 sm:px-10">
+      {/* ── Header bar ── */}
+      <div className="flex items-center justify-between px-6 py-4 sm:px-10 shrink-0"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div>
           <p className="font-sans text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
             {release.title}
@@ -358,30 +442,36 @@ export default function InteractiveTurntable({ release, onClose }) {
         </button>
       </div>
 
-      <motion.div
-        initial={{ scale: 0.93, y: 18 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.93, y: 18 }}
-        transition={{ duration: 0.28, ease: 'easeOut' }}
-        className="relative w-full max-w-2xl bg-transparent"
-        style={{ height: '64vh', minHeight: '380px' }}
-      >
-        <Canvas
-          shadows
-          dpr={[1, 1.5]}
-          gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-          camera={{ position: [0, 5, 4.5], fov: 40 }}
-          style={{ background: 'transparent' }}
-        >
-          <Suspense fallback={null}>
-            <TurntableScene release={release} isPlaying={isPlaying} />
-          </Suspense>
-        </Canvas>
-      </motion.div>
+      {/* ── Canvas — fills all remaining space ── */}
+      <div className="relative flex-1 min-h-0 w-full">
+        <ErrorBoundary fallback={
+          <img
+            src="/RegaP2_VINYL.jpg"
+            alt="Rega P2 turntable"
+            className="w-full h-full object-cover"
+            style={{ opacity: 0.7 }}
+          />
+        }>
+          <Canvas
+            shadows
+            dpr={[1, 1.5]}
+            gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+            camera={{ position: [0, 5, 4.5], fov: 40 }}
+            style={{ width: '100%', height: '100%', background: 'transparent' }}
+          >
+            <Suspense fallback={null}>
+              <TurntableScene release={release} isPlaying={isPlaying} />
+            </Suspense>
+          </Canvas>
+        </ErrorBoundary>
+      </div>
 
-      <p className="absolute bottom-6 font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
-        Drag to orbit · Scroll to zoom
-      </p>
+      {/* ── Footer hint ── */}
+      <div className="shrink-0 py-3 text-center">
+        <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
+          Drag to orbit · Scroll to zoom
+        </p>
+      </div>
     </motion.div>,
     document.body
   )
