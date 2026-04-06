@@ -71,7 +71,7 @@ function SpecPanel({ node, onClose }) {
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 16 }}
         transition={{ duration: 0.2 }}
-        className="absolute top-3 right-3 z-20 w-60 rounded-xl p-4"
+        className="absolute top-3 right-3 z-20 w-72 rounded-xl p-4"
         style={{
           background: 'var(--flow-panel-bg)',
           backdropFilter: 'blur(20px) saturate(120%)',
@@ -92,8 +92,8 @@ function SpecPanel({ node, onClose }) {
           <tbody>
             {Object.entries(node.specs).map(([k, v]) => (
               <tr key={k}>
-                <td className="font-mono-data pr-3 pb-1 align-top" style={{ color: 'var(--text-muted)' }}>{k}</td>
-                <td className="font-mono-data pb-1" style={{ color: 'var(--text-primary)' }}>{v}</td>
+                <td className="font-mono-data pr-4 pb-1.5 align-top whitespace-nowrap" style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{k}</td>
+                <td className="font-mono-data pb-1.5" style={{ color: 'var(--text-primary)', fontSize: '0.8rem' }}>{v}</td>
               </tr>
             ))}
           </tbody>
