@@ -62,47 +62,6 @@ function buildEdges(chain) {
   }))
 }
 
-function SpecPanel({ node, onClose }) {
-  if (!node) return null
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, x: 16 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 16 }}
-        transition={{ duration: 0.2 }}
-        className="absolute top-3 right-3 z-20 w-72 rounded-xl p-4"
-        style={{
-          background: 'var(--flow-panel-bg)',
-          backdropFilter: 'blur(20px) saturate(120%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(120%)',
-          border: '1px solid var(--flow-panel-border)',
-          boxShadow: 'inset 0 0 12px var(--flow-node-inset), 0 8px 24px rgba(0,0,0,0.08)',
-        }}
-      >
-        <div className="flex items-center justify-between mb-3">
-          <span className="font-sans text-sm font-medium" style={{ color: 'var(--accent)' }}>
-            {node.label}
-          </span>
-          <button onClick={onClose} style={{ color: 'var(--text-muted)' }} aria-label="Close">
-            <span className="material-symbols-rounded text-sm">close</span>
-          </button>
-        </div>
-        <table className="w-full">
-          <tbody>
-            {Object.entries(node.specs).map(([k, v]) => (
-              <tr key={k}>
-                <td className="font-mono-data pr-4 pb-1.5 align-top whitespace-nowrap" style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{k}</td>
-                <td className="font-mono-data pb-1.5" style={{ color: 'var(--text-primary)', fontSize: '0.8rem' }}>{v}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </motion.div>
-    </AnimatePresence>
-  )
-}
-
 function FlowSection({ title, chain }) {
   const [selected, setSelected] = useState(null)
   const [nodes, , onNodesChange] = useNodesState(buildNodes(chain, setSelected))
@@ -147,8 +106,41 @@ function FlowSection({ title, chain }) {
             style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
           />
         </ReactFlow>
-        <SpecPanel node={selected} onClose={() => setSelected(null)} />
       </div>
+
+      {/* Spec panel — below the diagram, slides in when a node is selected */}
+      <AnimatePresence>
+        {selected && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className="hidden sm:flex items-start gap-6 mt-2 px-4 py-3 rounded-xl"
+            style={{
+              background: 'var(--flow-panel-bg)',
+              backdropFilter: 'blur(20px) saturate(120%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(120%)',
+              border: '1px solid var(--flow-panel-border)',
+            }}
+          >
+            <span className="font-sans text-sm font-medium shrink-0 pt-0.5" style={{ color: 'var(--accent)', minWidth: '160px' }}>
+              {selected.label}
+            </span>
+            <div className="flex flex-wrap gap-x-8 gap-y-1 flex-1">
+              {Object.entries(selected.specs).map(([k, v]) => (
+                <div key={k} className="flex gap-2">
+                  <span className="font-mono-data whitespace-nowrap" style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{k}</span>
+                  <span className="font-mono-data" style={{ color: 'var(--text-primary)', fontSize: '0.8rem' }}>{v}</span>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setSelected(null)} style={{ color: 'var(--text-muted)' }} aria-label="Close">
+              <span className="material-symbols-rounded text-sm">close</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Mobile fallback */}
       <div className="sm:hidden rounded-xl border-subtle p-4" style={{ background: 'var(--bg-surface-1)' }}>
