@@ -209,7 +209,7 @@ export default function MotorLab() {
         style={{ background: 'rgba(2,13,26,0.6)', border: '1px solid rgba(0,229,255,0.12)', borderRadius: 'var(--radius)' }}
       >
         <video
-          src="/motor.mp4"
+          src="/motor_cmp.mp4"
           controls
           loop
           playsInline

@@ -33,7 +33,7 @@ export default function ProjectsPage() {
         <ErrorBoundary label="DeLorean Video">
           <Suspense fallback={<SectionFallback />}>
             <ProjectVideo
-              src="/videos/APSC 171-2024-T1C4-16-SW.mp4"
+              src="/videos/APSC 171-2024-T1C4-16-SW_cmp.mp4"
               poster="/DeLorean.png"
               title="APSC 171 DeLorean — SolidWorks Showcase"
             />
