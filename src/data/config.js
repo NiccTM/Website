@@ -730,27 +730,27 @@ export const archiveData = [
 // ─── Hardware Diagnostics & Repair ───────────────────────────────────────────
 export const hardwareDiagnostics = {
   title:      'Hardware Diagnostics & Repair',
-  descriptor: 'Solder reflow, fan replacement, thermal paste, and Windows-level software repair.',
-  spec:       'Component-level repair — solder, thermal, mechanical, OS.',
+  descriptor: 'Full teardowns, thermal compound replacement, drive servicing, and OS-level software repair.',
+  spec:       'Component-level repair — thermal, mechanical, storage, OS.',
   categories: [
     {
       key:         'compute',
       label:       'Compute',
       icon:        'computer',
-      description: 'Laptop teardowns and logic board diagnostics.',
+      description: 'GPU and laptop teardowns, thermal treatment, SSD and software repair.',
       images: [
-        { src: '/ASUS_gaming_laptop.jpg', label: 'ASUS ROG Gaming Laptop', caption: 'Thermal paste reapplication · heatsink inspection' },
-        { src: '/MSI_gaming_laptop.jpg',  label: 'MSI Gaming Laptop',     caption: 'Logic board diagnostics · power rail trace' },
-        { src: '/ASUS_laptop.jpg',        label: 'ASUS Laptop',           caption: 'Motherboard-level component inspection' },
-        { src: '/Acer_laptop.jpg',        label: 'Acer Laptop',           caption: 'Teardown · connector and trace audit' },
-        { src: '/Zotac_RTX3090.jpg',      label: 'Zotac RTX 3090',        caption: 'GPU VRAM inspection · thermal pad replacement' },
+        { src: '/ASUS_gaming_laptop.jpg', label: 'ASUS ROG Gaming Laptop', caption: 'Full disassembly · Thermal Grizzly PhaseSheet PTM reapplication · software repair · SSD repair' },
+        { src: '/MSI_gaming_laptop.jpg',  label: 'MSI Gaming Laptop',      caption: 'Full clean · MX-6 Arctic thermal paste reapplication · software repair · SSD repair' },
+        { src: '/ASUS_laptop.jpg',        label: 'ASUS Laptop',            caption: 'Full clean · MX-6 Arctic thermal paste reapplication · software repair · SSD repair' },
+        { src: '/Acer_laptop.jpg',        label: 'Acer Laptop',            caption: 'Full clean · MX-6 Arctic thermal paste reapplication · software repair · SSD repair' },
+        { src: '/Zotac_RTX3090.jpg',      label: 'Zotac RTX 3090',         caption: 'Full card clean · Thermal Grizzly PhaseSheet PTM reapplication · software repair' },
       ],
     },
     {
       key:         'analog',
       label:       'Analog',
       icon:        'speaker',
-      description: 'Amplifier internal inspection and component replacement.',
+      description: 'Headphone driver inspection and cable servicing.',
       images: [
         { src: '/beats_headphone.jpg', label: 'Beats Headphone', caption: 'Driver inspection · cable re-termination' },
       ],
@@ -759,9 +759,9 @@ export const hardwareDiagnostics = {
       key:         'digital',
       label:       'Digital',
       icon:        '_sacd',
-      description: 'Optical drive (DVD/SACD) and DAC servicing.',
+      description: 'Optical drive inspection, disc mechanism cleaning and servicing.',
       images: [
-        { src: '/DVD_player.jpg', label: 'DVD Player', caption: 'Laser sled cleaning · mechanism lubrication' },
+        { src: '/DVD_player.jpg', label: 'DVD Player', caption: 'Internal inspection · full disc drive disassembly · laser sled cleaning · mechanism lubrication' },
       ],
     },
   ],
