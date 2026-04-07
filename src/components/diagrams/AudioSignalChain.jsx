@@ -30,7 +30,7 @@ function AudioNode({ data }) {
         {data.label}
       </div>
       <div className="font-sans mt-0.5" style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-        {data.room} · {data.type?.toUpperCase()}
+        {data.room} Â· {data.type?.toUpperCase()}
       </div>
       <Handle type="source" position={Position.Right} />
     </div>
@@ -108,7 +108,7 @@ function FlowSection({ title, chain }) {
         </ReactFlow>
       </div>
 
-      {/* Spec panel — below the diagram, slides in when a node is selected */}
+      {/* Spec panel â€” below the diagram, slides in when a node is selected */}
       <AnimatePresence>
         {selected && (
           <motion.div
@@ -136,7 +136,7 @@ function FlowSection({ title, chain }) {
               ))}
             </div>
             <button onClick={() => setSelected(null)} style={{ color: 'var(--text-muted)' }} aria-label="Close">
-              <span className="material-symbols-rounded text-sm">close</span>
+              <span aria-hidden="true" className="material-symbols-rounded text-sm">close</span>
             </button>
           </motion.div>
         )}
@@ -148,7 +148,7 @@ function FlowSection({ title, chain }) {
           {chain.nodes.map((n) => (
             <div key={n.id} className="font-mono-data flex gap-2 text-sm">
               <span style={{ color: 'var(--accent)' }}>{n.label}</span>
-              <span style={{ color: 'var(--text-muted)' }}>— {n.type}</span>
+              <span style={{ color: 'var(--text-muted)' }}>â€” {n.type}</span>
             </div>
           ))}
         </div>

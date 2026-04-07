@@ -2,14 +2,14 @@ import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 
 /**
- * ProjectVideo — local .mp4 player with poster, custom overlay controls,
+ * ProjectVideo â€” local .mp4 player with poster, custom overlay controls,
  * and aspect-ratio lock to prevent layout shift.
  *
  * Props:
- *   src    — video path under /public, e.g. "/videos/APSC 171-2024-T1C4-16-SW.mp4"
- *   poster — poster image path (shown before first play)
- *   title  — section heading + aria-label
- *   ratio  — 'wide' (16/9) | 'cinema' (2.39:1) — default 'wide'
+ *   src    â€” video path under /public, e.g. "/videos/APSC 171-2024-T1C4-16-SW.mp4"
+ *   poster â€” poster image path (shown before first play)
+ *   title  â€” section heading + aria-label
+ *   ratio  â€” 'wide' (16/9) | 'cinema' (2.39:1) â€” default 'wide'
  */
 
 const RATIOS = {
@@ -54,7 +54,7 @@ export default function ProjectVideo({
         {title}
       </h2>
       <p className="font-mono-data mb-5" style={{ color: 'var(--text-muted)' }}>
-        APSC 171 · Mechanical Team · SolidWorks assembly showcase
+        APSC 171 Â· Mechanical Team Â· SolidWorks assembly showcase
       </p>
 
       {error ? (
@@ -62,7 +62,7 @@ export default function ProjectVideo({
           className="rounded-xl border-subtle p-6 text-center"
           style={{ background: 'var(--bg-surface-1)' }}
         >
-          <span className="material-symbols-rounded text-3xl block mb-2" style={{ color: 'var(--text-muted)' }}>
+          <span aria-hidden="true" className="material-symbols-rounded text-3xl block mb-2" style={{ color: 'var(--text-muted)' }}>
             videocam_off
           </span>
           <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
@@ -75,7 +75,7 @@ export default function ProjectVideo({
           className={`relative w-full ${RATIOS[ratio]} rounded-xl border-subtle overflow-hidden`}
           style={{ background: 'var(--bg-surface-1)' }}
         >
-          {/* Single video element — native controls always available */}
+          {/* Single video element â€” native controls always available */}
           <video
             ref={videoRef}
             src={src}
@@ -93,7 +93,7 @@ export default function ProjectVideo({
             className="absolute inset-0 w-full h-full object-contain"
           />
 
-          {/* Custom play overlay — only before first play */}
+          {/* Custom play overlay â€” only before first play */}
           {!playing && (
             <button
               onClick={toggle}
@@ -109,7 +109,7 @@ export default function ProjectVideo({
               </span>
               {!ready && (
                 <span className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
-                  Loading…
+                  Loadingâ€¦
                 </span>
               )}
             </button>
@@ -129,7 +129,7 @@ export default function ProjectVideo({
             className="flex items-center gap-1.5 font-mono-data"
             style={{ color: 'var(--text-muted)' }}
           >
-            <span className="material-symbols-rounded text-sm">{icon}</span>
+            <span aria-hidden="true" className="material-symbols-rounded text-sm">{icon}</span>
             {label}
           </div>
         ))}

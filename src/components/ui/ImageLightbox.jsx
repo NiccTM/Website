@@ -9,7 +9,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
   const [scale,    setScale]    = useState(1)
   const [dragging, setDragging] = useState(false)
 
-  // Refs — single source of truth for transform; no React state updates during drag
+  // Refs â€” single source of truth for transform; no React state updates during drag
   const scaleRef     = useRef(1)
   const offsetRef    = useRef({ x: 0, y: 0 })
   const draggingRef  = useRef(false)
@@ -17,14 +17,14 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
   const containerRef = useRef(null)
   const imgRef       = useRef(null)
 
-  // Write transform directly to DOM — zero React overhead
+  // Write transform directly to DOM â€” zero React overhead
   const applyTransform = useCallback((s, ox, oy) => {
     if (imgRef.current) {
       imgRef.current.style.transform = `scale(${s}) translate(${ox}px, ${oy}px)`
     }
   }, [])
 
-  // Sync scale state → DOM + reset offset when back to 1×
+  // Sync scale state â†’ DOM + reset offset when back to 1Ã—
   useEffect(() => {
     scaleRef.current = scale
     if (scale <= MIN_SCALE) offsetRef.current = { x: 0, y: 0 }
@@ -38,7 +38,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
     return () => window.removeEventListener('keydown', h)
   }, [onClose])
 
-  // Scroll-to-zoom — fully imperative, no setState during wheel
+  // Scroll-to-zoom â€” fully imperative, no setState during wheel
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
@@ -105,7 +105,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
       className="fixed inset-0 z-[9999] flex flex-col"
       style={{ background: 'rgba(3,7,18,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', willChange: 'opacity' }}
     >
-      {/* ── Top bar ── */}
+      {/* â”€â”€ Top bar â”€â”€ */}
       <div
         className="flex items-center justify-between px-6 py-4 shrink-0"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(10,8,18,0.98)' }}
@@ -122,11 +122,11 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
           style={{ color: 'rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.07)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}
           aria-label="Close"
         >
-          <span className="material-symbols-rounded text-base">close</span>
+          <span aria-hidden="true" className="material-symbols-rounded text-base">close</span>
         </button>
       </div>
 
-      {/* ── Image canvas ── */}
+      {/* â”€â”€ Image canvas â”€â”€ */}
       <div
         ref={containerRef}
         className="relative flex-1 overflow-hidden flex items-center justify-center select-none"
@@ -153,7 +153,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
           }}
         />
 
-        {/* ── Floating vertical button group ── */}
+        {/* â”€â”€ Floating vertical button group â”€â”€ */}
         <div
           className="absolute right-4 bottom-4 flex flex-col overflow-hidden"
           style={{ background: '#17100a', border: '1px solid #281c10', borderRadius: 'var(--radius)' }}
@@ -165,7 +165,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
             style={{ color: scale >= MAX_SCALE ? '#444' : 'var(--text-primary)' }}
             aria-label="Zoom in"
           >
-            <span className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>add</span>
+            <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>add</span>
           </button>
 
           <div style={{ height: '1px', background: '#281c10' }} />
@@ -177,7 +177,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
             style={{ color: scale <= MIN_SCALE ? '#444' : 'var(--text-primary)' }}
             aria-label="Zoom out"
           >
-            <span className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>remove</span>
+            <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>remove</span>
           </button>
 
           <div style={{ height: '1px', background: '#281c10' }} />
@@ -188,7 +188,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
             style={{ color: scale > 1 ? '#58b8e0' : 'var(--text-muted)' }}
             aria-label="Fit to screen"
           >
-            <span className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>fit_screen</span>
+            <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>fit_screen</span>
           </button>
         </div>
 

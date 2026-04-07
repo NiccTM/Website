@@ -39,7 +39,7 @@ function ProjectCard({ project, index }) {
             className="opacity-40 group-hover:opacity-100 transition-opacity duration-200 shrink-0"
             style={{ color: 'var(--accent)' }}
           >
-            <span className="material-symbols-rounded text-base">open_in_new</span>
+            <span aria-hidden="true" className="material-symbols-rounded text-base">open_in_new</span>
           </a>
         )}
       </div>

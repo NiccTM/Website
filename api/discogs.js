@@ -45,7 +45,7 @@ export default async function handler(req, res) {
       id:          r.id,
       artist:      r.basic_information?.artists?.[0]?.name ?? 'Unknown Artist',
       title:       r.basic_information?.title ?? 'Unknown Title',
-      year:        r.basic_information?.year ?? null,
+      year:        r.basic_information?.year || null,
       cover_image: r.basic_information?.cover_image ?? null,
     }))
 

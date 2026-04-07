@@ -23,7 +23,7 @@ export default function SocialLinks() {
           className="flex items-center gap-1.5 font-mono text-xs transition-colors duration-200"
           style={{ color: 'var(--text-muted)' }}
         >
-          <span className="material-symbols-rounded text-lg">{link.icon}</span>
+          <span aria-hidden="true" className="material-symbols-rounded text-lg">{link.icon}</span>
           <span>{link.label}</span>
         </motion.a>
       ))}

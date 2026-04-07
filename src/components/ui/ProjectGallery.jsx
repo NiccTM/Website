@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { projects } from '../../data/config'
 import ProjectModal from './ProjectModal'
 
-// ─── Card-level hero images keyed by project id ───────────────────────────────
+// â”€â”€â”€ Card-level hero images keyed by project id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PROJECT_IMAGES = {
   'bldc-motor':       '/motor-proto.jpg',
   'water-contact':    '/Water_Sense_AerospaceTeam_PCB.jpg',
@@ -49,7 +49,7 @@ function ProjectAward({ award }) {
         WebkitBackdropFilter: 'blur(10px)',
       }}
     >
-      <span className="material-symbols-rounded" style={{ fontSize: '0.875rem' }}>{style.icon}</span>
+      <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '0.875rem' }}>{style.icon}</span>
       {award.label}
     </span>
   )
@@ -77,7 +77,7 @@ function ProjectCard({ project, index, onExpand }) {
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(0,229,255,0.35)' }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
     >
-      {/* ── Image area ── */}
+      {/* â”€â”€ Image area â”€â”€ */}
       <div className="relative overflow-hidden" style={{ paddingTop: '62%' }}>
         {displayImage ? (
           // card-img class receives CSS transform via .card-hover-scale:hover .card-img
@@ -92,14 +92,14 @@ function ProjectCard({ project, index, onExpand }) {
             style={{ background: CATEGORY_GRADIENTS[project.category] ?? CATEGORY_GRADIENTS.practice }}
           >
             <div className="absolute inset-0 flex items-center justify-center opacity-10">
-              <span className="material-symbols-rounded" style={{ fontSize: '5rem', color: '#fff' }}>
+              <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '5rem', color: '#fff' }}>
                 {project.icon ?? (project.category === 'competitive' ? 'emoji_events' : project.category === 'software' ? 'code' : 'gavel')}
               </span>
             </div>
           </div>
         )}
 
-        {/* Specs overlay — CSS-driven slide-up on hover, always visible on touch */}
+        {/* Specs overlay â€” CSS-driven slide-up on hover, always visible on touch */}
         <div
           className="hover-overlay absolute inset-x-0 bottom-0"
           style={{
@@ -130,7 +130,7 @@ function ProjectCard({ project, index, onExpand }) {
           </div>
         )}
 
-        {/* Expand icon — always visible on touch, hover-shown on desktop */}
+        {/* Expand icon â€” always visible on touch, hover-shown on desktop */}
         {hasDetails && (
           <div className="absolute top-3 right-3">
             <span
@@ -150,7 +150,7 @@ function ProjectCard({ project, index, onExpand }) {
         )}
       </div>
 
-      {/* ── Info area ── */}
+      {/* â”€â”€ Info area â”€â”€ */}
       <div className="flex flex-col gap-2 p-4">
         {project.course && (
           <p className="font-mono-data" style={{ color: 'var(--text-muted)' }}>
@@ -188,7 +188,7 @@ function SectionHeading({ label, icon, index }) {
       transition={{ duration: 0.3, delay: index * 0.05 }}
       className="flex items-center gap-3 mb-6"
     >
-      <span className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{icon}</span>
+      <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{icon}</span>
       <h2
         className="font-display font-bold"
         style={{ color: 'var(--text-primary)', fontSize: 'clamp(1.35rem, 1.1rem + 0.8vw, 2rem)' }}

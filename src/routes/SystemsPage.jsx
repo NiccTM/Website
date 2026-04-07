@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react'
+import { usePageMeta } from '../hooks/usePageMeta'
 import ErrorBoundary from '../components/ui/ErrorBoundary'
 
 const EcoSortDemo = lazy(() => import('../components/ml/EcoSortDemo'))
@@ -12,6 +13,7 @@ function SectionFallback() {
 }
 
 export default function SystemsPage() {
+  usePageMeta('Systems', 'EcoSort — a real-time ML waste classification system using computer vision and Roboflow, built for sustainable sorting at scale.')
   return (
     <>
       <ErrorBoundary label="EcoSort ML Demo">

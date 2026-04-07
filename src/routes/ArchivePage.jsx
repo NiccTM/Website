@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react'
+import { usePageMeta } from '../hooks/usePageMeta'
 import ErrorBoundary      from '../components/ui/ErrorBoundary'
 import HardwareDiagnostics from '../components/hardware/HardwareDiagnostics'
 import ArchiveModules      from '../components/hardware/ArchiveModules'
@@ -14,6 +15,7 @@ function SectionFallback() {
 const VinylArchive = lazy(() => import('../components/audio/VinylArchive'))
 
 export default function ArchivePage() {
+  usePageMeta('Archive', 'Vinyl record collection, hardware diagnostics, and audio archive — a living record of gear, music, and engineering reference material.')
   return (
     <>
       <HardwareDiagnostics />

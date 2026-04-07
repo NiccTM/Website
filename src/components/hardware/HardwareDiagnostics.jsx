@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { hardwareDiagnostics } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 
-// ─── Data-decode scramble (same logic as ProjectGallery) ─────────────────────
+// â”€â”€â”€ Data-decode scramble (same logic as ProjectGallery) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SCRAMBLE_CHARS = '0123456789ABCDEF#&%$@!?<>[]{}|'
 function useScramble(text, active) {
   const [display, setDisplay] = useState(text)
@@ -29,7 +29,7 @@ function useScramble(text, active) {
   return display
 }
 
-// ─── Image card ───────────────────────────────────────────────────────────────
+// â”€â”€â”€ Image card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function DiagnosticImage({ image, index }) {
   const [hovered,  setHovered]  = useState(false)
   const [lightbox, setLightbox] = useState(false)
@@ -73,7 +73,7 @@ function DiagnosticImage({ image, index }) {
           className="absolute top-2 right-2 transition-opacity duration-200"
           style={{ opacity: hovered ? 1 : 0 }}
         >
-          <span className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>zoom_in</span>
+          <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>zoom_in</span>
         </div>
       </motion.div>
 
@@ -84,7 +84,7 @@ function DiagnosticImage({ image, index }) {
   )
 }
 
-// ─── Category section ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Category section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CategorySection({ category, sectionIndex }) {
   return (
     <div className="mb-8">
@@ -97,7 +97,7 @@ function CategorySection({ category, sectionIndex }) {
       >
         {category.icon === '_sacd'
           ? <span className="font-mono-data text-sm font-bold leading-none" style={{ color: 'var(--accent)', letterSpacing: '0.05em' }}>SACD</span>
-          : <span className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{category.icon}</span>
+          : <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{category.icon}</span>
         }
         <span className="font-mono-data text-sm tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
           {category.label}
@@ -115,7 +115,7 @@ function CategorySection({ category, sectionIndex }) {
   )
 }
 
-// ─── Main export ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HardwareDiagnostics() {
   const [hovered, setHovered] = useState(false)
   const scrambled = useScramble(hardwareDiagnostics.title, hovered)
@@ -147,7 +147,7 @@ export default function HardwareDiagnostics() {
           className="flex items-center gap-2 px-3 py-1.5"
           style={{ background: 'rgba(58,143,204,0.08)', border: '1px solid rgba(58,143,204,0.3)', borderRadius: 'var(--radius)' }}
         >
-          <span className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>build_circle</span>
+          <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>build_circle</span>
           <span className="font-mono-data text-sm" style={{ color: 'var(--accent)' }}>{hardwareDiagnostics.spec}</span>
         </div>
       </div>

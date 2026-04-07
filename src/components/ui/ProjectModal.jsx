@@ -39,7 +39,7 @@ function SubSystemSection({ sys }) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-2">
-        <span className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{sys.icon}</span>
+        <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{sys.icon}</span>
         <p className="font-mono-data text-xs tracking-widest uppercase" style={{ color: 'var(--accent)' }}>{sys.title}</p>
         <div className="flex-1 h-px ml-1" style={{ background: 'var(--border)' }} />
       </div>
@@ -111,7 +111,7 @@ export default function ProjectModal({ project, onClose }) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ── Header ── */}
+        {/* â”€â”€ Header â”€â”€ */}
         <div
           className="flex items-start justify-between gap-4 px-6 pt-6 pb-4"
           style={{ borderBottom: '1px solid var(--border)' }}
@@ -135,7 +135,7 @@ export default function ProjectModal({ project, onClose }) {
                       className="inline-flex items-center gap-1 font-mono-data px-2 py-0.5 text-xs border"
                       style={{ background: s.bg, borderColor: s.border, color: s.text, borderRadius: '8px' }}
                     >
-                      <span className="material-symbols-rounded" style={{ fontSize: '0.875rem' }}>{s.icon}</span>
+                      <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '0.875rem' }}>{s.icon}</span>
                       {award.label}
                     </span>
                   )
@@ -149,11 +149,11 @@ export default function ProjectModal({ project, onClose }) {
             style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
             aria-label="Close"
           >
-            <span className="material-symbols-rounded text-base">close</span>
+            <span aria-hidden="true" className="material-symbols-rounded text-base">close</span>
           </button>
         </div>
 
-        {/* ── Scrollable body ── */}
+        {/* â”€â”€ Scrollable body â”€â”€ */}
         <div className="overflow-y-auto flex-1 px-6 py-5 flex flex-col gap-6">
 
           {/* Description */}
@@ -221,7 +221,7 @@ export default function ProjectModal({ project, onClose }) {
           </div>
         </div>
 
-        {/* ── Footer links ── */}
+        {/* â”€â”€ Footer links â”€â”€ */}
         {(links.length > 0 || project.github) && (
           <div
             className="flex flex-wrap gap-3 px-6 py-4"
@@ -237,7 +237,7 @@ export default function ProjectModal({ project, onClose }) {
                     className="flex items-center gap-1.5 font-mono-data text-sm px-3 py-2 rounded-lg transition-colors duration-150"
                     style={{ color: 'var(--accent)', background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
                   >
-                    <span className="material-symbols-rounded text-sm">{icon ?? 'open_in_new'}</span>
+                    <span aria-hidden="true" className="material-symbols-rounded text-sm">{icon ?? 'open_in_new'}</span>
                     {label}
                   </a>
                 ))
@@ -249,7 +249,7 @@ export default function ProjectModal({ project, onClose }) {
                     className="flex items-center gap-1.5 font-mono-data text-sm px-3 py-2 rounded-lg transition-colors duration-150"
                     style={{ color: 'var(--accent)', background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
                   >
-                    <span className="material-symbols-rounded text-sm">open_in_new</span>
+                    <span aria-hidden="true" className="material-symbols-rounded text-sm">open_in_new</span>
                     GitHub
                   </a>
                 )}
