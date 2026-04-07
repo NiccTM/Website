@@ -3,35 +3,35 @@ import { usePageMeta } from '../hooks/usePageMeta'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 
-// â”€â”€â”€ All photos from /public/Remastered Photos/ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── All photos from /public/Remastered Photos/ ───────────────────────────────
 const PHOTOS = [
   { src: '/Remastered Photos/Northern Lights.jpg',                    caption: 'Northern Lights' },
   { src: '/Remastered Photos/Kelowna Night Sky.jpg',                  caption: 'Kelowna Night Sky' },
   { src: '/Remastered Photos/Yellow Rolling Clouds.jpg',              caption: 'Yellow Rolling Clouds' },
-  { src: '/Remastered Photos/Kelwona Blue & Orange Sky.jpg',          caption: 'Blue & Orange Sky â€” Kelowna' },
-  { src: '/Remastered Photos/Kelwona Blue & Orange Sky Part 2.jpg',   caption: 'Blue & Orange Sky II â€” Kelowna' },
+  { src: '/Remastered Photos/Kelwona Blue & Orange Sky.jpg',          caption: 'Blue & Orange Sky — Kelowna' },
+  { src: '/Remastered Photos/Kelwona Blue & Orange Sky Part 2.jpg',   caption: 'Blue & Orange Sky II — Kelowna' },
   { src: '/Remastered Photos/Kelowna Mountains.jpg',                  caption: 'Kelowna Mountains' },
   { src: '/Remastered Photos/Ottawa Night.jpg',                       caption: 'Ottawa Night' },
   { src: '/Remastered Photos/Clouds from Above.jpg',                  caption: 'Clouds from Above' },
   { src: '/Remastered Photos/Clouds from Airplane 1.jpg',             caption: 'Clouds from Airplane' },
   { src: '/Remastered Photos/Clouds.jpg',                             caption: 'Clouds' },
-  { src: '/Remastered Photos/Kelwona Pink Sky.jpg',                   caption: 'Pink Sky â€” Kelowna' },
-  { src: '/Remastered Photos/Kelwona Forest.jpg',                     caption: 'Forest â€” Kelowna' },
+  { src: '/Remastered Photos/Kelwona Pink Sky.jpg',                   caption: 'Pink Sky — Kelowna' },
+  { src: '/Remastered Photos/Kelwona Forest.jpg',                     caption: 'Forest — Kelowna' },
   { src: '/Remastered Photos/Kelowna Beach Photo 1.jpg',              caption: 'Kelowna Beach' },
-  { src: '/Remastered Photos/Kelowna Boat on Water.jpg',              caption: 'Boat on Water â€” Kelowna' },
+  { src: '/Remastered Photos/Kelowna Boat on Water.jpg',              caption: 'Boat on Water — Kelowna' },
   { src: '/Remastered Photos/Kelowna Falls.jpg',                      caption: 'Kelowna Falls' },
   { src: '/Remastered Photos/Kelowna Helicopter.jpg',                 caption: 'Kelowna Helicopter' },
   { src: '/Remastered Photos/Kelowna Water.jpg',                      caption: 'Kelowna Water' },
   { src: '/Remastered Photos/Kelowna Waterfall.jpg',                  caption: 'Kelowna Waterfall' },
-  { src: '/Remastered Photos/Kelwona Trail.jpg',                      caption: 'Trail â€” Kelowna' },
-  { src: '/Remastered Photos/Little River Kelowna.jpg',               caption: 'Little River â€” Kelowna' },
+  { src: '/Remastered Photos/Kelwona Trail.jpg',                      caption: 'Trail — Kelowna' },
+  { src: '/Remastered Photos/Little River Kelowna.jpg',               caption: 'Little River — Kelowna' },
   { src: '/Remastered Photos/Fox Kit Behind Pot.jpg',                 caption: 'Fox Kit' },
   { src: '/Remastered Photos/Kit Fox in Cliffside.jpg',              caption: 'Kit Fox in Cliffside' },
   { src: '/Remastered Photos/Mother Fox Looking Left.jpg',            caption: 'Mother Fox' },
   { src: '/Remastered Photos/Mother Fox on Pier.jpg',                 caption: 'Mother Fox on Pier' },
   { src: '/Remastered Photos/American Dipper.jpg',                    caption: 'American Dipper' },
   { src: '/Remastered Photos/Bee in Flower.jpg',                      caption: 'Bee in Flower' },
-  { src: '/Remastered Photos/Bird on Branch Borckville.jpg',          caption: 'Bird on Branch â€” Brockville' },
+  { src: '/Remastered Photos/Bird on Branch Borckville.jpg',          caption: 'Bird on Branch — Brockville' },
   { src: '/Remastered Photos/Blackbird in Tree.jpg',                  caption: 'Blackbird in Tree' },
   { src: '/Remastered Photos/Blue Berries on Trail.jpg',              caption: 'Blue Berries on Trail' },
   { src: '/Remastered Photos/Bunny with Glimmer in Eye.jpg',          caption: 'Bunny' },
@@ -44,27 +44,27 @@ const PHOTOS = [
   { src: '/Remastered Photos/Wooden Bridge.jpg',                      caption: 'Wooden Bridge' },
   { src: '/Remastered Photos/Pallet Fire.jpg',                        caption: 'Pallet Fire' },
   { src: '/Remastered Photos/Academy Road.jpg',                       caption: 'Academy Road' },
-  { src: '/Remastered Photos/Canadian Parliament Building 1.jpg',     caption: 'Parliament â€” Ottawa' },
-  { src: '/Remastered Photos/Canadian Parliament Building 2.jpg',     caption: 'Parliament II â€” Ottawa' },
-  { src: '/Remastered Photos/Canadian Parliament Building 3.jpg',     caption: 'Parliament III â€” Ottawa' },
-  { src: '/Remastered Photos/Full View Ottawa Parliament.jpg',        caption: 'Full View â€” Ottawa Parliament' },
+  { src: '/Remastered Photos/Canadian Parliament Building 1.jpg',     caption: 'Parliament — Ottawa' },
+  { src: '/Remastered Photos/Canadian Parliament Building 2.jpg',     caption: 'Parliament II — Ottawa' },
+  { src: '/Remastered Photos/Canadian Parliament Building 3.jpg',     caption: 'Parliament III — Ottawa' },
+  { src: '/Remastered Photos/Full View Ottawa Parliament.jpg',        caption: 'Full View — Ottawa Parliament' },
   { src: '/Remastered Photos/Ottawa Canel.jpg',                       caption: 'Ottawa Canal' },
   { src: '/Remastered Photos/Charleston Lake with Man Fishing.jpg',   caption: 'Charleston Lake' },
-  { src: '/Remastered Photos/Little River Brockville.jpg',            caption: 'Little River â€” Brockville' },
+  { src: '/Remastered Photos/Little River Brockville.jpg',            caption: 'Little River — Brockville' },
   { src: '/Remastered Photos/Little River Brockville from Pier.jpg',  caption: 'Little River from Pier' },
-  { src: '/Remastered Photos/St Lawerence Island with Cross.jpg',     caption: 'St. Lawrence â€” Island & Cross' },
-  { src: '/Remastered Photos/St Lawerence Lily Bay.jpg',              caption: 'St. Lawrence â€” Lily Bay' },
+  { src: '/Remastered Photos/St Lawerence Island with Cross.jpg',     caption: 'St. Lawrence — Island & Cross' },
+  { src: '/Remastered Photos/St Lawerence Lily Bay.jpg',              caption: 'St. Lawrence — Lily Bay' },
   { src: '/Remastered Photos/St Lawerence River with Ship in Background.jpg', caption: 'St. Lawrence River' },
-  { src: '/Remastered Photos/St Lawerence with Stanley Boat.jpg',     caption: 'St. Lawrence â€” Stanley Boat' },
+  { src: '/Remastered Photos/St Lawerence with Stanley Boat.jpg',     caption: 'St. Lawrence — Stanley Boat' },
   { src: '/Remastered Photos/Small Town from Above.jpg',              caption: 'Small Town from Above' },
-  { src: '/Remastered Photos/Waterfall Chute Luke.jpg',               caption: 'Waterfall â€” Chute Luke' },
+  { src: '/Remastered Photos/Waterfall Chute Luke.jpg',               caption: 'Waterfall — Chute Luke' },
   { src: '/Remastered Photos/Waterfall into Pond Chute Luke.jpg',     caption: 'Waterfall into Pond' },
 ]
 
 const MIN_SCALE = 1
 const MAX_SCALE = 5
 
-// â”€â”€â”€ Lightbox â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Lightbox ─────────────────────────────────────────────────────────────────
 function Lightbox({ idx, onClose, onGo }) {
   const photo    = PHOTOS[idx]
   const canPrev  = idx > 0
@@ -97,7 +97,7 @@ function Lightbox({ idx, onClose, onGo }) {
     setScale(1)
   }, [idx, applyTransform])
 
-  // Keyboard: â†/â†’ nav, Esc close
+  // Keyboard: â†/→ nav, Esc close
   useEffect(() => {
     const h = (e) => {
       if (e.key === 'Escape')      onClose()
@@ -207,7 +207,7 @@ function Lightbox({ idx, onClose, onGo }) {
       className="fixed inset-0 z-[9999] flex flex-col"
       style={{ background: 'rgba(5,4,10,0.97)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
     >
-      {/* â”€â”€ Top bar â”€â”€ */}
+      {/* ── Top bar ── */}
       <div
         className="flex items-center justify-between px-5 py-2.5 shrink-0"
         style={{ borderBottom: '1px solid rgba(180,140,255,0.1)', background: 'rgba(12,8,20,0.96)' }}
@@ -243,7 +243,7 @@ function Lightbox({ idx, onClose, onGo }) {
         </div>
       </div>
 
-      {/* â”€â”€ Image canvas â”€â”€ */}
+      {/* ── Image canvas ── */}
       <div
         ref={containerRef}
         className="relative flex-1 overflow-hidden flex items-center justify-center select-none"
@@ -273,7 +273,7 @@ function Lightbox({ idx, onClose, onGo }) {
           }}
         />
 
-        {/* â”€â”€ Prev arrow â”€â”€ */}
+        {/* ── Prev arrow ── */}
         {canPrev && (
           <button
             onClick={() => onGo(idx - 1)}
@@ -285,7 +285,7 @@ function Lightbox({ idx, onClose, onGo }) {
           </button>
         )}
 
-        {/* â”€â”€ Next arrow â”€â”€ */}
+        {/* ── Next arrow ── */}
         {canNext && (
           <button
             onClick={() => onGo(idx + 1)}
@@ -297,7 +297,7 @@ function Lightbox({ idx, onClose, onGo }) {
           </button>
         )}
 
-        {/* â”€â”€ Zoom controls (vertical pill, bottom-right) â”€â”€ */}
+        {/* ── Zoom controls (vertical pill, bottom-right) ── */}
         <div
           className="absolute right-4 bottom-14 flex flex-col overflow-hidden"
           style={{ background: 'rgba(12,8,20,0.88)', border: '1px solid rgba(180,140,255,0.18)', borderRadius: 'var(--radius)' }}
@@ -364,7 +364,7 @@ function Lightbox({ idx, onClose, onGo }) {
   )
 }
 
-// â”€â”€â”€ Masonry grid item â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Masonry grid item ────────────────────────────────────────────────────────
 function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
   const [loaded, setLoaded] = useState(false)
 
@@ -407,9 +407,9 @@ function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
   )
 }
 
-// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function PhotographyPage() {
-  usePageMeta('Photography', 'A personal photography portfolio featuring landscapes, night skies, and travel photography across Canada â€” captured and remastered by Nic Piraino.')
+  usePageMeta('Photography', 'A personal photography portfolio featuring landscapes, night skies, and travel photography across Canada — captured and remastered by Nic Piraino.')
   const [lightboxIdx, setLightboxIdx] = useState(-1)
 
   const col1 = PHOTOS.filter((_, i) => i % 4 === 0)
@@ -427,7 +427,7 @@ export default function PhotographyPage() {
         className="font-mono-data tracking-[0.18em] uppercase mb-4"
         style={{ color: 'var(--accent)', fontSize: '0.875rem' }}
       >
-        Kelowna Â· Ottawa Â· Brockville
+        Kelowna · Ottawa · Brockville
       </motion.p>
       <motion.h1
         initial={{ opacity: 0, y: 10 }}

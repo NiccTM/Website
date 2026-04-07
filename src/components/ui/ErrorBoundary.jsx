@@ -2,9 +2,9 @@ import { Component } from 'react'
 
 /**
  * Props:
- *   silent   â€” render nothing on error (for background WebGL canvases)
- *   fallback â€” React node or render-prop fn(error, reset) for custom UI
- *   label    â€” section name shown in the default error UI (e.g. "Vinyl Archive")
+ *   silent   — render nothing on error (for background WebGL canvases)
+ *   fallback — React node or render-prop fn(error, reset) for custom UI
+ *   label    — section name shown in the default error UI (e.g. "Vinyl Archive")
  */
 export default class ErrorBoundary extends Component {
   constructor(props) {

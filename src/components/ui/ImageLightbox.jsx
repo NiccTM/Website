@@ -9,7 +9,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
   const [scale,    setScale]    = useState(1)
   const [dragging, setDragging] = useState(false)
 
-  // Refs â€” single source of truth for transform; no React state updates during drag
+  // Refs — single source of truth for transform; no React state updates during drag
   const scaleRef     = useRef(1)
   const offsetRef    = useRef({ x: 0, y: 0 })
   const draggingRef  = useRef(false)
@@ -17,14 +17,14 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
   const containerRef = useRef(null)
   const imgRef       = useRef(null)
 
-  // Write transform directly to DOM â€” zero React overhead
+  // Write transform directly to DOM — zero React overhead
   const applyTransform = useCallback((s, ox, oy) => {
     if (imgRef.current) {
       imgRef.current.style.transform = `scale(${s}) translate(${ox}px, ${oy}px)`
     }
   }, [])
 
-  // Sync scale state â†’ DOM + reset offset when back to 1Ã—
+  // Sync scale state → DOM + reset offset when back to 1Ã—
   useEffect(() => {
     scaleRef.current = scale
     if (scale <= MIN_SCALE) offsetRef.current = { x: 0, y: 0 }
@@ -38,7 +38,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
     return () => window.removeEventListener('keydown', h)
   }, [onClose])
 
-  // Scroll-to-zoom â€” fully imperative, no setState during wheel
+  // Scroll-to-zoom — fully imperative, no setState during wheel
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
@@ -105,7 +105,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
       className="fixed inset-0 z-[9999] flex flex-col"
       style={{ background: 'rgba(3,7,18,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', willChange: 'opacity' }}
     >
-      {/* â”€â”€ Top bar â”€â”€ */}
+      {/* ── Top bar ── */}
       <div
         className="flex items-center justify-between px-6 py-4 shrink-0"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(10,8,18,0.98)' }}
@@ -126,7 +126,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
         </button>
       </div>
 
-      {/* â”€â”€ Image canvas â”€â”€ */}
+      {/* ── Image canvas ── */}
       <div
         ref={containerRef}
         className="relative flex-1 overflow-hidden flex items-center justify-center select-none"
@@ -153,7 +153,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
           }}
         />
 
-        {/* â”€â”€ Floating vertical button group â”€â”€ */}
+        {/* ── Floating vertical button group ── */}
         <div
           className="absolute right-4 bottom-4 flex flex-col overflow-hidden"
           style={{ background: '#17100a', border: '1px solid #281c10', borderRadius: 'var(--radius)' }}

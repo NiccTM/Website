@@ -3,24 +3,24 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { useAppStore } from '../../store/useAppStore'
 
-// â”€â”€â”€ Image manifest â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Image manifest ───────────────────────────────────────────────────────────
 // Files confirmed in /public/ (all .png)
 export const REFERENCE_IMAGES = [
   {
     src:     '/Screenshot 2026-03-31 125242.png',
     label:   '3D Assembly View',
-    caption: 'Top-side component render â€” Heartbeat Hotel Rev. A',
+    caption: 'Top-side component render — Heartbeat Hotel Rev. A',
     view:    'isometric',
   },
   {
     src:     '/Screenshot 2026-03-31 125305.png',
     label:   'Bottom Trace',
-    caption: 'Rear copper layer â€” trace routing and via connections',
+    caption: 'Rear copper layer — trace routing and via connections',
     view:    'bottom',
   },
 ]
 
-// â”€â”€â”€ Lightbox â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Lightbox ─────────────────────────────────────────────────────────────────
 function Lightbox({ image, onClose }) {
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose() }
@@ -72,7 +72,7 @@ function Lightbox({ image, onClose }) {
   )
 }
 
-// â”€â”€â”€ Gallery â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Gallery ──────────────────────────────────────────────────────────────────
 export default function ReferenceGallery({ onSyncView }) {
   const [lightbox, setLightbox] = useState(null)
 
@@ -127,7 +127,7 @@ export default function ReferenceGallery({ onSyncView }) {
               }}
             />
 
-            {/* Hover overlay â€” zoom icon */}
+            {/* Hover overlay — zoom icon */}
             <div
               className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150"
               style={{ background: 'rgba(3,7,18,0.45)' }}

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { hardwareDiagnostics } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 
-// â”€â”€â”€ Data-decode scramble (same logic as ProjectGallery) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Data-decode scramble (same logic as ProjectGallery) ─────────────────────
 const SCRAMBLE_CHARS = '0123456789ABCDEF#&%$@!?<>[]{}|'
 function useScramble(text, active) {
   const [display, setDisplay] = useState(text)
@@ -29,7 +29,7 @@ function useScramble(text, active) {
   return display
 }
 
-// â”€â”€â”€ Image card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Image card ───────────────────────────────────────────────────────────────
 function DiagnosticImage({ image, index }) {
   const [hovered,  setHovered]  = useState(false)
   const [lightbox, setLightbox] = useState(false)
@@ -84,7 +84,7 @@ function DiagnosticImage({ image, index }) {
   )
 }
 
-// â”€â”€â”€ Category section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Category section ─────────────────────────────────────────────────────────
 function CategorySection({ category, sectionIndex }) {
   return (
     <div className="mb-8">
@@ -115,7 +115,7 @@ function CategorySection({ category, sectionIndex }) {
   )
 }
 
-// â”€â”€â”€ Main export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main export ──────────────────────────────────────────────────────────────
 export default function HardwareDiagnostics() {
   const [hovered, setHovered] = useState(false)
   const scrambled = useScramble(hardwareDiagnostics.title, hovered)
