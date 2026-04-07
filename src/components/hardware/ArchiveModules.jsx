@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { archiveData } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 
-// ─── Data-decode scramble ─────────────────────────────────────────────────────
+// â”€â”€â”€ Data-decode scramble â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SCRAMBLE_CHARS = '0123456789ABCDEF#&%$@!?<>[]{}|'
 function useScramble(text, active) {
   const [display, setDisplay] = useState(text)
@@ -29,7 +29,7 @@ function useScramble(text, active) {
   return display
 }
 
-// ─── Image card ───────────────────────────────────────────────────────────────
+// â”€â”€â”€ Image card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ArchiveImage({ image, index }) {
   const [hovered,  setHovered]  = useState(false)
   const [lightbox, setLightbox] = useState(false)
@@ -70,7 +70,7 @@ function ArchiveImage({ image, index }) {
           <p className="font-mono-data mt-0.5" style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.875rem' }}>{image.caption}</p>
         </div>
         <div className="absolute top-2 right-2 transition-opacity duration-200" style={{ opacity: hovered ? 1 : 0 }}>
-          <span className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>zoom_in</span>
+          <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>zoom_in</span>
         </div>
       </motion.div>
 
@@ -81,7 +81,7 @@ function ArchiveImage({ image, index }) {
   )
 }
 
-// ─── Module card ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Module card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ArchiveModule({ mod, moduleIndex }) {
   const [hovered, setHovered] = useState(false)
   const scrambled = useScramble(mod.title, hovered)
@@ -96,7 +96,7 @@ function ArchiveModule({ mod, moduleIndex }) {
     >
       {/* Module header */}
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <span className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{mod.icon}</span>
+        <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{mod.icon}</span>
         <h2
           className="font-mono-data text-base tracking-widest uppercase cursor-default"
           style={{ color: 'var(--accent)' }}
@@ -122,7 +122,7 @@ function ArchiveModule({ mod, moduleIndex }) {
   )
 }
 
-// ─── Main export ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function ArchiveModules() {
   return (
     <section className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">

@@ -3,24 +3,24 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { useAppStore } from '../../store/useAppStore'
 
-// ─── Image manifest ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Image manifest â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Files confirmed in /public/ (all .png)
 export const REFERENCE_IMAGES = [
   {
     src:     '/Screenshot 2026-03-31 125242.png',
     label:   '3D Assembly View',
-    caption: 'Top-side component render — Heartbeat Hotel Rev. A',
+    caption: 'Top-side component render â€” Heartbeat Hotel Rev. A',
     view:    'isometric',
   },
   {
     src:     '/Screenshot 2026-03-31 125305.png',
     label:   'Bottom Trace',
-    caption: 'Rear copper layer — trace routing and via connections',
+    caption: 'Rear copper layer â€” trace routing and via connections',
     view:    'bottom',
   },
 ]
 
-// ─── Lightbox ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Lightbox â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Lightbox({ image, onClose }) {
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose() }
@@ -63,7 +63,7 @@ function Lightbox({ image, onClose }) {
             className="flex items-center gap-1.5 font-mono-data text-sm px-3 py-2 rounded-lg border-subtle"
             style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
           >
-            <span className="material-symbols-rounded text-sm">close</span>ESC
+            <span aria-hidden="true" className="material-symbols-rounded text-sm">close</span>ESC
           </button>
         </div>
       </motion.div>
@@ -72,7 +72,7 @@ function Lightbox({ image, onClose }) {
   )
 }
 
-// ─── Gallery ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Gallery â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function ReferenceGallery({ onSyncView }) {
   const [lightbox, setLightbox] = useState(null)
 
@@ -127,13 +127,13 @@ export default function ReferenceGallery({ onSyncView }) {
               }}
             />
 
-            {/* Hover overlay — zoom icon */}
+            {/* Hover overlay â€” zoom icon */}
             <div
               className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150"
               style={{ background: 'rgba(3,7,18,0.45)' }}
               onClick={(e) => { e.stopPropagation(); setLightbox(img) }}
             >
-              <span className="material-symbols-rounded text-2xl" style={{ color: 'var(--accent)' }}>zoom_in</span>
+              <span aria-hidden="true" className="material-symbols-rounded text-2xl" style={{ color: 'var(--accent)' }}>zoom_in</span>
             </div>
 
             {/* Label */}
@@ -156,7 +156,7 @@ export default function ReferenceGallery({ onSyncView }) {
             {/* Sync badge */}
             {img.view && (
               <div className="absolute top-2 left-2">
-                <span className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)', opacity: 0.7 }}>
+                <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)', opacity: 0.7 }}>
                   sync
                 </span>
               </div>

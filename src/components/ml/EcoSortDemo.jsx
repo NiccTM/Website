@@ -11,8 +11,8 @@ const CONF_THRESHOLD  = 0.65   // display filter (production default)
 const INFER_CONF      = 65     // sent to Roboflow
 const INFER_OVERLAP   = 30     // sent to Roboflow
 
-// ── Smart-crop preprocessing ──────────────────────────────────────────────────
-// Center-square crops the upload (uses the shorter dimension), resizes to 640×640,
+// â”€â”€ Smart-crop preprocessing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Center-square crops the upload (uses the shorter dimension), resizes to 640Ã—640,
 // then returns both the encoded frame AND the crop parameters needed to back-map
 // Roboflow's coordinate space onto the original displayed image.
 function preprocessImage(file) {
@@ -48,12 +48,12 @@ function preprocessImage(file) {
   })
 }
 
-// ── Coordinate back-mapping ───────────────────────────────────────────────────
-// Roboflow returns pixel coords in the 640×640 cropped frame.
+// â”€â”€ Coordinate back-mapping â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Roboflow returns pixel coords in the 640Ã—640 cropped frame.
 // This maps them back through the crop to the original image, then scales to
 // however wide the <img> element is rendered in the browser.
 //
-//   RF (640 space) → crop-origin offset → original pixel → display pixel
+//   RF (640 space) â†’ crop-origin offset â†’ original pixel â†’ display pixel
 //
 function mapBox(pred, crop, imgEl) {
   const { origW, origH, cropSx, cropSy, cropSize } = crop
@@ -68,7 +68,7 @@ function mapBox(pred, crop, imgEl) {
   return { left, top, width, height }
 }
 
-// ── Individual bounding box ───────────────────────────────────────────────────
+// â”€â”€ Individual bounding box â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function BoundingBox({ pred, crop, imgEl, confThreshold }) {
   if (!imgEl) return null
   const { left, top, width, height } = mapBox(pred, crop, imgEl)
@@ -114,7 +114,7 @@ function BoundingBox({ pred, crop, imgEl, confThreshold }) {
   )
 }
 
-// ── Terminal-style spinner ─────────────────────────────────────────────────────
+// â”€â”€ Terminal-style spinner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SPINNER_FRAMES = [
   '[ PROCESSING DATA...   ]',
   '[ PROCESSING DATA..  . ]',
@@ -136,13 +136,13 @@ function TerminalSpinner() {
         {SPINNER_FRAMES[frame]}
       </span>
       <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
-        Running Roboflow inference · model v{MODEL_VERSION}
+        Running Roboflow inference Â· model v{MODEL_VERSION}
       </span>
     </div>
   )
 }
 
-// ── Main component ─────────────────────────────────────────────────────────────
+// â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function EcoSortDemo({ sectionId }) {
   const [status, setStatus]         = useState('idle')  // idle | loading | done | error
   const [errorMsg, setErrorMsg]     = useState('')
@@ -162,7 +162,7 @@ export default function EcoSortDemo({ sectionId }) {
   const handleFile = useCallback(async (file) => {
     if (!file) return
     if (!ACCEPTED_TYPES.includes(file.type)) {
-      setErrorMsg('Unsupported format — use JPG, PNG, or WebP.')
+      setErrorMsg('Unsupported format â€” use JPG, PNG, or WebP.')
       setStatus('error'); return
     }
     if (file.size > MAX_BYTES) {
@@ -192,7 +192,7 @@ export default function EcoSortDemo({ sectionId }) {
         const body = await res.json().catch(() => ({}))
         throw new Error(
           body.error ??
-          (res.status === 429 ? 'Rate limit reached — try again later.' : `Server error ${res.status}`)
+          (res.status === 429 ? 'Rate limit reached â€” try again later.' : `Server error ${res.status}`)
         )
       }
 
@@ -202,7 +202,7 @@ export default function EcoSortDemo({ sectionId }) {
       setRawData(data)
       setStatus('done')
 
-      // ── Always log inference to the terminal ──────────────────────────────
+      // â”€â”€ Always log inference to the terminal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const latencyMs    = data.time != null ? (data.time * 1000).toFixed(0) : '?'
       const aboveThresh  = preds.filter((p) => p.confidence >= confThreshold)
       const topLines     = aboveThresh.slice(0, 4).map(
@@ -214,7 +214,7 @@ export default function EcoSortDemo({ sectionId }) {
           `[ INFERENCE: ${preds.length} object(s) found | Latency: ${latencyMs}ms ]`,
           ...(topLines.length > 0
             ? topLines
-            : [`  → 0 detections above ${(confThreshold * 100).toFixed(0)}% · enable Debug Mode`]),
+            : [`  â†’ 0 detections above ${(confThreshold * 100).toFixed(0)}% Â· enable Debug Mode`]),
         ],
       })
     } catch (err) {
@@ -254,10 +254,10 @@ export default function EcoSortDemo({ sectionId }) {
       transition={{ duration: 0.45 }}
       className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
     >
-      {/* ── Header ── */}
+      {/* â”€â”€ Header â”€â”€ */}
       <div className="flex flex-wrap items-start justify-between gap-3 mb-1">
         <h2 className="font-mono-data text-lg tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
-          EcoSort — Waste Classifier
+          EcoSort â€” Waste Classifier
         </h2>
         {status === 'done' && (
           <div className="flex flex-wrap items-center gap-3">
@@ -295,7 +295,7 @@ export default function EcoSortDemo({ sectionId }) {
               }}
               aria-pressed={debugMode}
             >
-              <span className="material-symbols-rounded text-sm">bug_report</span>
+              <span aria-hidden="true" className="material-symbols-rounded text-sm">bug_report</span>
               {debugMode ? 'Debug ON' : 'Debug Mode'}
             </button>
           </div>
@@ -303,17 +303,17 @@ export default function EcoSortDemo({ sectionId }) {
       </div>
 
       <p className="font-mono-data text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
-        Roboflow object detection · CMPE246 · model&nbsp;
+        Roboflow object detection Â· CMPE246 Â· model&nbsp;
         <span style={{ color: 'var(--accent)' }}>{MODEL_ID} v{MODEL_VERSION}</span>
-        &nbsp;· conf&nbsp;<span style={{ color: 'var(--accent)' }}>{INFER_CONF}%</span>
-        &nbsp;· overlap&nbsp;<span style={{ color: 'var(--accent)' }}>{INFER_OVERLAP}%</span>
-        &nbsp;· threshold&nbsp;<span style={{ color: 'var(--accent)' }}>{(confThreshold * 100).toFixed(0)}%</span>
-        &nbsp;· center-crop&nbsp;<span style={{ color: 'var(--accent)' }}>640×640</span>
+        &nbsp;Â· conf&nbsp;<span style={{ color: 'var(--accent)' }}>{INFER_CONF}%</span>
+        &nbsp;Â· overlap&nbsp;<span style={{ color: 'var(--accent)' }}>{INFER_OVERLAP}%</span>
+        &nbsp;Â· threshold&nbsp;<span style={{ color: 'var(--accent)' }}>{(confThreshold * 100).toFixed(0)}%</span>
+        &nbsp;Â· center-crop&nbsp;<span style={{ color: 'var(--accent)' }}>640Ã—640</span>
       </p>
 
       <AnimatePresence mode="wait">
 
-        {/* ── Drop zone ── */}
+        {/* â”€â”€ Drop zone â”€â”€ */}
         {status === 'idle' && (
           <motion.div key="drop"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -322,15 +322,15 @@ export default function EcoSortDemo({ sectionId }) {
             className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed cursor-pointer"
             style={{ height: '220px', borderColor: 'var(--border)', background: 'var(--bg-surface-1)' }}
           >
-            <span className="material-symbols-rounded text-4xl" style={{ color: 'var(--text-muted)' }}>upload_file</span>
+            <span aria-hidden="true" className="material-symbols-rounded text-4xl" style={{ color: 'var(--text-muted)' }}>upload_file</span>
             <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>Drop image or click to browse</span>
-            <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>JPG · PNG · WebP · max 4 MB</span>
+            <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>JPG Â· PNG Â· WebP Â· max 4 MB</span>
             <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp"
               className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
           </motion.div>
         )}
 
-        {/* ── Loading ── */}
+        {/* â”€â”€ Loading â”€â”€ */}
         {status === 'loading' && (
           <motion.div key="loading"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -338,7 +338,7 @@ export default function EcoSortDemo({ sectionId }) {
           </motion.div>
         )}
 
-        {/* ── Error ── */}
+        {/* â”€â”€ Error â”€â”€ */}
         {status === 'error' && (
           <motion.div key="error"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -352,14 +352,14 @@ export default function EcoSortDemo({ sectionId }) {
           </motion.div>
         )}
 
-        {/* ── Result ── */}
+        {/* â”€â”€ Result â”€â”€ */}
         {status === 'done' && (
           <motion.div key="result"
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
             className="flex flex-col gap-4"
           >
-            {/* ── Image + CSS bounding boxes ── */}
+            {/* â”€â”€ Image + CSS bounding boxes â”€â”€ */}
             {/* The image renders at its natural aspect ratio (w-full h-auto).
                 Boxes are absolute-positioned within the same container.
                 Coordinates are mapped from RF 640-space through the crop
@@ -388,7 +388,7 @@ export default function EcoSortDemo({ sectionId }) {
               ))}
             </div>
 
-            {/* ── Prediction table ── */}
+            {/* â”€â”€ Prediction table â”€â”€ */}
             {visiblePreds.length > 0 ? (
               <div className="rounded-xl border-subtle p-4" style={{ background: 'var(--bg-surface-1)' }}>
                 <table className="w-full">
@@ -418,7 +418,7 @@ export default function EcoSortDemo({ sectionId }) {
                 </table>
                 {debugMode && subThreshCount > 0 && (
                   <p className="font-mono-data text-sm mt-2" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>
-                    ↑ {subThreshCount} sub-threshold detection(s) shown (amber boxes)
+                    â†‘ {subThreshCount} sub-threshold detection(s) shown (amber boxes)
                   </p>
                 )}
               </div>
@@ -446,7 +446,7 @@ export default function EcoSortDemo({ sectionId }) {
               onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
               onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
             >
-              <span className="material-symbols-rounded text-sm">refresh</span>
+              <span aria-hidden="true" className="material-symbols-rounded text-sm">refresh</span>
               Classify another
             </button>
           </motion.div>

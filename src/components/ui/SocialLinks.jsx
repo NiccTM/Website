@@ -24,7 +24,7 @@ export default function SocialLinks() {
           onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
           onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
         >
-          <span className="material-symbols-rounded text-lg">{link.icon}</span>
+          <span aria-hidden="true" className="material-symbols-rounded text-lg">{link.icon}</span>
           <span>{link.label}</span>
         </motion.a>
       ))}

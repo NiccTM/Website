@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
+import { usePageMeta } from '../hooks/usePageMeta'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { profile, contact } from '../data/config'
@@ -116,6 +117,7 @@ function SectionFallback() {
 }
 
 export default function HomePage() {
+  usePageMeta(null, 'Nic Piraino — Hardware Engineering & System Design. Embedded systems, PCB design, audio electronics, and full-stack engineering.')
   return (
     <>
       {/* ── Split-screen Hero ──────────────────────────────────────────────── */}

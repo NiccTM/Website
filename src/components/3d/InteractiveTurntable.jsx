@@ -13,31 +13,31 @@ function proxied(url) {
   return `/api/image-proxy?url=${encodeURIComponent(url)}`
 }
 
-// ─── Y-Stack ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Y-Stack â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Plinth top surface : Y = 0.000
 // Record disc base   : Y = 0.002  (group center Y = 0.022)
 // Record top surface : Y = 0.042
 // Label / tonearm    : Y = 0.043
 
-// ─── Tonearm geometry constants ───────────────────────────────────────────────
+// â”€â”€â”€ Tonearm geometry constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Pivot at world (1.72, 0.043, -0.55).
 // Stylus tip in pivot-local space: approx [-1.368, ...] (new longer arm).
 //
-// rotation.y  →  stylus lands on record (recalculated for stylus at local [-1.368, _, 0.018])
-//   1.25 rad  →  parked (R≈1.51, just outside record edge)
-//   1.18 rad  →  outer groove (R≈1.41, near vinyl edge)
-//   0.50 rad  →  inner groove (R≈0.54, near label)
-const TONEARM_REST     = 1.25   // parked angle (rad) — just off the record edge
-const TONEARM_PLAY     = 1.22   // outer groove — drops here first
-const TONEARM_INNER    = 0.62   // inner groove — R≈0.67, stops just outside label edge (R=0.60)
+// rotation.y  â†’  stylus lands on record (recalculated for stylus at local [-1.368, _, 0.018])
+//   1.25 rad  â†’  parked (Râ‰ˆ1.51, just outside record edge)
+//   1.18 rad  â†’  outer groove (Râ‰ˆ1.41, near vinyl edge)
+//   0.50 rad  â†’  inner groove (Râ‰ˆ0.54, near label)
+const TONEARM_REST     = 1.25   // parked angle (rad) â€” just off the record edge
+const TONEARM_PLAY     = 1.22   // outer groove â€” drops here first
+const TONEARM_INNER    = 0.62   // inner groove â€” Râ‰ˆ0.67, stops just outside label edge (R=0.60)
 const RAISE_HEIGHT     = 0.14   // how far pivot lifts when cued up
 const PIVOT_BASE_Y     = 0.110  // pivot Y when playing: stylus tip (local -0.068) lands at vinyl surface Y=0.042
-const TRACKING_SECS    = 120    // seconds to sweep outer → inner (slow, realistic)
+const TRACKING_SECS    = 120    // seconds to sweep outer â†’ inner (slow, realistic)
 
 // Arm state machine
 const ARM = { PARKED: 0, SWINGING: 1, DROPPING: 2, PLAYING: 3 }
 
-// ─── Procedural groove normal map ─────────────────────────────────────────────
+// â”€â”€â”€ Procedural groove normal map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function useGrooveNormalMap(size = 1024, grooves = 200) {
   return useMemo(() => {
     const canvas = document.createElement('canvas')
@@ -65,7 +65,7 @@ function useGrooveNormalMap(size = 1024, grooves = 200) {
   }, [size, grooves])
 }
 
-// ─── Album label ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Album label â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function AlbumLabel({ coverUrl }) {
   const texture = useTexture(coverUrl)
   texture.colorSpace = THREE.SRGBColorSpace
@@ -93,7 +93,7 @@ function PlainLabel() {
   )
 }
 
-// ─── Vinyl disc — anisotropic PBR, RPM-linked rotation ───────────────────────
+// â”€â”€â”€ Vinyl disc â€” anisotropic PBR, RPM-linked rotation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function VinylRecord({ coverUrl }) {
   const groupRef  = useRef()
   const normalMap = useGrooveNormalMap(1024, 200)
@@ -113,7 +113,7 @@ function VinylRecord({ coverUrl }) {
 
   useFrame((_, delta) => {
     if (!groupRef.current) return
-    // rpm → rad/s: (rpm / 60) × 2π
+    // rpm â†’ rad/s: (rpm / 60) Ã— 2Ï€
     groupRef.current.rotation.y += delta * (rpm / 60) * Math.PI * 2
   })
 
@@ -146,22 +146,22 @@ function VinylRecord({ coverUrl }) {
   )
 }
 
-// ─── Tonearm — arc pivot + needle drop state machine ─────────────────────────
+// â”€â”€â”€ Tonearm â€” arc pivot + needle drop state machine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //
 // States:
-//   PARKED   — arm at REST angle, pivot raised RAISE_HEIGHT above surface
-//   SWINGING — arm rotating toward play angle, still raised
-//   DROPPING — arm reached angle, pivot damping down to surface
-//   PLAYING  — pivot at surface, tracking inward over TRACKING_SECS
+//   PARKED   â€” arm at REST angle, pivot raised RAISE_HEIGHT above surface
+//   SWINGING â€” arm rotating toward play angle, still raised
+//   DROPPING â€” arm reached angle, pivot damping down to surface
+//   PLAYING  â€” pivot at surface, tracking inward over TRACKING_SECS
 //
 // maath/easing `damp(obj, key, target, smoothTime, delta)` produces a
-// critically-damped spring — organic deceleration with no overshoot.
+// critically-damped spring â€” organic deceleration with no overshoot.
 function Tonearm({ isPlaying }) {
   const groupRef    = useRef()
   const stateRef    = useRef(ARM.DROPPING)  // skip swing, drop straight down at outer groove
   const progressRef = useRef(0)   // 0 = outer groove, 1 = inner groove
 
-  // Transition PARKED → SWINGING when isPlaying fires
+  // Transition PARKED â†’ SWINGING when isPlaying fires
   useEffect(() => {
     if (isPlaying && stateRef.current === ARM.PARKED) {
       stateRef.current = ARM.SWINGING
@@ -181,16 +181,16 @@ function Tonearm({ isPlaying }) {
 
     switch (stateRef.current) {
       case ARM.PARKED:
-        // Return to rest — fast enough to feel snappy, not instant
+        // Return to rest â€” fast enough to feel snappy, not instant
         damp(arm.rotation, 'y', TONEARM_REST, 0.35, delta)
         damp(arm.position, 'y', PIVOT_BASE_Y + RAISE_HEIGHT, 0.25, delta)
         break
 
       case ARM.SWINGING:
-        // Swing slowly, stay raised — smoothTime=0.9 gives deliberate mechanical feel
+        // Swing slowly, stay raised â€” smoothTime=0.9 gives deliberate mechanical feel
         arm.position.y = PIVOT_BASE_Y + RAISE_HEIGHT
         damp(arm.rotation, 'y', targetAngle, 0.9, delta)
-        // Transition once angle is settled (< 0.004 rad ≈ 0.23°)
+        // Transition once angle is settled (< 0.004 rad â‰ˆ 0.23Â°)
         if (Math.abs(arm.rotation.y - targetAngle) < 0.004) {
           stateRef.current = ARM.DROPPING
         }
@@ -208,7 +208,7 @@ function Tonearm({ isPlaying }) {
         break
 
       case ARM.PLAYING:
-        // Track inward — update progress, damp rotation to follow
+        // Track inward â€” update progress, damp rotation to follow
         progressRef.current = Math.min(1, progressRef.current + delta / TRACKING_SECS)
         damp(arm.rotation, 'y', targetAngle, 0.08, delta)
         arm.position.y = PIVOT_BASE_Y
@@ -219,25 +219,25 @@ function Tonearm({ isPlaying }) {
   return (
     <group ref={groupRef} position={[1.72, PIVOT_BASE_Y + RAISE_HEIGHT, -0.55]} rotation={[0, TONEARM_PLAY, 0]}>
 
-      {/* ── Bearing housing (pivot cup) — Rega matte black ── */}
+      {/* â”€â”€ Bearing housing (pivot cup) â€” Rega matte black â”€â”€ */}
       <mesh position={[0, 0, 0]}>
         <cylinderGeometry args={[0.045, 0.05, 0.06, 24]} />
         <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
       </mesh>
 
-      {/* ── Main arm tube — Rega straight matte black tube ── */}
+      {/* â”€â”€ Main arm tube â€” Rega straight matte black tube â”€â”€ */}
       <mesh position={[-0.62, 0.005, 0]} rotation={[0, 0, Math.PI / 2 - 0.04]}>
         <cylinderGeometry args={[0.010, 0.014, 1.24, 20]} />
         <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.32} />
       </mesh>
 
-      {/* ── Rear stub (counterweight arm) ── */}
+      {/* â”€â”€ Rear stub (counterweight arm) â”€â”€ */}
       <mesh position={[0.28, 0.003, 0]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.011, 0.013, 0.46, 16]} />
         <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
       </mesh>
 
-      {/* ── Counterweight — Rega grey/silver cylinder ── */}
+      {/* â”€â”€ Counterweight â€” Rega grey/silver cylinder â”€â”€ */}
       <mesh position={[0.54, 0, 0]}>
         <cylinderGeometry args={[0.046, 0.046, 0.072, 28]} />
         <meshStandardMaterial color="#666666" metalness={0.85} roughness={0.18} />
@@ -248,16 +248,16 @@ function Tonearm({ isPlaying }) {
         <meshStandardMaterial color="#888888" metalness={0.9} roughness={0.1} />
       </mesh>
 
-      {/* ── Headshell offset group — ~22° Y rotation so cartridge runs tangent to groove ── */}
+      {/* â”€â”€ Headshell offset group â€” ~22Â° Y rotation so cartridge runs tangent to groove â”€â”€ */}
       <group position={[-1.20, 0, 0]} rotation={[0, -0.38, 0]}>
 
-        {/* Headshell connector — matte black */}
+        {/* Headshell connector â€” matte black */}
         <mesh position={[-0.04, -0.012, 0]} rotation={[0.10, 0, -0.10]}>
           <boxGeometry args={[0.115, 0.018, 0.038]} />
           <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
         </mesh>
 
-        {/* Cartridge body — dark, slight gloss */}
+        {/* Cartridge body â€” dark, slight gloss */}
         <mesh position={[-0.11, -0.026, 0]} rotation={[0.10, 0, 0]}>
           <boxGeometry args={[0.095, 0.030, 0.052]} />
           <meshStandardMaterial color="#1a1a1a" metalness={0.6} roughness={0.45} />
@@ -281,17 +281,17 @@ function Tonearm({ isPlaying }) {
   )
 }
 
-// ─── Plinth ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Plinth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Plinth({ isPlaying }) {
   return (
     <group>
-      {/* Plinth body — Rega P2 piano-black acrylic, more square/thick */}
+      {/* Plinth body â€” Rega P2 piano-black acrylic, more square/thick */}
       <mesh position={[0, -0.08, 0]} receiveShadow castShadow>
         <boxGeometry args={[3.8, 0.16, 3.7]} />
         <meshPhysicalMaterial color="#070707" roughness={0.04} metalness={0.0} reflectivity={1.0} clearcoat={1.0} clearcoatRoughness={0.04} />
       </mesh>
 
-      {/* Glass platter — Rega's distinctive teal-tinted glass */}
+      {/* Glass platter â€” Rega's distinctive teal-tinted glass */}
       <mesh position={[0, 0.012, 0]}>
         <cylinderGeometry args={[1.52, 1.52, 0.024, 128]} />
         <meshPhysicalMaterial
@@ -306,19 +306,19 @@ function Plinth({ isPlaying }) {
         />
       </mesh>
 
-      {/* Felt mat — Rega dark charcoal felt, sits on glass platter */}
+      {/* Felt mat â€” Rega dark charcoal felt, sits on glass platter */}
       <mesh position={[0, 0.027, 0]}>
         <cylinderGeometry args={[1.49, 1.49, 0.008, 128]} />
         <meshStandardMaterial color="#181818" roughness={0.97} metalness={0.0} />
       </mesh>
 
-      {/* Spindle — small pin through felt */}
+      {/* Spindle â€” small pin through felt */}
       <mesh position={[0, 0.058, 0]}>
         <cylinderGeometry args={[0.016, 0.016, 0.055, 16]} />
         <meshStandardMaterial color="#aaaaaa" metalness={0.9} roughness={0.15} />
       </mesh>
 
-      {/* Tonearm bearing post — Rega style: matte black, tall pillar */}
+      {/* Tonearm bearing post â€” Rega style: matte black, tall pillar */}
       <mesh position={[1.72, 0.17, -0.55]}>
         <cylinderGeometry args={[0.048, 0.048, 0.34, 20]} />
         <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.3} />
@@ -329,14 +329,14 @@ function Plinth({ isPlaying }) {
   )
 }
 
-// ─── Scene ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Scene â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function TurntableScene({ release, isPlaying }) {
   return (
     <>
       <Environment preset="apartment" environmentIntensity={0.45} />
       <ambientLight intensity={0.18} />
 
-      {/* Key light — top-right, soft diffuse */}
+      {/* Key light â€” top-right, soft diffuse */}
       <spotLight
         position={[4, 8, 3]}
         angle={0.28}
@@ -349,7 +349,7 @@ function TurntableScene({ release, isPlaying }) {
         target-position={[0, 0, 0]}
       />
 
-      {/* Fill — warm, low angle, catches groove rings */}
+      {/* Fill â€” warm, low angle, catches groove rings */}
       <spotLight
         position={[-5, 4, 4]}
         angle={0.32}
@@ -362,7 +362,7 @@ function TurntableScene({ release, isPlaying }) {
         target-position={[0, 0, 0]}
       />
 
-      {/* Rim light — back left, subtle edge on plinth + arm */}
+      {/* Rim light â€” back left, subtle edge on plinth + arm */}
       <spotLight
         position={[-3, 5, -5]}
         angle={0.22}
@@ -375,7 +375,7 @@ function TurntableScene({ release, isPlaying }) {
         target-position={[0, 0, 0]}
       />
 
-      {/* Center point — gentle top-down on label */}
+      {/* Center point â€” gentle top-down on label */}
       <pointLight position={[0, 2.5, 0]} intensity={4} distance={3.5} decay={2} color="#ffffff" />
       <pointLight position={[-2, 1, 2]} intensity={0.3} color="#6ee7b7" decay={2} />
 
@@ -397,7 +397,7 @@ function TurntableScene({ release, isPlaying }) {
   )
 }
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function InteractiveTurntable({ release, onClose }) {
   const [isPlaying, setIsPlaying] = useState(true)
 
@@ -423,7 +423,7 @@ export default function InteractiveTurntable({ release, onClose }) {
       role="dialog"
       aria-modal="true"
     >
-      {/* ── Header bar ── */}
+      {/* â”€â”€ Header bar â”€â”€ */}
       <div className="flex items-center justify-between px-6 py-4 sm:px-10 shrink-0"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div>
@@ -431,7 +431,7 @@ export default function InteractiveTurntable({ release, onClose }) {
             {release.title}
           </p>
           <p className="font-mono-data text-xs" style={{ color: 'var(--accent)' }}>
-            {release.artist}{release.year ? ` · ${release.year}` : ''}
+            {release.artist}{release.year ? ` Â· ${release.year}` : ''}
           </p>
         </div>
         <button
@@ -442,12 +442,12 @@ export default function InteractiveTurntable({ release, onClose }) {
           onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
           onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
         >
-          <span className="material-symbols-rounded text-sm">close</span>
+          <span aria-hidden="true" className="material-symbols-rounded text-sm">close</span>
           ESC
         </button>
       </div>
 
-      {/* ── Canvas — fills all remaining space ── */}
+      {/* â”€â”€ Canvas â€” fills all remaining space â”€â”€ */}
       <div className="relative flex-1 min-h-0 w-full">
         <ErrorBoundary fallback={
           <img
@@ -471,10 +471,10 @@ export default function InteractiveTurntable({ release, onClose }) {
         </ErrorBoundary>
       </div>
 
-      {/* ── Footer hint ── */}
+      {/* â”€â”€ Footer hint â”€â”€ */}
       <div className="shrink-0 py-3 text-center">
         <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
-          Drag to orbit · Scroll to zoom
+          Drag to orbit Â· Scroll to zoom
         </p>
       </div>
     </motion.div>,

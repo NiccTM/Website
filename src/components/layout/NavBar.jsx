@@ -9,6 +9,7 @@ const ROUTES = [
   { to: '/hardware',    label: 'Hardware' },
   { to: '/archive',     label: 'Archive' },
   { to: '/photography', label: 'Photography' },
+  { to: '/systems',     label: 'Systems' },
 ]
 
 export default function NavBar() {
@@ -38,7 +39,7 @@ export default function NavBar() {
         aria-label="Main navigation"
       >
         <div className="flex items-center justify-between w-full max-w-[1600px] tv:max-w-[2400px] mx-auto px-5 sm:px-8 md:px-12 lg:px-20 xl:px-28 tv:px-40">
-        {/* Wordmark — always visible */}
+        {/* Wordmark â€” always visible */}
         <NavLink
           to="/"
           className="font-display text-lg font-bold select-none shrink-0"
@@ -48,7 +49,7 @@ export default function NavBar() {
           Nic <span style={{ color: 'var(--accent)', fontStyle: 'italic' }}>Piraino</span>
         </NavLink>
 
-        {/* Desktop nav links — hidden on mobile */}
+        {/* Desktop nav links â€” hidden on mobile */}
         <div className="hidden md:flex items-center gap-1">
           <div className="w-px h-4 mr-3" style={{ background: 'var(--border)' }} />
           {ROUTES.filter((r) => r.to !== '/').map(({ to, label }) => (
@@ -87,13 +88,13 @@ export default function NavBar() {
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)' }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)' }}
           >
-            <span className="material-symbols-rounded text-lg">
+            <span aria-hidden="true" className="material-symbols-rounded text-lg">
               {darkMode ? 'light_mode' : 'dark_mode'}
             </span>
           </button>
         </div>
 
-        {/* Mobile hamburger — visible below md */}
+        {/* Mobile hamburger â€” visible below md */}
         <button
           className="md:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5"
           onClick={() => setOpen((o) => !o)}
@@ -157,13 +158,13 @@ export default function NavBar() {
                 </NavLink>
               ))}
               <div className="h-px my-1" style={{ background: 'var(--border)' }} />
-              {/* Theme toggle — mobile */}
+              {/* Theme toggle â€” mobile */}
               <button
                 onClick={() => { toggleDarkMode(); setOpen(false) }}
                 className="flex items-center gap-2 font-mono-data text-sm px-4 py-3 rounded-lg w-full text-left"
                 style={{ color: 'var(--text-secondary)' }}
               >
-                <span className="material-symbols-rounded text-base">
+                <span aria-hidden="true" className="material-symbols-rounded text-base">
                   {darkMode ? 'light_mode' : 'dark_mode'}
                 </span>
                 {darkMode ? 'Light mode' : 'Dark mode'}

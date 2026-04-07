@@ -24,12 +24,12 @@ function DigitalTwinPanel({ src, label, caption, icon }) {
                 className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                 style={{ background: 'rgba(0,20,60,0.35)' }}
               >
-                <span className="material-symbols-rounded text-3xl" style={{ color: 'var(--accent)' }}>zoom_in</span>
+                <span aria-hidden="true" className="material-symbols-rounded text-3xl" style={{ color: 'var(--accent)' }}>zoom_in</span>
               </div>
             </>
           ) : (
             <div className="flex flex-col items-center gap-2 opacity-30">
-              <span className="material-symbols-rounded text-3xl" style={{ color: 'var(--accent)' }}>{icon}</span>
+              <span aria-hidden="true" className="material-symbols-rounded text-3xl" style={{ color: 'var(--accent)' }}>{icon}</span>
               <span className="font-mono-data text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>{label}</span>
             </div>
           )}
@@ -58,7 +58,7 @@ export default function WaterSenseDive() {
         transition={{ duration: 0.3 }}
         className="flex items-center gap-2 mb-2"
       >
-        <span className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>flight</span>
+        <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>flight</span>
         <h3 className="font-mono-data text-base tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
           {data.title}
         </h3>

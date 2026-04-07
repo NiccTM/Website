@@ -59,7 +59,7 @@ export default function NotFound() {
           onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,122,255,0.08)' }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
         >
-          <span className="material-symbols-rounded text-base">arrow_back</span>
+          <span aria-hidden="true" className="material-symbols-rounded text-base">arrow_back</span>
           Return to root directory
         </Link>
       </motion.div>

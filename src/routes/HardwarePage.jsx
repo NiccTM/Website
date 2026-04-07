@@ -1,7 +1,8 @@
 import { useRef, useEffect, Suspense, useCallback } from 'react'
+import { usePageMeta } from '../hooks/usePageMeta'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useGLTF, OrbitControls, Environment, Bounds, useBounds } from '@react-three/drei'
-// EffectComposer/Bloom removed — @react-three/postprocessing has version conflicts that crash the Canvas
+// EffectComposer/Bloom removed â€” @react-three/postprocessing has version conflicts that crash the Canvas
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { useState } from 'react'
@@ -16,7 +17,7 @@ import WaterSenseDive from '../components/hardware/WaterSenseDive'
 
 useGLTF.preload('/PCB.gltf')
 
-// ─── Camera presets (unit direction vectors — distance computed by Bounds.fit) ─
+// â”€â”€â”€ Camera presets (unit direction vectors â€” distance computed by Bounds.fit) â”€
 const CAM_DIRS = {
   topdown:   new THREE.Vector3(0,    1,     0.001),
   isometric: new THREE.Vector3(1,    1,     1    ),
@@ -24,13 +25,13 @@ const CAM_DIRS = {
   reset:     new THREE.Vector3(0.5,  0.8,   1    ),
 }
 
-// ─── BPM pulse ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ BPM pulse â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function bpmPhase(elapsedSecs, bpm) {
   const t = (elapsedSecs % (60 / bpm)) / (60 / bpm)
   return Math.max(0, Math.sin(t * Math.PI * 2)) ** 2
 }
 
-// ─── Camera controller (must live inside <Bounds> to use useBounds) ──────────
+// â”€â”€â”€ Camera controller (must live inside <Bounds> to use useBounds) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CameraController() {
   const { camera, controls } = useThree()
   const bounds        = useBounds()
@@ -53,7 +54,7 @@ function CameraController() {
   return null
 }
 
-// ─── PCB model ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ PCB model â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PCBModel({ xray }) {
   const { scene } = useGLTF('/PCB.gltf')
   const bpm       = useAppStore((s) => s.bpm)
@@ -119,7 +120,7 @@ function PCBModel({ xray }) {
   return <primitive object={scene} />
 }
 
-// ─── Scene ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Scene â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PCBScene({ xray }) {
   return (
     <>
@@ -154,7 +155,7 @@ function PCBScene({ xray }) {
   )
 }
 
-// ─── BPM controls ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ BPM controls â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function BpmDot({ bpm }) {
   const [active, setActive] = useState(false)
   useEffect(() => {
@@ -182,7 +183,7 @@ function BpmControl() {
   )
 }
 
-// ─── Reference Gallery strip (horizontal) ────────────────────────────────────
+// â”€â”€â”€ Reference Gallery strip (horizontal) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ReferenceGalleryStrip({ onSyncView }) {
   const [lightbox, setLightbox] = useState(null)
   const rawIndex       = useAppStore((s) => s.galleryIndex)
@@ -198,13 +199,13 @@ function ReferenceGalleryStrip({ onSyncView }) {
     <div className="mt-6">
       {/* Strip header */}
       <div className="flex items-center gap-2 mb-3">
-        <span className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>photo_library</span>
+        <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>photo_library</span>
         <p className="font-mono-data text-xs tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
           Altium Reference Gallery
         </p>
         <div className="flex-1 h-px ml-2" style={{ background: 'var(--border)' }} />
         <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
-          Click to sync 3D view · Hover to zoom
+          Click to sync 3D view Â· Hover to zoom
         </p>
       </div>
 
@@ -240,7 +241,7 @@ function ReferenceGalleryStrip({ onSyncView }) {
               onClick={(e) => { e.stopPropagation(); setLightbox(img) }}
 
             >
-              <span className="material-symbols-rounded text-2xl" style={{ color: 'var(--accent)' }}>zoom_in</span>
+              <span aria-hidden="true" className="material-symbols-rounded text-2xl" style={{ color: 'var(--accent)' }}>zoom_in</span>
             </div>
 
             {/* Label gradient */}
@@ -260,7 +261,7 @@ function ReferenceGalleryStrip({ onSyncView }) {
             {/* Sync icon */}
             {img.view && (
               <div className="absolute top-2 left-2">
-                <span className="material-symbols-rounded text-sm"
+                <span aria-hidden="true" className="material-symbols-rounded text-sm"
                   style={{ color: 'var(--accent)', opacity: 0.7 }}>sync</span>
               </div>
             )}
@@ -271,7 +272,7 @@ function ReferenceGalleryStrip({ onSyncView }) {
       {/* Caption for active image */}
       <p className="font-mono-data text-xs mt-2" style={{ color: 'var(--text-muted)' }}>
         <span style={{ color: 'var(--text-primary)' }}>{REFERENCE_IMAGES[activeIndex].label}</span>
-        &nbsp;·&nbsp;{REFERENCE_IMAGES[activeIndex].caption}
+        &nbsp;Â·&nbsp;{REFERENCE_IMAGES[activeIndex].caption}
       </p>
 
       <AnimatePresence>
@@ -281,8 +282,9 @@ function ReferenceGalleryStrip({ onSyncView }) {
   )
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HardwarePage() {
+  usePageMeta('Hardware Lab', 'Interactive 3D PCB digital twin, BLDC motor deep-dive, and UAS aerospace water contact sensor â€” hardware engineering in Altium Designer and embedded C.')
   const [canvasActive, setCanvasActive] = useState(false)
 
   // xray is now in the global store so the terminal can toggle it
@@ -298,17 +300,17 @@ export default function HardwarePage() {
   return (
     <section className="relative z-10 px-5 pt-8 pb-4 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40" id="section-hardware">
 
-      {/* ── Header ── */}
+      {/* â”€â”€ Header â”€â”€ */}
       <motion.div
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
         className="flex flex-wrap items-center justify-between gap-4 mb-5"
       >
         <div>
           <h2 className="font-mono-data tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
-            PCB Lab — Digital Twin
+            PCB Lab â€” Digital Twin
           </h2>
           <p className="font-sans text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
-            Heartrate PCB · Altium Designer 24 · Drag to orbit · Scroll to zoom
+            Heartrate PCB Â· Altium Designer 24 Â· Drag to orbit Â· Scroll to zoom
           </p>
         </div>
 
@@ -318,7 +320,7 @@ export default function HardwarePage() {
             className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-2 rounded-lg border-subtle transition-colors duration-150"
             style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
           >
-            <span className="material-symbols-rounded text-sm">center_focus_strong</span>
+            <span aria-hidden="true" className="material-symbols-rounded text-sm">center_focus_strong</span>
             Reset
           </button>
 
@@ -328,7 +330,7 @@ export default function HardwarePage() {
             style={{ color: xray ? 'var(--accent)' : 'var(--text-muted)', background: xray ? 'rgba(58,144,184,0.18)' : 'var(--bg-surface-2)' }}
             aria-pressed={xray}
           >
-            <span className="material-symbols-rounded text-sm">{xray ? 'visibility' : 'visibility_off'}</span>
+            <span aria-hidden="true" className="material-symbols-rounded text-sm">{xray ? 'visibility' : 'visibility_off'}</span>
             X-Ray
           </button>
 
@@ -336,7 +338,7 @@ export default function HardwarePage() {
         </div>
       </motion.div>
 
-      {/* ── PCB Digital Twin — full width ── */}
+      {/* â”€â”€ PCB Digital Twin â€” full width â”€â”€ */}
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.45, delay: 0.1 }}
@@ -346,12 +348,12 @@ export default function HardwarePage() {
         {canvasActive ? (
           <ErrorBoundary label="PCB Canvas" fallback={(err) => (
             <div className="flex flex-col items-center justify-center h-full gap-3">
-              <span className="material-symbols-rounded text-4xl" style={{ color: 'var(--accent)' }}>memory</span>
+              <span aria-hidden="true" className="material-symbols-rounded text-4xl" style={{ color: 'var(--accent)' }}>memory</span>
               <p className="font-mono-data text-sm text-center max-w-xs" style={{ color: 'var(--text-primary)' }}>
                 Failed to load 3D viewer
               </p>
               <p className="font-mono-data text-sm text-center max-w-sm" style={{ color: 'var(--text-secondary)' }}>
-                {err?.message || 'WebGL error — try refreshing the page'}
+                {err?.message || 'WebGL error â€” try refreshing the page'}
               </p>
             </div>
           )}>
@@ -365,7 +367,7 @@ export default function HardwarePage() {
             </Canvas>
           </ErrorBoundary>
         ) : (
-          /* Inactive placeholder — zero GPU cost */
+          /* Inactive placeholder â€” zero GPU cost */
           <div
             className="relative flex items-center justify-center h-full cursor-pointer group overflow-hidden"
             style={{ background: 'transparent' }}
@@ -385,21 +387,21 @@ export default function HardwarePage() {
                 className="flex items-center justify-center w-16 h-16 rounded-full transition-all duration-200 group-hover:scale-110"
                 style={{ background: 'rgba(88,184,224,0.18)', border: '1px solid rgba(88,184,224,0.50)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
               >
-                <span className="material-symbols-rounded text-3xl" style={{ color: '#58b8e0' }}>play_arrow</span>
+                <span aria-hidden="true" className="material-symbols-rounded text-3xl" style={{ color: '#58b8e0' }}>play_arrow</span>
               </div>
               <div className="text-center">
                 <p className="font-mono-data text-sm" style={{ color: 'var(--text-primary)' }}>
                   Click to activate 3D viewer
                 </p>
                 <p className="font-mono-data text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
-                  PCB.gltf · WebGL · Interactive
+                  PCB.gltf Â· WebGL Â· Interactive
                 </p>
               </div>
             </div>
           </div>
         )}
 
-        {/* Pause button — visible only when canvas is running */}
+        {/* Pause button â€” visible only when canvas is running */}
         {canvasActive && (
           <button
             onClick={() => setCanvasActive(false)}
@@ -414,17 +416,17 @@ export default function HardwarePage() {
             }}
             aria-label="Pause 3D viewer"
           >
-            <span className="material-symbols-rounded text-sm">pause</span>
+            <span aria-hidden="true" className="material-symbols-rounded text-sm">pause</span>
             Pause
           </button>
         )}
       </motion.div>
 
-      {/* ── Legend ── */}
+      {/* â”€â”€ Legend â”€â”€ */}
       <div className="flex flex-wrap gap-5 mt-3">
         {[
-          { color: 'rgba(255,245,220,0.9)', label: 'LED dome — pulses with BPM' },
-          { color: 'rgba(6,95,70,0.5)',     label: 'Board body — semi-transparent in X-Ray mode' },
+          { color: 'rgba(255,245,220,0.9)', label: 'LED dome â€” pulses with BPM' },
+          { color: 'rgba(6,95,70,0.5)',     label: 'Board body â€” semi-transparent in X-Ray mode' },
           { color: 'var(--accent)',          label: 'Click a reference image to sync 3D orientation' },
         ].map(({ color, label }) => (
           <div key={label} className="flex items-center gap-2 font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
@@ -434,13 +436,13 @@ export default function HardwarePage() {
         ))}
       </div>
 
-      {/* ── Altium Reference Gallery strip ── */}
+      {/* â”€â”€ Altium Reference Gallery strip â”€â”€ */}
       <ReferenceGalleryStrip onSyncView={handleSyncView} />
 
-      {/* ── BLDC Motor — Technical Deep Dive ── */}
+      {/* â”€â”€ BLDC Motor â€” Technical Deep Dive â”€â”€ */}
       <MotorLab />
 
-      {/* ── UAS Aerospace — Water Contact Sensor ── */}
+      {/* â”€â”€ UAS Aerospace â€” Water Contact Sensor â”€â”€ */}
       <WaterSenseDive />
 
     </section>

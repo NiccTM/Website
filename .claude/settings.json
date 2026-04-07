@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:nicpiraino.com)",
+      "Bash(curl -sI https://nicpiraino.com/projects)",
+      "Bash(curl -sI https://nicpiraino.com/404test)",
+      "Bash(curl -sI https://nicpiraino.com/api/discogs)",
+      "Bash(curl -s https://nicpiraino.com/assets/index-D6SxzwNK.js)",
+      "Bash(curl -sI \"https://nicpiraino.com/api/discogs\" -X GET)",
+      "Bash(curl -sI \"https://nicpiraino.com/assets/vendor-flow-\"*.js)",
+      "Bash(curl -s https://nicpiraino.com/assets/)",
+      "Bash(curl -s https://nicpiraino.com)",
+      "Bash(curl -sI \"https://nicpiraino.com/assets/vendor-three-D1nloYA_.js\")"
+    ]
+  }
+}

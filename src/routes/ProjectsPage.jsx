@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react'
+import { usePageMeta } from '../hooks/usePageMeta'
 import ProjectGallery from '../components/ui/ProjectGallery'
 import ErrorBoundary  from '../components/ui/ErrorBoundary'
 
@@ -22,6 +23,7 @@ const ProjectVideo = lazy(() => import('../components/media/ProjectVideo'))
 const EcoSortDemo  = lazy(() => import('../components/ml/EcoSortDemo'))
 
 export default function ProjectsPage() {
+  usePageMeta('Projects', 'Competitive design, professional practice, and software projects — from award-winning UBC Engineering teams to embedded systems and full-stack applications.')
   return (
     <>
       <ProjectGallery />
