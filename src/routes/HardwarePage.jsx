@@ -124,10 +124,12 @@ function PCBModel({ xray }) {
 function PCBScene({ xray }) {
   return (
     <>
-      <ambientLight intensity={0.3} color="#001B3D" />
-      <directionalLight position={[4, 6, 4]} intensity={1.2} color="#00E5FF" />
-      <directionalLight position={[-3, 4, -2]} intensity={0.55} color="#00FFAA" />
-      <directionalLight position={[0, -3, 2]} intensity={0.18} color="#00E5FF" />
+      <ambientLight intensity={1.8} color="#c8d8f0" />
+      <directionalLight position={[4, 6, 4]}   intensity={3.5} color="#00E5FF" />
+      <directionalLight position={[-3, 4, -2]}  intensity={2.0} color="#00FFAA" />
+      <directionalLight position={[0, -3, 2]}   intensity={1.2} color="#ffffff" />
+      <directionalLight position={[0, 8, 0]}    intensity={2.5} color="#ddeeff" />
+      <pointLight       position={[0, 3, 3]}    intensity={4.0} color="#ffffff" distance={12} decay={2} />
 
       <OrbitControls
         makeDefault
