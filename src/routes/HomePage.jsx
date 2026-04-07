@@ -158,7 +158,7 @@ export default function HomePage() {
             }}
           >
             Nic<br />
-            <span style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Piraino.</span>
+            <span style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Piraino</span>
           </h1>
 
           {/* Rotating tagline */}
