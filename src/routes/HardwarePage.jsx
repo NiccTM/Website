@@ -38,6 +38,12 @@ function CameraController() {
   const pcbCommand    = useAppStore((s) => s.pcbCommand)
   const setPcbCommand = useAppStore((s) => s.setPcbCommand)
 
+  // Initial fit once geometry is available
+  useEffect(() => {
+    const id = setTimeout(() => bounds.refresh().clip().fit(), 100)
+    return () => clearTimeout(id)
+  }, [bounds])
+
   useEffect(() => {
     if (!pcbCommand) return
     const dir = (CAM_DIRS[pcbCommand] ?? CAM_DIRS.reset).clone().normalize()
