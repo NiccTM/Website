@@ -109,10 +109,10 @@ export default function SystemArchitecture() {
         className="font-mono-data tracking-widest uppercase mb-2"
         style={{ color: 'var(--accent)' }}
       >
-        Feeble Presence â€” Architecture
+        Feeble Presence — Architecture
       </motion.h2>
       <p className="font-mono-data mb-5" style={{ color: 'var(--text-muted)' }}>
-        MediaMonkey 5 â†’ Discord Rich Presence data flow. Click nodes for details.
+        MediaMonkey 5 → Discord Rich Presence data flow. Click nodes for details.
       </p>
 
       <div

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { archiveData } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 
-// â”€â”€â”€ Data-decode scramble â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Data-decode scramble ─────────────────────────────────────────────────────
 const SCRAMBLE_CHARS = '0123456789ABCDEF#&%$@!?<>[]{}|'
 function useScramble(text, active) {
   const [display, setDisplay] = useState(text)
@@ -29,7 +29,7 @@ function useScramble(text, active) {
   return display
 }
 
-// â”€â”€â”€ Image card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Image card ───────────────────────────────────────────────────────────────
 function ArchiveImage({ image, index }) {
   const [hovered,  setHovered]  = useState(false)
   const [lightbox, setLightbox] = useState(false)
@@ -81,7 +81,7 @@ function ArchiveImage({ image, index }) {
   )
 }
 
-// â”€â”€â”€ Module card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Module card ──────────────────────────────────────────────────────────────
 function ArchiveModule({ mod, moduleIndex }) {
   const [hovered, setHovered] = useState(false)
   const scrambled = useScramble(mod.title, hovered)
@@ -122,7 +122,7 @@ function ArchiveModule({ mod, moduleIndex }) {
   )
 }
 
-// â”€â”€â”€ Main export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main export ──────────────────────────────────────────────────────────────
 export default function ArchiveModules() {
   return (
     <section className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">

@@ -111,7 +111,7 @@ export default function ProjectModal({ project, onClose }) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* â”€â”€ Header â”€â”€ */}
+        {/* ── Header ── */}
         <div
           className="flex items-start justify-between gap-4 px-6 pt-6 pb-4"
           style={{ borderBottom: '1px solid var(--border)' }}
@@ -153,7 +153,7 @@ export default function ProjectModal({ project, onClose }) {
           </button>
         </div>
 
-        {/* â”€â”€ Scrollable body â”€â”€ */}
+        {/* ── Scrollable body ── */}
         <div className="overflow-y-auto flex-1 px-6 py-5 flex flex-col gap-6">
 
           {/* Description */}
@@ -221,7 +221,7 @@ export default function ProjectModal({ project, onClose }) {
           </div>
         </div>
 
-        {/* â”€â”€ Footer links â”€â”€ */}
+        {/* ── Footer links ── */}
         {(links.length > 0 || project.github) && (
           <div
             className="flex flex-wrap gap-3 px-6 py-4"

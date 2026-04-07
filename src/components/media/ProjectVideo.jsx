@@ -2,14 +2,14 @@ import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 
 /**
- * ProjectVideo â€” local .mp4 player with poster, custom overlay controls,
+ * ProjectVideo — local .mp4 player with poster, custom overlay controls,
  * and aspect-ratio lock to prevent layout shift.
  *
  * Props:
- *   src    â€” video path under /public, e.g. "/videos/APSC 171-2024-T1C4-16-SW.mp4"
- *   poster â€” poster image path (shown before first play)
- *   title  â€” section heading + aria-label
- *   ratio  â€” 'wide' (16/9) | 'cinema' (2.39:1) â€” default 'wide'
+ *   src    — video path under /public, e.g. "/videos/APSC 171-2024-T1C4-16-SW.mp4"
+ *   poster — poster image path (shown before first play)
+ *   title  — section heading + aria-label
+ *   ratio  — 'wide' (16/9) | 'cinema' (2.39:1) — default 'wide'
  */
 
 const RATIOS = {
@@ -54,7 +54,7 @@ export default function ProjectVideo({
         {title}
       </h2>
       <p className="font-mono-data mb-5" style={{ color: 'var(--text-muted)' }}>
-        APSC 171 Â· Mechanical Team Â· SolidWorks assembly showcase
+        APSC 171 · Mechanical Team · SolidWorks assembly showcase
       </p>
 
       {error ? (
@@ -75,7 +75,7 @@ export default function ProjectVideo({
           className={`relative w-full ${RATIOS[ratio]} rounded-xl border-subtle overflow-hidden`}
           style={{ background: 'var(--bg-surface-1)' }}
         >
-          {/* Single video element â€” native controls always available */}
+          {/* Single video element — native controls always available */}
           <video
             ref={videoRef}
             src={src}
@@ -93,7 +93,7 @@ export default function ProjectVideo({
             className="absolute inset-0 w-full h-full object-contain"
           />
 
-          {/* Custom play overlay â€” only before first play */}
+          {/* Custom play overlay — only before first play */}
           {!playing && (
             <button
               onClick={toggle}

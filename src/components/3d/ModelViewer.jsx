@@ -5,11 +5,11 @@ import { motion } from 'framer-motion'
 import * as THREE from 'three'
 import { useUI } from '../../context/UIContext'
 
-// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Constants ────────────────────────────────────────────────────────────────
 const EXPLODE_SCALE  = 1.8   // how far parts spread (multiplier on centroid offset)
-const LERP_SPEED     = 0.06  // per-frame lerp factor â€” lower = smoother
+const LERP_SPEED     = 0.06  // per-frame lerp factor — lower = smoother
 
-// â”€â”€â”€ Utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Utilities ────────────────────────────────────────────────────────────────
 
 /** Compute world-space centroid of all meshes in a scene */
 function computeSceneCentroid(scene) {
@@ -47,7 +47,7 @@ function buildExplodeMap(scene, sceneCentroid) {
   return map
 }
 
-// â”€â”€â”€ Animated GLB scene â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Animated GLB scene ───────────────────────────────────────────────────────
 
 function ExplodableModel({ modelPath, exploded }) {
   const { scene } = useGLTF(modelPath)
@@ -92,7 +92,7 @@ function ExplodableModel({ modelPath, exploded }) {
   return <primitive object={cloned} />
 }
 
-// â”€â”€â”€ Placeholder (no model loaded) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Placeholder (no model loaded) ───────────────────────────────────────────
 
 function PlaceholderMesh({ label }) {
   return (
@@ -114,7 +114,7 @@ function PlaceholderMesh({ label }) {
   )
 }
 
-// â”€â”€â”€ R3F scene content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── R3F scene content ────────────────────────────────────────────────────────
 
 function SceneContent({ modelPath, label, exploded }) {
   return (
@@ -145,13 +145,13 @@ function SceneContent({ modelPath, label, exploded }) {
   )
 }
 
-// â”€â”€â”€ Public component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Public component ─────────────────────────────────────────────────────────
 
 /**
  * Props:
- *   modelPath â€” path to .glb in /public, e.g. "/models/delorean-engine.glb"
- *   label     â€” fallback label when no model is loaded
- *   height    â€” canvas height in px (default 420)
+ *   modelPath — path to .glb in /public, e.g. "/models/delorean-engine.glb"
+ *   label     — fallback label when no model is loaded
+ *   height    — canvas height in px (default 420)
  */
 export default function ModelViewer({
   modelPath,
@@ -184,14 +184,14 @@ export default function ModelViewer({
             className="font-mono-data tracking-widest uppercase"
             style={{ color: 'var(--accent)' }}
           >
-            3D Model â€” {label}
+            3D Model — {label}
           </h2>
           <p className="font-mono-data mt-1" style={{ color: 'var(--text-muted)' }}>
-            Drag to rotate Â· Scroll to zoom
+            Drag to rotate · Scroll to zoom
           </p>
         </div>
 
-        {/* Exploded view toggle â€” only meaningful when a model is loaded */}
+        {/* Exploded view toggle — only meaningful when a model is loaded */}
         {modelPath && (
           <button
             onClick={() => setExploded((v) => !v)}
@@ -233,7 +233,7 @@ export default function ModelViewer({
           style={{ color: 'var(--text-muted)' }}
         >
           {exploded
-            ? 'Engine block separated â€” inspect individual assemblies'
+            ? 'Engine block separated — inspect individual assemblies'
             : 'Toggle exploded view to inspect component separation'}
         </p>
       )}

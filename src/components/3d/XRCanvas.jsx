@@ -5,12 +5,12 @@ import { XR, createXRStore } from '@react-three/xr'
 import { motion } from 'framer-motion'
 
 /**
- * XRCanvas â€” wraps an R3F scene with WebXR immersive-vr support.
+ * XRCanvas — wraps an R3F scene with WebXR immersive-vr support.
  * Renders a VR-entry button when the browser supports WebXR.
  *
  * Props:
- *   children â€” R3F scene content (mesh, lights, etc.)
- *   label    â€” section label
+ *   children — R3F scene content (mesh, lights, etc.)
+ *   label    — section label
  */
 
 const xrStore = createXRStore()
@@ -57,7 +57,7 @@ export default function XRCanvas({ children, label = 'VR Inspection Mode' }) {
             {label}
           </h2>
           <p className="font-mono-data" style={{ color: 'var(--text-muted)' }}>
-            WebXR â€” requires compatible headset (Quest Pro / Rift S)
+            WebXR — requires compatible headset (Quest Pro / Rift S)
           </p>
         </div>
 

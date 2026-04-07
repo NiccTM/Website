@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 const InteractiveTurntable = lazy(() => import('../3d/InteractiveTurntable'))
 
-// â”€â”€â”€ Mock fallback data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Mock fallback data ───────────────────────────────────────────────────────
 // Shown when the Discogs API is unavailable (e.g. missing PAT in dev).
 const MOCK_RELEASES = [
   { id: 1, artist: 'Pink Floyd',      title: 'The Dark Side of the Moon', year: 1973, cover_image: null },
@@ -14,7 +14,7 @@ const MOCK_RELEASES = [
   { id: 6, artist: 'Radiohead',       title: 'OK Computer',               year: 1997, cover_image: null },
 ]
 
-// â”€â”€â”€ Data fetching with retry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Data fetching with retry ─────────────────────────────────────────────────
 
 function useCollection() {
   const [data,     setData]    = useState([])
@@ -52,7 +52,7 @@ function useCollection() {
   return { data, loading, error, isMock, retry, useMock }
 }
 
-// â”€â”€â”€ Stagger config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Stagger config ───────────────────────────────────────────────────────────
 
 const gridContainer = {
   hidden: {},
@@ -63,7 +63,7 @@ const gridItem = {
   show:   { opacity: 1, scale: 1,    y: 0, transition: { duration: 0.3, ease: 'easeOut' } },
 }
 
-// â”€â”€â”€ Album card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Album card ───────────────────────────────────────────────────────────────
 
 function AlbumCard({ release, onClick }) {
   const [imgError, setImgError] = useState(false)
@@ -76,12 +76,12 @@ function AlbumCard({ release, onClick }) {
       onClick={() => onClick(release)}
       className="group relative aspect-square rounded-lg overflow-hidden border-subtle text-left focus:outline-none focus-visible:ring-2"
       style={{ background: 'var(--bg-surface-2)', '--tw-ring-color': 'var(--accent)' }}
-      aria-label={`${release.artist} â€” ${release.title}`}
+      aria-label={`${release.artist} — ${release.title}`}
     >
       {release.cover_image && !imgError ? (
         <img
           src={release.cover_image}
-          alt={`${release.artist} â€” ${release.title}`}
+          alt={`${release.artist} — ${release.title}`}
           loading="lazy"
           decoding="async"
           onError={() => setImgError(true)}
@@ -101,7 +101,7 @@ function AlbumCard({ release, onClick }) {
           {release.title}
         </p>
         <p className="font-mono-data truncate" style={{ color: 'var(--accent)', fontSize: '0.875rem' }}>
-          {release.artist}{release.year ? ` Â· ${release.year}` : ''}
+          {release.artist}{release.year ? ` · ${release.year}` : ''}
         </p>
       </div>
 
@@ -114,7 +114,7 @@ function AlbumCard({ release, onClick }) {
   )
 }
 
-// â”€â”€â”€ Skeleton grid â€” matches AlbumCard dimensions exactly â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Skeleton grid — matches AlbumCard dimensions exactly ─────────────────────
 
 function SkeletonGrid() {
   return (
@@ -144,7 +144,7 @@ function SkeletonGrid() {
   )
 }
 
-// â”€â”€â”€ Error state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Error state ──────────────────────────────────────────────────────────────
 
 function ErrorState({ message, onRetry, onMock }) {
   return (
@@ -152,7 +152,7 @@ function ErrorState({ message, onRetry, onMock }) {
       <div>
         <p className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
           {message.includes('404') || message.includes('500') || message.includes('API')
-            ? 'Discogs API unavailable â€” check DISCOGS_PAT environment variable.'
+            ? 'Discogs API unavailable — check DISCOGS_PAT environment variable.'
             : `Collection error: ${message}`}
         </p>
       </div>
@@ -178,7 +178,7 @@ function ErrorState({ message, onRetry, onMock }) {
   )
 }
 
-// â”€â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export default function VinylArchive() {
   const { data, loading, error, isMock, retry, useMock } = useCollection()
@@ -205,8 +205,8 @@ export default function VinylArchive() {
               : error
               ? 'Collection unavailable'
               : isMock
-              ? `${data.length} sample records Â· Connect Discogs for your full collection`
-              : `${data.length} records Â· Click to inspect on the platter`}
+              ? `${data.length} sample records · Connect Discogs for your full collection`
+              : `${data.length} records · Click to inspect on the platter`}
           </p>
         </div>
         <a
