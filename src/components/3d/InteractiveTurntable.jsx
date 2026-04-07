@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, Suspense, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, useTexture, Environment } from '@react-three/drei'
+import { OrbitControls, useTexture } from '@react-three/drei'
 import { damp } from 'maath/easing'
 import * as THREE from 'three'
 import { motion } from 'framer-motion'
@@ -333,8 +333,7 @@ function Plinth({ isPlaying }) {
 function TurntableScene({ release, isPlaying }) {
   return (
     <>
-      <Environment preset="apartment" environmentIntensity={0.45} />
-      <ambientLight intensity={0.18} />
+      <ambientLight intensity={0.55} color="#f0e8d8" />
 
       {/* Key light — top-right, soft diffuse */}
       <spotLight
