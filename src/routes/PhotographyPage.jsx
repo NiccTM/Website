@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
+import PHOTO_DIMS from '../data/photoDimensions.json'
+import { thumbSrc } from '../utils/thumbs'
 
 // ─── All photos from /public/Remastered Photos/ ───────────────────────────────
 const PHOTOS = [
@@ -82,6 +84,29 @@ function Lightbox({ idx, onClose, onGo }) {
   const [scale,       setScale]       = useState(1)
   const [dragging,    setDragging]    = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [hiResSrc,    setHiResSrc]    = useState(null)
+  const [hiResFailed, setHiResFailed] = useState(false)
+
+  // Paint the grid thumbnail immediately -- it is already in cache, so the
+  // lightbox never opens empty -- while the full-resolution original decodes
+  // off-screen. Swap only once it is ready, so there is no half-drawn image.
+  useEffect(() => {
+    let cancelled = false
+    setHiResSrc(null)
+    setHiResFailed(false)
+
+    const img = new Image()
+    img.decoding = 'async'
+    img.onload  = () => { if (!cancelled) setHiResSrc(photo.src) }
+    img.onerror = () => { if (!cancelled) setHiResFailed(true) }   // keep the thumbnail
+    img.src = photo.src
+    if (img.complete && img.naturalWidth) setHiResSrc(photo.src)   // already cached
+
+    return () => { cancelled = true; img.onload = null; img.onerror = null }
+  }, [photo.src])
+
+  const displaySrc = hiResSrc ?? thumbSrc(photo.src)
+  const hiResPending = !hiResSrc && !hiResFailed
 
   const applyTransform = useCallback((s, ox, oy) => {
     if (imgRef.current) {
@@ -97,7 +122,7 @@ function Lightbox({ idx, onClose, onGo }) {
     setScale(1)
   }, [idx, applyTransform])
 
-  // Keyboard: â†/→ nav, Esc close
+  // Keyboard: ←/→ nav, Esc close
   useEffect(() => {
     const h = (e) => {
       if (e.key === 'Escape')      onClose()
@@ -257,9 +282,10 @@ function Lightbox({ idx, onClose, onGo }) {
       >
         <img
           ref={imgRef}
-          src={photo.src}
+          src={displaySrc}
           alt={photo.caption}
           draggable={false}
+          decoding="async"
           onContextMenu={(e) => e.preventDefault()}
           style={{
             maxWidth: '100%',
@@ -272,6 +298,23 @@ function Lightbox({ idx, onClose, onGo }) {
             willChange: 'transform',
           }}
         />
+
+        {/* ── Full-resolution loading chip ── */}
+        {hiResPending && (
+          <div
+            className="absolute top-4 left-4 flex items-center gap-2 font-mono-data text-xs px-2.5 py-1.5 pointer-events-none"
+            style={{ background: 'rgba(12,8,20,0.88)', border: '1px solid rgba(180,140,255,0.18)', borderRadius: 'var(--radius)', color: 'var(--text-muted)' }}
+          >
+            <span
+              aria-hidden="true"
+              className="material-symbols-rounded animate-spin"
+              style={{ fontSize: '0.95rem', color: 'var(--accent)' }}
+            >
+              progress_activity
+            </span>
+            Loading full resolution…
+          </div>
+        )}
 
         {/* ── Prev arrow ── */}
         {canPrev && (
@@ -355,7 +398,7 @@ function Lightbox({ idx, onClose, onGo }) {
             {photo.caption}
           </p>
           <p className="font-mono-data text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
-            Â© Nic Piraino
+            © Nic Piraino
           </p>
         </div>
       </div>
@@ -367,6 +410,7 @@ function Lightbox({ idx, onClose, onGo }) {
 // ─── Masonry grid item ────────────────────────────────────────────────────────
 function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
   const [loaded, setLoaded] = useState(false)
+  const dims = PHOTO_DIMS[photo.src]
 
   return (
     <motion.div
@@ -380,10 +424,15 @@ function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
       style={{ breakInside: 'avoid' }}
     >
       <img
-        src={photo.src}
+        src={thumbSrc(photo.src)}
         alt={photo.caption}
+        /* Intrinsic size of the ORIGINAL: same aspect ratio as the thumbnail, so
+           the browser reserves the right height before the image decodes and the
+           masonry columns don't reflow as tiles stream in. */
+        width={dims?.w}
+        height={dims?.h}
         className="w-full block rounded-lg"
-        style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.4s ease', pointerEvents: 'none', filter: 'contrast(90%) brightness(110%) saturate(110%)' }}
+        style={{ height: 'auto', opacity: loaded ? 1 : 0, transition: 'opacity 0.4s ease', pointerEvents: 'none', filter: 'contrast(90%) brightness(110%) saturate(110%)' }}
         onLoad={() => setLoaded(true)}
         loading="lazy"
         decoding="async"
@@ -454,7 +503,7 @@ export default function PhotographyPage() {
         style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
       >
         <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>copyright</span>
-        All photographs Â© Nic Piraino. No use, reproduction, or distribution without explicit written permission.
+        All photographs © Nic Piraino. No use, reproduction, or distribution without explicit written permission.
       </div>
 
       {/* Masonry grid */}

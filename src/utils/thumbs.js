@@ -1,0 +1,23 @@
+import PHOTO_DIMS from '../data/photoDimensions.json'
+
+/**
+ * Maps a full-resolution image URL under /public to its generated thumbnail by
+ * inserting a "thumbs/" segment before the filename:
+ *
+ *   /ASUS_laptop.jpg                 ->  /thumbs/ASUS_laptop.jpg
+ *   /Remastered Photos/Clouds.jpg    ->  /Remastered Photos/thumbs/Clouds.jpg
+ *
+ * Returns the ORIGINAL untouched when no thumbnail was generated for it. The
+ * generator only handles .jpg/.jpeg/.png, so animated .gif and .svg assets have
+ * no derivative -- rewriting those blindly points at a file that does not exist
+ * and renders as a broken image. photoDimensions.json is the generator's own
+ * output, so it is the authoritative list of what actually got built.
+ *
+ * Thumbnails are width-capped derivatives (see scripts/generate-thumbnails.ps1)
+ * used for grid tiles; the original is what a lightbox loads at full size.
+ */
+export const hasThumb = (src) =>
+  typeof src === 'string' && Object.prototype.hasOwnProperty.call(PHOTO_DIMS, src)
+
+export const thumbSrc = (src) =>
+  hasThumb(src) ? src.replace(/\/([^/]+)$/, '/thumbs/$1') : src

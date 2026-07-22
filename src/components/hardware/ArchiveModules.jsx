@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { archiveData } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
+import { thumbSrc } from '../../utils/thumbs'
 
 // ─── Data-decode scramble ─────────────────────────────────────────────────────
 const SCRAMBLE_CHARS = '0123456789ABCDEF#&%$@!?<>[]{}|'
@@ -56,7 +57,9 @@ function ArchiveImage({ image, index }) {
         }}
       >
         <img
-          src={image.src}
+          src={thumbSrc(image.src)}
+          loading="lazy"
+          decoding="async"
           alt={image.label}
           className="w-full h-full object-cover transition-all duration-500"
           style={{ transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s' }}

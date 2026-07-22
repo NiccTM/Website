@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
+import { thumbSrc } from '../../utils/thumbs'
 
 function SubSystemImage({ src, label, caption }) {
   const [hovered, setHovered] = useState(false)
@@ -18,8 +19,10 @@ function SubSystemImage({ src, label, caption }) {
     >
       <div style={{ aspectRatio: '4/3', overflow: 'hidden', background: 'var(--bg-surface-3)' }}>
         <img
-          src={src}
+          src={thumbSrc(src)}
           alt={label}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover"
           style={{
             transform: hovered ? 'scale(1.04)' : 'scale(1)',

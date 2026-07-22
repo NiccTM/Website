@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ImageLightbox from '../ui/ImageLightbox'
+import { thumbSrc } from '../../utils/thumbs'
 
 // ─── Challenge / Solution card data ───────────────────────────────────────────
 const CHALLENGES = [
@@ -9,20 +10,20 @@ const CHALLENGES = [
     icon: 'hub',
     title: 'Magnetic Reluctance Optimization',
     challenge:
-      'PLA stator teeth have a relative permeability of â‰ˆ 1 — effectively air. High reluctance limited flux density and produced insufficient torque at target RPM.',
+      'PLA stator teeth have a relative permeability of ≈ 1 — effectively air. High reluctance limited flux density and produced insufficient torque at target RPM.',
     solution:
-      'Replaced PLA teeth with iron bolts (Î¼áµ£ â‰ˆ 200). The ferromagnetic path concentrates magnetic flux through the air gap, significantly increasing torque density without a winding change.',
-    metric: 'Î¼áµ£: 1 → ~200',
+      'Replaced PLA teeth with iron bolts (μᵣ ≈ 200). The ferromagnetic path concentrates magnetic flux through the air gap, significantly increasing torque density without a winding change.',
+    metric: 'μᵣ: 1 → ~200',
   },
   {
     id: 'thermal',
     icon: 'thermostat',
     title: 'Thermal & Material Pivot',
     challenge:
-      'Resistive heating under the 30A ESC draw brought winding temperatures near the PLA+ glass transition (Tg â‰ˆ 55Â°C), risking dimensional deformation of the stator and rotor housing.',
+      'Resistive heating under the 30A ESC draw brought winding temperatures near the PLA+ glass transition (Tg ≈ 55°C), risking dimensional deformation of the stator and rotor housing.',
     solution:
-      'Upgraded both the base and rotor to PETG HF (Tg â‰ˆ 70Â°C). PETG HF maintains geometry under sustained thermal load and offers superior layer adhesion for press-fit magnet pockets.',
-    metric: 'Tg: 55Â°C → 70Â°C',
+      'Upgraded both the base and rotor to PETG HF (Tg ≈ 70°C). PETG HF maintains geometry under sustained thermal load and offers superior layer adhesion for press-fit magnet pockets.',
+    metric: 'Tg: 55°C → 70°C',
   },
   {
     id: 'commutation',
@@ -131,8 +132,10 @@ function DigitalTwinPanel({ src, label, caption, icon }) {
           {src ? (
             <>
               <img
-                src={src}
+                src={thumbSrc(src)}
                 alt={label}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div
@@ -210,6 +213,7 @@ export default function MotorLab() {
       >
         <video
           src="/motor_cmp.mp4"
+          aria-label="Motor prototype demonstration video"
           controls
           loop
           playsInline
@@ -240,7 +244,7 @@ export default function MotorLab() {
         {[
           { label: 'Topology',  value: '9S / 16P Inrunner' },
           { label: 'Winding',   value: '~200 T/pole · 24 AWG' },
-          { label: 'Râ‚šâ‚•',       value: '~2.022 Î©' },
+          { label: 'Rₚₕ',       value: '~2.022 Ω' },
           { label: 'Control',   value: 'Arduino + Hobbywing 30A' },
         ].map(({ label, value }) => (
           <div key={label} className="flex items-center gap-1.5">
