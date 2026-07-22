@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { hardwareDiagnostics } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
+import { thumbSrc } from '../../utils/thumbs'
 
 // ─── Data-decode scramble (same logic as ProjectGallery) ─────────────────────
 const SCRAMBLE_CHARS = '0123456789ABCDEF#&%$@!?<>[]{}|'
@@ -53,8 +54,10 @@ function DiagnosticImage({ image, index }) {
         }}
       >
         <img
-          src={image.src}
+          src={thumbSrc(image.src)}
           alt={image.label}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover transition-all duration-500"
           style={{ transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s' }}
         />

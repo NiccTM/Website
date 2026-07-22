@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { projects } from '../../data/config'
 import ProjectModal from './ProjectModal'
+import { thumbSrc } from '../../utils/thumbs'
 
 // ─── Card-level hero images keyed by project id ───────────────────────────────
 const PROJECT_IMAGES = {
@@ -82,8 +83,10 @@ function ProjectCard({ project, index, onExpand }) {
         {displayImage ? (
           // card-img class receives CSS transform via .card-hover-scale:hover .card-img
           <img
-            src={displayImage}
+            src={thumbSrc(displayImage)}
             alt={project.title}
+            loading="lazy"
+            decoding="async"
             className="card-img absolute inset-0 w-full h-full object-cover"
           />
         ) : (

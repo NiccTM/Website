@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { useAppStore } from '../../store/useAppStore'
+import { thumbSrc } from '../../utils/thumbs'
 
 // ─── Image manifest ───────────────────────────────────────────────────────────
 // Files confirmed in /public/ (all .png)
@@ -118,8 +119,10 @@ export default function ReferenceGallery({ onSyncView }) {
             onClick={() => handleClick(img, i)}
           >
             <img
-              src={img.src}
+              src={thumbSrc(img.src)}
               alt={img.label}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transition-all duration-200"
               style={{
                 filter: 'brightness(4.5) contrast(1.8) saturate(3) hue-rotate(160deg)',

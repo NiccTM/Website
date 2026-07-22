@@ -10,6 +10,7 @@ import * as THREE from 'three'
 import { useAppStore } from '../store/useAppStore'
 import ErrorBoundary  from '../components/ui/ErrorBoundary'
 import ImageLightbox  from '../components/ui/ImageLightbox'
+import { thumbSrc }   from '../utils/thumbs'
 import { REFERENCE_IMAGES } from '../components/hardware/ReferenceGallery'
 import MotorLab       from '../components/hardware/MotorLab'
 import WaterSenseDive from '../components/hardware/WaterSenseDive'
@@ -232,8 +233,10 @@ function ReferenceGalleryStrip({ onSyncView }) {
             onClick={() => handleClick(img, i)}
           >
             <img
-              src={img.src}
+              src={thumbSrc(img.src)}
               alt={img.label}
+              loading="lazy"
+              decoding="async"
               className="w-full object-cover transition-all duration-200"
               style={{
                 aspectRatio: '16/9',

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { createPortal } from 'react-dom'
+import { thumbSrc, hasThumb } from '../../utils/thumbs'
 
 const MIN_SCALE = 1
 const MAX_SCALE = 5
@@ -8,6 +9,31 @@ const MAX_SCALE = 5
 export default function ImageLightbox({ src, label, caption, onClose }) {
   const [scale,    setScale]    = useState(1)
   const [dragging, setDragging] = useState(false)
+  const [hiResSrc, setHiResSrc] = useState(null)
+
+  // Only fall back to a thumbnail for images the generator actually produced
+  // one for -- otherwise the placeholder request would 404 and flash a broken
+  // image before the original arrives.
+  const thumbed = hasThumb(src)
+
+  // Paint the grid thumbnail immediately (already cached, so the lightbox never
+  // opens empty) while the full-resolution original decodes off-screen; swap
+  // only once it is ready, so there is never a half-drawn image.
+  useEffect(() => {
+    let cancelled = false
+    setHiResSrc(null)
+    const img = new Image()
+    img.decoding = 'async'
+    const done = () => { if (!cancelled) setHiResSrc(src) }
+    img.onload  = done
+    img.onerror = done          // fall through to the original and let <img> report it
+    img.src = src
+    if (img.complete && img.naturalWidth) done()
+    return () => { cancelled = true; img.onload = null; img.onerror = null }
+  }, [src])
+
+  const displaySrc   = hiResSrc ?? thumbSrc(src)
+  const hiResPending = thumbed && !hiResSrc
 
   // Refs — single source of truth for transform; no React state updates during drag
   const scaleRef     = useRef(1)
@@ -24,7 +50,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
     }
   }, [])
 
-  // Sync scale state → DOM + reset offset when back to 1Ã—
+  // Sync scale state → DOM + reset offset when back to 1×
   useEffect(() => {
     scaleRef.current = scale
     if (scale <= MIN_SCALE) offsetRef.current = { x: 0, y: 0 }
@@ -138,9 +164,10 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
       >
         <img
           ref={imgRef}
-          src={src}
+          src={displaySrc}
           alt={label}
           draggable={false}
+          decoding="async"
           style={{
             maxWidth: '100%',
             maxHeight: '100%',
@@ -152,6 +179,19 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
             willChange: 'transform',
           }}
         />
+
+        {/* ── Full-resolution loading chip ── */}
+        {hiResPending && (
+          <div
+            className="absolute top-4 left-4 flex items-center gap-2 font-mono-data text-xs px-2.5 py-1.5 pointer-events-none"
+            style={{ background: '#17100a', border: '1px solid #281c10', borderRadius: 'var(--radius)', color: 'rgba(255,255,255,0.6)' }}
+          >
+            <span aria-hidden="true" className="material-symbols-rounded animate-spin" style={{ fontSize: '0.95rem', color: '#58b8e0' }}>
+              progress_activity
+            </span>
+            Loading full resolution…
+          </div>
+        )}
 
         {/* ── Floating vertical button group ── */}
         <div
