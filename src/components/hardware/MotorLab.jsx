@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ImageLightbox from '../ui/ImageLightbox'
-import { thumbSrc } from '../../utils/thumbs'
+import { thumbSrc, displaySrc } from '../../utils/thumbs'
 
 // ─── Challenge / Solution card data ───────────────────────────────────────────
 const CHALLENGES = [
@@ -214,6 +214,12 @@ export default function MotorLab() {
         <video
           src="/motor_cmp.mp4"
           aria-label="Motor prototype demonstration video"
+          /* Was unset, which defaults to preload="metadata" and pulls real
+             video bytes for an 11.3 MB file on page load. The poster stands in
+             until the viewer actually presses play. */
+          preload="none"
+          poster={displaySrc('/motor-proto.jpg')}
+          loading="lazy"
           controls
           loop
           playsInline
