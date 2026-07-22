@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { profile, contact } from '../data/config'
 import SocialLinks from '../components/ui/SocialLinks'
 import { displaySrc } from '../utils/thumbs'
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 
 const AudioSignalChain   = lazy(() => import('../components/diagrams/AudioSignalChain'))
 const SystemArchitecture = lazy(() => import('../components/diagrams/SystemArchitecture'))
@@ -29,11 +30,22 @@ const TAGLINES = [
 
 function HeroCarousel() {
   const [current, setCurrent] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const reducedMotion = usePrefersReducedMotion()
+
+  // WCAG 2.2.2 Pause, Stop, Hide is Level A: content that starts moving on its
+  // own, runs past five seconds and sits alongside other content needs a way to
+  // stop it. This carousel had none. It now stops on request, and does not
+  // start at all when the OS asks for reduced motion — the CSS reduced-motion
+  // block cannot help here, since this is a timer swapping state, not an
+  // animation.
+  const stopped = paused || reducedMotion
 
   useEffect(() => {
+    if (stopped) return
     const id = setInterval(() => setCurrent((c) => (c + 1) % HERO_PHOTOS.length), 5000)
     return () => clearInterval(id)
-  }, [])
+  }, [stopped])
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -61,7 +73,21 @@ function HeroCarousel() {
       {/* Dot indicators. The visible dot stays 6px, but each button carries a
           24x24 hit area — WCAG 2.2 AA 2.5.8 (Target Size Minimum) sets 24x24
           CSS px as the floor, and a 6x6 tap target is genuinely hard to hit. */}
-      <div className="absolute bottom-4 left-4 flex">
+      <div className="absolute bottom-4 left-4 flex items-center">
+        {/* Pause/resume — the WCAG 2.2.2 mechanism. Hidden when the OS already
+            asks for reduced motion, since nothing is moving to pause. */}
+        {!reducedMotion && (
+          <button
+            onClick={() => setPaused((p) => !p)}
+            aria-label={paused ? 'Resume photo slideshow' : 'Pause photo slideshow'}
+            className="grid place-items-center mr-1"
+            style={{ width: '28px', height: '28px', color: 'rgba(255,255,255,0.8)' }}
+          >
+            <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.05rem' }}>
+              {paused ? 'play_arrow' : 'pause'}
+            </span>
+          </button>
+        )}
         {HERO_PHOTOS.map((_, i) => (
           <button
             key={i}
@@ -90,11 +116,18 @@ function HeroCarousel() {
 
 function RotatingTagline() {
   const [idx, setIdx] = useState(0)
+  const reducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
+    // Same WCAG 2.2.2 reasoning as the carousel: auto-changing text is moving
+    // content. With reduced motion requested it settles on the first tagline
+    // rather than cycling. It carries no pause button of its own because the
+    // hero's control already covers the one piece of auto-advancing imagery;
+    // a lone line of text that stops on request is the lower-risk trade.
+    if (reducedMotion) return
     const id = setInterval(() => setIdx((i) => (i + 1) % TAGLINES.length), 3500)
     return () => clearInterval(id)
-  }, [])
+  }, [reducedMotion])
 
   return (
     <AnimatePresence mode="wait">
