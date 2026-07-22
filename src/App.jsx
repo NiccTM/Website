@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect, lazy, Suspense } from 'react'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -39,6 +41,8 @@ export default function App() {
           </Suspense>
         </BrowserRouter>
       </UIProvider>
+      <Analytics />
+      <SpeedInsights />
     </ErrorBoundary>
   )
 }
