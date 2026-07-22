@@ -12,6 +12,10 @@
  * Global cap:  50 requests per hour across all visitors.
  */
 
+import { rateLimit, applyRateLimit } from './_lib/rate-limit.js'
+
+const SHARED_LIMIT = 10   // per IP per hour, enforced across all instances
+
 // Allow up to 5 MB bodies (base64 bloat ~33% over raw)
 export const config = {
   api: {
@@ -63,6 +67,14 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
+
+  // Shared, cross-instance limit first. The in-memory buckets below cannot
+  // actually bound anything on serverless — each instance has its own Map and
+  // instances come and go — so they are a fallback for when Redis is not
+  // configured, not the real control. This route hits a paid ML API, so it gets
+  // the tightest limit of the three.
+  const verdict = await rateLimit(req, { route: 'classify', limit: SHARED_LIMIT, windowSeconds: 3600 })
+  if (applyRateLimit(res, verdict, SHARED_LIMIT)) return
 
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() ?? 'unknown'
   const { limited, reason } = checkRateLimit(ip)
