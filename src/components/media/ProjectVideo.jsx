@@ -6,7 +6,8 @@ import { motion } from 'framer-motion'
  * and aspect-ratio lock to prevent layout shift.
  *
  * Props:
- *   src    — video path under /public, e.g. "/videos/APSC 171-2024-T1C4-16-SW.mp4"
+ *   src    — video path under /public, e.g. "/videos/APSC 171-2024-T1C4-16-SW_cmp.mp4"
+ *            (only the compressed _cmp.mp4 files are committed; see .gitignore)
  *   poster — poster image path (shown before first play)
  *   title  — section heading + aria-label
  *   ratio  — 'wide' (16/9) | 'cinema' (2.39:1) — default 'wide'
@@ -109,7 +110,7 @@ export default function ProjectVideo({
               </span>
               {!ready && (
                 <span className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
-                  Loadingâ€¦
+                  Loading…
                 </span>
               )}
             </button>

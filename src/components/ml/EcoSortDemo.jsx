@@ -12,7 +12,7 @@ const INFER_CONF      = 65     // sent to Roboflow
 const INFER_OVERLAP   = 30     // sent to Roboflow
 
 // ── Smart-crop preprocessing ──────────────────────────────────────────────────
-// Center-square crops the upload (uses the shorter dimension), resizes to 640Ã—640,
+// Center-square crops the upload (uses the shorter dimension), resizes to 640×640,
 // then returns both the encoded frame AND the crop parameters needed to back-map
 // Roboflow's coordinate space onto the original displayed image.
 function preprocessImage(file) {
@@ -49,7 +49,7 @@ function preprocessImage(file) {
 }
 
 // ── Coordinate back-mapping ───────────────────────────────────────────────────
-// Roboflow returns pixel coords in the 640Ã—640 cropped frame.
+// Roboflow returns pixel coords in the 640×640 cropped frame.
 // This maps them back through the crop to the original image, then scales to
 // however wide the <img> element is rendered in the browser.
 //
@@ -308,7 +308,7 @@ export default function EcoSortDemo({ sectionId }) {
         &nbsp;· conf&nbsp;<span style={{ color: 'var(--accent)' }}>{INFER_CONF}%</span>
         &nbsp;· overlap&nbsp;<span style={{ color: 'var(--accent)' }}>{INFER_OVERLAP}%</span>
         &nbsp;· threshold&nbsp;<span style={{ color: 'var(--accent)' }}>{(confThreshold * 100).toFixed(0)}%</span>
-        &nbsp;· center-crop&nbsp;<span style={{ color: 'var(--accent)' }}>640Ã—640</span>
+        &nbsp;· center-crop&nbsp;<span style={{ color: 'var(--accent)' }}>640×640</span>
       </p>
 
       <AnimatePresence mode="wait">
