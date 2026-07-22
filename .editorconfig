@@ -1,0 +1,14 @@
+root = true
+
+# The charset line is the important one: it stops editors from re-saving these
+# files as Windows-1252, which is what previously mangled symbols like the
+# permeability sign in MotorLab.jsx. Run `npm run check:encoding` to verify.
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false
