@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useAppStore } from '../../store/useAppStore'
 
 const ACCEPTED_TYPES  = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_BYTES       = 4 * 1024 * 1024  // 4 MB
@@ -157,8 +156,6 @@ export default function EcoSortDemo({ sectionId }) {
   const imgRef  = useRef(null)
   const inputRef = useRef(null)
 
-  const pushHistory = useAppStore((s) => s.pushHistory)
-
   const handleFile = useCallback(async (file) => {
     if (!file) return
     if (!ACCEPTED_TYPES.includes(file.type)) {
@@ -201,27 +198,11 @@ export default function EcoSortDemo({ sectionId }) {
       setPredictions(preds)
       setRawData(data)
       setStatus('done')
-
-      // ── Always log inference to the terminal ──────────────────────────────
-      const latencyMs    = data.time != null ? (data.time * 1000).toFixed(0) : '?'
-      const aboveThresh  = preds.filter((p) => p.confidence >= confThreshold)
-      const topLines     = aboveThresh.slice(0, 4).map(
-        (p) => `  ${p.class.padEnd(14)} ${(p.confidence * 100).toFixed(0)}%`
-      )
-      pushHistory({
-        cmd: 'inspect ecosort --inference',
-        output: [
-          `[ INFERENCE: ${preds.length} object(s) found | Latency: ${latencyMs}ms ]`,
-          ...(topLines.length > 0
-            ? topLines
-            : [`  → 0 detections above ${(confThreshold * 100).toFixed(0)}% · enable Debug Mode`]),
-        ],
-      })
     } catch (err) {
       setErrorMsg(err.message)
       setStatus('error')
     }
-  }, [pushHistory, confThreshold])
+  }, [])
 
   const onDrop     = useCallback((e) => { e.preventDefault(); handleFile(e.dataTransfer.files[0]) }, [handleFile])
   const onDragOver = (e) => e.preventDefault()

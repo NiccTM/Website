@@ -1,35 +1,23 @@
 /**
- * UIContext — global command bus + shared playback state.
+ * UIContext — shared playback state for the vinyl deck.
  *
- * Command types:
- *   SCROLL_TO     payload: 'delorean' | 'bldc' | 'audio' | 'vinyl' | 'ecosort' | 'xr'
- *   EXPLODE       payload: boolean
- *   SET_RPM       payload: number  (33.333 | 45 | 78)
- *   HIGHLIGHT_SPECS  payload: boolean
+ * This used to also be a global command bus (SCROLL_TO / EXPLODE / SET_RPM /
+ * HIGHLIGHT_SPECS) driven by the terminal console. That console is gone and
+ * nothing else ever dispatched, so the bus went with it.
  *
- * Commands auto-clear after 150 ms so the same cmd can be re-dispatched.
- * `rpm` is persistent state (not a command) — survives between dispatches.
+ * `rpm` is what remains: InteractiveTurntable reads it to derive the disc's
+ * angular velocity. setRpm is exported so a speed control can be wired up
+ * without reintroducing a bus.
  */
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState } from 'react'
 
 const UIContext = createContext(null)
 
 export function UIProvider({ children }) {
-  const [command, setCommand] = useState(null)
-  const [rpm,     setRpm]     = useState(33.333)   // default 33⅓ RPM
-
-  const dispatch = useCallback((cmd) => {
-    // Handle state mutations inline rather than routing through command TTL
-    if (cmd.type === 'SET_RPM') {
-      setRpm(cmd.payload)
-      return
-    }
-    setCommand(cmd)
-    setTimeout(() => setCommand(null), 150)
-  }, [])
+  const [rpm, setRpm] = useState(33.333)   // 33⅓ RPM
 
   return (
-    <UIContext.Provider value={{ command, dispatch, rpm }}>
+    <UIContext.Provider value={{ rpm, setRpm }}>
       {children}
     </UIContext.Provider>
   )
