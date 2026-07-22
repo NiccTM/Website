@@ -13,3 +13,6 @@ dist
 !*_cmp.mp4
 !*_cmp.mov
 !*_cmp.webm
+
+# Local editor/tool config (tool resolves this from the session cwd, not here)
+.claude/launch.json
