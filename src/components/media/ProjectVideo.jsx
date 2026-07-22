@@ -28,11 +28,17 @@ export default function ProjectVideo({
   const [playing, setPlaying] = useState(false)
   const [ready,   setReady]   = useState(false)
   const [error,   setError]   = useState(false)
+  // With preload="none" nothing is fetched until the viewer asks for it, so
+  // "Loading…" must be tied to an actual request rather than to canplay having
+  // not fired yet — otherwise it would sit there permanently, claiming to load
+  // something the browser has deliberately not started.
+  const [requested, setRequested] = useState(false)
 
   const toggle = () => {
     const v = videoRef.current
     if (!v) return
     if (v.paused) {
+      setRequested(true)
       v.play().then(() => setPlaying(true)).catch(() => setError(true))
     } else {
       v.pause()
@@ -84,7 +90,15 @@ export default function ProjectVideo({
             controls
             muted
             playsInline
-            preload="metadata"
+            /* preload="none", not "metadata": browsers cannot know where a
+               file's metadata lives, so preload="metadata" fetches a real slice
+               of video bytes via Content-Range on page load. For a 38 MB clip
+               nobody may play, that is pure waste. The poster carries the
+               visual and is itself an LCP candidate in Chromium since Chrome
+               116. loading="lazy" defers poster+media too but is Chromium-only,
+               so preload="none" does the real work. */
+            preload="none"
+            loading="lazy"
             onCanPlay={() => setReady(true)}
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
@@ -108,7 +122,7 @@ export default function ProjectVideo({
               >
                 play_circle
               </span>
-              {!ready && (
+              {requested && !ready && (
                 <span className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
                   Loading…
                 </span>
