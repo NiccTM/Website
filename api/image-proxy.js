@@ -1,30 +1,27 @@
 /**
  * Vercel Serverless Function — /api/image-proxy
- * Proxies Discogs CDN images to bypass browser CORS restrictions.
- * Only allows i.discogs.com as source domain.
+ *
+ * Proxies Discogs CDN cover art so the browser (and three.js TextureLoader)
+ * sees a same-origin image. Validation lives in _lib/upstream-image.js and is
+ * shared with the dev/preview middleware so the two cannot drift.
  */
+import { validateImageUrl, fetchUpstreamImage } from './_lib/upstream-image.js'
+
 export default async function handler(req, res) {
-  const { url } = req.query
-  if (!url) return res.status(400).json({ error: 'Missing url param' })
-
-  // Allowlist — only proxy from Discogs CDN
-  let parsed
-  try { parsed = new URL(url) } catch { return res.status(400).json({ error: 'Invalid URL' }) }
-  if (!parsed.hostname.endsWith('discogs.com') && !parsed.hostname.endsWith('discogs-cdn.com')) {
-    return res.status(403).json({ error: 'Domain not allowed' })
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  try {
-    const upstream = await fetch(url, {
-      headers: { 'User-Agent': 'NicPirainoPortfolio/1.0 +https://github.com/NiccTM' },
-    })
-    const buf = await upstream.arrayBuffer()
+  const check = validateImageUrl(req.query.url)
+  if (!check.ok) return res.status(check.status).json({ error: check.error })
 
-    res.setHeader('Content-Type', upstream.headers.get('content-type') ?? 'image/jpeg')
-    res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=3600')
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    return res.status(200).send(Buffer.from(buf))
-  } catch (err) {
-    return res.status(502).json({ error: 'Upstream error' })
-  }
+  const result = await fetchUpstreamImage(check.url)
+  if (!result.ok) return res.status(result.status).json({ error: result.error })
+
+  res.setHeader('Content-Type', result.contentType)
+  res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=3600')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  // The response is always an image; stop any content-type sniffing on it.
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  return res.status(200).send(result.body)
 }
