@@ -218,6 +218,36 @@ canvas, img, video, .no-theme-transition {
 /* Suppress focus ring on mouse click — only show on keyboard */
 :focus:not(:focus-visible) { outline: none; }
 
+/* ── Skip link (WCAG 2.4.1 Bypass Blocks, Level A) ────────────────────────── */
+/* Off-screen rather than display:none or visibility:hidden, both of which take
+   it out of the tab order entirely and defeat the point. It reveals itself on
+   :focus (not :focus-visible — a click-through should show it too). */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;              /* above the sticky nav, which sits at z-50 */
+  transform: translateY(-150%);
+  padding: 0.7rem 1.15rem;
+  border-radius: 0 0 8px 0;
+  /* Deliberately NOT var(--accent) as the background. In the light theme that
+     token is #2a7cc8, and neither white (4.36:1) nor near-black ink (4.40:1)
+     clears 4.5:1 on it at this size. This fixed pair is ~18:1 in both themes,
+     with the accent kept as the border so it still reads as part of the site. */
+  background: #08131c;
+  color: #ffffff;
+  border: 2px solid var(--accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: transform 160ms ease-out;
+}
+.skip-link:focus { transform: translateY(0); }
+
+/* The skip target is only focusable so focus can be moved into it; it should
+   not draw a ring the way a real control does. */
+main:focus { outline: none; }
+
 /* ── Prevent horizontal overflow on mobile ───────────────────────────────── */
 html, body { overflow-x: hidden; max-width: 100vw; }
 

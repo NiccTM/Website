@@ -62,13 +62,28 @@ function DiagnosticImage({ image, index }) {
           style={{ transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s' }}
         />
 
-        {/* Always-visible gradient bar */}
+        {/* Always-visible caption scrim.
+            This was `inset-0` with `justify-end` and a gradient that is fully
+            transparent above 75% — so the scrim covered a fixed quarter of the
+            card while the text block grew upward with its content. Captions
+            like the DVD player's ("Internal inspection · full disc drive
+            disassembly · laser sled cleaning · mechanism lubrication") run to
+            four lines and ended up sitting on bare photo, white-on-white in
+            places and unreadable.
+
+            Anchoring to the bottom edge instead lets the box hug its own text,
+            so the gradient always spans exactly the height the caption needs,
+            whatever the caption length. The extra top padding gives the fade
+            somewhere to happen above the first line. */}
         <div
-          className="absolute inset-0 flex flex-col justify-end p-3"
-          style={{ background: 'linear-gradient(to top, rgba(0,20,60,0.82) 0%, rgba(0,20,60,0.45) 50%, transparent 75%)' }}
+          className="absolute inset-x-0 bottom-0 px-3 pb-3 pt-6"
+          style={{
+            background:
+              'linear-gradient(to top, rgba(0,20,60,0.92) 0%, rgba(0,20,60,0.86) 55%, rgba(0,20,60,0.55) 85%, rgba(0,20,60,0) 100%)',
+          }}
         >
           <p className="font-mono-data text-sm font-medium" style={{ color: '#ffffff' }}>{image.label}</p>
-          <p className="font-mono-data mt-0.5" style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.875rem' }}>{image.caption}</p>
+          <p className="font-mono-data mt-0.5" style={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.875rem' }}>{image.caption}</p>
         </div>
 
         {/* Zoom icon */}

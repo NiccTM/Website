@@ -62,7 +62,7 @@ function buildEdges(chain) {
   }))
 }
 
-function FlowSection({ title, chain }) {
+function FlowSection({ id, title, chain }) {
   const [selected, setSelected] = useState(null)
   const [nodes, , onNodesChange] = useNodesState(buildNodes(chain, setSelected))
   const [edges, , onEdgesChange] = useEdgesState(buildEdges(chain))
@@ -88,7 +88,15 @@ function FlowSection({ title, chain }) {
           boxShadow: 'inset 0 0 12px var(--flow-node-inset), 0 4px 16px rgba(0,0,0,0.06)',
         }}
       >
+        {/* id must be unique per instance, and there are several: one
+            FlowSection per room here, plus SystemArchitecture on the same page.
+            React Flow derives DOM ids from it and numbers every instance "1" by
+            default, so leaving it unset emitted duplicate
+            #react-flow__aria-live-1 live regions and duplicate
+            #react-flow__node-desc-1 targets — the aria-describedby on one
+            diagram's nodes then resolved to another diagram's description. */}
         <ReactFlow
+          id={`audio-${id}`}
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
@@ -100,7 +108,9 @@ function FlowSection({ title, chain }) {
           panOnDrag
           zoomOnScroll={false}
         >
-          <Background color="#1f2937" gap={24} />
+          {/* Background builds its SVG <pattern> id as `pattern-${rfId}${id}`,
+              which is literally "pattern-1undefined" when neither is set. */}
+          <Background id="dots" color="#1f2937" gap={24} />
           <Controls
             showInteractive={false}
             style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
@@ -175,7 +185,7 @@ export default function AudioSignalChain({ sectionId }) {
       </p>
 
       {audioChain.rooms.map((room) => (
-        <FlowSection key={room.id} title={room.label} chain={room} />
+        <FlowSection key={room.id} id={room.id} title={room.label} chain={room} />
       ))}
     </section>
   )
