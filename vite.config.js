@@ -6,14 +6,18 @@ const DISCOGS_URL =
   '?sort=added&sort_order=desc&per_page=50'
 
 /**
- * Vite dev-only plugin — serves /api/discogs without Vercel CLI.
- * Reads DISCOGS_PAT from .env, proxies to Discogs, returns mapped payload.
- * In production, the real api/discogs.js Vercel function takes over.
+ * Local stand-in for the Vercel serverless functions in api/, so the site works
+ * without the Vercel CLI. Reads secrets from .env and never exposes them to the
+ * client. In production the real api/*.js functions take over.
+ *
+ * Registered for BOTH `vite dev` and `vite preview`: preview runs its own
+ * server that does not call configureServer, so without configurePreviewServer
+ * every /api/* request falls through to the SPA catch-all and returns
+ * index.html — which surfaces as `Unexpected token '<'` when the client
+ * calls .json() on it.
  */
-function discogsDevPlugin(env) {
-  return {
-    name: 'discogs-dev-proxy',
-    configureServer(server) {
+function registerApiMiddleware(server, env) {
+  {
       // Image proxy — bypasses CORS on Discogs CDN for TextureLoader
       server.middlewares.use('/api/image-proxy', async (req, res) => {
         const url = new URL(req.url, 'http://localhost').searchParams.get('url')
@@ -108,7 +112,14 @@ function discogsDevPlugin(env) {
           res.end(JSON.stringify({ error: err.message }))
         }
       })
-    },
+  }
+}
+
+function localApiPlugin(env) {
+  return {
+    name: 'local-api',
+    configureServer(server)        { registerApiMiddleware(server, env) },
+    configurePreviewServer(server) { registerApiMiddleware(server, env) },
   }
 }
 
@@ -116,7 +127,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')   // load .env without VITE_ prefix filter
 
   return {
-    plugins: [react(), discogsDevPlugin(env)],
+    plugins: [react(), localApiPlugin(env)],
     server: {
       port: 4000,
       open: true,

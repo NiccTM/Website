@@ -29,12 +29,26 @@ function useCollection() {
     setError(null)
 
     fetch('/api/discogs')
-      .then((r) => {
-        if (!r.ok) throw new Error(`API ${r.status}`)
-        return r.json()
+      .then(async (r) => {
+        // Guard the content type before parsing. If /api/* is not being served
+        // (no serverless runtime), the SPA catch-all answers with index.html at
+        // status 200 -- .json() would then fail with a bare "Unexpected token
+        // '<'", which says nothing about the actual problem.
+        const isJson = (r.headers.get('content-type') ?? '').includes('application/json')
+        if (!isJson) {
+          throw new Error(
+            `API returned ${r.headers.get('content-type') ?? 'no content-type'} instead of JSON — the /api routes are not running.`
+          )
+        }
+        const json = await r.json()
+        if (!r.ok) throw new Error(json?.error ?? `API ${r.status}`)
+        return json
       })
       .then((json) => {
-        if (!cancelled) { setData(json); setIsMock(false) }
+        if (!cancelled) {
+          if (!Array.isArray(json)) throw new Error('Unexpected payload shape from /api/discogs.')
+          setData(json); setIsMock(false)
+        }
       })
       .catch((err) => {
         if (!cancelled) setError(err.message)
@@ -201,7 +215,7 @@ export default function VinylArchive() {
           </h2>
           <p className="font-mono-data mt-1" style={{ color: 'var(--text-muted)' }}>
             {loading
-              ? 'Fetching collectionâ€¦'
+              ? 'Fetching collection\u2026'
               : error
               ? 'Collection unavailable'
               : isMock
