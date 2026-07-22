@@ -664,7 +664,7 @@ export default function InteractiveTurntable({ release, onClose }) {
       <div className="relative flex-1 min-h-0 w-full">
         <ErrorBoundary fallback={
           <img
-            src="/RegaP2_VINYL.jpg"
+            src="/display/RegaP2_VINYL.jpg"
             alt="Rega P2 turntable"
             className="w-full h-full object-cover"
             style={{ opacity: 0.7 }}

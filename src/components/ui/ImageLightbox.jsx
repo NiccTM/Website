@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { createPortal } from 'react-dom'
-import { thumbSrc, hasThumb } from '../../utils/thumbs'
+// Aliased: this component already has a local `displaySrc` for "what to render
+// right now". fullResSrc is the 2560px deliverable that replaced shipping the
+// 16320px source file to the browser.
+import { thumbSrc, hasThumb, displaySrc as fullResSrc } from '../../utils/thumbs'
 
 const MIN_SCALE = 1
 const MAX_SCALE = 5
@@ -22,12 +25,13 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
   useEffect(() => {
     let cancelled = false
     setHiResSrc(null)
+    const full = fullResSrc(src)
     const img = new Image()
     img.decoding = 'async'
-    const done = () => { if (!cancelled) setHiResSrc(src) }
+    const done = () => { if (!cancelled) setHiResSrc(full) }
     img.onload  = done
-    img.onerror = done          // fall through to the original and let <img> report it
-    img.src = src
+    img.onerror = done
+    img.src = full
     if (img.complete && img.naturalWidth) done()
     return () => { cancelled = true; img.onload = null; img.onerror = null }
   }, [src])

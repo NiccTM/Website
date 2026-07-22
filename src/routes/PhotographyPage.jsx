@@ -3,7 +3,10 @@ import { usePageMeta } from '../hooks/usePageMeta'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import PHOTO_DIMS from '../data/photoDimensions.json'
-import { thumbSrc } from '../utils/thumbs'
+// fullResSrc aliased: this file already uses `displaySrc` for "what to render
+// right now". The 2560px tier is what the lightbox loads -- originals live in
+// originals/ and are no longer deployed.
+import { thumbSrc, displaySrc as fullResSrc } from '../utils/thumbs'
 
 // ─── All photos from /public/Remastered Photos/ ───────────────────────────────
 const PHOTOS = [
@@ -95,12 +98,13 @@ function Lightbox({ idx, onClose, onGo }) {
     setHiResSrc(null)
     setHiResFailed(false)
 
+    const full = fullResSrc(photo.src)
     const img = new Image()
     img.decoding = 'async'
-    img.onload  = () => { if (!cancelled) setHiResSrc(photo.src) }
+    img.onload  = () => { if (!cancelled) setHiResSrc(full) }
     img.onerror = () => { if (!cancelled) setHiResFailed(true) }   // keep the thumbnail
-    img.src = photo.src
-    if (img.complete && img.naturalWidth) setHiResSrc(photo.src)   // already cached
+    img.src = full
+    if (img.complete && img.naturalWidth) setHiResSrc(full)        // already cached
 
     return () => { cancelled = true; img.onload = null; img.onerror = null }
   }, [photo.src])
