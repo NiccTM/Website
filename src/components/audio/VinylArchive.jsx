@@ -165,8 +165,11 @@ function ErrorState({ message, onRetry, onMock }) {
     <div className="rounded-xl border-subtle p-6 flex flex-col gap-4" style={{ background: 'var(--bg-surface-1)' }}>
       <div>
         <p className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
+          {/* Deliberately does not name the server-side env var: that is an
+              operator detail, and it shipped in the client bundle where it told
+              visitors nothing useful and disclosed internals. */}
           {message.includes('404') || message.includes('500') || message.includes('API')
-            ? 'Discogs API unavailable — check DISCOGS_PAT environment variable.'
+            ? 'The Discogs collection is temporarily unavailable.'
             : `Collection error: ${message}`}
         </p>
       </div>
