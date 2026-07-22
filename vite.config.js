@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import { validateImageUrl, fetchUpstreamImage } from './api/_lib/upstream-image.js'
 
 const DISCOGS_URL =
   'https://api.discogs.com/users/NiccTM/collection/folders/0/releases' +
@@ -18,26 +19,34 @@ const DISCOGS_URL =
  */
 function registerApiMiddleware(server, env) {
   {
-      // Image proxy — bypasses CORS on Discogs CDN for TextureLoader
+      // Image proxy — makes Discogs CDN art same-origin for TextureLoader.
+      // This previously fetched ANY url with no allowlist at all, so dev and
+      // production disagreed about what was permitted. It now runs the exact
+      // same validation as the deployed function.
       server.middlewares.use('/api/image-proxy', async (req, res) => {
-        const url = new URL(req.url, 'http://localhost').searchParams.get('url')
-        if (!url) {
-          res.writeHead(400); res.end('Missing url param'); return
+        const raw = new URL(req.url, 'http://localhost').searchParams.get('url')
+
+        const check = validateImageUrl(raw)
+        if (!check.ok) {
+          res.writeHead(check.status, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ error: check.error }))
+          return
         }
-        try {
-          const img = await fetch(url, {
-            headers: { 'User-Agent': 'NicPirainoPortfolio/1.0 +https://github.com/NiccTM' },
-          })
-          const buf = await img.arrayBuffer()
-          res.writeHead(200, {
-            'Content-Type': img.headers.get('content-type') ?? 'image/jpeg',
-            'Cache-Control': 's-maxage=86400',
-            'Access-Control-Allow-Origin': '*',
-          })
-          res.end(Buffer.from(buf))
-        } catch {
-          res.writeHead(502); res.end('Proxy error')
+
+        const result = await fetchUpstreamImage(check.url)
+        if (!result.ok) {
+          res.writeHead(result.status, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ error: result.error }))
+          return
         }
+
+        res.writeHead(200, {
+          'Content-Type': result.contentType,
+          'Cache-Control': 'no-store',
+          'Access-Control-Allow-Origin': '*',
+          'X-Content-Type-Options': 'nosniff',
+        })
+        res.end(result.body)
       })
 
       // Classify proxy — keeps ROBOFLOW_API_KEY off the client in dev
