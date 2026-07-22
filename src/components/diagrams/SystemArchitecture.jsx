@@ -126,7 +126,10 @@ export default function SystemArchitecture() {
           boxShadow: 'inset 0 0 12px var(--flow-node-inset), 0 4px 16px rgba(0,0,0,0.06)',
         }}
       >
+        {/* See AudioSignalChain: both diagrams render on the home page, and an
+            unset id makes React Flow number every instance "1". */}
         <ReactFlow
+          id="system-arch"
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
@@ -138,7 +141,7 @@ export default function SystemArchitecture() {
           panOnDrag
           zoomOnScroll={false}
         >
-          <Background color="#1f2937" gap={24} />
+          <Background id="dots" color="#1f2937" gap={24} />
           <Controls
             showInteractive={false}
             style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
