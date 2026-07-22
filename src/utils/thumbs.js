@@ -1,4 +1,7 @@
-import PHOTO_DIMS from '../data/photoDimensions.json'
+// The `with { type: 'json' }` attribute is required by Node's ESM loader and
+// accepted by Vite, which keeps this module importable by both the bundler and
+// `node --test` — without it the unit tests cannot load it at all.
+import PHOTO_DIMS from '../data/photoDimensions.json' with { type: 'json' }
 
 /**
  * Maps a full-resolution image URL under /public to its generated thumbnail by
