@@ -93,7 +93,7 @@ const VALID_RPMS = { '33': 33.333, '45': 45, '78': 78 }
 
 function verboseSpecsOutput() {
   return [
-    '══ System Diagnostic ════════════════════',
+    '══ System Diagnostic ═════════════════════',
     `  Host     : ${profile.name}`,
     `  Location : ${profile.location}`,
     `  Program  : ${profile.academics.program} @ ${profile.academics.institution}`,
@@ -217,7 +217,7 @@ function parseCommand(raw, { dispatch, navigate, setRpm, setBpm, nextGallery, se
         '  │  Uptime   : 3 years, 47 days               │',
         '  │  Shell    : zsh 5.9                        │',
         '  │  Terminal : portfolio-v2.1.0               │',
-        '  │  CPU      : Ryzen 7 9800X3D @ 4.7GHz      │',
+        '  │  CPU      : Ryzen 7 9800X3D @ 4.7GHz       │',
         '  │  Memory   : 32GB DDR5 6000MHz CL30         │',
         '  │  GPU      : Zotac RTX 3090 24GB            │',
         '  │  Theme    : Engineering Dark               │',
@@ -645,8 +645,8 @@ function TerminalLine({ session, visible }) {
   return (
     <div className="mb-4">
       <div className="flex items-center gap-2">
-        <span style={{ color: 'var(--accent)' }} className="font-mono-data select-none">›</span>
-        <span className="font-mono-data" style={{ color: 'var(--text-primary)' }}>{typed}</span>
+        <span style={{ color: 'var(--accent)' }} className="font-terminal select-none">›</span>
+        <span className="font-terminal" style={{ color: 'var(--text-primary)' }}>{typed}</span>
         {visible && !showOutput && (
           <span className="inline-block w-[7px] h-[14px] ml-0.5 animate-pulse"
             style={{ background: 'var(--accent)' }} />
@@ -660,13 +660,13 @@ function TerminalLine({ session, visible }) {
           className="mt-1 pl-5"
         >
           {session.wrap && (
-            <div className="font-mono-data" style={{ color: 'var(--text-secondary)' }}>{session.wrap[0]}</div>
+            <div className="font-terminal" style={{ color: 'var(--text-secondary)' }}>{session.wrap[0]}</div>
           )}
           {session.output.map((line, i) => (
-            <div key={i} className="font-mono-data" style={{ color: 'var(--text-secondary)' }}>{line}</div>
+            <div key={i} className="font-terminal" style={{ color: 'var(--text-secondary)' }}>{line}</div>
           ))}
           {session.wrap && (
-            <div className="font-mono-data" style={{ color: 'var(--text-secondary)' }}>{session.wrap[1]}</div>
+            <div className="font-terminal" style={{ color: 'var(--text-secondary)' }}>{session.wrap[1]}</div>
           )}
         </motion.div>
       )}
@@ -680,11 +680,11 @@ function HistoryEntry({ cmd, output }) {
   return (
     <div className="mb-3">
       <div className="flex items-center gap-2">
-        <span style={{ color: 'var(--accent)' }} className="font-mono-data select-none">›</span>
-        <span className="font-mono-data" style={{ color: 'var(--text-primary)' }}>{cmd}</span>
+        <span style={{ color: 'var(--accent)' }} className="font-terminal select-none">›</span>
+        <span className="font-terminal" style={{ color: 'var(--text-primary)' }}>{cmd}</span>
       </div>
       {output && output.map((line, i) => (
-        <div key={i} className="mt-0.5 pl-5 font-mono-data" style={{ color: 'var(--text-secondary)' }}>
+        <div key={i} className="mt-0.5 pl-5 font-terminal" style={{ color: 'var(--text-secondary)' }}>
           {line}
         </div>
       ))}
@@ -864,12 +864,15 @@ export default function TerminalConsole() {
         {/* Interactive prompt with ghost autocomplete */}
         {interactive && (
           <form onSubmit={handleSubmit} className="flex items-center gap-2 relative">
-            <span style={{ color: 'var(--accent)' }} className="font-mono-data select-none">›</span>
+            <span style={{ color: 'var(--accent)' }} className="font-terminal select-none">›</span>
             <div className="relative flex-1">
               {hint && (
                 <span
-                  className="absolute inset-0 font-mono-data pointer-events-none select-none"
-                  style={{ color: 'var(--text-muted)', opacity: 0.45, fontSize: '0.875rem', lineHeight: 'inherit' }}
+                  className="absolute inset-0 font-terminal pointer-events-none select-none"
+                  /* nowrap overrides .font-terminal's pre-wrap: this ghost is
+                     overlaid on a single-line <input>, so it must never wrap
+                     independently of the text it is shadowing. */
+                  style={{ color: 'var(--text-muted)', opacity: 0.45, fontSize: '0.875rem', lineHeight: 'inherit', whiteSpace: 'nowrap' }}
                   aria-hidden="true"
                 >
                   {inputValue}{hint}
@@ -880,7 +883,7 @@ export default function TerminalConsole() {
                 value={inputValue}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
-                className="w-full bg-transparent font-mono-data outline-none caret-emerald-400 relative"
+                className="w-full bg-transparent font-terminal outline-none caret-emerald-400 relative"
                 style={{ color: 'var(--text-primary)', fontSize: '0.875rem' }}
                 placeholder={hint ? '' : 'type "help" for commands'}
                 autoComplete="off"

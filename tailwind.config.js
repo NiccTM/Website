@@ -41,9 +41,13 @@ export default {
         '2xl': '16px',
       },
 
+      // Exo 2 ships only latin/latin-ext/cyrillic/vietnamese — it has NO Greek
+      // subset, and no math, arrow, or box-drawing glyphs. So μ π Ω ≈ → ← ─ all
+      // fall through to a fallback. The symbol families below make that fallback
+      // explicit and consistent across platforms instead of OS-dependent.
       fontFamily: {
-        sans:    ['"Exo 2"', '"Segoe UI"', 'Tahoma', 'system-ui', 'sans-serif'],
-        mono:    ['"Exo 2"', '"Segoe UI"', 'system-ui', 'sans-serif'],
+        sans:    ['"Exo 2"', '"Segoe UI"', 'Tahoma', 'system-ui', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', '"DejaVu Sans"', 'sans-serif'],
+        mono:    ['"Exo 2"', '"Segoe UI"', 'system-ui', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', '"DejaVu Sans"', 'sans-serif'],
         display: ['"Playfair Display"', 'Georgia', 'serif'],
       },
 
