@@ -10,7 +10,7 @@ import * as THREE from 'three'
 import { useAppStore } from '../store/useAppStore'
 import ErrorBoundary  from '../components/ui/ErrorBoundary'
 import ImageLightbox  from '../components/ui/ImageLightbox'
-import { thumbSrc }   from '../utils/thumbs'
+import { thumbSrc, displaySrc } from '../utils/thumbs'
 import { REFERENCE_IMAGES } from '../components/hardware/ReferenceGallery'
 import MotorLab       from '../components/hardware/MotorLab'
 import WaterSenseDive from '../components/hardware/WaterSenseDive'
@@ -310,6 +310,10 @@ export default function HardwarePage() {
   return (
     <section className="relative z-10 px-5 pt-8 pb-4 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40" id="section-hardware">
 
+      {/* Visually hidden: the page leads with an h2 section label rather than a
+          page title, so it had no h1 for screen readers or search engines. */}
+      <h1 className="sr-only">Hardware Lab</h1>
+
       {/* ── Header ── */}
       <motion.div
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
@@ -385,7 +389,7 @@ export default function HardwarePage() {
           >
             {/* PCB preview photo */}
             <img
-              src="/Screenshot 2026-03-31 125242.png"
+              src={displaySrc('/Screenshot 2026-03-31 125242.png')}
               alt="PCB preview"
               className="absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:scale-[1.02]"
               style={{ filter: 'brightness(0.35) saturate(0.6)' }}

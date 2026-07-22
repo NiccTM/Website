@@ -36,7 +36,7 @@ export default function ProjectsPage() {
           <Suspense fallback={<SectionFallback />}>
             <ProjectVideo
               src="/videos/APSC 171-2024-T1C4-16-SW_cmp.mp4"
-              poster="/DeLorean.png"
+              poster="/display/DeLorean.png"
               title="APSC 171 DeLorean — SolidWorks Showcase"
             />
           </Suspense>

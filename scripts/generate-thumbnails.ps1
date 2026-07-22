@@ -31,7 +31,8 @@
   encoders and the images decode fine.
 #>
 param(
-    [int]$MaxWidth = 800,
+    [int]$MaxWidth = 800,     # thumbs/  -- grid tiles
+    [int]$DisplayWidth = 1920, # display/ -- hero backdrops and full-bleed panels
     [int]$Quality  = 82,
     [switch]$Force
 )
@@ -40,10 +41,12 @@ Add-Type -AssemblyName System.Drawing
 $ErrorActionPreference = 'Stop'
 
 $root    = Split-Path $PSScriptRoot -Parent
+$orig    = Join-Path $root 'originals'
 $pub     = Join-Path $root 'public'
 $maniOut = Join-Path $root 'src\data\photoDimensions.json'
 
-if (-not (Test-Path $pub)) { throw "public/ not found at $pub" }
+if (-not (Test-Path $orig)) { throw "originals/ not found at $orig" }
+if (-not (Test-Path $pub))  { throw "public/ not found at $pub" }
 
 $jpegCodec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() |
              Where-Object { $_.MimeType -eq 'image/jpeg' }
@@ -51,29 +54,41 @@ $encParams = New-Object System.Drawing.Imaging.EncoderParameters(1)
 $encParams.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
     [System.Drawing.Imaging.Encoder]::Quality, [int64]$Quality)
 
-# Source sets: the photography folder, and the flat images at the public root.
+# Sources live in originals/, which is NOT under public/ and therefore is never
+# copied into the build. Only the derivatives written into public/ are deployed.
+# That is what takes the deployment from 639 MB to well under 100 MB: nothing
+# ships a 16320px, 33 MB source file to a browser.
 $sets = @(
-    @{ Dir = Join-Path $pub 'Remastered Photos'; UrlPrefix = '/Remastered Photos/' },
-    @{ Dir = $pub;                               UrlPrefix = '/'                   }
+    @{ Src = Join-Path $orig 'Remastered Photos'; Out = Join-Path $pub 'Remastered Photos'; UrlPrefix = '/Remastered Photos/' },
+    @{ Src = $orig;                               Out = $pub;                               UrlPrefix = '/'                   }
 )
 
 $manifest = [ordered]@{}
 $made = 0; $skipped = 0; $srcBytes = 0; $outBytes = 0
 
+# Two derivative tiers. thumbs/ is for grid tiles; display/ is for anything
+# rendered full-bleed -- the hero carousel was loading 4-19 MB originals as a
+# backdrop, which is most of the home page's weight.
+$tiers = @(
+    @{ Dir = 'thumbs';  Width = $MaxWidth },
+    @{ Dir = 'display'; Width = $DisplayWidth }
+)
+
 foreach ($set in $sets) {
-    if (-not (Test-Path $set.Dir)) { continue }
-    $outDir = Join-Path $set.Dir 'thumbs'
-    if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }
+    if (-not (Test-Path $set.Src)) { continue }
+    foreach ($t in $tiers) {
+      $outDir = Join-Path $set.Out $t.Dir
+      if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }
 
     # Non-recursive: each set owns only the files directly inside it, so the
-    # root set never re-processes "Remastered Photos" or any thumbs/ output.
-    Get-ChildItem (Join-Path $set.Dir '*') -File |
+    # root set never re-processes "Remastered Photos".
+    Get-ChildItem (Join-Path $set.Src '*') -File |
         Where-Object { $_.Extension -match '^\.(jpg|jpeg|png)$' } |
         Sort-Object Name | ForEach-Object {
 
         $src = $_
         $dst = Join-Path $outDir $src.Name
-        $srcBytes += $src.Length
+        if ($t.Dir -eq 'thumbs') { $srcBytes += $src.Length }
 
         $img = [System.Drawing.Image]::FromFile($src.FullName)
         try {
@@ -86,7 +101,7 @@ foreach ($set in $sets) {
             }
 
             # Never upscale: a source narrower than the cap keeps its own width.
-            $w = [Math]::Min($MaxWidth, $img.Width)
+            $w = [Math]::Min($t.Width, $img.Width)
             $h = [int][Math]::Round($img.Height * ($w / $img.Width))
 
             $bmp = New-Object System.Drawing.Bitmap($w, $h)
@@ -103,10 +118,11 @@ foreach ($set in $sets) {
             $g.Dispose(); $bmp.Dispose()
 
             $made++; $outBytes += (Get-Item $dst).Length
-            "  {0,-46} {1,5}x{2,-5} -> {3}x{4}  {5,7:N2} MB -> {6,6:N0} KB" -f `
-                $src.Name, $img.Width, $img.Height, $w, $h, ($src.Length/1MB), ((Get-Item $dst).Length/1KB)
+            "  {0,-8} {1,-42} {2,5}x{3,-5} -> {4}x{5}  {6,7:N2} MB -> {7,6:N0} KB" -f `
+                $t.Dir, $src.Name, $img.Width, $img.Height, $w, $h, ($src.Length/1MB), ((Get-Item $dst).Length/1KB)
         }
         finally { $img.Dispose() }
+    }
     }
 }
 

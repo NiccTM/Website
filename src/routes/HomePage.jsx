@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { profile, contact } from '../data/config'
 import SocialLinks from '../components/ui/SocialLinks'
+import { displaySrc } from '../utils/thumbs'
 
 const AudioSignalChain   = lazy(() => import('../components/diagrams/AudioSignalChain'))
 const SystemArchitecture = lazy(() => import('../components/diagrams/SystemArchitecture'))
@@ -39,7 +40,7 @@ function HeroCarousel() {
       <AnimatePresence mode="sync">
         <motion.img
           key={current}
-          src={HERO_PHOTOS[current]}
+          src={displaySrc(HERO_PHOTOS[current])}
           alt=""
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}

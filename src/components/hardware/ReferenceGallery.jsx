@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { useAppStore } from '../../store/useAppStore'
-import { thumbSrc } from '../../utils/thumbs'
+import { thumbSrc, displaySrc } from '../../utils/thumbs'
 
 // ─── Image manifest ───────────────────────────────────────────────────────────
 // Files confirmed in /public/ (all .png)
@@ -48,7 +48,7 @@ function Lightbox({ image, onClose }) {
         className="relative max-w-5xl w-full"
       >
         <img
-          src={image.src}
+          src={displaySrc(image.src)}
           alt={image.label}
           className="w-full rounded-xl border-subtle"
           style={{ maxHeight: '82vh', objectFit: 'contain', background: '#0d1f0f', filter: 'brightness(3.5) contrast(1.6) saturate(2)', mixBlendMode: 'screen' }}
