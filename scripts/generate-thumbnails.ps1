@@ -18,7 +18,14 @@
   URL to its intrinsic size, so tiles can reserve an aspect-ratio box and avoid
   layout shift.
 
-  Originals are untouched and remain what the lightbox loads at full size.
+  Originals stay in originals/, which is outside public/ and is never deployed.
+  The display/ tier is therefore the highest resolution a browser can obtain,
+  and it is what the lightbox loads when a photo is opened.
+
+  DisplayWidth is 4000 because that is the native width of the photography
+  originals -- going wider would only upscale them. The hardware teardowns
+  report 8160x6120 and 16320x12240, but those are upscaled exports rather than
+  optical detail, so 4000 is the point past which bytes stop buying sharpness.
 
   Re-run after adding images:  powershell -File scripts/generate-thumbnails.ps1
   Up-to-date thumbnails are skipped; -Force rebuilds everything.
@@ -31,8 +38,8 @@
   encoders and the images decode fine.
 #>
 param(
-    [int]$MaxWidth = 800,     # thumbs/  -- grid tiles
-    [int]$DisplayWidth = 1920, # display/ -- hero backdrops and full-bleed panels
+    [int]$MaxWidth = 800,      # thumbs/  -- grid tiles
+    [int]$DisplayWidth = 4000, # display/ -- lightbox, hero backdrops, full-bleed panels
     [int]$Quality  = 82,
     [switch]$Force
 )
