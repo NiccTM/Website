@@ -39,12 +39,7 @@
   </head>
   <body>
     <!-- Sync theme before React mounts — prevents flash of wrong theme -->
-    <script>
-      try {
-        var t = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', t);
-      } catch(e) {}
-    </script>
+    <script src="/theme-init.js"></script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
