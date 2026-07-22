@@ -16,6 +16,10 @@ export default function SystemsPage() {
   usePageMeta('Systems', 'EcoSort — a real-time ML waste classification system using computer vision and Roboflow, built for sustainable sorting at scale.')
   return (
     <>
+      {/* Visually hidden: the page has no visible title, but every route needs
+          exactly one h1 for screen readers and search engines. */}
+      <h1 className="sr-only">Systems — EcoSort waste classifier</h1>
+
       <ErrorBoundary label="EcoSort ML Demo">
         <Suspense fallback={<SectionFallback />}>
           <EcoSortDemo sectionId="section-ecosort" />
