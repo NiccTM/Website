@@ -52,24 +52,36 @@ function HeroCarousel() {
       </AnimatePresence>
       {/* Gradient fade to right on desktop — only last 20% */}
       <div className="absolute inset-0 hidden md:block" style={{ background: 'linear-gradient(to right, transparent 80%, var(--hero-gradient-to) 100%)' }} />
-      {/* Dark overlay for mobile legibility */}
-      <div className="absolute inset-0 bg-black/40 md:hidden" />
+      {/* Light scrim so the dot indicators keep contrast against the photo.
+          This was bg-black/40 "for mobile legibility", but on mobile the layout
+          stacks (flex-col): the text sits BELOW the photo, never over it. At 40%
+          over night photography the hero rendered as a near-black rectangle. */}
+      <div className="absolute inset-0 bg-black/15 md:hidden" />
 
-      {/* Dot indicators */}
-      <div className="absolute bottom-6 left-6 flex gap-2">
+      {/* Dot indicators. The visible dot stays 6px, but each button carries a
+          24x24 hit area — WCAG 2.2 AA 2.5.8 (Target Size Minimum) sets 24x24
+          CSS px as the floor, and a 6x6 tap target is genuinely hard to hit. */}
+      <div className="absolute bottom-4 left-4 flex">
         {HERO_PHOTOS.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
-            aria-label={`Photo ${i + 1}`}
-            className="transition-all duration-300"
-            style={{
-              width: i === current ? '24px' : '6px',
-              height: '6px',
-              borderRadius: '3px',
-              background: i === current ? 'var(--accent)' : 'rgba(255,255,255,0.45)',
-            }}
-          />
+            aria-label={`Show photo ${i + 1} of ${HERO_PHOTOS.length}`}
+            aria-current={i === current ? 'true' : undefined}
+            className="grid place-items-center"
+            style={{ width: '28px', height: '28px' }}
+          >
+            <span
+              aria-hidden="true"
+              className="block transition-all duration-300"
+              style={{
+                width: i === current ? '24px' : '6px',
+                height: '6px',
+                borderRadius: '3px',
+                background: i === current ? 'var(--accent)' : 'rgba(255,255,255,0.45)',
+              }}
+            />
+          </button>
         ))}
       </div>
     </div>
