@@ -40,10 +40,12 @@ function registerApiMiddleware(server, env) {
           return
         }
 
+        // No Access-Control-Allow-Origin, matching the deployed function: the
+        // site calls this same-origin, so CORS never applies, and '*' would let
+        // any other site use it as a free image CDN from script.
         res.writeHead(200, {
           'Content-Type': result.contentType,
           'Cache-Control': 'no-store',
-          'Access-Control-Allow-Origin': '*',
           'X-Content-Type-Options': 'nosniff',
         })
         res.end(result.body)

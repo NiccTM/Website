@@ -15,10 +15,17 @@ const DISCOGS_URL =
   'https://api.discogs.com/users/NiccTM/collection/folders/0/releases' +
   '?sort=added&sort_order=desc&per_page=50'
 
+import { rateLimit, applyRateLimit } from './_lib/rate-limit.js'
+
+const LIMIT = 30
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
+
+  const verdict = await rateLimit(req, { route: 'discogs', limit: LIMIT, windowSeconds: 60 })
+  if (applyRateLimit(res, verdict, LIMIT)) return
 
   const token = process.env.DISCOGS_PAT
   if (!token) {
