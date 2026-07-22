@@ -1,7 +1,13 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 export default function NotFound() {
+  // Without this the 404 inherited the home page's title and description, so a
+  // missing page reported itself to browsers, history and crawlers as the site
+  // landing page.
+  usePageMeta('Page not found', 'That page does not exist. Return to the home page to browse projects, hardware, archive and photography.')
+
   return (
     <section
       className="flex flex-col items-start justify-center min-h-[80vh] px-5 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40"

@@ -18,6 +18,11 @@ export default function ArchivePage() {
   usePageMeta('Archive', 'Vinyl record collection, hardware diagnostics, and audio archive — a living record of gear, music, and engineering reference material.')
   return (
     <>
+      {/* The page has no visible title, but every route still needs exactly one
+          h1: it is what screen readers and search engines use to identify the
+          page. Visually hidden, so the design is unchanged. */}
+      <h1 className="sr-only">Archive</h1>
+
       <HardwareDiagnostics />
 
       <div className="mx-5 sm:mx-8 md:mx-14 lg:mx-20 xl:mx-28 tv:mx-40">
