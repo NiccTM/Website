@@ -394,28 +394,11 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   }
 
   /* Typography */
-  /* Genuine fixed-pitch stack for terminal output, where column alignment is
-     load-bearing (box-drawing frames, padded tables, ASCII rules).
-     - white-space: pre-wrap keeps the leading spaces in art like "  ┌────┐",
-       which HTML would otherwise collapse, while still wrapping on narrow
-       screens instead of overflowing horizontally.
-     - letter-spacing must stay 0; tracking added to a monospace face is what
-       makes drawn frames drift out of true.
-     Every font listed carries the U+2500 box-drawing block. */
-  .font-terminal {
-    font-family: ui-monospace, 'Cascadia Mono', 'Cascadia Code', 'SFMono-Regular',
-      Menlo, Consolas, 'DejaVu Sans Mono', 'Liberation Mono', monospace;
-    font-variant-ligatures: none;
-    white-space: pre-wrap;
-    letter-spacing: 0;
-    line-height: 1.6;
-    font-weight: 500;
-    tab-size: 4;
-  }
-
   .font-mono-data {
     /* NOTE: despite the name this is a proportional stack, not a monospace one.
-       Fine for readouts; use .font-terminal for anything that must column-align. */
+       Fine for readouts. Anything that must column-align (box-drawing frames,
+       padded tables) needs a genuine fixed-pitch stack with letter-spacing: 0
+       — there is no such class in use now that the terminal console is gone. */
     font-family: 'Exo 2', 'Segoe UI', Tahoma, system-ui, 'Segoe UI Symbol',
       'Apple Symbols', 'Noto Sans Symbols 2', 'DejaVu Sans', sans-serif;
     /* No font-size override — let Tailwind text-xs/sm/base classes control size */

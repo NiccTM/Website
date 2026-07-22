@@ -297,7 +297,7 @@ export default function HardwarePage() {
   usePageMeta('Hardware Lab', 'Interactive 3D PCB digital twin, BLDC motor deep-dive, and UAS aerospace water contact sensor — hardware engineering in Altium Designer and embedded C.')
   const [canvasActive, setCanvasActive] = useState(false)
 
-  // xray is now in the global store so the terminal can toggle it
+  // xray lives in the global store so the 3D scene and the toggle stay in sync
   const xray      = useAppStore((s) => s.pcbXray)
   const setXray   = useAppStore((s) => s.setPcbXray)
   const setPcbCommand = useAppStore((s) => s.setPcbCommand)

@@ -5,7 +5,6 @@ import MeshBackground from './MeshBackground'
 import { useAppStore } from '../../store/useAppStore'
 
 export default function AppShell() {
-  const overclock = useAppStore((s) => s.overclock)
   const darkMode  = useAppStore((s) => s.darkMode)
 
   // Keep data-theme attribute in sync with store
@@ -23,11 +22,7 @@ export default function AppShell() {
   return (
     <div
       className="relative min-h-screen w-full"
-      style={{
-        background: 'var(--bg-base)',
-        filter: overclock ? 'sepia(1) saturate(6) hue-rotate(310deg) brightness(0.88)' : 'none',
-        transition: 'filter 0.25s ease-in-out',
-      }}
+      style={{ background: 'var(--bg-base)' }}
     >
       <MeshBackground />
       <NavBar />
