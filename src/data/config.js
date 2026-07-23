@@ -659,6 +659,111 @@ export const projects = [
       links: [],
     },
   },
+  {
+    id: 'algotraderos',
+    category: 'software',
+    title: 'AlgoTraderOS — Algorithmic Trading System',
+    description: 'Single-machine, event-driven algorithmic trading system for the Canadian equity market (TSX). Runs a long-only volatility-breakout strategy with an LLM signal-validation layer, a React dashboard, and a Rust hot-path execution core.',
+    tags: ['Python', 'asyncio', 'Rust', 'PyO3', 'React', 'FastAPI', 'IBKR', 'Anthropic'],
+    github: null,
+    icon: 'electric_bolt',
+    awards: [],
+    expandedDetails: {
+      extendedDescription:
+        'AlgoTraderOS is an event-driven trading system built around a single asyncio queue of typed, frozen-dataclass events. Everything flows through one pipeline — Market → Signal → Order → Fill — coordinated by a central TradingEngine that auto-detects its run mode. It operates in four: BACKTEST against a local parquet data lake, PAPER against Interactive Brokers, QUESTRADE against live TSX data/execution, and a HYBRID mode that takes Questrade data with IBKR execution.\n\nThe production strategy is a Keltner-channel volatility breakout (Hull moving-average channels with ADX and Bollinger-squeeze filters). It is deliberately long-only and exit-only — it never sells short — as a hard cash-account compliance invariant, not a stylistic choice. An Anthropic LLM layer scores breakout quality and produces probabilistic forecasts via tool-use, but stays strictly advisory: any API error, timeout, or malformed response fails open to a neutral default so trading can never halt on an outage.\n\nThe hot path is a Rust PyO3 extension (algo_core.pyd) that runs the limit-order price-walk math. Optuna Bayesian optimization plus a multi-horizon Monte Carlo sweep drive parameter tuning, and a FastAPI + React 19 dashboard streams live fills over WebSocket. The process is Windows-tuned — ProactorEventLoop, realtime priority class, and CPU-affinity pinning for deterministic execution latency.',
+      technicalSpecs: [
+        { label: 'Market',       value: 'Canadian equities (TSX), small retail account' },
+        { label: 'Architecture', value: 'Event-driven asyncio pipeline — Market→Signal→Order→Fill' },
+        { label: 'Strategy',     value: 'Keltner volatility breakout — long-only, exit-only' },
+        { label: 'AI layer',     value: 'Anthropic LLM signal validation + forecasts (fail-open)' },
+        { label: 'Native core',  value: 'Rust PyO3 → algo_core.pyd — execution price-walk' },
+        { label: 'Brokers',      value: 'IBKR (ib_insync) + Questrade REST — 4 run modes' },
+        { label: 'Optimization', value: 'Optuna Bayesian + multi-horizon Monte Carlo' },
+        { label: 'Dashboard',    value: 'FastAPI + React 19 + Vite — WebSocket live tape' },
+      ],
+      links: [],
+    },
+  },
+  {
+    id: 'tracesight',
+    category: 'software',
+    title: 'Tracesight — Congressional & Insider Trade Intelligence',
+    description: 'Full-stack platform that ingests U.S. House, Senate, and SEC Form 4 disclosures, scores them through a signal engine, and surfaces high-alpha trades with beta-adjusted backtesting, a filer leaderboard, and paper-trading execution.',
+    tags: ['Flask', 'PostgreSQL', 'React', 'SQLAlchemy', 'Signal Engine', 'Backtesting'],
+    github: 'https://github.com/NiccTM/congress_stock_trading_reimagined',
+    icon: 'search',
+    awards: [],
+    expandedDetails: {
+      extendedDescription:
+        'Tracesight is a Congressional and SEC trading tracker. Scrapers pull House PTRs, Senate PTRs, and SEC Form 4 insider filings into a PostgreSQL corpus (12,000+ SEC rows, 11,000+ House rows), where a signal engine scores recent trades by source — SEC weighted 1.0, Senate 0.6, House 0.4 — with time decay, then assigns conviction labels such as Institutional Swarm, SEC Opportunistic, Cross-Source Corroboration, and Political Lead.\n\nA large part of the work is being honest about what is not a signal. Pre-scheduled 10b5-1 plans and sell-to-cover tax liquidations carry zero idiosyncratic alpha by construction, so they are mechanically zeroed out of scoring — around 12.8% of the SEC corpus — while still being preserved for audit rather than deleted. A per-transaction footnote classifier pins tax-withholding precision at 1.000 by design, because a single false zero on a discretionary trade silently destroys a real signal.\n\nOn top sits the analytics layer: a fixed-horizon backtester (T+20 / T+60 / T+90) computes beta-adjusted alpha against sector-ETF benchmarks, a filer leaderboard ranks individuals by raw mean alpha with a stale-while-revalidate cache, and a strict-FIFO tax-lot ledger tracks realized, fee-net paper-trading P&L. A React dashboard fronts it, with Discord and email alerting behind dispatch deduplication.',
+      technicalSpecs: [
+        { label: 'Backend',       value: 'Flask + SQLAlchemy + PostgreSQL' },
+        { label: 'Frontend',      value: 'React trades dashboard' },
+        { label: 'Sources',       value: 'House PTR, Senate PTR, SEC Form 4 (12k+ / 11k+ rows)' },
+        { label: 'Signal engine', value: 'Source-weighted decay scoring + conviction labels' },
+        { label: 'Noise control', value: '10b5-1 + tax-withholding suppression (audit-preserving)' },
+        { label: 'Backtest',      value: 'Fixed-horizon T+20/60/90 beta-adjusted alpha vs sector ETF' },
+        { label: 'Leaderboard',   value: 'Filers ranked by raw mean alpha (SWR-cached)' },
+        { label: 'Paper trading', value: 'Strict-FIFO tax-lot ledger — fee-net realized P&L' },
+      ],
+      links: [
+        { label: 'GitHub', url: 'https://github.com/NiccTM/congress_stock_trading_reimagined', icon: 'open_in_new' },
+      ],
+    },
+  },
+  {
+    id: 'signalvault',
+    category: 'software',
+    title: 'SignalVault — Forensic Audio Preservation',
+    description: 'Headless Python pipeline that ingests high-resolution vinyl rips and emits tiered, preservation-grade archival packages — with FADGI-aligned conformance scoring, PREMIS event logging, and cryptographic fixity.',
+    tags: ['Python', 'DSP', 'PySide6', 'Audio Preservation', 'IASA-TC 04', 'FADGI', 'BWF/FLAC'],
+    github: null,
+    icon: 'library_music',
+    awards: [],
+    expandedDetails: {
+      extendedDescription:
+        'SignalVault is a long-running headless pipeline for institutional-grade audio preservation. It ingests high-resolution transfers — 24-bit/96 kHz vinyl rips, plus DSD/FLAC/MP3 via a universal decoder — and applies forensic restoration, segmentation, metadata enrichment, and analysis, then emits a tiered archival package following IASA-TC 04 and FADGI-aligned conventions. Before any DSP runs, a bit-exact raw copy of the source is sealed, and every transformation from that point on is logged as a PREMIS event, so the whole chain is defensible after the fact.\n\nThe preservation philosophy is that archival math must be static, never dynamic. Loudness normalization is always a single linear scalar — 10^((target − measured)/20) broadcast across the array — never a compressor, limiter, or envelope shaper, because any envelope alteration would disqualify the file as a preservation derivative. That rule shapes the output tiers: a forensic raw copy, an unsegmented full-side BWF preservation master with no DSP, per-track restoration BWF masters, and access-tier FLACs.\n\nEvery run produces an A–F conformance score (labeled an Audio Preservation Conformance Score, FADGI-aligned — audio FADGI is pass/fail aim points, not a star rating), SHA-256 fixity manifests, and METS + PBCore repository XML. A PySide6 operator console fronts the pipeline with a local SQLite job history that is explicitly not treated as preservation truth, alongside scheduled fixity audits, BagIt transfer export, and experimental C2PA provenance signing.',
+      technicalSpecs: [
+        { label: 'Language',    value: 'Python — headless pipeline + PySide6 console' },
+        { label: 'Target',      value: '24-bit / 96 kHz analog preservation (PCM_24/32/Float)' },
+        { label: 'Conformance', value: 'Audio Preservation Conformance Score (FADGI-aligned), A–F' },
+        { label: 'Loudness',    value: 'EBU R128 single linear scalar — no compression/limiting' },
+        { label: 'Standards',   value: 'IASA-TC 04, BWF (bext), METS + PBCore, PREMIS' },
+        { label: 'Fixity',      value: 'SHA-256 manifests + scheduled audit CLI + BagIt export' },
+        { label: 'Tiers',       value: 'Forensic raw → preservation BWF → restoration BWF → access FLAC' },
+        { label: 'Provenance',  value: 'Experimental C2PA signing (c2patool)' },
+      ],
+      links: [],
+    },
+  },
+  {
+    id: 'rigpilot',
+    category: 'software',
+    title: 'RigPilot — Windows Hardware Control Suite',
+    description: 'A GPL-3.0 Windows desktop suite for safe, transactional hardware control — GPU fan/power/clock, continuous cooling curves, RGB routing, and monitoring — mediated entirely by capability-gated, signed-driver hardware adapters.',
+    tags: ['.NET 10', 'WPF', 'C#', 'Windows Service', 'PawnIO', 'NVAPI/NVML', 'Hardware'],
+    github: 'https://github.com/NiccTM/rigpilot',
+    icon: 'memory',
+    awards: [],
+    expandedDetails: {
+      extendedDescription:
+        'RigPilot is a Windows desktop control suite inspired by G-Helper\'s low-friction workflow. Because desktop hardware has no universal control interface, every read or write is mediated by a capability-gated hardware adapter using a signed PawnIO path or a documented vendor API — never WinRing0 or a vulnerable-driver bypass. A boot-capable Windows service owns the hardware; the WPF dashboard, CLI, and crash-isolated adapter, automation, and effect hosts all talk to it over versioned, length-prefixed JSON on secured named pipes.\n\nSafety is the architecture, not a feature. Profiles apply transactionally: a rollback snapshot is persisted before the first write, each control domain is verified by read-back, and any failure or cancellation rolls back every attempted domain in reverse safety order. Voltage is never raised automatically and never applied at startup; a stale cooling sensor fails toward maximum cooling and firmware control; and capability labels — Verified, Experimental, Read-only, Blocked — are treated as evidence claims that are never widened for UI convenience.\n\nThe implemented surface includes NVAPI/NVML GPU fan, power-limit, and clock-offset control (arm-gated and Experimental, run out-of-process in a recyclable helper that fails safe to firmware if it dies), fan commissioning with bounded identification pulses, LibreHardwareMonitor telemetry through a signed PawnIO driver, and RGB routing across Windows Dynamic Lighting, an OpenRGB bridge, and verified adapters. It is extensible through Ed25519-signed .pcha adapter packs with a public SDK. Built on .NET 10 and WPF as a framework-dependent x64 deployment.',
+      technicalSpecs: [
+        { label: 'Framework',     value: '.NET 10, WPF — Windows service + isolated hosts' },
+        { label: 'IPC',           value: 'Versioned length-prefixed JSON over secured named pipes' },
+        { label: 'Safety',        value: 'Transactional apply, pre-write rollback snapshot, read-back verify' },
+        { label: 'GPU control',   value: 'NVAPI/NVML fan/power/clock — arm-gated, fail-safe to firmware' },
+        { label: 'Telemetry',     value: 'LibreHardwareMonitor via signed PawnIO driver' },
+        { label: 'Cooling',       value: '5-point fan calibration, hysteresis, stale-sensor fail-safe' },
+        { label: 'Lighting',      value: 'Windows Dynamic Lighting + OpenRGB + verified adapters' },
+        { label: 'Extensibility', value: 'Ed25519-signed .pcha adapter packs + public SDK' },
+        { label: 'License',       value: 'GPL-3.0 · Windows 11 24H2 x64' },
+      ],
+      links: [
+        { label: 'GitHub', url: 'https://github.com/NiccTM/rigpilot', icon: 'open_in_new' },
+      ],
+    },
+  },
 ]
 
 // ─── Water Contact Sensor — UAS Aerospace Team ───────────────────────────────
