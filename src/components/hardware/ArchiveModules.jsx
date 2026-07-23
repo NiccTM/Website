@@ -62,15 +62,25 @@ function ArchiveImage({ image, index }) {
           decoding="async"
           alt={image.label}
           className="w-full h-full object-cover transition-all duration-500"
-          style={{ transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s' }}
+          /* objectPosition top: several of these are PORTRAIT photos (the hi-fi
+             rack, the headphone, the GPU) shown in a 4:3 landscape box. Centred
+             cover-cropping sliced out the vertical middle — for the rack that
+             meant a band of bare shelf with the turntable cropped away, which
+             read as if the photo were rotated. Anchoring to the top keeps the
+             subject, which in every one of these shots sits at the top. */
+          style={{ objectPosition: 'top', transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s' }}
         />
-        {/* Always-visible gradient bar */}
+        {/* Caption scrim. Was `inset-0` + justify-end with a gradient that is
+            transparent above 75%, so on a narrow card the text block grew past
+            the fade and covered nearly the whole image. Anchoring to the bottom
+            edge lets the scrim hug its own text at any card size. Same fix as
+            HardwareDiagnostics. */}
         <div
-          className="absolute inset-0 flex flex-col justify-end p-3"
-          style={{ background: 'linear-gradient(to top, rgba(3,7,18,0.97) 0%, rgba(3,7,18,0.55) 50%, transparent 75%)' }}
+          className="absolute inset-x-0 bottom-0 px-3 pb-2.5 pt-4"
+          style={{ background: 'linear-gradient(to top, rgba(3,7,18,0.97) 0%, rgba(3,7,18,0.88) 55%, rgba(3,7,18,0.55) 85%, rgba(3,7,18,0) 100%)' }}
         >
-          <p className="font-mono-data text-sm font-medium" style={{ color: '#ffffff' }}>{image.label}</p>
-          <p className="font-mono-data mt-0.5" style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.875rem' }}>{image.caption}</p>
+          <p className="font-mono-data text-sm font-medium line-clamp-2" style={{ color: '#ffffff' }}>{image.label}</p>
+          <p className="font-mono-data mt-0.5 line-clamp-2" style={{ color: 'rgba(255,255,255,0.78)', fontSize: '0.875rem' }}>{image.caption}</p>
         </div>
         <div className="absolute top-2 right-2 transition-opacity duration-200" style={{ opacity: hovered ? 1 : 0 }}>
           <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>zoom_in</span>
@@ -116,7 +126,10 @@ function ArchiveModule({ mod, moduleIndex }) {
       </p>
 
       {/* Image grid */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+      {/* Single column under 480px. At 2 columns a phone card is ~182x136, which
+          is too small for a label plus a full caption — the scrim grew past the
+          card and buried the photo entirely. */}
+      <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
         {mod.images.map((img, i) => (
           <ArchiveImage key={img.src} image={img} index={i} />
         ))}

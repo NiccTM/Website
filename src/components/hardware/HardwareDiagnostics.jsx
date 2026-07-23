@@ -59,7 +59,11 @@ function DiagnosticImage({ image, index }) {
           loading="lazy"
           decoding="async"
           className="w-full h-full object-cover transition-all duration-500"
-          style={{ transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s' }}
+          /* Three of these are portrait (the hi-fi rack, the RTX 3090, the
+             Beats headphone) rendered into a 4:3 landscape box. Centred
+             cover-cropping cut the subject out of the middle; top-anchoring
+             keeps it. See ArchiveModules for the same fix. */
+          style={{ objectPosition: 'top', transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s' }}
         />
 
         {/* Always-visible caption scrim.
@@ -76,14 +80,14 @@ function DiagnosticImage({ image, index }) {
             whatever the caption length. The extra top padding gives the fade
             somewhere to happen above the first line. */}
         <div
-          className="absolute inset-x-0 bottom-0 px-3 pb-3 pt-6"
+          className="absolute inset-x-0 bottom-0 px-3 pb-2.5 pt-4"
           style={{
             background:
               'linear-gradient(to top, rgba(0,20,60,0.92) 0%, rgba(0,20,60,0.86) 55%, rgba(0,20,60,0.55) 85%, rgba(0,20,60,0) 100%)',
           }}
         >
-          <p className="font-mono-data text-sm font-medium" style={{ color: '#ffffff' }}>{image.label}</p>
-          <p className="font-mono-data mt-0.5" style={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.875rem' }}>{image.caption}</p>
+          <p className="font-mono-data text-sm font-medium line-clamp-2" style={{ color: '#ffffff' }}>{image.label}</p>
+          <p className="font-mono-data mt-0.5 line-clamp-2" style={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.875rem' }}>{image.caption}</p>
         </div>
 
         {/* Zoom icon */}
@@ -124,7 +128,7 @@ function CategorySection({ category, sectionIndex }) {
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{category.description}</span>
       </motion.div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {category.images.map((img, i) => (
           <DiagnosticImage key={img.src} image={img} index={i} />
         ))}
