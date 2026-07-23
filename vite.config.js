@@ -145,15 +145,27 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       target: 'esnext',
-      minify: 'esbuild',
+      /* `true` = Vite 8's default minifier (oxc, built into rolldown). This was
+         'esbuild', but Vite 8 no longer ships esbuild as a dependency, so
+         naming it explicitly fails with "Cannot find package 'esbuild'".
+         Dropping esbuild is also what cleared its dev-server advisory. */
+      minify: true,
       rollupOptions: {
         output: {
-          manualChunks: {
-            'vendor-react':   ['react', 'react-dom', 'react-router-dom'],
-            'vendor-three':   ['three', '@react-three/fiber', '@react-three/drei'],
-            'vendor-flow':    ['reactflow'],
-            'vendor-motion':  ['framer-motion'],
-            'vendor-store':   ['zustand'],
+          /* Function form, not the object map. Vite 8 bundles with rolldown
+             instead of rollup, and rolldown's manualChunks accepts only a
+             function — the object form fails the build with "manualChunks is
+             not a function". Matching on a node_modules path segment keeps the
+             same five vendor chunks as before. */
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return
+            const inPkg = (...names) =>
+              names.some((n) => id.includes(`node_modules/${n}/`) || id.includes(`node_modules\\${n}\\`))
+            if (inPkg('react', 'react-dom', 'react-router-dom', 'react-router')) return 'vendor-react'
+            if (inPkg('three', '@react-three/fiber', '@react-three/drei')) return 'vendor-three'
+            if (inPkg('reactflow', '@reactflow')) return 'vendor-flow'
+            if (inPkg('framer-motion', 'motion-dom', 'motion-utils')) return 'vendor-motion'
+            if (inPkg('zustand')) return 'vendor-store'
           },
         },
       },

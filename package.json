@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.2.0",
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/prerender-meta.mjs",
@@ -26,10 +29,10 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^6.0.4",
     "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.40",
+    "postcss": "^8.5.22",
     "tailwindcss": "^3.4.7",
-    "vite": "^5.4.0"
+    "vite": "^8.1.5"
   }
 }
