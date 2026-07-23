@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
@@ -490,15 +490,59 @@ function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
   )
 }
 
+// Column count matched to the Tailwind breakpoints used elsewhere on the page
+// (sm 640 / lg 1024 / xl 1280). Returns 4 during SSR/first paint; this is a
+// client-rendered SPA so that value is only ever the initial guess before the
+// effect runs on mount.
+function columnCountFor(width) {
+  if (width >= 1280) return 4
+  if (width >= 1024) return 3
+  if (width >= 640) return 2
+  return 1
+}
+
+function useColumnCount() {
+  const [n, setN] = useState(() =>
+    typeof window === 'undefined' ? 4 : columnCountFor(window.innerWidth)
+  )
+  useEffect(() => {
+    // columnCountFor returns one of four discrete values, so setN is a no-op
+    // (no re-render) until a resize actually crosses a breakpoint — cheap
+    // enough to run bare, no debounce needed.
+    const onResize = () => setN(columnCountFor(window.innerWidth))
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  return n
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function PhotographyPage() {
   usePageMeta('Photography', 'A personal photography portfolio featuring landscapes, night skies, and travel photography across Canada — captured and remastered by Nic Piraino.')
   const [lightboxIdx, setLightboxIdx] = useState(-1)
+  const columnCount = useColumnCount()
 
-  const col1 = PHOTOS.filter((_, i) => i % 4 === 0)
-  const col2 = PHOTOS.filter((_, i) => i % 4 === 1)
-  const col3 = PHOTOS.filter((_, i) => i % 4 === 2)
-  const col4 = PHOTOS.filter((_, i) => i % 4 === 3)
+  // True masonry: place each photo in whichever column is currently shortest,
+  // using its known aspect ratio (from photoDimensions.json) as the height it
+  // will add. All columns are equal width, so h/w is a faithful proxy for
+  // rendered height and the columns end within a fraction of a tile of each
+  // other — which a fixed round-robin split (the old i % 4) could not do,
+  // because it ignored heights entirely. flatIdx stays the photo's index in
+  // PHOTOS so the lightbox opens the right image.
+  const columns = useMemo(() => {
+    const cols = Array.from({ length: columnCount }, () => [])
+    const heights = new Array(columnCount).fill(0)
+    PHOTOS.forEach((photo, i) => {
+      const d = PHOTO_DIMS[photo.src]
+      const ratio = d && d.w ? d.h / d.w : 0.75   // fallback ≈ 4:3 landscape
+      let shortest = 0
+      for (let c = 1; c < columnCount; c++) if (heights[c] < heights[shortest]) shortest = c
+      cols[shortest].push({ photo, i })
+      heights[shortest] += ratio
+    })
+    return cols
+  }, [columnCount])
 
   return (
     <section className="px-5 pt-12 pb-20 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40">
@@ -540,28 +584,21 @@ export default function PhotographyPage() {
         All photographs © Nic Piraino. No use, reproduction, or distribution without explicit written permission.
       </div>
 
-      {/* Masonry grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 items-start">
-        <div>
-          {col1.map((photo, i) => (
-            <PhotoTile key={photo.src} photo={photo} animIndex={i * 4} flatIdx={i * 4} onOpen={setLightboxIdx} />
-          ))}
-        </div>
-        <div className="hidden sm:block">
-          {col2.map((photo, i) => (
-            <PhotoTile key={photo.src} photo={photo} animIndex={i * 4 + 1} flatIdx={i * 4 + 1} onOpen={setLightboxIdx} />
-          ))}
-        </div>
-        <div className="hidden lg:block">
-          {col3.map((photo, i) => (
-            <PhotoTile key={photo.src} photo={photo} animIndex={i * 4 + 2} flatIdx={i * 4 + 2} onOpen={setLightboxIdx} />
-          ))}
-        </div>
-        <div className="hidden xl:block">
-          {col4.map((photo, i) => (
-            <PhotoTile key={photo.src} photo={photo} animIndex={i * 4 + 3} flatIdx={i * 4 + 3} onOpen={setLightboxIdx} />
-          ))}
-        </div>
+      {/* Masonry grid — equal-width flex columns, filled by the shortest-column
+          packing above. The previous version sliced PHOTOS into four fixed
+          columns and hid the 2nd/3rd/4th below the xl/lg/sm breakpoints, so on
+          anything narrower than xl a chunk of the gallery never rendered (on
+          mobile, three of every four photos), and it split by index so the
+          columns ended at wildly different depths. Now every photo shows at
+          every width and the columns end within a fraction of a tile. */}
+      <div className="flex gap-3 md:gap-4 items-start">
+        {columns.map((col, ci) => (
+          <div key={ci} className="flex-1 min-w-0">
+            {col.map(({ photo, i }) => (
+              <PhotoTile key={photo.src} photo={photo} animIndex={i} flatIdx={i} onOpen={setLightboxIdx} />
+            ))}
+          </div>
+        ))}
       </div>
 
       <AnimatePresence>
