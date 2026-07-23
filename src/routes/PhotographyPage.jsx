@@ -481,7 +481,10 @@ function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
         className="hover-caption absolute inset-x-0 bottom-0 px-3 py-2.5 rounded-b-lg"
         style={{ background: 'linear-gradient(to top, rgba(8,8,8,0.85) 0%, rgba(8,8,8,0.45) 60%, transparent 100%)' }}
       >
-        <p className="font-sans text-xs" style={{ color: 'rgba(255,255,255,0.82)', fontSize: 'clamp(0.68rem, 0.62rem + 0.2vw, 0.8rem)' }}>
+        {/* 0.75rem (12px) floor: the old 0.68rem bottomed out at 10.9px on
+            phones, where these captions are permanently visible (the
+            hover-reveal is overridden under `@media (hover: none)`). */}
+        <p className="font-sans text-xs" style={{ color: 'rgba(255,255,255,0.82)', fontSize: 'clamp(0.75rem, 0.68rem + 0.2vw, 0.8rem)' }}>
           {photo.caption}
         </p>
       </div>
