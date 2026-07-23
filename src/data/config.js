@@ -690,7 +690,7 @@ export const projects = [
     title: 'Tracesight — Congressional & Insider Trade Intelligence',
     description: 'Full-stack platform that ingests U.S. House, Senate, and SEC Form 4 disclosures, scores them through a signal engine, and surfaces high-alpha trades with beta-adjusted backtesting, a filer leaderboard, and paper-trading execution.',
     tags: ['Flask', 'PostgreSQL', 'React', 'SQLAlchemy', 'Signal Engine', 'Backtesting'],
-    github: 'https://github.com/NiccTM/congress_stock_trading_reimagined',
+    github: null,
     icon: 'search',
     awards: [],
     expandedDetails: {
@@ -706,9 +706,7 @@ export const projects = [
         { label: 'Leaderboard',   value: 'Filers ranked by raw mean alpha (SWR-cached)' },
         { label: 'Paper trading', value: 'Strict-FIFO tax-lot ledger — fee-net realized P&L' },
       ],
-      links: [
-        { label: 'GitHub', url: 'https://github.com/NiccTM/congress_stock_trading_reimagined', icon: 'open_in_new' },
-      ],
+      links: [],
     },
   },
   {
