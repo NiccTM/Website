@@ -495,10 +495,10 @@
                              "h":  12240,
                              "w":  16320
                          },
-    "/beats_headphone.jpg":  {
-                                 "h":  4000,
-                                 "w":  3000
-                             },
+    "/beats_headphone_v2.jpg":  {
+                                    "h":  4000,
+                                    "w":  3000
+                                },
     "/Built_WoodWorkBench.jpg":  {
                                      "h":  3000,
                                      "w":  4000
@@ -523,10 +523,10 @@
                                    "h":  6120,
                                    "w":  8160
                                },
-    "/RegaP2_CreekCD43MK2_LuxmanK202.jpg":  {
-                                                "h":  4000,
-                                                "w":  3000
-                                            },
+    "/RegaP2_CreekCD43MK2_LuxmanK202_v2.jpg":  {
+                                                   "h":  4000,
+                                                   "w":  3000
+                                               },
     "/RegaP2_VINYL.jpg":  {
                               "h":  3024,
                               "w":  4032
@@ -555,8 +555,8 @@
                                                "h":  3000,
                                                "w":  4000
                                            },
-    "/Zotac_RTX3090.jpg":  {
-                               "h":  8160,
-                               "w":  6120
-                           }
+    "/Zotac_RTX3090_v2.jpg":  {
+                                  "h":  8160,
+                                  "w":  6120
+                              }
 }

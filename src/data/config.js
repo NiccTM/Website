@@ -863,7 +863,7 @@ export const archiveData = [
     icon:       'speaker',
     images: [
       {
-        src:     '/RegaP2_CreekCD43MK2_LuxmanK202.jpg',
+        src:     '/RegaP2_CreekCD43MK2_LuxmanK202_v2.jpg',
         label:   'Rega P2 · Creek CD43 MK2 · Luxman K-202',
         caption: 'Bedroom signal chain — turntable, CD player, cassette deck',
       },
@@ -907,7 +907,7 @@ export const hardwareDiagnostics = {
         { src: '/MSI_gaming_laptop.jpg',  label: 'MSI Gaming Laptop',      caption: 'Full clean · MX-6 Arctic thermal paste reapplication · software repair · SSD repair' },
         { src: '/ASUS_laptop.jpg',        label: 'ASUS Laptop',            caption: 'Full clean · MX-6 Arctic thermal paste reapplication · software repair · SSD repair' },
         { src: '/Acer_laptop.jpg',        label: 'Acer Laptop',            caption: 'Full clean · MX-6 Arctic thermal paste reapplication · software repair · SSD repair' },
-        { src: '/Zotac_RTX3090.jpg',      label: 'Zotac RTX 3090',         caption: 'Full card clean · Thermal Grizzly PhaseSheet PTM reapplication · software repair' },
+        { src: '/Zotac_RTX3090_v2.jpg',      label: 'Zotac RTX 3090',         caption: 'Full card clean · Thermal Grizzly PhaseSheet PTM reapplication · software repair' },
       ],
     },
     {
@@ -916,7 +916,7 @@ export const hardwareDiagnostics = {
       icon:        'speaker',
       description: 'Headphone driver inspection and cable servicing.',
       images: [
-        { src: '/beats_headphone.jpg', label: 'Beats Headphone', caption: 'Driver inspection · cable re-termination' },
+        { src: '/beats_headphone_v2.jpg', label: 'Beats Headphone', caption: 'Driver inspection · cable re-termination' },
       ],
     },
     {
