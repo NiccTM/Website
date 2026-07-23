@@ -7,6 +7,10 @@
     <title>Nic Piraino | Hardware Engineering & System Design</title>
 
     <!-- Open Graph -->
+    <!-- Canonical + og:url. usePageMeta rewrites both per route; these are the
+         defaults for the home page and for any crawler that does not run JS. -->
+    <link rel="canonical" href="https://nicpiraino.com/" />
+    <meta property="og:url"         content="https://nicpiraino.com/" />
     <meta property="og:type"        content="website" />
     <meta property="og:title"       content="Nic Piraino | Hardware Engineering & System Design" />
     <meta property="og:description" content="Embedded systems, PCB design, audio electronics, and full-stack engineering." />
@@ -33,9 +37,54 @@
       Regenerate by scanning src/ for icon literals and `icon:` data fields.
     -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=accessibility_new,add,album,arrow_back,bug_report,build_circle,center_focus_strong,chevron_left,chevron_right,close,code,computer,copyright,dark_mode,electric_bolt,emoji_events,fit_screen,flight,fullscreen,fullscreen_exit,gavel,handyman,hub,library_music,light_mode,memory,military_tech,open_in_full,open_in_new,pause,person,photo_camera,photo_library,play_arrow,play_circle,progress_activity,radio_button_checked,refresh,remove,search,settings,speaker,stars,sync,thermostat,upload_file,videocam_off,visibility,visibility_off,zoom_in&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=accessibility_new,add,album,arrow_back,bug_report,build_circle,center_focus_strong,chevron_left,chevron_right,close,code,computer,copyright,dark_mode,electric_bolt,emoji_events,fit_screen,flight,fullscreen,fullscreen_exit,gavel,handyman,hub,library_music,light_mode,mail,memory,military_tech,open_in_full,open_in_new,pause,person,photo_camera,photo_library,play_arrow,play_circle,progress_activity,radio_button_checked,refresh,remove,search,settings,speaker,stars,sync,thermostat,upload_file,videocam_off,visibility,visibility_off,zoom_in&display=swap"
       rel="stylesheet"
     />
+
+    <!-- schema.org Person. This is a name-based domain, so the highest-value
+         structured data is telling search engines that "Nic Piraino" is a
+         person and that these external profiles are the same identity
+         (sameAs) — that is what lets a name search resolve to this site.
+
+         NOTE ON CSP: script-src is 'self' with no unsafe-inline, but a block
+         with a non-JavaScript type is a DATA block, not executable script, so
+         CSP does not apply to it and this is not an inline-script violation.
+         Verified in production with zero CSP reports. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Nic Piraino",
+      "url": "https://nicpiraino.com/",
+      "email": "mailto:nicpiraino@proton.me",
+      "jobTitle": "Engineering Student",
+      "description": "Hardware engineering and system design — embedded systems, PCB design, audio electronics, and full-stack engineering.",
+      "alumniOf": {
+        "@type": "CollegeOrUniversity",
+        "name": "University of British Columbia Okanagan"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Kelowna",
+        "addressRegion": "BC",
+        "addressCountry": "CA"
+      },
+      "knowsAbout": [
+        "Hardware Engineering",
+        "PCB Design",
+        "Embedded Systems",
+        "Motor Control",
+        "Computer Vision",
+        "Audio Preservation",
+        "Photography"
+      ],
+      "sameAs": [
+        "https://github.com/NiccTM",
+        "https://www.linkedin.com/in/nic-piraino/",
+        "https://www.discogs.com/user/NiccTM"
+      ]
+    }
+    </script>
   </head>
   <body>
     <!-- Sync theme before React mounts — prevents flash of wrong theme -->

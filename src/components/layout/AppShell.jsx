@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import NavBar from './NavBar'
 import MeshBackground from './MeshBackground'
 import { useAppStore } from '../../store/useAppStore'
+import { contact } from '../../data/config'
 
 export default function AppShell() {
   const darkMode  = useAppStore((s) => s.darkMode)
@@ -47,12 +48,27 @@ export default function AppShell() {
 
       {/* ── Global footer ── */}
       <footer
-        className="relative z-10 flex items-center px-5 py-5 sm:px-8 md:px-14 lg:px-20 xl:px-28"
+        className="relative z-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-5 sm:px-8 md:px-14 lg:px-20 xl:px-28"
         style={{ borderTop: '1px solid var(--border)' }}
       >
         <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
           © {new Date().getFullYear()} Nic Piraino
         </p>
+        {/* The site had no contact method at all: contact.email existed in
+            config.js and was imported by HomePage but never rendered. A
+            portfolio needs one reachable address, so it lives in the footer
+            where it is present on every route. py-1 keeps the target >= 24px
+            tall (WCAG 2.2 AA 2.5.8), matching the social row. */}
+        <a
+          href={`mailto:${contact.email}`}
+          className="flex items-center gap-1.5 py-1 font-mono-data text-xs transition-colors duration-200"
+          style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+        >
+          <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1rem' }}>mail</span>
+          {contact.email}
+        </a>
       </footer>
     </div>
   )
