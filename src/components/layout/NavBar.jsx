@@ -140,7 +140,11 @@ export default function NavBar() {
               boxShadow: 'var(--nav-shadow)',
             }}
           >
-            <div className="flex flex-col px-5 py-4 gap-1">
+            {/* A <nav> landmark, not a plain div: the drawer renders outside
+                the main <nav> above, so without this the mobile route links
+                belong to no navigation landmark at all and a screen-reader
+                user browsing by landmark cannot find them. */}
+            <nav aria-label="Mobile navigation" className="flex flex-col px-5 py-4 gap-1">
               {ROUTES.map(({ to, label }) => (
                 <NavLink
                   key={to}
@@ -169,7 +173,7 @@ export default function NavBar() {
                 </span>
                 {darkMode ? 'Light mode' : 'Dark mode'}
               </button>
-            </div>
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>

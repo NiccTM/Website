@@ -183,8 +183,12 @@ function BpmControl() {
   return (
     <div className="flex items-center gap-3">
       <span className="font-mono-data text-xs select-none" style={{ color: 'var(--text-muted)' }}>BPM</span>
+      {/* h-6 (24px) because a bare range input renders ~16px tall, which is
+          under the WCAG 2.2 AA 2.5.8 24x24 floor and is genuinely fiddly to
+          drag on a phone. The track stays visually thin; only the hit area
+          grows. */}
       <input type="range" min={40} max={180} value={bpm} onChange={(e) => setBpm(Number(e.target.value))}
-        className="w-24 accent-emerald-400" aria-label="BPM" />
+        className="w-24 h-6 accent-emerald-400 cursor-pointer" aria-label="BPM" />
       <span className="font-mono-data text-xs w-7 text-right tabular-nums" style={{ color: 'var(--accent)' }}>{bpm}</span>
       <BpmDot bpm={bpm} />
     </div>
