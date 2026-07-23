@@ -65,10 +65,27 @@ $encParams.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
 # copied into the build. Only the derivatives written into public/ are deployed.
 # That is what takes the deployment from 639 MB to well under 100 MB: nothing
 # ships a 16320px, 33 MB source file to a browser.
+# Each set is a single non-recursive folder. The root set (last) owns only the
+# files directly inside originals/, so it never re-processes the subfolders below.
 $sets = @(
     @{ Src = Join-Path $orig 'Remastered Photos'; Out = Join-Path $pub 'Remastered Photos'; UrlPrefix = '/Remastered Photos/' },
-    @{ Src = $orig;                               Out = $pub;                               UrlPrefix = '/'                   }
+    @{ Src = Join-Path $orig 'project-heroes';    Out = Join-Path $pub 'project-heroes';    UrlPrefix = '/project-heroes/'    }
 )
+
+# Auto-discover project screenshot galleries: one set per originals/project-shots/<name>.
+$shotsRoot = Join-Path $orig 'project-shots'
+if (Test-Path $shotsRoot) {
+    Get-ChildItem $shotsRoot -Directory | Sort-Object Name | ForEach-Object {
+        $sets += @{
+            Src       = $_.FullName
+            Out       = Join-Path $pub ('project-shots\' + $_.Name)
+            UrlPrefix = '/project-shots/' + $_.Name + '/'
+        }
+    }
+}
+
+# Root last so its non-recursive -File scan never re-touches the folders above.
+$sets += @{ Src = $orig; Out = $pub; UrlPrefix = '/' }
 
 $manifest = [ordered]@{}
 $made = 0; $skipped = 0; $srcBytes = 0; $outBytes = 0

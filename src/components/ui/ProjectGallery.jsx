@@ -15,6 +15,11 @@ const PROJECT_IMAGES = {
   firesense:          '/FireSense.jpg',
   consultation:       '/Remastered Photos/Canadian Parliament Building 1.jpg',
   whistler:           '/Remastered Photos/Kelowna Mountains.jpg',
+  // Software dashboards — 16:10 hero crops of a real app screen.
+  algotraderos:       '/project-heroes/algotraderos.png',
+  tracesight:         '/project-heroes/tracesight.png',
+  signalvault:        '/project-heroes/signalvault.png',
+  rigpilot:           '/project-heroes/rigpilot.png',
 }
 
 // Gradient placeholders for projects without photos
