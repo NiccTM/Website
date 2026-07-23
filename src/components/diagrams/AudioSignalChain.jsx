@@ -107,6 +107,14 @@ function FlowSection({ id, title, chain }) {
           proOptions={{ hideAttribution: true }}
           panOnDrag
           zoomOnScroll={false}
+          /* Edges are decoration here — the affordance is "click any NODE for
+             specs", and an edge does nothing when activated. React Flow still
+             makes every edge focusable by default, which put a ~185x10 control
+             in the a11y tree: an undersized target (WCAG 2.2 AA 2.5.8) and a
+             tab stop that leads nowhere. Turning off edge focus/selection
+             removes them as controls without changing how the diagram looks. */
+          edgesFocusable={false}
+          edgesUpdatable={false}
         >
           {/* Background builds its SVG <pattern> id as `pattern-${rfId}${id}`,
               which is literally "pattern-1undefined" when neither is set. */}

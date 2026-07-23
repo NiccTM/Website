@@ -140,6 +140,11 @@ export default function SystemArchitecture() {
           proOptions={{ hideAttribution: true }}
           panOnDrag
           zoomOnScroll={false}
+          /* See AudioSignalChain: edges are decoration, but React Flow makes
+             them focusable by default, which registers an undersized control
+             and a dead tab stop. */
+          edgesFocusable={false}
+          edgesUpdatable={false}
         >
           <Background id="dots" color="#1f2937" gap={24} />
           <Controls
