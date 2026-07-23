@@ -681,6 +681,20 @@ export const projects = [
         { label: 'Optimization', value: 'Optuna Bayesian + multi-horizon Monte Carlo' },
         { label: 'Dashboard',    value: 'FastAPI + React 19 + Vite — WebSocket live tape' },
       ],
+      subSystemsLabel: 'Interface',
+      subSystems: [
+        {
+          id: 'ui',
+          title: 'React 19 live dashboard',
+          icon: 'photo_library',
+          description: 'FastAPI + WebSocket command center. Click any screen to enlarge.',
+          images: [
+            { src: '/project-shots/algotraderos/06_live_active.png', label: 'Live Command Center', caption: 'Equity curve, order execution, and per-trade passport' },
+            { src: '/project-shots/algotraderos/08_risk_active.png', label: 'Risk',                 caption: 'Position risk, exposure, and drawdown' },
+            { src: '/project-shots/algotraderos/03_optimize.png',    label: 'Optimization',         caption: 'Optuna + multi-horizon Monte Carlo sweeps' },
+          ],
+        },
+      ],
       links: [],
     },
   },
@@ -705,6 +719,20 @@ export const projects = [
         { label: 'Backtest',      value: 'Fixed-horizon T+20/60/90 beta-adjusted alpha vs sector ETF' },
         { label: 'Leaderboard',   value: 'Filers ranked by raw mean alpha (SWR-cached)' },
         { label: 'Paper trading', value: 'Strict-FIFO tax-lot ledger — fee-net realized P&L' },
+      ],
+      subSystemsLabel: 'Interface',
+      subSystems: [
+        {
+          id: 'ui',
+          title: 'React trades dashboard',
+          icon: 'photo_library',
+          description: 'Signal research surface. Click any screen to enlarge.',
+          images: [
+            { src: '/project-shots/tracesight/tracesight-2-leaderboard.png',  label: 'Insider Leaderboard', caption: 'Filers ranked by β-adjusted alpha (T+90)' },
+            { src: '/project-shots/tracesight/tracesight-5-signals.png',       label: 'Signal Engine',       caption: 'Conviction-scored trades by source and label' },
+            { src: '/project-shots/tracesight/tracesight-4-paper-trading.png', label: 'Paper Trading',       caption: 'Strict-FIFO simulated ledger and P&L' },
+          ],
+        },
       ],
       links: [],
     },
@@ -731,6 +759,20 @@ export const projects = [
         { label: 'Tiers',       value: 'Forensic raw → preservation BWF → restoration BWF → access FLAC' },
         { label: 'Provenance',  value: 'Experimental C2PA signing (c2patool)' },
       ],
+      subSystemsLabel: 'Interface',
+      subSystems: [
+        {
+          id: 'ui',
+          title: 'PySide6 operator console',
+          icon: 'photo_library',
+          description: 'Preservation workflow. Click any screen to enlarge.',
+          images: [
+            { src: '/project-shots/signalvault/06-soundcheck.png', label: 'Sound Check', caption: 'Raw-vs-restored audition + 1/3-octave spectral deviation' },
+            { src: '/project-shots/signalvault/05-equipment.png',  label: 'Equipment',  caption: 'ADC / capture-chain calibration and ledger' },
+            { src: '/project-shots/signalvault/08-export.png',     label: 'Export',     caption: 'BagIt transfer and archival package export' },
+          ],
+        },
+      ],
       links: [],
     },
   },
@@ -756,6 +798,20 @@ export const projects = [
         { label: 'Lighting',      value: 'Windows Dynamic Lighting + OpenRGB + verified adapters' },
         { label: 'Extensibility', value: 'Ed25519-signed .pcha adapter packs + public SDK' },
         { label: 'License',       value: 'GPL-3.0 · Windows 11 24H2 x64' },
+      ],
+      subSystemsLabel: 'Interface',
+      subSystems: [
+        {
+          id: 'ui',
+          title: 'WPF dashboard',
+          icon: 'photo_library',
+          description: 'Hardware control surface. Click any screen to enlarge.',
+          images: [
+            { src: '/project-shots/rigpilot/01-overview-clean.png', label: 'Overview', caption: 'Live sensors, safety state, and control readiness' },
+            { src: '/project-shots/rigpilot/03-cooling-clean.png',  label: 'Cooling',  caption: 'Fan curves, calibration, and thermal ceilings' },
+            { src: '/project-shots/rigpilot/05-lighting-clean.png', label: 'Lighting', caption: 'RGB routing across Dynamic Lighting / OpenRGB' },
+          ],
+        },
       ],
       links: [
         { label: 'GitHub', url: 'https://github.com/NiccTM/rigpilot', icon: 'open_in_new' },

@@ -27,18 +27,18 @@
                                                                 "h":  3213,
                                                                 "w":  4820
                                                             },
+    "/Remastered Photos/Blue \u0026 Yellow Sky with Streetlight.jpg":  {
+                                                                           "h":  3000,
+                                                                           "w":  4000
+                                                                       },
+    "/Remastered Photos/Blue \u0026 Yellow Sky.jpg":  {
+                                                          "h":  3000,
+                                                          "w":  4000
+                                                      },
     "/Remastered Photos/Blue Berries on Trail.jpg":  {
                                                          "h":  3000,
                                                          "w":  4000
                                                      },
-    "/Remastered Photos/Blue & Yellow Sky with Streetlight.jpg":  {
-                                                                    "h":  3000,
-                                                                    "w":  4000
-                                                                },
-    "/Remastered Photos/Blue & Yellow Sky.jpg":  {
-                                                   "h":  3000,
-                                                   "w":  4000
-                                               },
     "/Remastered Photos/Bunny with Glimmer in Eye.jpg":  {
                                                              "h":  3060,
                                                              "w":  4080
@@ -228,9 +228,9 @@
                                                       "w":  8152
                                                   },
     "/Remastered Photos/Northern Leopard Frog Behind Grass.jpg":  {
-                                                                     "h":  8000,
-                                                                     "w":  12000
-                                                                 },
+                                                                      "h":  8000,
+                                                                      "w":  12000
+                                                                  },
     "/Remastered Photos/Northern Lights.jpg":  {
                                                    "h":  3000,
                                                    "w":  4000
@@ -327,6 +327,138 @@
                                                          "h":  6120,
                                                          "w":  8160
                                                      },
+    "/project-heroes/algotraderos.png":  {
+                                             "h":  2000,
+                                             "w":  3200
+                                         },
+    "/project-heroes/rigpilot.png":  {
+                                         "h":  836,
+                                         "w":  1338
+                                     },
+    "/project-heroes/signalvault.png":  {
+                                            "h":  1052,
+                                            "w":  1684
+                                        },
+    "/project-heroes/tracesight.png":  {
+                                           "h":  1800,
+                                           "w":  2880
+                                       },
+    "/project-shots/algotraderos/01_live.png":  {
+                                                    "h":  4508,
+                                                    "w":  3200
+                                                },
+    "/project-shots/algotraderos/02_risk.png":  {
+                                                    "h":  2000,
+                                                    "w":  3200
+                                                },
+    "/project-shots/algotraderos/03_optimize.png":  {
+                                                        "h":  2000,
+                                                        "w":  3200
+                                                    },
+    "/project-shots/algotraderos/04_intelligence.png":  {
+                                                            "h":  2134,
+                                                            "w":  3200
+                                                        },
+    "/project-shots/algotraderos/05_live_fullpage.png":  {
+                                                             "h":  4642,
+                                                             "w":  3200
+                                                         },
+    "/project-shots/algotraderos/06_live_active.png":  {
+                                                           "h":  5126,
+                                                           "w":  3200
+                                                       },
+    "/project-shots/algotraderos/07_live_active_fullpage.png":  {
+                                                                    "h":  5260,
+                                                                    "w":  3200
+                                                                },
+    "/project-shots/algotraderos/08_risk_active.png":  {
+                                                           "h":  2000,
+                                                           "w":  3200
+                                                       },
+    "/project-shots/rigpilot/01-overview-clean.png":  {
+                                                          "h":  918,
+                                                          "w":  1338
+                                                      },
+    "/project-shots/rigpilot/02-profiles-clean.png":  {
+                                                          "h":  918,
+                                                          "w":  1338
+                                                      },
+    "/project-shots/rigpilot/03-cooling-clean.png":  {
+                                                         "h":  918,
+                                                         "w":  1338
+                                                     },
+    "/project-shots/rigpilot/04-performance-clean.png":  {
+                                                             "h":  918,
+                                                             "w":  1338
+                                                         },
+    "/project-shots/rigpilot/05-lighting-clean.png":  {
+                                                          "h":  918,
+                                                          "w":  1338
+                                                      },
+    "/project-shots/rigpilot/07-games-tools-clean.png":  {
+                                                             "h":  918,
+                                                             "w":  1338
+                                                         },
+    "/project-shots/rigpilot/08-devices-clean.png":  {
+                                                         "h":  918,
+                                                         "w":  1338
+                                                     },
+    "/project-shots/rigpilot/09-diagnostics-clean.png":  {
+                                                             "h":  918,
+                                                             "w":  1338
+                                                         },
+    "/project-shots/signalvault/01-home.png":  {
+                                                   "h":  1382,
+                                                   "w":  1684
+                                               },
+    "/project-shots/signalvault/02-files.png":  {
+                                                    "h":  1382,
+                                                    "w":  1684
+                                                },
+    "/project-shots/signalvault/03-review.png":  {
+                                                     "h":  1382,
+                                                     "w":  1684
+                                                 },
+    "/project-shots/signalvault/04-automation.png":  {
+                                                         "h":  1382,
+                                                         "w":  1684
+                                                     },
+    "/project-shots/signalvault/05-equipment.png":  {
+                                                        "h":  1382,
+                                                        "w":  1684
+                                                    },
+    "/project-shots/signalvault/06-soundcheck.png":  {
+                                                         "h":  1382,
+                                                         "w":  1684
+                                                     },
+    "/project-shots/signalvault/07-albums.png":  {
+                                                     "h":  1382,
+                                                     "w":  1684
+                                                 },
+    "/project-shots/signalvault/08-export.png":  {
+                                                     "h":  1382,
+                                                     "w":  1684
+                                                 },
+    "/project-shots/tracesight/tracesight-1-home.png":  {
+                                                            "h":  1800,
+                                                            "w":  2880
+                                                        },
+    "/project-shots/tracesight/tracesight-2-leaderboard.png":  {
+                                                                   "h":  1800,
+                                                                   "w":  2880
+                                                               },
+    "/project-shots/tracesight/tracesight-3-congress-activity.png":  {
+                                                                         "h":  1800,
+                                                                         "w":  2880
+                                                                     },
+    "/project-shots/tracesight/tracesight-4-paper-trading.png":  {
+                                                                     "h":  1800,
+                                                                     "w":  2880
+                                                                 },
+    "/project-shots/tracesight/tracesight-5-signals.png":  {
+                                                               "h":  1800,
+                                                               "w":  2880
+                                                           },
     "/20260321_172148.jpg":  {
                                  "h":  3000,
                                  "w":  4000

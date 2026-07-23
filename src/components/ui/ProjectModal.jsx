@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { thumbSrc } from '../../utils/thumbs'
+import ImageLightbox from './ImageLightbox'
 
-function SubSystemImage({ src, label, caption }) {
+function SubSystemImage({ src, label, caption, onOpen }) {
   const [hovered, setHovered] = useState(false)
   return (
     <div
-      className="flex flex-col overflow-hidden"
+      className="flex flex-col overflow-hidden cursor-zoom-in"
+      onClick={() => onOpen?.({ src, label, caption })}
       style={{
         background: 'var(--bg-surface-2)',
         border: `1px solid ${hovered ? 'var(--accent)' : 'var(--border)'}`,
@@ -25,6 +27,10 @@ function SubSystemImage({ src, label, caption }) {
           decoding="async"
           className="w-full h-full object-cover"
           style={{
+            // Anchor to the top: many of these are tall dashboard captures, and
+            // the header/metrics at the top read better in a 4:3 tile than the
+            // vertical middle object-cover would otherwise show.
+            objectPosition: 'top',
             transform: hovered ? 'scale(1.04)' : 'scale(1)',
             transition: 'transform 0.25s',
           }}
@@ -38,7 +44,7 @@ function SubSystemImage({ src, label, caption }) {
   )
 }
 
-function SubSystemSection({ sys }) {
+function SubSystemSection({ sys, onOpen }) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-2">
@@ -55,7 +61,7 @@ function SubSystemSection({ sys }) {
           style={{ gridTemplateColumns: `repeat(${Math.min(sys.images.length, 3)}, 1fr)` }}
         >
           {sys.images.map((img) => (
-            <SubSystemImage key={img.src} src={img.src} label={img.label} caption={img.caption} />
+            <SubSystemImage key={img.src} src={img.src} label={img.label} caption={img.caption} onOpen={onOpen} />
           ))}
         </div>
       )}
@@ -83,8 +89,15 @@ export default function ProjectModal({ project, onClose }) {
     return () => window.removeEventListener('keydown', handler)
   }, [onClose])
 
+  const [shot, setShot] = useState(null)   // sub-system image opened in the lightbox
+
   const { expandedDetails, awards = [] } = project
-  const { extendedDescription = '', technicalSpecs = [], subSystems = [], links = [] } = expandedDetails ?? {}
+  const {
+    extendedDescription = '', technicalSpecs = [], subSystems = [], links = [],
+    // Label above the screenshot grid. Defaults to the original hardware wording;
+    // software projects override it (e.g. "Interface").
+    subSystemsLabel = 'Hardware Integration',
+  } = expandedDetails ?? {}
   const paragraphs = Array.isArray(extendedDescription)
     ? extendedDescription
     : extendedDescription.split('\n\n').filter(Boolean)
@@ -202,10 +215,10 @@ export default function ProjectModal({ project, onClose }) {
           {subSystems.length > 0 && (
             <div className="flex flex-col gap-5">
               <p className="font-mono-data text-xs tracking-widest uppercase -mb-2" style={{ color: 'var(--accent)' }}>
-                Hardware Integration
+                {subSystemsLabel}
               </p>
               {subSystems.map((sys) => (
-                <SubSystemSection key={sys.id} sys={sys} />
+                <SubSystemSection key={sys.id} sys={sys} onOpen={setShot} />
               ))}
             </div>
           )}
@@ -259,6 +272,19 @@ export default function ProjectModal({ project, onClose }) {
           </div>
         )}
       </motion.div>
+
+      {/* Screenshot lightbox — opened from a sub-system image. Stops the click
+          from bubbling to the backdrop (which would close the whole modal). */}
+      {shot && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <ImageLightbox
+            src={shot.src}
+            label={shot.label}
+            caption={shot.caption}
+            onClose={() => setShot(null)}
+          />
+        </div>
+      )}
     </motion.div>,
     document.body
   )
