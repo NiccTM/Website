@@ -116,6 +116,25 @@ foreach ($set in $sets) {
 
         $img = [System.Drawing.Image]::FromFile($src.FullName)
         try {
+            # EXIF orientation. System.Drawing does NOT apply it when drawing,
+            # so a phone photo stored with Orientation=6 (rotate 90 CW) was
+            # resized from its raw, un-rotated pixels into a derivative that no
+            # longer carried the tag -- the browser had nothing left to rotate
+            # by, and the image rendered sideways. Rotate the pixels to match
+            # the tag, then strip the tag so nothing rotates it a second time.
+            # Width/Height below are read AFTER this, so the manifest records
+            # the displayed orientation (swapped for the 90/270 cases).
+            if ($img.PropertyIdList -contains 0x0112) {
+                $rf = switch ($img.GetPropertyItem(0x0112).Value[0]) {
+                    2 { 'RotateNoneFlipX' }   3 { 'Rotate180FlipNone' }
+                    4 { 'Rotate180FlipX' }    5 { 'Rotate90FlipX' }
+                    6 { 'Rotate90FlipNone' }  7 { 'Rotate270FlipX' }
+                    8 { 'Rotate270FlipNone' } default { $null }
+                }
+                if ($rf) { $img.RotateFlip([System.Drawing.RotateFlipType]::$rf) }
+                $img.RemovePropertyItem(0x0112)
+            }
+
             $manifest["$($set.UrlPrefix)$($src.Name)"] = @{ w = $img.Width; h = $img.Height }
 
             $upToDate = (Test-Path $dst) -and ((Get-Item $dst).LastWriteTime -ge $src.LastWriteTime)
