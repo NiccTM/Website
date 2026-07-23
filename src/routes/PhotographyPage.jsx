@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
-import PHOTO_DIMS from '../data/photoDimensions.json'
 // fullResSrc aliased: this file already uses `displaySrc` for "what to render
 // right now". The 2560px tier is what the lightbox loads -- originals live in
 // originals/ and are no longer deployed.
@@ -441,10 +440,15 @@ function Lightbox({ idx, onClose, onGo }) {
   )
 }
 
-// ─── Masonry grid item ────────────────────────────────────────────────────────
+// ─── Uniform grid item ────────────────────────────────────────────────────────
+// Every tile is a fixed 4:3 box so the grid lines up in exact rows and columns.
+// This replaced a masonry layout: masonry keeps each photo's own proportions, so
+// the columns necessarily end at different heights and never line up — which read
+// as "not in line". All 82 gallery photos are landscape (56 at 4:3, 24 at 3:2),
+// so a 4:3 tile fits most exactly and only mildly centre-crops the 3:2 ones via
+// object-cover. The lightbox still loads the full, uncropped image on click.
 function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
   const [loaded, setLoaded] = useState(false)
-  const dims = PHOTO_DIMS[photo.src]
 
   return (
     <motion.div
@@ -452,21 +456,16 @@ function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.5, ease: 'easeOut', delay: (animIndex % 8) * 0.04 }}
-      className="img-hover-scale group relative overflow-hidden rounded-lg cursor-pointer mb-3 md:mb-4"
+      className="img-hover-scale group relative overflow-hidden rounded-lg cursor-pointer"
       onClick={() => onOpen(flatIdx)}
       onContextMenu={(e) => e.preventDefault()}
-      style={{ breakInside: 'avoid' }}
+      style={{ aspectRatio: '4 / 3' }}
     >
       <img
         src={thumbSrc(photo.src)}
         alt={photo.caption}
-        /* Intrinsic size of the ORIGINAL: same aspect ratio as the thumbnail, so
-           the browser reserves the right height before the image decodes and the
-           masonry columns don't reflow as tiles stream in. */
-        width={dims?.w}
-        height={dims?.h}
-        className="w-full block rounded-lg"
-        style={{ height: 'auto', opacity: loaded ? 1 : 0, transition: 'opacity 0.4s ease', pointerEvents: 'none', filter: 'contrast(90%) brightness(110%) saturate(110%)' }}
+        className="w-full h-full object-cover block rounded-lg"
+        style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.4s ease', pointerEvents: 'none', filter: 'contrast(90%) brightness(110%) saturate(110%)' }}
         onLoad={() => setLoaded(true)}
         loading="lazy"
         decoding="async"
@@ -490,59 +489,10 @@ function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
   )
 }
 
-// Column count matched to the Tailwind breakpoints used elsewhere on the page
-// (sm 640 / lg 1024 / xl 1280). Returns 4 during SSR/first paint; this is a
-// client-rendered SPA so that value is only ever the initial guess before the
-// effect runs on mount.
-function columnCountFor(width) {
-  if (width >= 1280) return 4
-  if (width >= 1024) return 3
-  if (width >= 640) return 2
-  return 1
-}
-
-function useColumnCount() {
-  const [n, setN] = useState(() =>
-    typeof window === 'undefined' ? 4 : columnCountFor(window.innerWidth)
-  )
-  useEffect(() => {
-    // columnCountFor returns one of four discrete values, so setN is a no-op
-    // (no re-render) until a resize actually crosses a breakpoint — cheap
-    // enough to run bare, no debounce needed.
-    const onResize = () => setN(columnCountFor(window.innerWidth))
-    onResize()
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-  return n
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function PhotographyPage() {
   usePageMeta('Photography', 'A personal photography portfolio featuring landscapes, night skies, and travel photography across Canada — captured and remastered by Nic Piraino.')
   const [lightboxIdx, setLightboxIdx] = useState(-1)
-  const columnCount = useColumnCount()
-
-  // True masonry: place each photo in whichever column is currently shortest,
-  // using its known aspect ratio (from photoDimensions.json) as the height it
-  // will add. All columns are equal width, so h/w is a faithful proxy for
-  // rendered height and the columns end within a fraction of a tile of each
-  // other — which a fixed round-robin split (the old i % 4) could not do,
-  // because it ignored heights entirely. flatIdx stays the photo's index in
-  // PHOTOS so the lightbox opens the right image.
-  const columns = useMemo(() => {
-    const cols = Array.from({ length: columnCount }, () => [])
-    const heights = new Array(columnCount).fill(0)
-    PHOTOS.forEach((photo, i) => {
-      const d = PHOTO_DIMS[photo.src]
-      const ratio = d && d.w ? d.h / d.w : 0.75   // fallback ≈ 4:3 landscape
-      let shortest = 0
-      for (let c = 1; c < columnCount; c++) if (heights[c] < heights[shortest]) shortest = c
-      cols[shortest].push({ photo, i })
-      heights[shortest] += ratio
-    })
-    return cols
-  }, [columnCount])
 
   return (
     <section className="px-5 pt-12 pb-20 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40">
@@ -584,20 +534,13 @@ export default function PhotographyPage() {
         All photographs © Nic Piraino. No use, reproduction, or distribution without explicit written permission.
       </div>
 
-      {/* Masonry grid — equal-width flex columns, filled by the shortest-column
-          packing above. The previous version sliced PHOTOS into four fixed
-          columns and hid the 2nd/3rd/4th below the xl/lg/sm breakpoints, so on
-          anything narrower than xl a chunk of the gallery never rendered (on
-          mobile, three of every four photos), and it split by index so the
-          columns ended at wildly different depths. Now every photo shows at
-          every width and the columns end within a fraction of a tile. */}
-      <div className="flex gap-3 md:gap-4 items-start">
-        {columns.map((col, ci) => (
-          <div key={ci} className="flex-1 min-w-0">
-            {col.map(({ photo, i }) => (
-              <PhotoTile key={photo.src} photo={photo} animIndex={i} flatIdx={i} onOpen={setLightboxIdx} />
-            ))}
-          </div>
+      {/* Uniform grid. Every tile is a fixed 4:3 box (see PhotoTile), so rows
+          and columns line up exactly at every breakpoint — 2 columns on mobile,
+          up to 4 on wide screens. This replaced a masonry layout whose columns
+          kept each photo's own height and therefore never ended level. */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+        {PHOTOS.map((photo, i) => (
+          <PhotoTile key={photo.src} photo={photo} animIndex={i} flatIdx={i} onOpen={setLightboxIdx} />
         ))}
       </div>
 
