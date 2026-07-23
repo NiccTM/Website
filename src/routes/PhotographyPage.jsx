@@ -531,7 +531,7 @@ export default function PhotographyPage() {
         style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
       >
         <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>copyright</span>
-        All photographs © Nic Piraino. No use, reproduction, or distribution without explicit written permission.
+        All photographs by Nic Piraino. No use, reproduction, or distribution without explicit written permission.
       </div>
 
       {/* Uniform grid. Every tile is a fixed 4:3 box (see PhotoTile), so rows
