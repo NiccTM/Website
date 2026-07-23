@@ -75,7 +75,7 @@ const PHOTOS = [
   { src: '/Remastered Photos/Sparrow on Branch.jpg',                        caption: 'Sparrow on Branch' },
   { src: '/Remastered Photos/Sparrow Looking at Me.jpg',                    caption: 'Sparrow' },
   { src: '/Remastered Photos/Chipmunk w Nut.jpg',                           caption: 'Chipmunk with Nut' },
-  { src: '/Remastered Photos/Northen Leopard Frog Behind Grass.jpg',        caption: 'Northern Leopard Frog' },
+  { src: '/Remastered Photos/Northern Leopard Frog Behind Grass.jpg',       caption: 'Northern Leopard Frog' },
   { src: '/Remastered Photos/Fat Tadpole on Branch.jpg',                    caption: 'Tadpole on Branch' },
   { src: '/Remastered Photos/Canadian Tiger Swallowtail Butterfly.jpg',     caption: 'Canadian Tiger Swallowtail' },
   { src: '/Remastered Photos/Dragonfly.jpg',                                caption: 'Dragonfly' },
@@ -91,8 +91,8 @@ const PHOTOS = [
   { src: '/Remastered Photos/Kelowna Sunset with Airplane.jpg',             caption: 'Kelowna Sunset with Airplane' },
   { src: '/Remastered Photos/Moon in Daylight.jpg',                         caption: 'Moon in Daylight' },
   { src: '/Remastered Photos/Pink Clouds and Moon.jpg',                     caption: 'Pink Clouds and Moon' },
-  { src: '/Remastered Photos/Blue_Yellow Sky.jpg',                          caption: 'Blue & Yellow Sky' },
-  { src: '/Remastered Photos/Blue_Yellow Sky with Streetlight.jpg',         caption: 'Blue & Yellow Sky with Streetlight' },
+  { src: '/Remastered Photos/Blue & Yellow Sky.jpg',                        caption: 'Blue & Yellow Sky' },
+  { src: '/Remastered Photos/Blue & Yellow Sky with Streetlight.jpg',       caption: 'Blue & Yellow Sky with Streetlight' },
   { src: '/Remastered Photos/Rusty AC Controls.jpg',                        caption: 'Rusty AC Controls' },
 ]
 
