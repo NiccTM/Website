@@ -21,6 +21,10 @@ function Divider() {
 
 const ProjectVideo = lazy(() => import('../components/media/ProjectVideo'))
 const EcoSortDemo  = lazy(() => import('../components/ml/EcoSortDemo'))
+/* Moved off the home page. Feeble Presence already has a card in the gallery
+   above, so its architecture diagram belongs with it rather than being the
+   landing page's main content. */
+const SystemArchitecture = lazy(() => import('../components/diagrams/SystemArchitecture'))
 
 export default function ProjectsPage() {
   usePageMeta('Projects', 'Competitive design, professional practice, and software projects — from award-winning UBC Engineering teams to embedded systems and full-stack applications.')
@@ -49,6 +53,15 @@ export default function ProjectsPage() {
       <ErrorBoundary label="EcoSort ML Demo">
         <Suspense fallback={<SectionFallback />}>
           <EcoSortDemo sectionId="section-ecosort" />
+        </Suspense>
+      </ErrorBoundary>
+
+      <Divider />
+
+      {/* Feeble Presence architecture */}
+      <ErrorBoundary label="Feeble Presence Architecture">
+        <Suspense fallback={<SectionFallback />}>
+          <SystemArchitecture />
         </Suspense>
       </ErrorBoundary>
 
