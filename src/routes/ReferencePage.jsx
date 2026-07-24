@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { usePageMeta } from '../hooks/usePageMeta'
 import ImageLightbox from '../components/ui/ImageLightbox'
-import { thumbSrc } from '../utils/thumbs'
+import { thumbSrc, displaySrc } from '../utils/thumbs'
 
 const BENCH_PHOTO = '/ltz1000-bench-3458a.jpg'
 
@@ -39,7 +39,7 @@ function Heading({ children }) {
 
 function Body({ children }) {
   return (
-    <p className="font-sans mb-4 max-w-[68ch]" style={{ color: 'var(--text-secondary)', lineHeight: 1.75 }}>
+    <p className="font-sans mb-4 max-w-[72ch]" style={{ color: 'var(--text-secondary)', lineHeight: 1.75 }}>
       {children}
     </p>
   )
@@ -68,7 +68,11 @@ export default function ReferencePage() {
   const [lightbox, setLightbox] = useState(false)
 
   return (
-    <section className="px-5 pt-12 pb-20 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
+    /* Article measure, not the 1600px grid width the gallery pages use. At
+       1600px the photo ran the full container while the prose sat at ~68ch,
+       leaving a very wide empty column to its right. Capping the whole article
+       keeps the image and the text on the same measure. */
+    <section className="px-5 pt-12 pb-20 sm:px-8 md:px-10 max-w-[54rem] mx-auto w-full">
       {/* ── Header ── */}
       <motion.p
         initial={{ opacity: 0 }}
@@ -94,7 +98,7 @@ export default function ReferencePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.15 }}
-        className="font-sans mb-6 max-w-[68ch]"
+        className="font-sans mb-6 max-w-[72ch]"
         style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.75 }}
       >
         An ultra-stable 10&nbsp;V DC reference built around an ADR1000 ovenized buried-Zener
@@ -108,7 +112,7 @@ export default function ReferencePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="flex items-start gap-2.5 mb-12 px-4 py-3 rounded-lg max-w-[68ch]"
+        className="flex items-start gap-2.5 mb-12 px-4 py-3 rounded-lg max-w-[72ch]"
         style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)' }}
       >
         <span aria-hidden="true" className="material-symbols-rounded shrink-0" style={{ color: 'var(--accent)', fontSize: '1.05rem', marginTop: '0.1rem' }}>
@@ -133,15 +137,23 @@ export default function ReferencePage() {
           onClick={() => setLightbox(true)}
           style={{ border: '1px solid var(--border)', aspectRatio: '3 / 2' }}
         >
+          {/* The 4000px display tier, not the 800px thumbnail: this renders
+              near-full-column width, so a thumb was being upscaled ~2x and
+              looked soft. srcSet still hands phones the small file rather than
+              a ~1 MB image they cannot resolve anyway. */}
           <img
-            src={thumbSrc(BENCH_PHOTO)}
+            src={displaySrc(BENCH_PHOTO)}
+            srcSet={`${thumbSrc(BENCH_PHOTO)} 800w, ${displaySrc(BENCH_PHOTO)} 4000w`}
+            sizes="(max-width: 54rem) 100vw, 54rem"
+            width={7836}
+            height={5876}
             alt="An HP 3458A 8½-digit multimeter reading 9.9999889 volts DC at the reference output"
             loading="eager"
             decoding="async"
             className="w-full h-full object-cover"
           />
         </div>
-        <figcaption className="font-mono-data text-sm mt-3 max-w-[68ch]" style={{ color: 'var(--text-muted)' }}>
+        <figcaption className="font-mono-data text-sm mt-3 max-w-[72ch]" style={{ color: 'var(--text-muted)' }}>
           Bench verification on an HP 3458A. The output reads 9.9999889&nbsp;V DC — roughly
           11&nbsp;ppm from nominal, in a pre-calibration development state. Not a calibrated
           result or a specification.
@@ -274,7 +286,7 @@ export default function ReferencePage() {
         viewport={{ once: true, margin: '-40px' }}
         transition={{ duration: 0.4 }}
         aria-labelledby="legal-heading"
-        className="rounded-xl px-5 py-5 max-w-[68ch]"
+        className="rounded-xl px-5 py-5 max-w-[72ch]"
         style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)' }}
       >
         <h2
