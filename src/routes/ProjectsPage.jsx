@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
+import PageHeader     from '../components/layout/PageHeader'
 import ProjectGallery from '../components/ui/ProjectGallery'
 import ErrorBoundary  from '../components/ui/ErrorBoundary'
 
@@ -30,6 +31,16 @@ export default function ProjectsPage() {
   usePageMeta('Projects', 'Competitive design, professional practice, and software projects — from award-winning UBC Engineering teams to embedded systems and full-stack applications.')
   return (
     <>
+      {/* This route had no page heading at all, and so no h1 -- it opened
+          straight into the gallery's own section labels. */}
+      <section className="px-5 pt-12 pb-0 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
+        <PageHeader
+          eyebrow="Competition · Coursework · Software"
+          title="Projects"
+          intro="Competition hardware, coursework that outgrew the assignment, and the software I write around it. Each entry states the constraint it was built against and what was actually measured — where a figure is calculated rather than measured, it says so."
+        />
+      </section>
+
       <ProjectGallery />
 
       <Divider />

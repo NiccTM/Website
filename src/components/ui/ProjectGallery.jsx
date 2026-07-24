@@ -212,28 +212,11 @@ export default function ProjectGallery() {
   const [activeProject, setActiveProject] = useState(null)
 
   return (
-    <section className="relative z-10 px-5 py-12 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
-      {/* Section eyebrow */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        className="font-mono-data tracking-[0.18em] uppercase mb-4"
-        style={{ color: 'var(--accent)', fontSize: '0.875rem' }}
-      >
-        Selected Work
-      </motion.p>
-      <motion.h1
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
-        className="font-display mb-6"
-        style={{ fontSize: 'clamp(2.25rem, 2rem + 2.5vw, 5rem)', color: 'var(--text-primary)', fontWeight: 900, lineHeight: 1 }}
-      >
-        Projects
-      </motion.h1>
-
+    /* pt-0: ProjectsPage renders the page header (eyebrow, h1, intro) directly
+       above this. The gallery used to carry its own "Selected Work" eyebrow and
+       a second <h1>Projects</h1>, which duplicated the page title and put two
+       h1s on the route. The page owns the heading; this owns the grid. */
+    <section className="relative z-10 px-5 pt-0 pb-12 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
       <div className="flex flex-col gap-14">
         {SECTIONS.map((section, si) => {
           const sectionProjects = projects.filter((p) => p.category === section.key)

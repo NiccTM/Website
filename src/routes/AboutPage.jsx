@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { usePageMeta } from '../hooks/usePageMeta'
+import PageHeader from '../components/layout/PageHeader'
 import { profile, contact, bio } from '../data/config'
 
 const FACTS = [
@@ -74,37 +75,13 @@ export default function AboutPage() {
   return (
     <section className="px-5 pt-12 pb-20 sm:px-8 md:px-14 lg:px-20 max-w-[72rem] mx-auto w-full [&_p]:max-w-none">
       {/* ── Header ── */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="font-mono-data tracking-[0.18em] uppercase mb-4"
-        style={{ color: 'var(--accent)', fontSize: '0.875rem' }}
-      >
-        About
-      </motion.p>
-
-      <motion.h1
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="font-display mb-6"
-        style={{ fontSize: 'clamp(2.25rem, 1.7rem + 3vw, 4rem)', fontWeight: 900, lineHeight: 1.02, color: 'var(--text-primary)' }}
-      >
-        Nic Piraino
-      </motion.h1>
-
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.12 }}
-        className="font-sans mb-10"
-        style={{ color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1.8 }}
-      >
-        Electrical Engineering student at UBC Okanagan, working mainly in precision analog,
-        PCB design, embedded systems and electrical metrology. I like engineering problems
-        where the disagreement can eventually be settled by a measurement.
-      </motion.p>
+      <PageHeader
+        eyebrow="About"
+        title="Nic Piraino"
+        size="article"
+        introClassName="mb-10"
+        intro="Electrical Engineering student at UBC Okanagan, working mainly in precision analog, PCB design, embedded systems and electrical metrology. I like engineering problems where the disagreement can eventually be settled by a measurement."
+      />
 
       <div className="grid gap-10 lg:gap-14 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] items-start">
         {/* ── Main column ── */}

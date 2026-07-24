@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { usePageMeta } from '../hooks/usePageMeta'
 import ImageLightbox from '../components/ui/ImageLightbox'
 import HardwareTabs  from '../components/layout/HardwareTabs'
+import PageHeader    from '../components/layout/PageHeader'
 import { thumbSrc, displaySrc } from '../utils/thumbs'
 
 const BENCH_PHOTO = '/ltz1000-bench-3458a.jpg'
@@ -77,37 +78,17 @@ export default function ReferencePage() {
       <HardwareTabs />
 
       {/* ── Header ── */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="font-mono-data tracking-[0.18em] uppercase mb-4"
-        style={{ color: 'var(--accent)', fontSize: '0.875rem' }}
-      >
-        Precision Analog · {EMPLOYER}
-      </motion.p>
-
-      <motion.h1
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="font-display mb-6"
-        style={{ fontSize: 'clamp(2.25rem, 1.7rem + 3vw, 4.5rem)', fontWeight: 900, lineHeight: 1.02, color: 'var(--text-primary)' }}
-      >
-        ADR1000 10&nbsp;V Reference
-      </motion.h1>
-
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.15 }}
-        className="font-sans mb-6"
-        style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.75 }}
-      >
-        An ultra-stable 10&nbsp;V DC reference built around an ADR1000 ovenized buried-Zener
-        reference, scaled to 10&nbsp;V by a zero-drift amplifier and trimmed with fixed
-        precision foil resistors instead of a potentiometer.
-      </motion.p>
+      <PageHeader
+        eyebrow={`Precision Analog · ${EMPLOYER}`}
+        title={<>ADR1000 10&nbsp;V Reference</>}
+        size="article"
+        introClassName="mb-6"
+        intro={<>
+          An ultra-stable 10&nbsp;V DC reference built around an ADR1000 ovenized buried-Zener
+          reference, scaled to 10&nbsp;V by a zero-drift amplifier and trimmed with fixed
+          precision foil resistors instead of a potentiometer.
+        </>}
+      />
 
       {/* Ownership notice, stated up front rather than buried in a footer, so a
           reader knows whose work this is before reading any of it. */}

@@ -1,7 +1,7 @@
 import { lazy, Suspense, useRef, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import { usePageMeta } from '../hooks/usePageMeta'
+import PageHeader from '../components/layout/PageHeader'
 import ErrorBoundary from '../components/ui/ErrorBoundary'
 
 /* /photography and /archive used to be two separate nav items. They are the
@@ -107,37 +107,11 @@ export default function HobbiesPage() {
     <>
       {/* ── Header ── */}
       <section className="px-5 pt-12 pb-0 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40">
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-          className="font-mono-data tracking-[0.18em] uppercase mb-4"
-          style={{ color: 'var(--accent)', fontSize: '0.875rem' }}
-        >
-          Outside engineering
-        </motion.p>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="font-display mb-6"
-          style={{ fontSize: 'clamp(2.75rem, 2rem + 4vw, 7rem)', fontWeight: 900, lineHeight: 0.95, color: 'var(--text-primary)' }}
-        >
-          Hobbies
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="font-sans mb-8 max-w-xl [&_p]:max-w-none"
-          style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1.75 }}
-        >
-          Photography, hi-fi audio and vinyl, and the hardware I pull apart on weekends.
-          None of it is professional work — it is where the same curiosity goes when there
-          is no specification to meet.
-        </motion.p>
+        <PageHeader
+          eyebrow="Outside engineering"
+          title="Hobbies"
+          intro="Photography, hi-fi audio and vinyl, and the hardware I pull apart on weekends. None of it is professional work — it is where the same curiosity goes when there is no specification to meet."
+        />
 
         {/* ── Tabs ── */}
         <div
