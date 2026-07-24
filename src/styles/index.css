@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ════════════════════════════════════════════════════════════════════════════
-   DARK MODE — default (:root)
+   DARK MODE -- default (:root)
    Liminal Dusk: deep purple-indigo night, cyan + warm amber
    ════════════════════════════════════════════════════════════════════════════ */
 :root {
@@ -52,7 +52,7 @@
   --glass-inset:      rgba(255, 255, 255, 0.06);
   --glass-outer:      0 8px 32px rgba(0,0,0,0.45);
 
-  /* Mesh blobs — cyan left, amber warm, deep purple center, lavender hint */
+  /* Mesh blobs -- cyan left, amber warm, deep purple center, lavender hint */
   --blob-1: rgba(0, 229, 255, 0.07);
   --blob-2: rgba(232, 168, 50, 0.08);
   --blob-3: rgba(90, 40, 160, 0.55);
@@ -70,7 +70,7 @@
   --flow-edge:         #00E5FF;
   --flow-edge-glow:    rgba(0, 229, 255, 0.7);
 
-  /* Buttons — warm amber gel for dark mode */
+  /* Buttons -- warm amber gel for dark mode */
   --btn-primary-grad:   linear-gradient(to bottom, #f5c842 0%, #d4820a 42%, #8a4800 100%);
   --btn-primary-top:    rgba(255, 210, 100, 0.70);
   --btn-primary-shadow: 0 4px 18px rgba(232, 168, 50, 0.50);
@@ -81,7 +81,7 @@
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   LIGHT MODE — Dreamcore Verdant: vivid sky, mint grass, lavender dusk haze
+   LIGHT MODE -- Dreamcore Verdant: vivid sky, mint grass, lavender dusk haze
    ════════════════════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
   /* Palette */
@@ -116,7 +116,7 @@
   --glass-inset:      rgba(255, 255, 255, 0.62);
   --glass-outer:      0 8px 32px rgba(0,0,0,0.10);
 
-  /* Mesh blobs — sky blue, vivid mint green, soft lavender-mauve */
+  /* Mesh blobs -- sky blue, vivid mint green, soft lavender-mauve */
   --blob-1: rgba(155, 205, 245, 0.65);
   --blob-2: rgba(160, 230, 175, 0.55);
   --blob-3: rgba(210, 175, 240, 0.50);
@@ -134,7 +134,7 @@
   --flow-edge:         #2a7cc8;
   --flow-edge-glow:    rgba(42, 124, 200, 0.55);
 
-  /* Buttons — sky blue gel for light mode */
+  /* Buttons -- sky blue gel for light mode */
   --btn-primary-grad:   linear-gradient(to bottom, #c8e8f8 0%, #5cb0e8 42%, #2a78c2 100%);
   --btn-primary-top:    rgba(255, 255, 255, 0.85);
   --btn-primary-shadow: 0 4px 14px rgba(42, 120, 194, 0.38);
@@ -171,7 +171,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
 }
 
-/* Paragraphs — comfortable reading width */
+/* Paragraphs -- comfortable reading width */
 p {
   max-width: 72ch;
 }
@@ -184,7 +184,7 @@ button, input, select, textarea {
   transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 
-/* Theme transition — smooth color swap */
+/* Theme transition -- smooth color swap */
 *, *::before, *::after {
   transition-property: background-color, border-color, color, box-shadow;
   transition-duration: 0.35s;
@@ -208,20 +208,20 @@ canvas, img, video, .no-theme-transition {
   nav a { padding-top: 0.75rem; padding-bottom: 0.75rem; }
 }
 
-/* ── Focus-visible — cyan glow matching accent, no browser default blue ──── */
+/* ── Focus-visible -- cyan glow matching accent, no browser default blue ──── */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 6px;
   box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.18);
 }
-/* Suppress focus ring on mouse click — only show on keyboard */
+/* Suppress focus ring on mouse click -- only show on keyboard */
 :focus:not(:focus-visible) { outline: none; }
 
 /* ── Skip link (WCAG 2.4.1 Bypass Blocks, Level A) ────────────────────────── */
 /* Off-screen rather than display:none or visibility:hidden, both of which take
    it out of the tab order entirely and defeat the point. It reveals itself on
-   :focus (not :focus-visible — a click-through should show it too). */
+   :focus (not :focus-visible -- a click-through should show it too). */
 .skip-link {
   position: fixed;
   top: 0;
@@ -271,7 +271,7 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   .hover-caption { opacity: 0; transition: opacity 300ms ease; }
   .img-hover-scale:hover .hover-caption { opacity: 1; }
 
-  /* Heavy Aero glass card — 500ms float-up */
+  /* Heavy Aero glass card -- 500ms float-up */
   .glass-card {
     transition:
       transform 500ms ease-in-out,
@@ -428,10 +428,10 @@ html, body { overflow-x: hidden; max-width: 100vw; }
     /* NOTE: despite the name this is a proportional stack, not a monospace one.
        Fine for readouts. Anything that must column-align (box-drawing frames,
        padded tables) needs a genuine fixed-pitch stack with letter-spacing: 0
-       — there is no such class in use now that the terminal console is gone. */
+       -- there is no such class in use now that the terminal console is gone. */
     font-family: 'Exo 2', 'Segoe UI', Tahoma, system-ui, 'Segoe UI Symbol',
       'Apple Symbols', 'Noto Sans Symbols 2', 'DejaVu Sans', sans-serif;
-    /* No font-size override — let Tailwind text-xs/sm/base classes control size */
+    /* No font-size override -- let Tailwind text-xs/sm/base classes control size */
     line-height: 1.6;
     letter-spacing: 0.025em;
     font-weight: 500;
@@ -447,7 +447,7 @@ html, body { overflow-x: hidden; max-width: 100vw; }
     padding-right: max(1.25rem, env(safe-area-inset-right));
   }
 
-  /* Glossy gel CTA — themed via CSS vars */
+  /* Glossy gel CTA -- themed via CSS vars */
   .btn-primary {
     background: var(--btn-primary-grad);
     border: 1px solid var(--btn-primary-top);
@@ -483,7 +483,7 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   REDUCED MOTION — freeze all decorative animations
+   REDUCED MOTION -- freeze all decorative animations
    ════════════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -492,12 +492,12 @@ html, body { overflow-x: hidden; max-width: 100vw; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  /* Blob drifts are purely decorative — stop them entirely */
+  /* Blob drifts are purely decorative -- stop them entirely */
   .mesh-blob { animation: none !important; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   HIGH CONTRAST — boost glass opacity and legibility
+   HIGH CONTRAST -- boost glass opacity and legibility
    ════════════════════════════════════════════════════════════════════════════ */
 @media (prefers-contrast: more) {
   :root {
@@ -512,7 +512,7 @@ html, body { overflow-x: hidden; max-width: 100vw; }
     --text-muted:   #1a2e48;
     --border:       rgba(0, 0, 0, 0.45);
   }
-  /* Remove frosted blur — solid background passes WCAG 4.5:1 contrast */
+  /* Remove frosted blur -- solid background passes WCAG 4.5:1 contrast */
   .glass, .glass-card {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;

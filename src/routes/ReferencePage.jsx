@@ -138,8 +138,8 @@ export default function ReferencePage() {
           />
         </div>
         <figcaption className="font-mono-data text-sm mt-3" style={{ color: 'var(--text-muted)' }}>
-          Bench verification on an HP 3458A. The output reads 9.9999927&nbsp;V DC — about
-          7&nbsp;µV, or 0.7&nbsp;ppm, from nominal, in a pre-calibration development state. Not a
+          Bench verification on an HP 3458A. The output reads 9.9999927&nbsp;V DC, about
+          7&nbsp;µV or 0.7&nbsp;ppm from nominal, in a pre-calibration development state. Not a
           calibrated result or a specification.
         </figcaption>
       </motion.figure>
@@ -155,7 +155,7 @@ export default function ReferencePage() {
         <Body>
           That is the reason this class of part turns up inside calibrators and 8½-digit
           meters rather than ordinary power supplies. The figure of merit is not how close the
-          raw output sits to a round number — it is how little that output moves over time and
+          raw output sits to a round number. It is how little that output moves over time and
           temperature.
         </Body>
       </Section>
@@ -164,7 +164,7 @@ export default function ReferencePage() {
         <Body>
           The board originally ran an LTZ1000 and was later changed to an ADR1000. The two are
           pin-compatible, but they do not sit at the same voltage, so the swap was not a
-          drop-in — the entire 10&nbsp;V scaling network had to be recalculated around the new
+          drop-in. The entire 10&nbsp;V scaling network had to be recalculated around the new
           device.
         </Body>
         <Body>
@@ -201,7 +201,7 @@ export default function ReferencePage() {
       <Section title="What the numbers mean">
         <Body>
           The solver reports a resistor-fit residual far below a ppm. That figure describes how
-          closely the resistor arithmetic lands on the target — it is not the accuracy of the
+          closely the resistor arithmetic lands on the target. It is not the accuracy of the
           finished board, and presenting it as such would be misleading.
         </Body>
         <Body>
@@ -296,7 +296,7 @@ export default function ReferencePage() {
       {lightbox && (
         <ImageLightbox
           src={BENCH_PHOTO}
-          label="10 V reference — bench verification"
+          label="10 V reference, bench verification"
           caption="HP 3458A reading 9.9999927 V DC at the amplified output"
           onClose={() => setLightbox(false)}
         />

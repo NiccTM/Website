@@ -68,7 +68,7 @@ function DiagnosticImage({ image, index }) {
 
         {/* Always-visible caption scrim.
             This was `inset-0` with `justify-end` and a gradient that is fully
-            transparent above 75% — so the scrim covered a fixed quarter of the
+            transparent above 75% -- so the scrim covered a fixed quarter of the
             card while the text block grew upward with its content. Captions
             like the DVD player's ("Internal inspection · full disc drive
             disassembly · laser sled cleaning · mechanism lubrication") run to

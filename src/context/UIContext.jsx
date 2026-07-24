@@ -1,5 +1,5 @@
 /**
- * UIContext — shared playback state for the vinyl deck.
+ * UIContext -- shared playback state for the vinyl deck.
  *
  * This used to also be a global command bus (SCROLL_TO / EXPLODE / SET_RPM /
  * HIGHLIGHT_SPECS) driven by the terminal console. That console is gone and

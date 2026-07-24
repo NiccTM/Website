@@ -6,9 +6,9 @@ import { profile, contact, bio } from '../data/config'
 
 const FACTS = [
   { label: 'Program',   value: bio.program },
-  { label: 'School',    value: `${bio.school} — expected ${bio.expected}` },
+  { label: 'School',    value: `${bio.school}, expected ${bio.expected}` },
   { label: 'Role',      value: `${bio.role}, ${bio.employer}` },
-  { label: 'Team',      value: 'Okanagan Rover Craft — CIRC' },
+  { label: 'Team',      value: 'Okanagan Rover Craft · CIRC' },
   { label: 'Affiliate', value: bio.affiliation },
   { label: 'Based in',  value: profile.location },
 ]
@@ -21,10 +21,10 @@ const TOOLSET = [
 ]
 
 const AWARDS = [
-  { year: '2024', text: 'Third place, Project Design — APSC 171 Design Competition' },
-  { year: '2023', text: 'First place, Project Impact — APSC 169 Sustainable Design Competition' },
-  { year: '2023', text: 'Third place, Project Design — APSC 169 Sustainable Design Competition' },
-  { year: '2022', text: 'Second place, Top Academics — St. Mary Catholic High School' },
+  { year: '2024', text: 'Third place, Project Design · APSC 171 Design Competition' },
+  { year: '2023', text: 'First place, Project Impact · APSC 169 Sustainable Design Competition' },
+  { year: '2023', text: 'Third place, Project Design · APSC 169 Sustainable Design Competition' },
+  { year: '2022', text: 'Second place, Top Academics · St. Mary Catholic High School' },
 ]
 
 function Heading({ children, id }) {
@@ -69,7 +69,7 @@ function Section({ title, children }) {
 export default function AboutPage() {
   usePageMeta(
     'About',
-    'Nic Piraino — Electrical Engineering student at UBC Okanagan working in precision analog, PCB design, embedded systems and electrical metrology.'
+    'Nic Piraino, Electrical Engineering student at UBC Okanagan, working in precision analog, PCB design, embedded systems and electrical metrology.'
   )
 
   return (
@@ -111,7 +111,7 @@ export default function AboutPage() {
             <Body>
               I work as a Hardware Engineering Intern at Measurements International Ltd., a
               precision electrical metrology company. My first term there in 2024 was largely
-              documentation and configuration control — modernising older schematics, producing
+              documentation and configuration control: modernising older schematics, producing
               revised board versions to match existing hardware, and generating BOMs, change
               logs and assembly instructions. That work taught me how quickly an electrical
               design becomes unmaintainable when nobody can tell which drawing matches the
@@ -121,7 +121,7 @@ export default function AboutPage() {
               More recent work has been precision hardware itself: analog circuitry, current
               sources, impedance-related systems, PCB layout, component selection and
               characterisation. Working where measurement uncertainty is the product rather than
-              an afterthought changes the scale at which imperfections matter — a resistor
+              an afterthought changes the scale at which imperfections matter. A resistor
               tempco that is excellent in a general-purpose circuit can dominate the error budget
               of a precision divider. A precision component does not make a precision
               instrument; the whole signal chain has to preserve it.
@@ -144,17 +144,17 @@ export default function AboutPage() {
           <Section title="Teams">
             <Body>
               I work on power architecture for Okanagan Rover Craft, UBCO&rsquo;s entry to the
-              Canadian International Rover Challenge — a 24 V LiFePO₄ system running battery →
-              main fuse → contactor → high-current connector → individually fused branches. It is
-              the opposite end of the scale from a voltage reference: instead of microvolts, the
-              questions are fault current, conductor sizing and whether every connection in the
+              Canadian International Rover Challenge. It is a 24 V LiFePO₄ system running battery →
+              main fuse → contactor → high-current connector → individually fused branches, and it
+              sits at the opposite end of the scale from a voltage reference: instead of microvolts,
+              the questions are fault current, conductor sizing and whether every connection in the
               path can carry the load safely.
             </Body>
             <Body>
               Before that I was on the electrical team for UBCO&rsquo;s Aerial Robotics and
               Rocketry Club as head researcher for a helicopter FPV system, covering analog and
               digital video, transmitters, antennas and cameras. I also presented the project
-              plan and budget to the CEO of Sanmina and secured platinum sponsorship for it —
+              plan and budget to the CEO of Sanmina and secured platinum sponsorship for it,
               a reminder that a technically sound project still needs someone able to explain
               why it is worth funding.
             </Body>
@@ -172,7 +172,7 @@ export default function AboutPage() {
               taking provider claims at face value. What I think actually matters is the
               workflow around them: specifications, bounded milestones, test suites, regression
               checks and explicit approval gates for anything irreversible. AI is very good at
-              producing confident errors, so the value is not in generating code quickly — it is
+              producing confident errors, so the value is not in generating code quickly. It is
               in being able to tell whether what came out is right.
             </Body>
           </Section>
@@ -230,8 +230,8 @@ export default function AboutPage() {
           <div>
             <Heading>Outside engineering</Heading>
             <p className="font-sans text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              Vinyl and high-fidelity audio, including digitisation and archival workflows —
-              measurable engineering meeting entirely subjective preference.{' '}
+              Vinyl and high-fidelity audio, including digitisation and archival workflows,
+              where measurable engineering meets entirely subjective preference.{' '}
               <Link to="/hobbies?tab=photography" style={{ color: 'var(--accent)' }}>Photography</Link>,
               drones and helicopters, custom PC builds and home networking.
             </p>

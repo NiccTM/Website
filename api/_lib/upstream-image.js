@@ -10,7 +10,7 @@
  *
  * A suffix match on a hostname is not a domain check. "evil-discogs.com",
  * "notdiscogs.com" and "xdiscogs-cdn.com" all satisfy it, and any of them can
- * simply be registered — which turns this endpoint into an open proxy that
+ * simply be registered -- which turns this endpoint into an open proxy that
  * fetches arbitrary attacker-controlled URLs using the site's own egress.
  * A boundary-aware check ("." + domain, or exact equality) fixes the class;
  * an exact-host allowlist is stronger still, and is what is used here because

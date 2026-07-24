@@ -27,9 +27,9 @@ function proxied(url) {
 //   1.25 rad  →  parked (R≈1.51, just outside record edge)
 //   1.18 rad  →  outer groove (R≈1.41, near vinyl edge)
 //   0.50 rad  →  inner groove (R≈0.54, near label)
-const TONEARM_REST     = 1.25   // parked angle (rad) — just off the record edge
-const TONEARM_PLAY     = 1.22   // outer groove — drops here first
-const TONEARM_INNER    = 0.62   // inner groove — R≈0.67, stops just outside label edge (R=0.60)
+const TONEARM_REST     = 1.25   // parked angle (rad) -- just off the record edge
+const TONEARM_PLAY     = 1.22   // outer groove -- drops here first
+const TONEARM_INNER    = 0.62   // inner groove -- R≈0.67, stops just outside label edge (R=0.60)
 const RAISE_HEIGHT     = 0.14   // how far the STYLUS END lifts when cued up
 const PIVOT_BASE_Y     = 0.110  // pivot Y: stylus tip (local -0.068) lands on vinyl surface Y=0.042
 const TRACKING_SECS    = 120    // seconds to sweep outer → inner (slow, realistic)
@@ -38,7 +38,7 @@ const TRACKING_SECS    = 120    // seconds to sweep outer → inner (slow, reali
 // pivot upward. Raising the pivot lifted the arm clear of the bearing post it
 // is supposed to be mounted on, which is what made it look like it was floating
 // free of the deck. Rotating keeps the bearing fixed, and the counterweight
-// dips as the stylus rises — the see-saw a real arm actually does.
+// dips as the stylus rises -- the see-saw a real arm actually does.
 const ARM_REACH  = 1.368                                  // pivot → stylus, in pivot-local X
 const LIFT_ANGLE = -Math.asin(RAISE_HEIGHT / ARM_REACH)   // ≈ -0.1025 rad; negative lifts the -X end
 
@@ -49,13 +49,13 @@ const ARM = { PARKED: 0, SWINGING: 1, DROPPING: 2, PLAYING: 3 }
 //
 // Two data textures, generated per-texel in polar space:
 //
-//   normal     — groove micro-relief. A real LP has ~700 grooves per side, which
+//   normal     -- groove micro-relief. A real LP has ~700 grooves per side, which
 //                is far past Nyquist for any texture we can afford; drawing them
 //                as hard rings is what produced the moire banding. This uses a
 //                smooth cosine slope instead, which mips cleanly, and leans on
 //                the anisotropic highlight to actually read as grooves.
 //
-//   anisotropy — per-texel direction field. three interprets R/G as a vector in
+//   anisotropy -- per-texel direction field. three interprets R/G as a vector in
 //                tangent/bitangent space and B as strength. Grooves run
 //                circumferentially, so the direction is perpendicular to the
 //                radius and rotates around the disc -- a single constant
@@ -252,7 +252,7 @@ function PlainLabel() {
   )
 }
 
-// ─── Vinyl disc — anisotropic PBR, RPM-linked rotation ───────────────────────
+// ─── Vinyl disc -- anisotropic PBR, RPM-linked rotation ───────────────────────
 function VinylRecord({ coverUrl }) {
   const groupRef = useRef()
   const proxyUrl = proxied(coverUrl)
@@ -328,16 +328,16 @@ function VinylRecord({ coverUrl }) {
   )
 }
 
-// ─── Tonearm — arc pivot + needle drop state machine ─────────────────────────
+// ─── Tonearm -- arc pivot + needle drop state machine ─────────────────────────
 //
 // States:
-//   PARKED   — arm at REST angle, pivot raised RAISE_HEIGHT above surface
-//   SWINGING — arm rotating toward play angle, still raised
-//   DROPPING — arm reached angle, pivot damping down to surface
-//   PLAYING  — pivot at surface, tracking inward over TRACKING_SECS
+//   PARKED   -- arm at REST angle, pivot raised RAISE_HEIGHT above surface
+//   SWINGING -- arm rotating toward play angle, still raised
+//   DROPPING -- arm reached angle, pivot damping down to surface
+//   PLAYING  -- pivot at surface, tracking inward over TRACKING_SECS
 //
 // maath/easing `damp(obj, key, target, smoothTime, delta)` produces a
-// critically-damped spring — organic deceleration with no overshoot.
+// critically-damped spring -- organic deceleration with no overshoot.
 function Tonearm({ isPlaying }) {
   const groupRef    = useRef()
   const stateRef    = useRef(ARM.DROPPING)  // skip swing, drop straight down at outer groove
@@ -363,13 +363,13 @@ function Tonearm({ isPlaying }) {
 
     switch (stateRef.current) {
       case ARM.PARKED:
-        // Return to rest — fast enough to feel snappy, not instant
+        // Return to rest -- fast enough to feel snappy, not instant
         damp(arm.rotation, 'y', TONEARM_REST, 0.35, delta)
         damp(arm.rotation, 'z', LIFT_ANGLE, 0.25, delta)
         break
 
       case ARM.SWINGING:
-        // Swing slowly, stay cued up — smoothTime=0.9 gives deliberate mechanical feel
+        // Swing slowly, stay cued up -- smoothTime=0.9 gives deliberate mechanical feel
         arm.rotation.z = LIFT_ANGLE
         damp(arm.rotation, 'y', targetAngle, 0.9, delta)
         // Transition once angle is settled (< 0.004 rad ≈ 0.23°)
@@ -389,7 +389,7 @@ function Tonearm({ isPlaying }) {
         break
 
       case ARM.PLAYING:
-        // Track inward — update progress, damp rotation to follow
+        // Track inward -- update progress, damp rotation to follow
         progressRef.current = Math.min(1, progressRef.current + delta / TRACKING_SECS)
         damp(arm.rotation, 'y', targetAngle, 0.08, delta)
         arm.rotation.z = 0
@@ -398,18 +398,18 @@ function Tonearm({ isPlaying }) {
   })
 
   // Euler order XYZ composes as Rx*Ry*Rz, so the z tilt is applied in the arm's
-  // own frame first and the y swing then carries it around — exactly the order a
+  // own frame first and the y swing then carries it around -- exactly the order a
   // real bearing constrains. Pivot Y is now fixed.
   return (
     <group ref={groupRef} position={[1.72, PIVOT_BASE_Y, -0.55]} rotation={[0, TONEARM_PLAY, LIFT_ANGLE]}>
 
-      {/* ── Bearing housing (pivot cup) — Rega matte black ── */}
+      {/* ── Bearing housing (pivot cup) -- Rega matte black ── */}
       <mesh position={[0, 0, 0]}>
         <cylinderGeometry args={[0.045, 0.05, 0.06, 24]} />
         <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
       </mesh>
 
-      {/* ── Main arm tube — Rega straight matte black tube ── */}
+      {/* ── Main arm tube -- Rega straight matte black tube ── */}
       <mesh position={[-0.62, 0.005, 0]} rotation={[0, 0, Math.PI / 2 - 0.04]}>
         <cylinderGeometry args={[0.010, 0.014, 1.24, 20]} />
         <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.32} />
@@ -421,7 +421,7 @@ function Tonearm({ isPlaying }) {
         <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
       </mesh>
 
-      {/* ── Counterweight — Rega grey/silver cylinder ── */}
+      {/* ── Counterweight -- Rega grey/silver cylinder ── */}
       <mesh position={[0.54, 0, 0]}>
         <cylinderGeometry args={[0.046, 0.046, 0.072, 28]} />
         <meshStandardMaterial color="#666666" metalness={0.85} roughness={0.18} />
@@ -432,16 +432,16 @@ function Tonearm({ isPlaying }) {
         <meshStandardMaterial color="#888888" metalness={0.9} roughness={0.1} />
       </mesh>
 
-      {/* ── Headshell offset group — ~22° Y rotation so cartridge runs tangent to groove ── */}
+      {/* ── Headshell offset group -- ~22° Y rotation so cartridge runs tangent to groove ── */}
       <group position={[-1.20, 0, 0]} rotation={[0, -0.38, 0]}>
 
-        {/* Headshell connector — matte black */}
+        {/* Headshell connector -- matte black */}
         <mesh position={[-0.04, -0.012, 0]} rotation={[0.10, 0, -0.10]}>
           <boxGeometry args={[0.115, 0.018, 0.038]} />
           <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
         </mesh>
 
-        {/* Cartridge body — dark, slight gloss */}
+        {/* Cartridge body -- dark, slight gloss */}
         <mesh position={[-0.11, -0.026, 0]} rotation={[0.10, 0, 0]}>
           <boxGeometry args={[0.095, 0.030, 0.052]} />
           <meshStandardMaterial color="#1a1a1a" metalness={0.6} roughness={0.45} />
@@ -469,7 +469,7 @@ function Tonearm({ isPlaying }) {
 function Plinth({ isPlaying }) {
   return (
     <group>
-      {/* Plinth body — Rega P2 piano-black acrylic, more square/thick */}
+      {/* Plinth body -- Rega P2 piano-black acrylic, more square/thick */}
       <mesh position={[0, -0.08, 0]} receiveShadow castShadow>
         <boxGeometry args={[3.8, 0.16, 3.7]} />
         {/* Piano black, but NOT a mirror: at roughness 0.10 the plinth reflected
@@ -478,7 +478,7 @@ function Plinth({ isPlaying }) {
         <meshPhysicalMaterial color="#0e0e10" roughness={0.38} metalness={0.0} reflectivity={0.35} clearcoat={1.0} clearcoatRoughness={0.30} envMapIntensity={0.32} />
       </mesh>
 
-      {/* Glass platter — Rega's teal-tinted glass. transmission needs a separate
+      {/* Glass platter -- Rega's teal-tinted glass. transmission needs a separate
           render pass per frame and the platter is almost entirely hidden under
           the record, so this approximates it with a cheap tinted dielectric. */}
       <mesh position={[0, 0.012, 0]} receiveShadow>
@@ -494,13 +494,13 @@ function Plinth({ isPlaying }) {
         />
       </mesh>
 
-      {/* Felt mat — Rega dark charcoal felt, sits on glass platter */}
+      {/* Felt mat -- Rega dark charcoal felt, sits on glass platter */}
       <mesh position={[0, 0.027, 0]}>
         <cylinderGeometry args={[1.49, 1.49, 0.008, 128]} />
         <meshStandardMaterial color="#252525" roughness={0.97} metalness={0.0} />
       </mesh>
 
-      {/* Spindle — small pin through felt */}
+      {/* Spindle -- small pin through felt */}
       <mesh position={[0, 0.058, 0]}>
         <cylinderGeometry args={[0.016, 0.016, 0.055, 16]} />
         <meshStandardMaterial color="#aaaaaa" metalness={0.9} roughness={0.15} />
@@ -545,7 +545,7 @@ function TurntableScene({ release, isPlaying }) {
         <Lightformer form="rect" intensity={1.1} color="#ffffff"
           position={[0, 6, 1]} rotation={[-Math.PI / 2, 0, 0]} scale={[5, 4, 1]} />
         {/* Long thin strip: this is what draws the classic radial streak that
-            sweeps across a spinning record. Small solid angle, high intensity —
+            sweeps across a spinning record. Small solid angle, high intensity --
             bright highlight, negligible overall lift. */}
         <Lightformer form="rect" intensity={9} color="#fff4e6"
           position={[-3.5, 4, 2]} rotation={[-Math.PI / 3, -0.4, 0]} scale={[0.5, 7, 1]} />
@@ -584,7 +584,7 @@ function TurntableScene({ release, isPlaying }) {
       <VinylRecord coverUrl={release?.cover_image} />
       <Plinth isPlaying={isPlaying} />
 
-      {/* Soft occlusion beneath the plinth — grounds the deck in the scene */}
+      {/* Soft occlusion beneath the plinth -- grounds the deck in the scene */}
       <ContactShadows
         position={[0, -0.161, 0]}
         scale={9}
@@ -660,7 +660,7 @@ export default function InteractiveTurntable({ release, onClose }) {
         </button>
       </div>
 
-      {/* ── Canvas — fills all remaining space ── */}
+      {/* ── Canvas -- fills all remaining space ── */}
       <div className="relative flex-1 min-h-0 w-full">
         <ErrorBoundary fallback={
           <img

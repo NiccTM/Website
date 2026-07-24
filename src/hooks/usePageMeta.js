@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom'
  * unmount so navigating back to "/" is clean.
  *
  * The og:* / twitter:* tags used to be static in index.html, so every subpage
- * shared on LinkedIn/Discord rendered the HOME page's title and description —
+ * shared on LinkedIn/Discord rendered the HOME page's title and description --
  * a link to /projects previewed as "Hardware Engineering & System Design".
  * Because this is a client-rendered SPA there is no per-route HTML to put them
  * in, so they are updated here instead. Crawlers that execute JS read the
@@ -16,7 +16,7 @@ import { useLocation } from 'react-router-dom'
  */
 const SITE = 'https://nicpiraino.com'
 const DEFAULT_TITLE = 'Nic Piraino | Hardware Engineering & System Design'
-const DEFAULT_DESC  = 'Nic Piraino — Hardware Engineering & System Design. Embedded systems, PCB design, audio electronics, and full-stack engineering.'
+const DEFAULT_DESC  = 'Nic Piraino: Hardware Engineering & System Design. Embedded systems, PCB design, audio electronics, and full-stack engineering.'
 
 /** Sets an existing meta tag's content, creating the tag if it is absent. */
 function setMeta(selector, attr, name, content) {

@@ -1,7 +1,7 @@
 /**
  * Locks in the image-proxy validation that closed the open-proxy/SSRF hole.
  *
- * Uses node:test, which ships with Node — no dev dependency, which matters
+ * Uses node:test, which ships with Node -- no dev dependency, which matters
  * because these cases were previously only ever checked by hand against a
  * running server, and hand checks do not survive a refactor.
  *

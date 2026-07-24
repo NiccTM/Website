@@ -10,13 +10,13 @@ export const REFERENCE_IMAGES = [
   {
     src:     '/Screenshot 2026-03-31 125242.png',
     label:   '3D Assembly View',
-    caption: 'Top-side component render — Heartbeat Hotel Rev. A',
+    caption: 'Top-side component render · Heartbeat Hotel Rev. A',
     view:    'isometric',
   },
   {
     src:     '/Screenshot 2026-03-31 125305.png',
     label:   'Bottom Trace',
-    caption: 'Rear copper layer — trace routing and via connections',
+    caption: 'Rear copper layer · trace routing and via connections',
     view:    'bottom',
   },
 ]
@@ -130,7 +130,7 @@ export default function ReferenceGallery({ onSyncView }) {
               }}
             />
 
-            {/* Hover overlay — zoom icon */}
+            {/* Hover overlay -- zoom icon */}
             <div
               className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150"
               style={{ background: 'rgba(3,7,18,0.45)' }}

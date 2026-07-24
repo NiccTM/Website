@@ -14,7 +14,7 @@
  * Prerendering at build time fixes that with zero runtime cost: each route is a
  * plain static file, and vercel.json rewrites /projects to /projects.html. The
  * shell is byte-identical to index.html apart from the meta, so it boots the
- * exact same SPA — react-router reads location.pathname and renders as usual.
+ * exact same SPA -- react-router reads location.pathname and renders as usual.
  *
  * The per-route text is PARSED OUT OF THE ROUTE COMPONENTS rather than being
  * duplicated here, so it cannot drift from what usePageMeta sets at runtime.

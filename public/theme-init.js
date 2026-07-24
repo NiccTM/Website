@@ -14,5 +14,5 @@ try {
   var t = localStorage.getItem('theme') || 'dark'
   document.documentElement.setAttribute('data-theme', t)
 } catch (e) {
-  /* private mode / storage disabled — fall through to the CSS default */
+  /* private mode / storage disabled -- fall through to the CSS default */
 }

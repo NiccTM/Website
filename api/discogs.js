@@ -1,5 +1,5 @@
 /**
- * Vercel Serverless Function — /api/discogs
+ * Vercel Serverless Function -- /api/discogs
  *
  * Proxies NiccTM's Discogs collection. Token stays server-side only.
  * Set DISCOGS_PAT in Vercel dashboard env vars (and .env locally).
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
 
     const data = await upstream.json()
 
-    // Map to minimal payload — never send raw Discogs response to client
+    // Map to minimal payload -- never send raw Discogs response to client
     const releases = (data.releases ?? []).map((r) => ({
       id:          r.id,
       artist:      r.basic_information?.artists?.[0]?.name ?? 'Unknown Artist',
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
       cover_image: r.basic_information?.cover_image ?? null,
     }))
 
-    // Aggressive caching — 24h on CDN, 1h stale-while-revalidate
+    // Aggressive caching -- 24h on CDN, 1h stale-while-revalidate
     res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=3600')
     return res.status(200).json(releases)
   } catch (err) {

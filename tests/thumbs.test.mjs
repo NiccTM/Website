@@ -3,7 +3,7 @@
  *
  * The regression these guard against actually happened: thumbSrc rewrote every
  * path to /thumbs/, including /motor-cad.gif, for which no derivative is ever
- * generated — so the tile rendered as a broken image. The fix was to consult
+ * generated -- so the tile rendered as a broken image. The fix was to consult
  * the generator's own manifest, which is what the "leaves un-derived assets
  * alone" cases below assert.
  *
@@ -38,7 +38,7 @@ test('handles root-level images too', () => {
 
 test('leaves assets with no generated derivative untouched', () => {
   // The generator only handles .jpg/.jpeg/.png. Rewriting anything else points
-  // at a file that was never built — this is the motor-cad.gif regression.
+  // at a file that was never built -- this is the motor-cad.gif regression.
   for (const src of ['/motor-cad.gif', '/PCB.gltf', '/videos/clip_cmp.mp4', '/nonexistent.jpg']) {
     assert.equal(hasThumb(src), false, `${src} should not be in the manifest`)
     assert.equal(thumbSrc(src), src, `${src} must be returned unchanged`)

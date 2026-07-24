@@ -11,30 +11,30 @@ const PHOTOS = [
   { src: '/Remastered Photos/Northern Lights.jpg',                    caption: 'Northern Lights' },
   { src: '/Remastered Photos/Kelowna Night Sky.jpg',                  caption: 'Kelowna Night Sky' },
   { src: '/Remastered Photos/Yellow Rolling Clouds.jpg',              caption: 'Yellow Rolling Clouds' },
-  { src: '/Remastered Photos/Kelwona Blue & Orange Sky.jpg',          caption: 'Blue & Orange Sky — Kelowna' },
-  { src: '/Remastered Photos/Kelwona Blue & Orange Sky Part 2.jpg',   caption: 'Blue & Orange Sky II — Kelowna' },
+  { src: '/Remastered Photos/Kelwona Blue & Orange Sky.jpg',          caption: 'Blue & Orange Sky, Kelowna' },
+  { src: '/Remastered Photos/Kelwona Blue & Orange Sky Part 2.jpg',   caption: 'Blue & Orange Sky II, Kelowna' },
   { src: '/Remastered Photos/Kelowna Mountains.jpg',                  caption: 'Kelowna Mountains' },
   { src: '/Remastered Photos/Ottawa Night.jpg',                       caption: 'Ottawa Night' },
   { src: '/Remastered Photos/Clouds from Above.jpg',                  caption: 'Clouds from Above' },
   { src: '/Remastered Photos/Clouds from Airplane 1.jpg',             caption: 'Clouds from Airplane' },
   { src: '/Remastered Photos/Clouds.jpg',                             caption: 'Clouds' },
-  { src: '/Remastered Photos/Kelwona Pink Sky.jpg',                   caption: 'Pink Sky — Kelowna' },
-  { src: '/Remastered Photos/Kelwona Forest.jpg',                     caption: 'Forest — Kelowna' },
+  { src: '/Remastered Photos/Kelwona Pink Sky.jpg',                   caption: 'Pink Sky, Kelowna' },
+  { src: '/Remastered Photos/Kelwona Forest.jpg',                     caption: 'Forest, Kelowna' },
   { src: '/Remastered Photos/Kelowna Beach Photo 1.jpg',              caption: 'Kelowna Beach' },
-  { src: '/Remastered Photos/Kelowna Boat on Water.jpg',              caption: 'Boat on Water — Kelowna' },
+  { src: '/Remastered Photos/Kelowna Boat on Water.jpg',              caption: 'Boat on Water, Kelowna' },
   { src: '/Remastered Photos/Kelowna Falls.jpg',                      caption: 'Kelowna Falls' },
   { src: '/Remastered Photos/Kelowna Helicopter.jpg',                 caption: 'Kelowna Helicopter' },
   { src: '/Remastered Photos/Kelowna Water.jpg',                      caption: 'Kelowna Water' },
   { src: '/Remastered Photos/Kelowna Waterfall.jpg',                  caption: 'Kelowna Waterfall' },
-  { src: '/Remastered Photos/Kelwona Trail.jpg',                      caption: 'Trail — Kelowna' },
-  { src: '/Remastered Photos/Little River Kelowna.jpg',               caption: 'Little River — Kelowna' },
+  { src: '/Remastered Photos/Kelwona Trail.jpg',                      caption: 'Trail, Kelowna' },
+  { src: '/Remastered Photos/Little River Kelowna.jpg',               caption: 'Little River, Kelowna' },
   { src: '/Remastered Photos/Fox Kit Behind Pot.jpg',                 caption: 'Fox Kit' },
   { src: '/Remastered Photos/Kit Fox in Cliffside.jpg',              caption: 'Kit Fox in Cliffside' },
   { src: '/Remastered Photos/Mother Fox Looking Left.jpg',            caption: 'Mother Fox' },
   { src: '/Remastered Photos/Mother Fox on Pier.jpg',                 caption: 'Mother Fox on Pier' },
   { src: '/Remastered Photos/American Dipper.jpg',                    caption: 'American Dipper' },
   { src: '/Remastered Photos/Bee in Flower.jpg',                      caption: 'Bee in Flower' },
-  { src: '/Remastered Photos/Bird on Branch Borckville.jpg',          caption: 'Bird on Branch — Brockville' },
+  { src: '/Remastered Photos/Bird on Branch Borckville.jpg',          caption: 'Bird on Branch, Brockville' },
   { src: '/Remastered Photos/Blackbird in Tree.jpg',                  caption: 'Blackbird in Tree' },
   { src: '/Remastered Photos/Blue Berries on Trail.jpg',              caption: 'Blue Berries on Trail' },
   { src: '/Remastered Photos/Bunny with Glimmer in Eye.jpg',          caption: 'Bunny' },
@@ -47,25 +47,25 @@ const PHOTOS = [
   { src: '/Remastered Photos/Wooden Bridge.jpg',                      caption: 'Wooden Bridge' },
   { src: '/Remastered Photos/Pallet Fire.jpg',                        caption: 'Pallet Fire' },
   { src: '/Remastered Photos/Academy Road.jpg',                       caption: 'Academy Road' },
-  { src: '/Remastered Photos/Canadian Parliament Building 1.jpg',     caption: 'Parliament — Ottawa' },
-  { src: '/Remastered Photos/Canadian Parliament Building 2.jpg',     caption: 'Parliament II — Ottawa' },
-  { src: '/Remastered Photos/Canadian Parliament Building 3.jpg',     caption: 'Parliament III — Ottawa' },
-  { src: '/Remastered Photos/Full View Ottawa Parliament.jpg',        caption: 'Full View — Ottawa Parliament' },
+  { src: '/Remastered Photos/Canadian Parliament Building 1.jpg',     caption: 'Parliament, Ottawa' },
+  { src: '/Remastered Photos/Canadian Parliament Building 2.jpg',     caption: 'Parliament II, Ottawa' },
+  { src: '/Remastered Photos/Canadian Parliament Building 3.jpg',     caption: 'Parliament III, Ottawa' },
+  { src: '/Remastered Photos/Full View Ottawa Parliament.jpg',        caption: 'Full View, Ottawa Parliament' },
   { src: '/Remastered Photos/Ottawa Canel.jpg',                       caption: 'Ottawa Canal' },
   { src: '/Remastered Photos/Charleston Lake with Man Fishing.jpg',   caption: 'Charleston Lake' },
-  { src: '/Remastered Photos/Little River Brockville.jpg',            caption: 'Little River — Brockville' },
+  { src: '/Remastered Photos/Little River Brockville.jpg',            caption: 'Little River, Brockville' },
   { src: '/Remastered Photos/Little River Brockville from Pier.jpg',  caption: 'Little River from Pier' },
-  { src: '/Remastered Photos/St Lawerence Island with Cross.jpg',     caption: 'St. Lawrence — Island & Cross' },
-  { src: '/Remastered Photos/St Lawerence Lily Bay.jpg',              caption: 'St. Lawrence — Lily Bay' },
+  { src: '/Remastered Photos/St Lawerence Island with Cross.jpg',     caption: 'St. Lawrence, Island & Cross' },
+  { src: '/Remastered Photos/St Lawerence Lily Bay.jpg',              caption: 'St. Lawrence, Lily Bay' },
   { src: '/Remastered Photos/St Lawerence River with Ship in Background.jpg', caption: 'St. Lawrence River' },
-  { src: '/Remastered Photos/St Lawerence with Stanley Boat.jpg',     caption: 'St. Lawrence — Stanley Boat' },
+  { src: '/Remastered Photos/St Lawerence with Stanley Boat.jpg',     caption: 'St. Lawrence, Stanley Boat' },
   { src: '/Remastered Photos/Small Town from Above.jpg',              caption: 'Small Town from Above' },
-  { src: '/Remastered Photos/Waterfall Chute Luke.jpg',               caption: 'Waterfall — Chute Luke' },
+  { src: '/Remastered Photos/Waterfall Chute Luke.jpg',               caption: 'Waterfall, Chute Luke' },
   { src: '/Remastered Photos/Waterfall into Pond Chute Luke.jpg',     caption: 'Waterfall into Pond' },
 
   // ── Wildlife & nature (added 2026-07) ──
   { src: '/Remastered Photos/Black-throated Green Warbler.jpg',              caption: 'Black-throated Green Warbler' },
-  { src: '/Remastered Photos/Black-throated Green Warbler Behind Pine.jpg',  caption: 'Black-throated Green Warbler — Behind Pine' },
+  { src: '/Remastered Photos/Black-throated Green Warbler Behind Pine.jpg',  caption: 'Black-throated Green Warbler, Behind Pine' },
   { src: '/Remastered Photos/Common Yellowthroat on Branch.jpg',            caption: 'Common Yellowthroat' },
   { src: '/Remastered Photos/Eastern Phoebe on Branch.jpg',                 caption: 'Eastern Phoebe' },
   { src: '/Remastered Photos/Golden-cheeked Warbler.jpg',                   caption: 'Golden-cheeked Warbler' },
@@ -80,7 +80,7 @@ const PHOTOS = [
   { src: '/Remastered Photos/Eastern Red Columbine.jpg',                    caption: 'Eastern Red Columbine' },
   { src: '/Remastered Photos/White Trillium.jpg',                           caption: 'White Trillium' },
   { src: '/Remastered Photos/Dandelion.jpg',                                caption: 'Dandelion' },
-  { src: '/Remastered Photos/Dandelion White.jpg',                          caption: 'Dandelion — Seed Head' },
+  { src: '/Remastered Photos/Dandelion White.jpg',                          caption: 'Dandelion, Seed Head' },
   { src: '/Remastered Photos/Lily Pads.jpg',                                caption: 'Lily Pads' },
   { src: '/Remastered Photos/Lilypads in Pond.jpg',                         caption: 'Lily Pads in Pond' },
   { src: '/Remastered Photos/Pond with Trees.jpg',                          caption: 'Pond with Trees' },
@@ -442,7 +442,7 @@ function Lightbox({ idx, onClose, onGo }) {
 // ─── Uniform grid item ────────────────────────────────────────────────────────
 // Every tile is a fixed 4:3 box so the grid lines up in exact rows and columns.
 // This replaced a masonry layout: masonry keeps each photo's own proportions, so
-// the columns necessarily end at different heights and never line up — which read
+// the columns necessarily end at different heights and never line up -- which read
 // as "not in line". All 82 gallery photos are landscape (56 at 4:3, 24 at 3:2),
 // so a 4:3 tile fits most exactly and only mildly centre-crops the 3:2 ones via
 // object-cover. The lightbox still loads the full, uncropped image on click.
@@ -531,7 +531,7 @@ export default function PhotoGallery() {
       </div>
 
       {/* Uniform grid. Every tile is a fixed 4:3 box (see PhotoTile), so rows
-          and columns line up exactly at every breakpoint — 2 columns on mobile,
+          and columns line up exactly at every breakpoint -- 2 columns on mobile,
           up to 4 on wide screens. This replaced a masonry layout whose columns
           kept each photo's own height and therefore never ended level. */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
