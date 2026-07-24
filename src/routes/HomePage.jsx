@@ -331,7 +331,7 @@ export default function HomePage() {
               View Projects
             </Link>
             <Link
-              to="/photography"
+              to="/hobbies?tab=photography"
               className="btn-outline font-sans text-sm px-6 py-2.5"
             >
               Photography

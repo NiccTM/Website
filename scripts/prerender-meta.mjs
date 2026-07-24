@@ -31,13 +31,11 @@ const DEFAULT_TITLE = 'Nic Piraino | Hardware Engineering & System Design'
 
 // route path -> route component file. Mirrors the <Route> table in App.jsx.
 const ROUTES = {
-  projects:    'ProjectsPage.jsx',
-  hardware:    'HardwarePage.jsx',
-  archive:     'ArchivePage.jsx',
-  systems:     'SystemsPage.jsx',
-  photography: 'PhotographyPage.jsx',
-  reference:   'ReferencePage.jsx',
-  about:       'AboutPage.jsx',
+  projects:  'ProjectsPage.jsx',
+  hardware:  'HardwarePage.jsx',
+  hobbies:   'HobbiesPage.jsx',
+  reference: 'ReferencePage.jsx',
+  about:     'AboutPage.jsx',
 }
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')

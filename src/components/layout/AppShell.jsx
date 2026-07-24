@@ -22,17 +22,16 @@ export default function AppShell() {
 
   return (
     /* flex column + flex-1 on <main> pins the footer to the bottom of the
-       viewport on short routes. /systems and the 404 page are under a screen
-       tall, and the footer was landing mid-page with a band of empty
-       background beneath it. MeshBackground is position:fixed, so it stays out
-       of the flex flow. */
+       viewport on short routes. The 404 page is under a screen tall, and the
+       footer was landing mid-page with a band of empty background beneath it.
+       MeshBackground is position:fixed, so it stays out of the flex flow. */
     <div
       className="relative min-h-screen w-full flex flex-col"
       style={{ background: 'var(--bg-base)' }}
     >
       <MeshBackground />
 
-      {/* WCAG 2.4.1 Bypass Blocks (Level A): six nav links plus a theme toggle
+      {/* WCAG 2.4.1 Bypass Blocks (Level A): five nav links plus a theme toggle
           sit ahead of the content on every route, and a keyboard user had to
           tab through all of them on each navigation. Visually hidden until
           focused, at which point it is the first thing in the tab order. */}

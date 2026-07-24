@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { usePageMeta } from '../hooks/usePageMeta'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 // fullResSrc aliased: this file already uses `displaySrc` for "what to render
 // right now". The 2560px tier is what the lightbox loads -- originals live in
 // originals/ and are no longer deployed.
-import { thumbSrc, displaySrc as fullResSrc } from '../utils/thumbs'
+import { thumbSrc, displaySrc as fullResSrc } from '../../utils/thumbs'
 
 // ─── All photos from /public/Remastered Photos/ ───────────────────────────────
 const PHOTOS = [
@@ -492,14 +491,17 @@ function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
   )
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-export default function PhotographyPage() {
-  usePageMeta('Photography', 'A personal photography portfolio featuring landscapes, night skies, and travel photography across Canada — captured and remastered by Nic Piraino.')
+// ─── Gallery ──────────────────────────────────────────────────────────────────
+// This was /photography, a route of its own. It is now a tab on /hobbies, so it
+// no longer owns the page <h1> or the document title -- HobbiesPage does. The
+// heading here is an <h2> to keep the outline valid under that page's <h1>.
+export default function PhotoGallery() {
   const [lightboxIdx, setLightboxIdx] = useState(-1)
 
   return (
-    <section className="px-5 pt-12 pb-20 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40">
+    <section className="px-5 pt-2 pb-20 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40">
       {/* Header */}
+      <h2 className="sr-only">Photography</h2>
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -509,20 +511,11 @@ export default function PhotographyPage() {
       >
         Kelowna · Ottawa · Brockville
       </motion.p>
-      <motion.h1
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="font-display mb-6"
-        style={{ fontSize: 'clamp(2.75rem, 2rem + 4vw, 7rem)', fontWeight: 900, lineHeight: 0.95, color: 'var(--text-primary)' }}
-      >
-        Photography
-      </motion.h1>
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.15 }}
-        className="font-sans mb-10 max-w-lg"
+        className="font-sans mb-8 max-w-lg"
         style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1.75 }}
       >
         Landscapes, wildlife, and urban scenes from across British Columbia and Eastern Ontario.
