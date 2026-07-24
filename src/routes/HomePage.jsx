@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
@@ -6,8 +6,6 @@ import { profile } from '../data/config'
 import SocialLinks from '../components/ui/SocialLinks'
 import { displaySrc } from '../utils/thumbs'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
-
-const SystemArchitecture = lazy(() => import('../components/diagrams/SystemArchitecture'))
 
 // ─── Hero carousel photos ──────────────────────────────────────────────────────
 const HERO_PHOTOS = [
@@ -149,14 +147,6 @@ function Divider() {
   return (
     <div className="max-w-[1600px] tv:max-w-[2400px] mx-auto w-full px-5 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40">
       <hr style={{ borderColor: 'var(--border)' }} />
-    </div>
-  )
-}
-
-function SectionFallback() {
-  return (
-    <div className="px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
-      <div className="h-48 rounded-xl animate-pulse" style={{ background: 'var(--bg-surface-1)' }} />
     </div>
   )
 }
@@ -342,13 +332,6 @@ export default function HomePage() {
       <Divider />
 
       <About />
-
-      {/* ── Diagrams ────────────────────────────────────────────────────────── */}
-      <Divider />
-
-      <Suspense fallback={<SectionFallback />}>
-        <SystemArchitecture />
-      </Suspense>
 
       <div className="h-12" />
     </>
