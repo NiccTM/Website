@@ -157,7 +157,7 @@ function Divider() {
    titles or dates I cannot support. */
 const ABOUT_FACTS = [
   { label: 'Studying', value: `${bio.program} — ${bio.school}` },
-  { label: 'Currently', value: `${bio.role}, ${bio.employer}`, to: '/reference' },
+  { label: 'Currently', value: `${bio.role}, ${bio.employer}`, to: '/hardware/reference' },
   { label: 'Team',     value: profile.academics.teams.join(' · ') },
   { label: 'Based in', value: profile.location },
 ]

@@ -21,7 +21,7 @@
  * Anything unparseable is a hard error: shipping silently wrong social previews
  * is worse than failing the build.
  */
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
@@ -30,12 +30,14 @@ const SITE = 'https://nicpiraino.com'
 const DEFAULT_TITLE = 'Nic Piraino | Hardware Engineering & System Design'
 
 // route path -> route component file. Mirrors the <Route> table in App.jsx.
+// Keys may be nested ('hardware/reference'); the output directory is created
+// as needed so a sub-route still gets its own shell and its own meta.
 const ROUTES = {
-  projects:  'ProjectsPage.jsx',
-  hardware:  'HardwarePage.jsx',
-  hobbies:   'HobbiesPage.jsx',
-  reference: 'ReferencePage.jsx',
-  about:     'AboutPage.jsx',
+  projects:              'ProjectsPage.jsx',
+  hardware:              'HardwarePage.jsx',
+  'hardware/reference':  'ReferencePage.jsx',
+  hobbies:               'HobbiesPage.jsx',
+  about:                 'AboutPage.jsx',
 }
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -78,7 +80,9 @@ for (const [route, file] of Object.entries(ROUTES)) {
   html = replaceTag(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${d}$2`, 'twitter:description')
   html = replaceTag(html, /(<link\s+rel="canonical"\s+href=")[^"]*(")/, `$1${url}$2`, 'canonical')
 
-  writeFileSync(join(ROOT, `dist/${route}.html`), html)
+  const outFile = join(ROOT, `dist/${route}.html`)
+  mkdirSync(dirname(outFile), { recursive: true })
+  writeFileSync(outFile, html)
   console.log(`  prerendered /${route}  ->  ${fullTitle}`)
   written++
 }

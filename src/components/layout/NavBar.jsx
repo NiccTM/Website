@@ -3,17 +3,21 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAppStore } from '../../store/useAppStore'
 
-/* "Reference" alone was ambiguous -- it reads as a reference section or a job
-   reference, not a 10 V voltage standard. "Voltage Reference" matches the page
-   title and says what the page actually is. */
+/* The voltage reference lives under Hardware as /hardware/reference, reached
+   from the sub-nav there rather than from a top-level item of its own. */
 const ROUTES = [
-  { to: '/',          label: 'Home' },
-  { to: '/projects',  label: 'Projects' },
-  { to: '/hardware',  label: 'Hardware' },
-  { to: '/reference', label: 'Voltage Reference' },
-  { to: '/hobbies',   label: 'Hobbies' },
-  { to: '/about',     label: 'About' },
+  { to: '/',         label: 'Home' },
+  { to: '/projects', label: 'Projects' },
+  { to: '/hardware', label: 'Hardware' },
+  { to: '/hobbies',  label: 'Hobbies' },
+  { to: '/about',    label: 'About' },
 ]
+
+/* NavLink's own isActive already treats /hardware/reference as inside
+   /hardware; the pill was drawn off a bare `pathname === to`, which did not,
+   so the Hardware item lost its outline on the sub-route. */
+const isSection = (pathname, to) =>
+  to === '/' ? pathname === '/' : pathname === to || pathname.startsWith(`${to}/`)
 
 export default function NavBar() {
   const { pathname } = useLocation()
@@ -71,7 +75,7 @@ export default function NavBar() {
               })}
             >
               {label}
-              {pathname === to && (
+              {isSection(pathname, to) && (
                 <motion.span
                   layoutId="nav-pill"
                   className="absolute inset-0 pointer-events-none"

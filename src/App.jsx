@@ -31,19 +31,21 @@ export default function App() {
               <Route element={<AppShell />}>
                 <Route index                element={<HomePage />}        />
                 <Route path="projects"      element={<ProjectsPage />}    />
-                <Route path="hardware"      element={<HardwarePage />}    />
-                <Route path="hobbies"       element={<HobbiesPage />}     />
-                <Route path="reference"     element={<ReferencePage />}   />
-                <Route path="about"         element={<AboutPage />}       />
+                <Route path="hardware"           element={<HardwarePage />}  />
+                <Route path="hardware/reference" element={<ReferencePage />} />
+                <Route path="hobbies"            element={<HobbiesPage />}   />
+                <Route path="about"              element={<AboutPage />}     />
 
                 {/* Retired routes. /photography and /archive merged into
-                    /hobbies; /systems was only ever the EcoSort demo, which
-                    already had a section on /projects. vercel.json serves 308s
-                    for these so crawlers and external links land correctly on a
-                    cold load -- these client-side redirects only catch in-app
-                    navigation that still points at an old path. */}
+                    /hobbies; /reference moved under /hardware; /systems was
+                    only ever the EcoSort demo, which already had a section on
+                    /projects. vercel.json serves 308s for these so crawlers and
+                    external links land correctly on a cold load -- these
+                    client-side redirects only catch in-app navigation that
+                    still points at an old path. */}
                 <Route path="photography"   element={<Navigate to="/hobbies?tab=photography" replace />} />
                 <Route path="archive"       element={<Navigate to="/hobbies" replace />} />
+                <Route path="reference"     element={<Navigate to="/hardware/reference" replace />} />
                 <Route path="systems"       element={<Navigate to="/projects" replace />} />
 
                 <Route path="*"             element={<NotFound />}        />

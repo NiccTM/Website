@@ -153,7 +153,7 @@ export default function AboutPage() {
 
           <Section title="Selected work">
             <Body>
-              A <Link to="/reference" style={{ color: 'var(--accent)' }}>10 V buried-Zener
+              A <Link to="/hardware/reference" style={{ color: 'var(--accent)' }}>10 V buried-Zener
               voltage reference</Link>, trimmed with a fixed metal-foil resistor network instead
               of a potentiometer, and characterised on an HP 3458A. A three-phase motor wound
               from scratch, where the winding sequence had to be redesigned after the first

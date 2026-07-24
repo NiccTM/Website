@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { usePageMeta } from '../hooks/usePageMeta'
 import ImageLightbox from '../components/ui/ImageLightbox'
+import HardwareTabs  from '../components/layout/HardwareTabs'
 import { thumbSrc, displaySrc } from '../utils/thumbs'
 
 const BENCH_PHOTO = '/ltz1000-bench-3458a.jpg'
@@ -72,7 +73,9 @@ export default function ReferencePage() {
        1600px the photo ran the full container while the prose sat at ~68ch,
        leaving a very wide empty column to its right. Capping the whole article
        keeps the image and the text on the same measure. */
-    <section className="px-5 pt-12 pb-20 sm:px-8 md:px-14 lg:px-20 max-w-[72rem] mx-auto w-full [&_p]:max-w-none">
+    <section className="px-5 pt-8 pb-20 sm:px-8 md:px-14 lg:px-20 max-w-[72rem] mx-auto w-full [&_p]:max-w-none">
+      <HardwareTabs />
+
       {/* ── Header ── */}
       <motion.p
         initial={{ opacity: 0 }}
