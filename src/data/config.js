@@ -969,7 +969,7 @@ export const hardwareDiagnostics = {
 
 // ─── Contact ──────────────────────────────────────────────────────────────────
 export const contact = {
-  email: 'nicpiraino@proton.me',
+  email: 'nic.piraino2005@gmail.com',
 }
 
 // ─── Social / External Links ──────────────────────────────────────────────────
