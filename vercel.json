@@ -29,6 +29,10 @@
       "destination": "/reference.html"
     },
     {
+      "source": "/about",
+      "destination": "/about.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
