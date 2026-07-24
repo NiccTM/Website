@@ -145,18 +145,18 @@ export default function ReferencePage() {
             src={displaySrc(BENCH_PHOTO)}
             srcSet={`${thumbSrc(BENCH_PHOTO)} 800w, ${displaySrc(BENCH_PHOTO)} 4000w`}
             sizes="(max-width: 72rem) 100vw, 72rem"
-            width={7836}
-            height={5876}
-            alt="An HP 3458A 8½-digit multimeter reading 9.9999889 volts DC at the reference output"
+            width={7866}
+            height={5900}
+            alt="An HP 3458A 8½-digit multimeter reading 9.9999927 volts DC at the reference output"
             loading="eager"
             decoding="async"
             className="w-full h-full object-cover"
           />
         </div>
         <figcaption className="font-mono-data text-sm mt-3" style={{ color: 'var(--text-muted)' }}>
-          Bench verification on an HP 3458A. The output reads 9.9999889&nbsp;V DC — roughly
-          11&nbsp;ppm from nominal, in a pre-calibration development state. Not a calibrated
-          result or a specification.
+          Bench verification on an HP 3458A. The output reads 9.9999927&nbsp;V DC — about
+          7&nbsp;µV, or 0.7&nbsp;ppm, from nominal, in a pre-calibration development state. Not a
+          calibrated result or a specification.
         </figcaption>
       </motion.figure>
 
@@ -313,7 +313,7 @@ export default function ReferencePage() {
         <ImageLightbox
           src={BENCH_PHOTO}
           label="10 V reference — bench verification"
-          caption="HP 3458A reading 9.9999889 V DC at the amplified output"
+          caption="HP 3458A reading 9.9999927 V DC at the amplified output"
           onClose={() => setLightbox(false)}
         />
       )}
