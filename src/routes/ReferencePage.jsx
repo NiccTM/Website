@@ -6,13 +6,15 @@ import { thumbSrc } from '../utils/thumbs'
 
 const BENCH_PHOTO = '/ltz1000-bench-3458a.jpg'
 
+const EMPLOYER = 'Measurements International Ltd.'
+
 const SPECS = [
-  { label: 'Reference',    value: 'LTZ1000 buried-Zener, ovenized' },
-  { label: 'Raw output',   value: '~7.1 V, measured after warm-up' },
-  { label: 'Heater ratio', value: '13 kΩ / 1 kΩ (~60 °C die)' },
+  { label: 'Reference',    value: 'ADR1000 buried-Zener, ovenized' },
+  { label: 'Raw output',   value: '~6.6 V, measured after warm-up' },
+  { label: 'Previously',   value: 'LTZ1000 (pin-compatible)' },
   { label: 'Output stage', value: 'ADA4523-1 zero-drift amplifier' },
   { label: 'Support amp',  value: 'OPA2145' },
-  { label: 'Trim',         value: 'Fixed VPG bulk metal foil network' },
+  { label: 'Trim',         value: 'Fixed bulk metal foil network' },
   { label: 'Foil TCR',     value: 'to ±0.2 ppm/°C' },
   { label: 'Adjustment',   value: 'No potentiometer' },
   { label: 'Verification', value: 'HP 3458A, 8½-digit' },
@@ -61,7 +63,7 @@ function Section({ title, children }) {
 export default function ReferencePage() {
   usePageMeta(
     'Voltage Reference',
-    'An ultra-stable 10 V DC voltage reference built around an LTZ1000 ovenized buried-Zener reference, trimmed with a fixed precision foil resistor network instead of a potentiometer.',
+    'An ultra-stable 10 V DC voltage reference built around an ADR1000 ovenized buried-Zener reference, developed at Measurements International Ltd.'
   )
   const [lightbox, setLightbox] = useState(false)
 
@@ -75,7 +77,7 @@ export default function ReferencePage() {
         className="font-mono-data tracking-[0.18em] uppercase mb-4"
         style={{ color: 'var(--accent)', fontSize: '0.875rem' }}
       >
-        Precision Analog · Personal Project
+        Precision Analog · {EMPLOYER}
       </motion.p>
 
       <motion.h1
@@ -85,26 +87,45 @@ export default function ReferencePage() {
         className="font-display mb-6"
         style={{ fontSize: 'clamp(2.25rem, 1.7rem + 3vw, 4.5rem)', fontWeight: 900, lineHeight: 1.02, color: 'var(--text-primary)' }}
       >
-        LTZ1000 10&nbsp;V Reference
+        ADR1000 10&nbsp;V Reference
       </motion.h1>
 
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.15 }}
-        className="font-sans mb-10 max-w-[68ch]"
+        className="font-sans mb-6 max-w-[68ch]"
         style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.75 }}
       >
-        An ultra-stable 10&nbsp;V DC reference built around an LTZ1000 ovenized buried-Zener
+        An ultra-stable 10&nbsp;V DC reference built around an ADR1000 ovenized buried-Zener
         reference, scaled to 10&nbsp;V by a zero-drift amplifier and trimmed with fixed
         precision foil resistors instead of a potentiometer.
       </motion.p>
+
+      {/* Ownership notice, stated up front rather than buried in a footer, so a
+          reader knows whose work this is before reading any of it. */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="flex items-start gap-2.5 mb-12 px-4 py-3 rounded-lg max-w-[68ch]"
+        style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)' }}
+      >
+        <span aria-hidden="true" className="material-symbols-rounded shrink-0" style={{ color: 'var(--accent)', fontSize: '1.05rem', marginTop: '0.1rem' }}>
+          gavel
+        </span>
+        <p className="font-mono-data text-sm" style={{ color: 'var(--text-muted)', lineHeight: 1.7 }}>
+          Work carried out at {EMPLOYER} All hardware, designs, test data and
+          equipment shown remain the property of {EMPLOYER} Published with permission —
+          see the notice at the foot of this page.
+        </p>
+      </motion.div>
 
       {/* ── Bench photo ── */}
       <motion.figure
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
         className="mb-12"
       >
         <div
@@ -114,84 +135,89 @@ export default function ReferencePage() {
         >
           <img
             src={thumbSrc(BENCH_PHOTO)}
-            alt="HP 3458A 8½-digit multimeter reading 9.9999889 V DC at the reference output"
+            alt="An HP 3458A 8½-digit multimeter reading 9.9999889 volts DC at the reference output"
             loading="eager"
             decoding="async"
             className="w-full h-full object-cover"
           />
         </div>
         <figcaption className="font-mono-data text-sm mt-3 max-w-[68ch]" style={{ color: 'var(--text-muted)' }}>
-          Bench verification on an HP 3458A. The output reads 9.9999889&nbsp;V DC —
-          roughly 11&nbsp;ppm from nominal, in a pre-calibration trim state.
+          Bench verification on an HP 3458A. The output reads 9.9999889&nbsp;V DC — roughly
+          11&nbsp;ppm from nominal, in a pre-calibration development state. Not a calibrated
+          result or a specification.
         </figcaption>
       </motion.figure>
 
       {/* ── Write-up ── */}
-      <Section title="Why the LTZ1000">
+      <Section title="Why a buried-Zener reference">
         <Body>
-          The LTZ1000 is not a normal reference chip. It puts a buried Zener, a
+          The ADR1000 is not a normal reference chip. It puts a buried Zener, a
           temperature-sensing transistor and a heater on one die. External circuitry holds
           that die at a constant elevated temperature and controls the Zener current, so the
           reference sits in its own thermal environment regardless of what the room is doing.
         </Body>
         <Body>
-          Analog Devices specifies the part around 1.2&nbsp;µV peak-to-peak noise,
-          0.05&nbsp;ppm/°C drift and 2&nbsp;µV/√kHr long-term stability. That is why these
-          turn up inside calibrators and 8½-digit meters rather than ordinary power supplies.
+          That is the reason this class of part turns up inside calibrators and 8½-digit
+          meters rather than ordinary power supplies. The figure of merit is not how close the
+          raw output sits to a round number — it is how little that output moves over time and
+          temperature.
         </Body>
       </Section>
 
       <Section title="Measured, not assumed">
         <Body>
-          The board started out with an ADR1000. Moving to an LTZ1000 changed the raw
-          reference voltage, which meant the existing gain network no longer produced 10&nbsp;V.
+          The board originally ran an LTZ1000 and was later changed to an ADR1000. The two are
+          pin-compatible, but they do not sit at the same voltage, so the swap was not a
+          drop-in — the entire 10&nbsp;V scaling network had to be recalculated around the new
+          device.
         </Body>
         <Body>
-          Rather than assume a nominal value, I let the board stabilise for about sixteen
-          hours and used the voltage it actually produced to calculate the output stage. The
-          LTZ1000 is a stability reference, not a factory-trimmed 7.000&nbsp;V source — every
-          part lands somewhere slightly different. The absolute value can be calibrated later.
-          What matters is that it stays put.
+          Rather than assume a nominal value, the board was left to stabilise and the gain
+          network was calculated from the voltage it actually produced. These parts are
+          stability references, not factory-trimmed sources; every individual device lands
+          somewhere slightly different. The absolute value can be calibrated later. What
+          matters is that it stays put.
         </Body>
       </Section>
 
       <Section title="No trim potentiometer">
         <Body>
-          The usual way to land on exactly 10&nbsp;V is a trimpot. I did not want one. A
+          The usual way to land on exactly 10&nbsp;V is a trimpot. This design avoids one. A
           mechanical wiper is another component that drifts with temperature, vibration and
           age, sitting in the middle of a circuit built for stability.
         </Body>
         <Body>
-          Instead the gain is set by a fixed network of VPG bulk metal foil resistors, with
+          Instead the gain is set by a fixed network of bulk metal foil resistors, with
           additional branches placed in parallel to correct the ratio. The resistor technology
           is the point: foil parts reach single-digit and sub-ppm/°C temperature coefficients,
-          an order of magnitude better than a trimmer wiper. Replacing the pot with fixed
-          resistors is a real improvement rather than a lateral move.
+          far better than a trimmer wiper. To choose values I wrote a small solver that
+          searches combinations of the foil values available and only proposes networks that
+          can actually be populated on the board.
         </Body>
         <Body>
-          To choose values I wrote a small solver that searches combinations of the foil
-          values available, respects the board&rsquo;s footprints and assembly rules, and only
-          proposes networks that can actually be populated.
+          The trade-off is real and worth stating: changing the reference device means
+          recomputing and repopulating resistors rather than turning a screw. That is exactly
+          what the LTZ1000-to-ADR1000 change required. For a board whose whole purpose is
+          holding still, that is the right side of the trade.
         </Body>
       </Section>
 
       <Section title="What the numbers mean">
         <Body>
-          The solver reports a resistor-fit residual in the range of ten-thousandths of a ppm.
-          That figure describes how closely the resistor arithmetic lands on the target — it is
-          not the accuracy of the finished board, and it would be misleading to present it that
-          way.
+          The solver reports a resistor-fit residual far below a ppm. That figure describes how
+          closely the resistor arithmetic lands on the target — it is not the accuracy of the
+          finished board, and presenting it as such would be misleading.
         </Body>
         <Body>
-          The real error sources are far larger. The LTZ1000&rsquo;s own noise is already
-          around 0.17&nbsp;ppm referred to its 7&nbsp;V output. The amplifier contributes
-          offset. Real resistors sit somewhere inside their tolerance bands rather than exactly
-          on nominal. Thermal EMFs at dissimilar-metal junctions generate microvolts on their
-          own, and the meter carries its own calibration uncertainty.
+          The real error sources are much larger. The reference has its own noise. The
+          amplifier contributes offset. Real resistors sit somewhere inside their tolerance
+          bands rather than exactly on nominal. Thermal EMFs at dissimilar-metal junctions
+          generate microvolts on their own, and the meter carries its own calibration
+          uncertainty.
         </Body>
         <Body>
-          Claiming sub-ppm accuracy would require a full traceable uncertainty budget. The
-          defensible claim is the calculated nominal output, and the measured reading above.
+          Any claim of sub-ppm accuracy would require a full traceable uncertainty budget. What
+          is shown here is a development measurement, not a specification.
         </Body>
       </Section>
 
@@ -214,6 +240,7 @@ export default function ReferencePage() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
         transition={{ duration: 0.4 }}
+        className="mb-12"
       >
         <Heading>Specifications</Heading>
         <div
@@ -235,12 +262,45 @@ export default function ReferencePage() {
             </div>
           ))}
         </div>
+        <p className="font-mono-data text-sm mt-3 max-w-[46rem]" style={{ color: 'var(--text-muted)' }}>
+          Indicative of a development configuration. Not a specification or a datasheet.
+        </p>
       </motion.div>
+
+      {/* ── Legal notice ── */}
+      <motion.aside
+        initial={{ opacity: 0, y: 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ duration: 0.4 }}
+        aria-labelledby="legal-heading"
+        className="rounded-xl px-5 py-5 max-w-[68ch]"
+        style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)' }}
+      >
+        <h2
+          id="legal-heading"
+          className="font-mono-data text-sm tracking-widest uppercase mb-3"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          Attribution &amp; ownership
+        </h2>
+
+        {[
+          `This work was carried out at ${EMPLOYER} All hardware, schematics, circuit designs, board files, test data, measurement instruments and associated intellectual property described or shown on this page are and remain the property of ${EMPLOYER}`,
+          `This page is published with permission and describes engineering work I contributed to. It is not a product announcement, datasheet, specification or offer of sale, and it does not represent the views or positions of ${EMPLOYER}`,
+          'No confidential, proprietary or customer information is disclosed. The component selections and circuit topologies referenced here are drawn from publicly available manufacturer datasheets and application notes.',
+          'Measured values shown are from a development configuration. They are not calibrated results, certified specifications, or claims of instrument accuracy, and no traceable uncertainty budget is presented or implied.',
+        ].map((text) => (
+          <p key={text.slice(0, 40)} className="font-sans text-sm mb-3 last:mb-0" style={{ color: 'var(--text-muted)', lineHeight: 1.7 }}>
+            {text}
+          </p>
+        ))}
+      </motion.aside>
 
       {lightbox && (
         <ImageLightbox
           src={BENCH_PHOTO}
-          label="LTZ1000 10 V reference — bench verification"
+          label="10 V reference — bench verification"
           caption="HP 3458A reading 9.9999889 V DC at the amplified output"
           onClose={() => setLightbox(false)}
         />
