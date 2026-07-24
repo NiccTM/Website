@@ -1,5 +1,5 @@
 /**
- * Vercel Serverless Function — /api/image-proxy
+ * Vercel Serverless Function -- /api/image-proxy
  *
  * Proxies Discogs CDN cover art so the browser (and three.js TextureLoader)
  * sees a same-origin image. Validation lives in _lib/upstream-image.js and is
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
   // No Access-Control-Allow-Origin: the site calls this endpoint same-origin,
   // where CORS does not apply, so '*' bought nothing and let any other site use
   // it as a free image CDN from script. (It cannot stop <img> hotlinking, which
-  // never consults CORS — the rate limit is what covers that.)
+  // never consults CORS -- the rate limit is what covers that.)
   // The response is always an image; stop any content-type sniffing on it.
   res.setHeader('X-Content-Type-Options', 'nosniff')
   return res.status(200).send(result.body)

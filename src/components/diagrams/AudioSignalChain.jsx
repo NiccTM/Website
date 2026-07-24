@@ -93,7 +93,7 @@ function FlowSection({ id, title, chain }) {
             React Flow derives DOM ids from it and numbers every instance "1" by
             default, so leaving it unset emitted duplicate
             #react-flow__aria-live-1 live regions and duplicate
-            #react-flow__node-desc-1 targets — the aria-describedby on one
+            #react-flow__node-desc-1 targets -- the aria-describedby on one
             diagram's nodes then resolved to another diagram's description. */}
         <ReactFlow
           id={`audio-${id}`}
@@ -107,7 +107,7 @@ function FlowSection({ id, title, chain }) {
           proOptions={{ hideAttribution: true }}
           panOnDrag
           zoomOnScroll={false}
-          /* Edges are decoration here — the affordance is "click any NODE for
+          /* Edges are decoration here -- the affordance is "click any NODE for
              specs", and an edge does nothing when activated. React Flow still
              makes every edge focusable by default, which put a ~185x10 control
              in the a11y tree: an undersized target (WCAG 2.2 AA 2.5.8) and a
@@ -126,7 +126,7 @@ function FlowSection({ id, title, chain }) {
         </ReactFlow>
       </div>
 
-      {/* Spec panel — below the diagram, slides in when a node is selected */}
+      {/* Spec panel -- below the diagram, slides in when a node is selected */}
       <AnimatePresence>
         {selected && (
           <motion.div
@@ -166,7 +166,7 @@ function FlowSection({ id, title, chain }) {
           {chain.nodes.map((n) => (
             <div key={n.id} className="font-mono-data flex gap-2 text-sm">
               <span style={{ color: 'var(--accent)' }}>{n.label}</span>
-              <span style={{ color: 'var(--text-muted)' }}>— {n.type}</span>
+              <span style={{ color: 'var(--text-muted)' }}>· {n.type}</span>
             </div>
           ))}
         </div>

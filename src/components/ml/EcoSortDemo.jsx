@@ -159,7 +159,7 @@ export default function EcoSortDemo({ sectionId }) {
   const handleFile = useCallback(async (file) => {
     if (!file) return
     if (!ACCEPTED_TYPES.includes(file.type)) {
-      setErrorMsg('Unsupported format — use JPG, PNG, or WebP.')
+      setErrorMsg('Unsupported format. Use JPG, PNG, or WebP.')
       setStatus('error'); return
     }
     if (file.size > MAX_BYTES) {
@@ -189,7 +189,7 @@ export default function EcoSortDemo({ sectionId }) {
         const body = await res.json().catch(() => ({}))
         throw new Error(
           body.error ??
-          (res.status === 429 ? 'Rate limit reached — try again later.' : `Server error ${res.status}`)
+          (res.status === 429 ? 'Rate limit reached. Try again later.' : `Server error ${res.status}`)
         )
       }
 
@@ -238,7 +238,7 @@ export default function EcoSortDemo({ sectionId }) {
       {/* ── Header ── */}
       <div className="flex flex-wrap items-start justify-between gap-3 mb-1">
         <h2 className="font-mono-data text-lg tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
-          EcoSort — Waste Classifier
+          EcoSort · Waste Classifier
         </h2>
         {status === 'done' && (
           <div className="flex flex-wrap items-center gap-3">

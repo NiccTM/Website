@@ -28,7 +28,7 @@ const EcoSortDemo  = lazy(() => import('../components/ml/EcoSortDemo'))
 const SystemArchitecture = lazy(() => import('../components/diagrams/SystemArchitecture'))
 
 export default function ProjectsPage() {
-  usePageMeta('Projects', 'Competitive design, professional practice, and software projects — from award-winning UBC Engineering teams to embedded systems and full-stack applications.')
+  usePageMeta('Projects', 'Competitive design, professional practice, and software projects, from award-winning UBC Engineering teams to embedded systems and full-stack applications.')
   return (
     <>
       {/* This route had no page heading at all, and so no h1 -- it opened
@@ -37,7 +37,7 @@ export default function ProjectsPage() {
         <PageHeader
           eyebrow="Competition · Coursework · Software"
           title="Projects"
-          intro="Competition hardware, coursework that outgrew the assignment, and the software I write around it. Each entry states the constraint it was built against and what was actually measured — where a figure is calculated rather than measured, it says so."
+          intro="Competition hardware, coursework that outgrew the assignment, and the software I write around it. Each entry states the constraint it was built against and what was actually measured. Where a figure is calculated rather than measured, it says so."
         />
       </section>
 
@@ -52,7 +52,7 @@ export default function ProjectsPage() {
             <ProjectVideo
               src="/videos/APSC 171-2024-T1C4-16-SW_cmp.mp4"
               poster="/display/DeLorean.png"
-              title="APSC 171 DeLorean — SolidWorks Showcase"
+              title="APSC 171 DeLorean · SolidWorks Showcase"
             />
           </Suspense>
         </ErrorBoundary>

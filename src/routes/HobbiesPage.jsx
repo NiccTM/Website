@@ -63,7 +63,7 @@ function AudioPanel() {
 export default function HobbiesPage() {
   usePageMeta(
     'Hobbies',
-    'Photography, hi-fi audio and vinyl, and hardware teardowns — landscape and wildlife photography across British Columbia and Eastern Ontario, plus analog audio signal chains and component-level repair.',
+    'Photography, hi-fi audio and vinyl, and hardware teardowns. Landscape and wildlife photography across British Columbia and Eastern Ontario, plus analog audio signal chains and component-level repair.',
   )
 
   const [params, setParams] = useSearchParams()
@@ -110,7 +110,7 @@ export default function HobbiesPage() {
         <PageHeader
           eyebrow="Outside engineering"
           title="Hobbies"
-          intro="Photography, hi-fi audio and vinyl, and the hardware I pull apart on weekends. None of it is professional work — it is where the same curiosity goes when there is no specification to meet."
+          intro="Photography, hi-fi audio and vinyl, and the hardware I pull apart on weekends. None of it is professional work. It is where the same curiosity goes when there is no specification to meet."
         />
 
         {/* ── Tabs ── */}

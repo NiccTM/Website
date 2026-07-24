@@ -33,7 +33,7 @@ function HeroCarousel() {
   // WCAG 2.2.2 Pause, Stop, Hide is Level A: content that starts moving on its
   // own, runs past five seconds and sits alongside other content needs a way to
   // stop it. This carousel had none. It now stops on request, and does not
-  // start at all when the OS asks for reduced motion — the CSS reduced-motion
+  // start at all when the OS asks for reduced motion -- the CSS reduced-motion
   // block cannot help here, since this is a timer swapping state, not an
   // animation.
   const stopped = paused || reducedMotion
@@ -59,7 +59,7 @@ function HeroCarousel() {
           style={{ willChange: 'opacity, transform' }}
         />
       </AnimatePresence>
-      {/* Gradient fade to right on desktop — only last 20% */}
+      {/* Gradient fade to right on desktop -- only last 20% */}
       <div className="absolute inset-0 hidden md:block" style={{ background: 'linear-gradient(to right, transparent 80%, var(--hero-gradient-to) 100%)' }} />
       {/* Light scrim so the dot indicators keep contrast against the photo.
           This was bg-black/40 "for mobile legibility", but on mobile the layout
@@ -68,10 +68,10 @@ function HeroCarousel() {
       <div className="absolute inset-0 bg-black/15 md:hidden" />
 
       {/* Dot indicators. The visible dot stays 6px, but each button carries a
-          24x24 hit area — WCAG 2.2 AA 2.5.8 (Target Size Minimum) sets 24x24
+          24x24 hit area -- WCAG 2.2 AA 2.5.8 (Target Size Minimum) sets 24x24
           CSS px as the floor, and a 6x6 tap target is genuinely hard to hit. */}
       <div className="absolute bottom-4 left-4 flex items-center">
-        {/* Pause/resume — the WCAG 2.2.2 mechanism. Hidden when the OS already
+        {/* Pause/resume -- the WCAG 2.2.2 mechanism. Hidden when the OS already
             asks for reduced motion, since nothing is moving to pause. */}
         {!reducedMotion && (
           <button
@@ -153,10 +153,10 @@ function Divider() {
 
 /* Sits directly under the hero so the first thing below the fold is the
    engineering, not a hobby. Every field comes from `profile` in config.js or
-   from work that has its own page — nothing here is invented, and there are no
+   from work that has its own page -- nothing here is invented, and there are no
    titles or dates I cannot support. */
 const ABOUT_FACTS = [
-  { label: 'Studying', value: `${bio.program} — ${bio.school}` },
+  { label: 'Studying', value: `${bio.program}, ${bio.school}` },
   { label: 'Currently', value: `${bio.role}, ${bio.employer}`, to: '/hardware/reference' },
   { label: 'Team',     value: profile.academics.teams.join(' · ') },
   { label: 'Based in', value: profile.location },
@@ -186,7 +186,7 @@ function About() {
       <div className="grid gap-8 lg:gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-start">
         <div>
           <p className="font-sans mb-4" style={{ color: 'var(--text-secondary)', fontSize: '1.15rem', lineHeight: 1.75 }}>
-            I build hardware that has to answer to an instrument — precision analog, PCB design,
+            I build hardware that has to answer to an instrument: precision analog, PCB design,
             embedded systems and electrical metrology.
           </p>
           <p className="font-sans mb-4" style={{ color: 'var(--text-secondary)', fontSize: '1.02rem', lineHeight: 1.8 }}>
@@ -254,12 +254,12 @@ function About() {
 }
 
 export default function HomePage() {
-  usePageMeta(null, 'Nic Piraino — Hardware Engineering & System Design. Embedded systems, PCB design, audio electronics, and full-stack engineering.')
+  usePageMeta(null, 'Nic Piraino: Hardware Engineering & System Design. Embedded systems, PCB design, audio electronics, and full-stack engineering.')
   return (
     <>
       {/* ── Split-screen Hero ──────────────────────────────────────────────── */}
       <section className="relative flex flex-col md:flex-row md:min-h-screen overflow-hidden">
-        {/* Top (mobile) / Left (desktop): Photo carousel — 45vh crop on mobile, fills column on desktop */}
+        {/* Top (mobile) / Left (desktop): Photo carousel -- 45vh crop on mobile, fills column on desktop */}
         <div className="relative w-full h-[45vh] md:w-[55%] md:h-auto flex-shrink-0 overflow-hidden">
           <HeroCarousel />
         </div>
@@ -287,7 +287,7 @@ export default function HomePage() {
             {profile.location} · {profile.academics.institution}
           </p>
 
-          {/* Name — massive Playfair Display */}
+          {/* Name -- massive Playfair Display */}
           <h1
             className="font-display leading-[0.92] mb-6"
             style={{

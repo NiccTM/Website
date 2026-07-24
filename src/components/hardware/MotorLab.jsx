@@ -10,7 +10,7 @@ const CHALLENGES = [
     icon: 'hub',
     title: 'Magnetic Reluctance Optimization',
     challenge:
-      'PLA stator teeth have a relative permeability of ≈ 1 — effectively air. High reluctance limited flux density and produced insufficient torque at target RPM.',
+      'PLA stator teeth have a relative permeability of ≈ 1, effectively air. High reluctance limited flux density and produced insufficient torque at target RPM.',
     solution:
       'Replaced PLA teeth with iron bolts (μᵣ ≈ 200). The ferromagnetic path concentrates magnetic flux through the air gap, significantly increasing torque density without a winding change.',
     metric: 'μᵣ: 1 → ~200',
@@ -32,7 +32,7 @@ const CHALLENGES = [
     challenge:
       'Initial ABCABCABC winding distributed opposing magnetic polarities across adjacent teeth, causing torque cancellation and low-speed oscillation that prevented clean spin-up.',
     solution:
-      'Implemented AaABbBCCC winding sequence — grouping same-phase poles to unify magnetic torque vectoring across the air gap, eliminating cancellation and producing smooth commutation.',
+      'Implemented AaABbBCCC winding sequence, grouping same-phase poles to unify magnetic torque vectoring across the air gap, eliminating cancellation and producing smooth commutation.',
     metric: 'ABCABCABC → AaABbBCCC',
   },
 ]
@@ -182,7 +182,7 @@ export default function MotorLab() {
           className="font-mono-data text-base tracking-widest uppercase"
           style={{ color: 'var(--accent)' }}
         >
-          BLDC Motor — Technical Deep Dive
+          BLDC Motor · Technical Deep Dive
         </h3>
         <div className="flex-1 h-px ml-2" style={{ background: 'rgba(0,229,255,0.12)' }} />
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -228,7 +228,7 @@ export default function MotorLab() {
         />
         <div className="px-3 py-2">
           <p className="font-mono-data text-sm font-medium" style={{ color: '#ffffff' }}>Motor Demo</p>
-          <p className="font-mono-data text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>First spin-up — AaABbBCCC winding sequence · Hobbywing Skywalker 30A V2 ESC</p>
+          <p className="font-mono-data text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>First spin-up · AaABbBCCC winding sequence · Hobbywing Skywalker 30A V2 ESC</p>
         </div>
       </div>
 

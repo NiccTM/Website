@@ -273,7 +273,7 @@ export default function ProjectModal({ project, onClose }) {
         )}
       </motion.div>
 
-      {/* Screenshot lightbox — opened from a sub-system image. Stops the click
+      {/* Screenshot lightbox -- opened from a sub-system image. Stops the click
           from bubbling to the backdrop (which would close the whole modal). */}
       {shot && (
         <div onClick={(e) => e.stopPropagation()}>

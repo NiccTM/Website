@@ -1,8 +1,8 @@
 /**
- * Vercel Serverless Function — /api/classify
+ * Vercel Serverless Function -- /api/classify
  *
  * Proxies image classification requests to the Roboflow API.
- * ROBOFLOW_API_KEY and ROBOFLOW_MODEL_ID are set in the Vercel dashboard —
+ * ROBOFLOW_API_KEY and ROBOFLOW_MODEL_ID are set in the Vercel dashboard --
  * they are NEVER exposed to client-side code.
  *
  * Request:  POST application/json  { image: "<base64 string>" }
@@ -44,7 +44,7 @@ function checkRateLimit(ip) {
     globalReset = now + WINDOW_MS
   }
   if (globalCount >= GLOBAL_MAX) {
-    return { limited: true, reason: 'Global demo limit reached — try again later.' }
+    return { limited: true, reason: 'Global demo limit reached -- try again later.' }
   }
 
   // Per-IP bucket
@@ -69,8 +69,8 @@ export default async function handler(req, res) {
   }
 
   // Shared, cross-instance limit first. The in-memory buckets below cannot
-  // actually bound anything on serverless — each instance has its own Map and
-  // instances come and go — so they are a fallback for when Redis is not
+  // actually bound anything on serverless -- each instance has its own Map and
+  // instances come and go -- so they are a fallback for when Redis is not
   // configured, not the real control. This route hits a paid ML API, so it gets
   // the tightest limit of the three.
   const verdict = await rateLimit(req, { route: 'classify', limit: SHARED_LIMIT, windowSeconds: 3600 })

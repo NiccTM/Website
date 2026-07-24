@@ -85,7 +85,7 @@ for (const file of walk(ROOT)) {
   try {
     text = strict.decode(buf);
   } catch {
-    console.error(`✗ ${relative(ROOT, file)} — not valid UTF-8`);
+    console.error(`✗ ${relative(ROOT, file)} -- not valid UTF-8`);
     bad++;
     continue;
   }
@@ -93,7 +93,7 @@ for (const file of walk(ROOT)) {
   if (!hits.length) continue;
 
   bad++;
-  console.error(`✗ ${relative(ROOT, file)} — ${hits.length} mojibake sequence(s)`);
+  console.error(`✗ ${relative(ROOT, file)} -- ${hits.length} mojibake sequence(s)`);
   const seen = new Map();
   for (const h of hits) seen.set(h.from, (seen.get(h.from) ?? 0) + 1);
   for (const [from, n] of seen) {
@@ -103,7 +103,7 @@ for (const file of walk(ROOT)) {
 }
 
 if (bad === 0) {
-  console.log('✓ encoding clean — no mojibake found');
+  console.log('✓ encoding clean -- no mojibake found');
   process.exit(0);
 }
 console.error(

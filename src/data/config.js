@@ -10,7 +10,7 @@ export const profile = {
   },
   github: 'https://github.com/NiccTM',
   interests: [
-    'Vinyl collecting — jazz, pop, rock, R&B, rap, trap',
+    'Vinyl collecting: jazz, pop, rock, R&B, rap, trap',
     'High-fidelity audio',
     'VR hardware',
     'Custom PC builds',
@@ -18,7 +18,7 @@ export const profile = {
 }
 
 // Shared by the home About teaser and the full /about page, so the two cannot
-// drift apart. Anything here has to be supportable — no invented dates or titles.
+// drift apart. Anything here has to be supportable -- no invented dates or titles.
 export const bio = {
   role:        'Hardware Engineering Intern',
   employer:    'Measurements International Ltd.',
@@ -45,7 +45,7 @@ export const hardware = {
   },
 }
 
-// ─── Audio Signal Chains (React Flow — per room) ─────────────────────────────
+// ─── Audio Signal Chains (React Flow -- per room) ─────────────────────────────
 export const audioChain = {
   rooms: [
     // ── House Master ──────────────────────────────────────────────────────────
@@ -259,7 +259,7 @@ export const audioChain = {
           room: 'Bedroom',
           specs: {
             Type: '2-way bass-reflex bookshelf',
-            Driver: 'Uni-Q — 1" vented Al dome + 6.5" Al cone',
+            Driver: 'Uni-Q · 1" vented Al dome + 6.5" Al cone',
             Crossover: '2,500Hz',
             'Freq Response': '63Hz – 28kHz ±3dB',
             Sensitivity: '87dB / 2.83V / 1m',
@@ -277,7 +277,7 @@ export const audioChain = {
           specs: {
             Type: 'Sealed dual-opposed active subwoofer',
             Drivers: '2× 8" aluminum cone (force-cancelling)',
-            Amplifier: 'Sledge STA-800D2 — 800W RMS / 2,500W peak',
+            Amplifier: 'Sledge STA-800D2 · 800W RMS / 2,500W peak',
             DSP: '50MHz / 56-bit precision, 3-band parametric EQ',
             'Freq Response': '23Hz – 240Hz ±3dB',
             App: 'iOS / Android / Alexa control',
@@ -328,9 +328,9 @@ export const audioChain = {
             Power: '80W × 5 @ 8Ω (FTC)',
             THD: '0.08%',
             SNR: '106dB (IHF-A)',
-            DAC: 'AKM AK4458 — 384kHz / 32-bit',
+            DAC: 'AKM AK4458 · 384kHz / 32-bit',
             'Hi-Res': 'FLAC/WAV/AIFF up to 192kHz/24-bit, DSD 5.6MHz',
-            HDMI: '6 in / 1 out — 4K/60p, HDR10, Dolby Vision',
+            HDMI: '6 in / 1 out · 4K/60p, HDR10, Dolby Vision',
             Wireless: 'Wi-Fi 802.11a/b/g/n dual-band, Bluetooth 4.1, AirPlay',
             'Room Correction': 'MCACC',
             Year: '2017',
@@ -381,7 +381,7 @@ export const audioChain = {
   ],
 }
 
-// ─── System Architecture — Feeble Presence (React Flow) ──────────────────────
+// ─── System Architecture -- Feeble Presence (React Flow) ──────────────────────
 export const feeblePresenceArch = {
   nodes: [
     {
@@ -427,7 +427,7 @@ export const projects = [
   {
     id: 'unbox',
     category: 'competitive',
-    title: 'UnBox — Sustainable Smart Packaging',
+    title: 'UnBox: Sustainable Smart Packaging',
     course: 'APSC 169',
     description:
       'Circularly shipped, compostable, impact-resistant packaging for electronics e-commerce. Elongated rhombic dodecahedron geometry in PLA with integrated NFC tag for label-free shipping and circular return.',
@@ -435,18 +435,18 @@ export const projects = [
     github: null,
     demo: null,
     awards: [
-      { id: 'unbox-impact-gold',   label: '1st Place — Project Impact', tier: 'gold'   },
-      { id: 'unbox-design-bronze', label: '3rd Place — Project Design', tier: 'bronze' },
+      { id: 'unbox-impact-gold',   label: '1st Place · Project Impact', tier: 'gold'   },
+      { id: 'unbox-design-bronze', label: '3rd Place · Project Design', tier: 'bronze' },
     ],
     expandedDetails: {
       extendedDescription:
-        'UnBox is a circularly shipped, compostable, and impact-resistant packaging solution designed to reduce single-use plastic waste in electronics e-commerce. The container utilizes an elongated rhombic dodecahedron geometry, manufactured from Polylactic Acid (PLA). This structure provides high rigidity, withstanding over 680 N (60 kg) of vertical force without permanent deformation, while allowing the boxes to tile efficiently during transit. The shell is secured using integrated 3D-printed edge clips.\n\nTo eliminate waste from traditional shipping labels and facilitate a circular return system, UnBox integrates a passive Near Field Communication (NFC) tag. Shipping details — including return address, recipient address, tracking number, and routing information — are stored directly on the tag and can be read or rewritten using a smartphone.',
+        'UnBox is a circularly shipped, compostable, and impact-resistant packaging solution designed to reduce single-use plastic waste in electronics e-commerce. The container utilizes an elongated rhombic dodecahedron geometry, manufactured from Polylactic Acid (PLA). This structure provides high rigidity, withstanding over 680 N (60 kg) of vertical force without permanent deformation, while allowing the boxes to tile efficiently during transit. The shell is secured using integrated 3D-printed edge clips.\n\nTo eliminate waste from traditional shipping labels and facilitate a circular return system, UnBox integrates a passive Near Field Communication (NFC) tag. Shipping details (return address, recipient address, tracking number, and routing information) are stored directly on the tag and can be read or rewritten using a smartphone.',
       technicalSpecs: [
         { label: 'Material',           value: 'Polylactic Acid (PLA)' },
         { label: 'Geometry',           value: 'Elongated Rhombic Dodecahedron' },
-        { label: 'Data integration',   value: 'Passive NFC Tag — NXP NTAG® 215 / 500-character capacity' },
+        { label: 'Data integration',   value: 'Passive NFC Tag · NXP NTAG® 215 / 500-character capacity' },
         { label: 'Load capacity',      value: '> 680 N (> 60 kg) vertical crush resistance' },
-        { label: 'Circularity',        value: '100% compostable — designed for 100–115 use cycles' },
+        { label: 'Circularity',        value: '100% compostable · designed for 100–115 use cycles' },
         { label: 'Closure mechanism',  value: 'Integrated 3D-printed edge clips' },
         { label: 'Course',             value: 'APSC 169' },
       ],
@@ -456,7 +456,7 @@ export const projects = [
   {
     id: 'firesense',
     category: 'competitive',
-    title: 'FireSense — Wildfire Detection',
+    title: 'FireSense: Wildfire Detection',
     course: 'APSC 171',
     description:
       'Autonomous early-warning architecture for remote wildfire monitoring. Sensor fusion across VOC/CO gas, IR thermal, and anemometer with multi-sensor consensus voting to eliminate false positives.',
@@ -464,13 +464,13 @@ export const projects = [
     github: null,
     demo: null,
     awards: [
-      { id: 'firesense-design-bronze', label: '3rd Place — Project Design', tier: 'bronze' },
+      { id: 'firesense-design-bronze', label: '3rd Place · Project Design', tier: 'bronze' },
     ],
     expandedDetails: {
       extendedDescription:
         'An autonomous early-warning architecture for remote wildfire monitoring. The system integrates the Bosch BME688 gas sensor (VOC/CO detection), IR thermal imaging, and anemometer data to distinguish true ignition events from false positives like sun glare or prescribed burns through a multi-sensor consensus voting logic.\n\nCommunication is optimized for extreme remote deployment using a satellite uplink as the primary backhaul, ensuring real-time telemetry transmission in regions lacking terrestrial infrastructure.\n\nDeliverables included a full systems architecture diagram and component selection rationale based on spectral sensitivity and BME688 gas-classification training.',
       technicalSpecs: [
-        { label: 'Gas sensor',   value: 'Bosch BME688 — VOC / CO detection + gas classification' },
+        { label: 'Gas sensor',   value: 'Bosch BME688 · VOC / CO detection + gas classification' },
         { label: 'Deliverables', value: 'Systems architecture diagram + component selection rationale' },
         { label: 'Course',       value: 'APSC 171' },
       ],
@@ -484,7 +484,7 @@ export const projects = [
     course: 'APSC 171',
     role: 'Mechanical Team',
     description:
-      'SolidWorks recreation of the Back to the Future DeLorean — 200+ unique parts with interactive Exploded View state. V6 engine assembly, component research, and full rendering in SolidWorks Visualize.',
+      'SolidWorks recreation of the Back to the Future DeLorean, with 200+ unique parts with interactive Exploded View state. V6 engine assembly, component research, and full rendering in SolidWorks Visualize.',
     tags: ['SolidWorks', 'SolidWorks Visualize', 'CAD', 'V6 Engine', 'Research'],
     github: null,
     demo: 'video',
@@ -492,11 +492,11 @@ export const projects = [
     poster: '/videos/delorean-poster.jpg',
     model: '/models/delorean-engine.glb',
     awards: [
-      { id: 'delorean-finalist-cyan', label: 'Top 14 Finalist — Design Competition', tier: 'cyan' },
+      { id: 'delorean-finalist-cyan', label: 'Top 14 Finalist · Design Competition', tier: 'cyan' },
     ],
     expandedDetails: {
       extendedDescription:
-        'A full SolidWorks multi-body assembly of the iconic DMC DeLorean, modelled from archival engineering drawings and reference photography. The project spanned 200+ individually constrained parts — body panels, gullwing door mechanisms, suspension geometry, and a complete PRV V6 engine sub-assembly.\n\nRendered at production quality in SolidWorks Visualize with environment lighting, material assignments, and an interactive Exploded View animation sequence. Placed in the Top 14 of the APSC 171 design competition across all cohort entries.',
+        'A full SolidWorks multi-body assembly of the iconic DMC DeLorean, modelled from archival engineering drawings and reference photography. The project spanned 200+ individually constrained parts: body panels, gullwing door mechanisms, suspension geometry, and a complete PRV V6 engine sub-assembly.\n\nRendered at production quality in SolidWorks Visualize with environment lighting, material assignments, and an interactive Exploded View animation sequence. Placed in the Top 14 of the APSC 171 design competition across all cohort entries.',
       technicalSpecs: [
         { label: 'Tool',        value: 'SolidWorks 2024 + Visualize' },
         { label: 'Part count',  value: '200+ unique constrained parts' },
@@ -517,7 +517,7 @@ export const projects = [
     course: 'APSC 201',
     icon: 'gavel',
     description:
-      'Policy framework for Gull Bay First Nation (Ontario) addressing Indigenous Community Consultation Policy (ICCP) — sustainable development, community engagement, and environmental stewardship.',
+      'Policy framework for Gull Bay First Nation (Ontario) addressing Indigenous Community Consultation Policy (ICCP), covering sustainable development, community engagement, and environmental stewardship.',
     tags: ['Policy Analysis', 'Stakeholder Engagement', 'Ethical Engineering', 'ICCP'],
     github: null,
     demo: null,
@@ -529,10 +529,10 @@ export const projects = [
         'A policy analysis and framework document developed for Gull Bay First Nation (Ontario) in the context of resource development decisions governed by the Indigenous Community Consultation Policy (ICCP). The work examined how engineers bear legal and ethical obligations to engage with affected communities before and during infrastructure projects.\n\nThe framework addressed Free, Prior and Informed Consent (FPIC), environmental stewardship principles, and practical consultation timelines. Deliverables included a structured policy recommendation report and an oral presentation to a simulated stakeholder panel.',
       technicalSpecs: [
         { label: 'Context',      value: 'Gull Bay First Nation, Ontario' },
-        { label: 'Framework',    value: 'ICCP — Indigenous Community Consultation Policy' },
+        { label: 'Framework',    value: 'ICCP · Indigenous Community Consultation Policy' },
         { label: 'Principle',    value: 'FPIC (Free, Prior and Informed Consent)' },
         { label: 'Deliverables', value: 'Policy report + stakeholder presentation' },
-        { label: 'Course',       value: 'APSC 201 — Engineering Professionalism' },
+        { label: 'Course',       value: 'APSC 201 · Engineering Professionalism' },
       ],
       links: [],
     },
@@ -544,20 +544,20 @@ export const projects = [
     course: 'APSC 176',
     icon: 'accessibility_new',
     description:
-      'Final project for APSC 176 at UBCO. Comprehensive accessibility audit and Universal Design proposal for a multi-purpose theatre in Whistler, BC — inclusive spatial design and a stakeholder-focused technical report.',
+      'Final project for APSC 176 at UBCO. Comprehensive accessibility audit and Universal Design proposal for a multi-purpose theatre in Whistler, BC, covering inclusive spatial design and a stakeholder-focused technical report.',
     tags: ['Universal Design', 'Accessibility Standards', 'CAD (Spatial)', 'Technical Writing'],
     github: null,
     demo: null,
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'A Universal Design audit and retrofit proposal for a multi-purpose performing arts theatre in Whistler, BC. The project evaluated the existing facility against Canadian accessibility standards (CSA B651, BC Building Code) across twelve categories: entrances, seating, washrooms, wayfinding, acoustics, and emergency egress.\n\nThe final report proposed spatially specific design interventions — wider aisle clearances, distributed assistive listening system (ALS) coverage, tactile guide paths, and accessible service counter heights.',
+        'A Universal Design audit and retrofit proposal for a multi-purpose performing arts theatre in Whistler, BC. The project evaluated the existing facility against Canadian accessibility standards (CSA B651, BC Building Code) across twelve categories: entrances, seating, washrooms, wayfinding, acoustics, and emergency egress.\n\nThe final report proposed spatially specific design interventions: wider aisle clearances, distributed assistive listening system (ALS) coverage, tactile guide paths, and accessible service counter heights.',
       technicalSpecs: [
         { label: 'Standards',    value: 'CSA B651, BC Building Code Part 3' },
         { label: 'Audit scope',  value: '12 accessibility categories' },
         { label: 'ALS',          value: 'Assistive Listening System coverage mapping' },
         { label: 'Deliverable',  value: 'Technical report + stakeholder presentation' },
-        { label: 'Course',       value: 'APSC 176 — final project, UBC Okanagan' },
+        { label: 'Course',       value: 'APSC 176 · final project, UBC Okanagan' },
       ],
       links: [],
     },
@@ -575,11 +575,11 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'Feeble Presence is a MediaMonkey 5 plugin that bridges the desktop music player to Discord\'s Rich Presence API, letting your server see exactly what you\'re listening to in real time — track title, artist, album, and elapsed progress.\n\nThe plugin hooks into MediaMonkey\'s COM/SDK interface, polls playback state on a 2-second interval, and pushes updates over a local named pipe to the Discord IPC endpoint using the pypresence library. Round-trip latency from track change to visible Discord update is typically under 50 ms.',
+        'Feeble Presence is a MediaMonkey 5 plugin that bridges the desktop music player to Discord\'s Rich Presence API, letting your server see exactly what you\'re listening to in real time: track title, artist, album, and elapsed progress.\n\nThe plugin hooks into MediaMonkey\'s COM/SDK interface, polls playback state on a 2-second interval, and pushes updates over a local named pipe to the Discord IPC endpoint using the pypresence library. Round-trip latency from track change to visible Discord update is typically under 50 ms.',
       technicalSpecs: [
         { label: 'Language',    value: 'Python' },
         { label: 'Player',      value: 'MediaMonkey 5 (COM/SDK hooks)' },
-        { label: 'IPC',         value: 'Discord local named pipe — pypresence' },
+        { label: 'IPC',         value: 'Discord local named pipe · pypresence' },
         { label: 'Polling',     value: '2s interval' },
         { label: 'Latency',     value: '<50ms track-change → Discord update' },
         { label: 'Fields',      value: 'State, Details, Timestamps, Cover Art' },
@@ -594,24 +594,24 @@ export const projects = [
     category: 'software',
     title: 'EcoSort',
     course: 'CMPE 246',
-    description: 'Final project for CMPE 246 at UBCO. Real-time computer vision pipeline for automated waste stream segregation — custom YOLOv8 model on Roboflow with hardware actuation via a servo-driven diverter flap.',
+    description: 'Final project for CMPE 246 at UBCO. Real-time computer vision pipeline for automated waste stream segregation, using a custom YOLOv8 model on Roboflow with hardware actuation via a servo-driven diverter flap.',
     tags: ['React', 'YOLOv8', 'Roboflow', 'Computer Vision', 'Vercel', 'PWM', 'Servo', 'Hardware'],
     github: 'https://github.com/NiccTM/CMPE246_G16_Trash_Organizer',
     demo: 'ml',
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'A real-time computer vision pipeline for automated waste stream segregation using a custom-trained YOLOv8 model hosted on a Roboflow inference endpoint. The frontend performs a center-square crop to 640×640, encodes the frame as base64, and sends it to the inference API — back-mapping returned bounding box coordinates through the crop transform to the original image space for pixel-accurate overlay rendering.\n\nFull-Stack Pipeline: Built with React and Framer Motion for a low-latency UI, backed by a Vercel serverless function that proxies the API key and enforces per-IP and global rate limits.\n\nHardware Actuation: Classification outputs drive a servo-driven diverter flap via PWM, physically routing items into compost, recycle, or landfill bins.',
+        'A real-time computer vision pipeline for automated waste stream segregation using a custom-trained YOLOv8 model hosted on a Roboflow inference endpoint. The frontend performs a center-square crop to 640×640, encodes the frame as base64, and sends it to the inference API, back-mapping returned bounding box coordinates through the crop transform to the original image space for pixel-accurate overlay rendering.\n\nFull-Stack Pipeline: Built with React and Framer Motion for a low-latency UI, backed by a Vercel serverless function that proxies the API key and enforces per-IP and global rate limits.\n\nHardware Actuation: Classification outputs drive a servo-driven diverter flap via PWM, physically routing items into compost, recycle, or landfill bins.',
       technicalSpecs: [
-        { label: 'Model',         value: 'YOLOv8 — yolov8-trash-detections-kgnug v11' },
-        { label: 'Inference',     value: 'Roboflow hosted API — confidence 25%, overlap 30%' },
+        { label: 'Model',         value: 'YOLOv8 · yolov8-trash-detections-kgnug v11' },
+        { label: 'Inference',     value: 'Roboflow hosted API · confidence 25%, overlap 30%' },
         { label: 'Preprocessing', value: 'Center-square crop → 640×640 JPEG' },
         { label: 'Coord mapping', value: 'RF 640-space → crop offset → original → display px' },
-        { label: 'Backend',       value: 'Vercel serverless — rate limit 5 req/IP/hr' },
+        { label: 'Backend',       value: 'Vercel serverless · rate limit 5 req/IP/hr' },
         { label: 'Frontend',      value: 'React + Framer Motion, CSS absolute bounding boxes' },
-        { label: 'MCU',           value: 'Microcontroller — servo PWM actuation' },
-        { label: 'Actuator',      value: 'Servo-driven diverter flap — center pos calibrated' },
-        { label: 'Course',        value: 'CMPE 246 — final project, UBC Okanagan' },
+        { label: 'MCU',           value: 'Microcontroller · servo PWM actuation' },
+        { label: 'Actuator',      value: 'Servo-driven diverter flap · center pos calibrated' },
+        { label: 'Course',        value: 'CMPE 246 · final project, UBC Okanagan' },
       ],
       subSystems: [
         {
@@ -627,8 +627,8 @@ export const projects = [
           icon:        'memory',
           description: 'Microcontroller logic processing classification outputs to drive physical actuators.',
           images: [
-            { src: '/20260321_172148.jpg', label: 'UBCO Bin Reference',        caption: 'Target bins — garbage, recycle, returnables, compost, e-waste' },
-            { src: '/20260321_200413.jpg', label: 'Detection Test — Red Bull', caption: 'Live Roboflow inference on returnable can' },
+            { src: '/20260321_172148.jpg', label: 'UBCO Bin Reference',        caption: 'Target bins · garbage, recycle, returnables, compost, e-waste' },
+            { src: '/20260321_200413.jpg', label: 'Detection Test · Red Bull', caption: 'Live Roboflow inference on returnable can' },
           ],
         },
         {
@@ -637,8 +637,8 @@ export const projects = [
           icon:        'settings',
           description: 'Custom diverter mechanism routing items to respective waste bins based on servo positioning.',
           images: [
-            { src: '/20260321_210541.jpg', label: 'Background Substitution Test', caption: 'UI calibration — background subtraction frame capture' },
-            { src: '/20260321_210639.jpg', label: 'LCD Screen Test',              caption: 'LCD display output — classification result readout' },
+            { src: '/20260321_210541.jpg', label: 'Background Substitution Test', caption: 'UI calibration · background subtraction frame capture' },
+            { src: '/20260321_210639.jpg', label: 'LCD Screen Test',              caption: 'LCD display output · classification result readout' },
           ],
         },
       ],
@@ -659,18 +659,18 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'A ground-up 3-phase brushless DC inrunner motor engineered without any off-the-shelf motor components. The 9-pole stator and 16-pole rotor were designed in CAD and 3D-printed — initially in PLA, then upgraded to PETG HF after thermal analysis revealed PLA+ would approach its glass transition temperature (55°C) under the 30A draw required for target torque.\n\nThe winding geometry went through two major iterations. The initial ABCABCABC sequence produced torque cancellation and oscillation; redesigning to AaABbBCCC unified the magnetic torque vectors and eliminated the instability. Stator teeth were replaced mid-project with iron bolts to concentrate flux and increase torque density — a direct response to the poor relative permeability (≈1) of PLA. The full BOM was engineered to $94.92 CAD against a $100 target.',
+        'A ground-up 3-phase brushless DC inrunner motor engineered without any off-the-shelf motor components. The 9-pole stator and 16-pole rotor were designed in CAD and 3D-printed, initially in PLA, then upgraded to PETG HF after thermal analysis revealed PLA+ would approach its glass transition temperature (55°C) under the 30A draw required for target torque.\n\nThe winding geometry went through two major iterations. The initial ABCABCABC sequence produced torque cancellation and oscillation; redesigning to AaABbBCCC unified the magnetic torque vectors and eliminated the instability. Stator teeth were replaced mid-project with iron bolts to concentrate flux and increase torque density, a direct response to the poor relative permeability (≈1) of PLA. The full BOM was engineered to $94.92 CAD against a $100 target.',
       technicalSpecs: [
-        { label: 'Topology',         value: '3-phase inrunner — 9-pole stator / 16-pole rotor' },
+        { label: 'Topology',         value: '3-phase inrunner · 9-pole stator / 16-pole rotor' },
         { label: 'Connection',       value: 'Wye (Star)' },
-        { label: 'Winding',          value: '24 AWG enameled copper — ~200 turns/pole' },
+        { label: 'Winding',          value: '24 AWG enameled copper · ~200 turns/pole' },
         { label: 'Phase resistance', value: '~2.022 Ω' },
-        { label: 'Stator teeth',     value: 'Iron bolts (replaced PLA — μᵣ ≈ 1 → high flux density)' },
-        { label: 'Rotor / base',     value: 'PETG HF (Tg ≈ 70°C — upgraded from PLA+ Tg 55°C)' },
-        { label: 'Control MCU',      value: 'Arduino Uno — PWM via Servo.h' },
+        { label: 'Stator teeth',     value: 'Iron bolts (replaced PLA, μᵣ ≈ 1 → high flux density)' },
+        { label: 'Rotor / base',     value: 'PETG HF (Tg ≈ 70°C, upgraded from PLA+ Tg 55°C)' },
+        { label: 'Control MCU',      value: 'Arduino Uno · PWM via Servo.h' },
         { label: 'ESC',              value: 'Hobbywing Skywalker 30A V2' },
         { label: 'BOM total',        value: '$94.92 CAD (budget: $100)' },
-        { label: 'Course',           value: 'ENGR 320 — motor design project, UBC Okanagan' },
+        { label: 'Course',           value: 'ENGR 320 · motor design project, UBC Okanagan' },
       ],
       links: [],
     },
@@ -678,7 +678,7 @@ export const projects = [
   {
     id: 'algotraderos',
     category: 'software',
-    title: 'AlgoTraderOS — Algorithmic Trading System',
+    title: 'AlgoTraderOS: Algorithmic Trading System',
     description: 'Single-machine, event-driven algorithmic trading system for the Canadian equity market (TSX). Runs a long-only volatility-breakout strategy with an LLM signal-validation layer, a React dashboard, and a Rust hot-path execution core.',
     tags: ['Python', 'asyncio', 'Rust', 'PyO3', 'React', 'FastAPI', 'IBKR', 'Anthropic'],
     github: null,
@@ -686,16 +686,16 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'AlgoTraderOS is an event-driven trading system built around a single asyncio queue of typed, frozen-dataclass events. Everything flows through one pipeline — Market → Signal → Order → Fill — coordinated by a central TradingEngine that auto-detects its run mode. It operates in four: BACKTEST against a local parquet data lake, PAPER against Interactive Brokers, QUESTRADE against live TSX data/execution, and a HYBRID mode that takes Questrade data with IBKR execution.\n\nThe production strategy is a Keltner-channel volatility breakout (Hull moving-average channels with ADX and Bollinger-squeeze filters). It is deliberately long-only and exit-only — it never sells short — as a hard cash-account compliance invariant, not a stylistic choice. An Anthropic LLM layer scores breakout quality and produces probabilistic forecasts via tool-use, but stays strictly advisory: any API error, timeout, or malformed response fails open to a neutral default so trading can never halt on an outage.\n\nThe hot path is a Rust PyO3 extension (algo_core.pyd) that runs the limit-order price-walk math. Optuna Bayesian optimization plus a multi-horizon Monte Carlo sweep drive parameter tuning, and a FastAPI + React 19 dashboard streams live fills over WebSocket. The process is Windows-tuned — ProactorEventLoop, realtime priority class, and CPU-affinity pinning for deterministic execution latency.',
+        'AlgoTraderOS is an event-driven trading system built around a single asyncio queue of typed, frozen-dataclass events. Everything flows through one pipeline (Market → Signal → Order → Fill) coordinated by a central TradingEngine that auto-detects its run mode. It operates in four: BACKTEST against a local parquet data lake, PAPER against Interactive Brokers, QUESTRADE against live TSX data/execution, and a HYBRID mode that takes Questrade data with IBKR execution.\n\nThe production strategy is a Keltner-channel volatility breakout (Hull moving-average channels with ADX and Bollinger-squeeze filters). It is deliberately long-only and exit-only, never selling short, as a hard cash-account compliance invariant, not a stylistic choice. An Anthropic LLM layer scores breakout quality and produces probabilistic forecasts via tool-use, but stays strictly advisory: any API error, timeout, or malformed response fails open to a neutral default so trading can never halt on an outage.\n\nThe hot path is a Rust PyO3 extension (algo_core.pyd) that runs the limit-order price-walk math. Optuna Bayesian optimization plus a multi-horizon Monte Carlo sweep drive parameter tuning, and a FastAPI + React 19 dashboard streams live fills over WebSocket. The process is Windows-tuned: ProactorEventLoop, realtime priority class, and CPU-affinity pinning for deterministic execution latency.',
       technicalSpecs: [
         { label: 'Market',       value: 'Canadian equities (TSX), small retail account' },
-        { label: 'Architecture', value: 'Event-driven asyncio pipeline — Market→Signal→Order→Fill' },
-        { label: 'Strategy',     value: 'Keltner volatility breakout — long-only, exit-only' },
+        { label: 'Architecture', value: 'Event-driven asyncio pipeline · Market→Signal→Order→Fill' },
+        { label: 'Strategy',     value: 'Keltner volatility breakout · long-only, exit-only' },
         { label: 'AI layer',     value: 'Anthropic LLM signal validation + forecasts (fail-open)' },
-        { label: 'Native core',  value: 'Rust PyO3 → algo_core.pyd — execution price-walk' },
-        { label: 'Brokers',      value: 'IBKR (ib_insync) + Questrade REST — 4 run modes' },
+        { label: 'Native core',  value: 'Rust PyO3 → algo_core.pyd · execution price-walk' },
+        { label: 'Brokers',      value: 'IBKR (ib_insync) + Questrade REST · 4 run modes' },
         { label: 'Optimization', value: 'Optuna Bayesian + multi-horizon Monte Carlo' },
-        { label: 'Dashboard',    value: 'FastAPI + React 19 + Vite — WebSocket live tape' },
+        { label: 'Dashboard',    value: 'FastAPI + React 19 + Vite · WebSocket live tape' },
       ],
       subSystemsLabel: 'Interface',
       subSystems: [
@@ -717,7 +717,7 @@ export const projects = [
   {
     id: 'tracesight',
     category: 'software',
-    title: 'Tracesight — Congressional & Insider Trade Intelligence',
+    title: 'Tracesight: Congressional & Insider Trade Intelligence',
     description: 'Full-stack platform that ingests U.S. House, Senate, and SEC Form 4 disclosures, scores them through a signal engine, and surfaces high-alpha trades with beta-adjusted backtesting, a filer leaderboard, and paper-trading execution.',
     tags: ['Flask', 'PostgreSQL', 'React', 'SQLAlchemy', 'Signal Engine', 'Backtesting'],
     github: null,
@@ -725,7 +725,7 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'Tracesight is a Congressional and SEC trading tracker. Scrapers pull House PTRs, Senate PTRs, and SEC Form 4 insider filings into a PostgreSQL corpus (12,000+ SEC rows, 11,000+ House rows), where a signal engine scores recent trades by source — SEC weighted 1.0, Senate 0.6, House 0.4 — with time decay, then assigns conviction labels such as Institutional Swarm, SEC Opportunistic, Cross-Source Corroboration, and Political Lead.\n\nA large part of the work is being honest about what is not a signal. Pre-scheduled 10b5-1 plans and sell-to-cover tax liquidations carry zero idiosyncratic alpha by construction, so they are mechanically zeroed out of scoring — around 12.8% of the SEC corpus — while still being preserved for audit rather than deleted. A per-transaction footnote classifier pins tax-withholding precision at 1.000 by design, because a single false zero on a discretionary trade silently destroys a real signal.\n\nOn top sits the analytics layer: a fixed-horizon backtester (T+20 / T+60 / T+90) computes beta-adjusted alpha against sector-ETF benchmarks, a filer leaderboard ranks individuals by raw mean alpha with a stale-while-revalidate cache, and a strict-FIFO tax-lot ledger tracks realized, fee-net paper-trading P&L. A React dashboard fronts it, with Discord and email alerting behind dispatch deduplication.',
+        'Tracesight is a Congressional and SEC trading tracker. Scrapers pull House PTRs, Senate PTRs, and SEC Form 4 insider filings into a PostgreSQL corpus (12,000+ SEC rows, 11,000+ House rows), where a signal engine scores recent trades by source (SEC weighted 1.0, Senate 0.6, House 0.4) with time decay, then assigns conviction labels such as Institutional Swarm, SEC Opportunistic, Cross-Source Corroboration, and Political Lead.\n\nA large part of the work is being honest about what is not a signal. Pre-scheduled 10b5-1 plans and sell-to-cover tax liquidations carry zero idiosyncratic alpha by construction, so they are mechanically zeroed out of scoring, around 12.8% of the SEC corpus, while still being preserved for audit rather than deleted. A per-transaction footnote classifier pins tax-withholding precision at 1.000 by design, because a single false zero on a discretionary trade silently destroys a real signal.\n\nOn top sits the analytics layer: a fixed-horizon backtester (T+20 / T+60 / T+90) computes beta-adjusted alpha against sector-ETF benchmarks, a filer leaderboard ranks individuals by raw mean alpha with a stale-while-revalidate cache, and a strict-FIFO tax-lot ledger tracks realized, fee-net paper-trading P&L. A React dashboard fronts it, with Discord and email alerting behind dispatch deduplication.',
       technicalSpecs: [
         { label: 'Backend',       value: 'Flask + SQLAlchemy + PostgreSQL' },
         { label: 'Frontend',      value: 'React trades dashboard' },
@@ -734,7 +734,7 @@ export const projects = [
         { label: 'Noise control', value: '10b5-1 + tax-withholding suppression (audit-preserving)' },
         { label: 'Backtest',      value: 'Fixed-horizon T+20/60/90 beta-adjusted alpha vs sector ETF' },
         { label: 'Leaderboard',   value: 'Filers ranked by raw mean alpha (SWR-cached)' },
-        { label: 'Paper trading', value: 'Strict-FIFO tax-lot ledger — fee-net realized P&L' },
+        { label: 'Paper trading', value: 'Strict-FIFO tax-lot ledger · fee-net realized P&L' },
       ],
       subSystemsLabel: 'Interface',
       subSystems: [
@@ -756,20 +756,20 @@ export const projects = [
   {
     id: 'signalvault',
     category: 'software',
-    title: 'SignalVault — Forensic Audio Preservation',
-    description: 'Headless Python pipeline that ingests high-resolution vinyl rips and emits tiered, preservation-grade archival packages — with FADGI-aligned conformance scoring, PREMIS event logging, and cryptographic fixity.',
+    title: 'SignalVault: Forensic Audio Preservation',
+    description: 'Headless Python pipeline that ingests high-resolution vinyl rips and emits tiered, preservation-grade archival packages, with FADGI-aligned conformance scoring, PREMIS event logging, and cryptographic fixity.',
     tags: ['Python', 'DSP', 'PySide6', 'Audio Preservation', 'IASA-TC 04', 'FADGI', 'BWF/FLAC'],
     github: null,
     icon: 'library_music',
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'SignalVault is a long-running headless pipeline for institutional-grade audio preservation. It ingests high-resolution transfers — 24-bit/96 kHz vinyl rips, plus DSD/FLAC/MP3 via a universal decoder — and applies forensic restoration, segmentation, metadata enrichment, and analysis, then emits a tiered archival package following IASA-TC 04 and FADGI-aligned conventions. Before any DSP runs, a bit-exact raw copy of the source is sealed, and every transformation from that point on is logged as a PREMIS event, so the whole chain is defensible after the fact.\n\nThe preservation philosophy is that archival math must be static, never dynamic. Loudness normalization is always a single linear scalar — 10^((target − measured)/20) broadcast across the array — never a compressor, limiter, or envelope shaper, because any envelope alteration would disqualify the file as a preservation derivative. That rule shapes the output tiers: a forensic raw copy, an unsegmented full-side BWF preservation master with no DSP, per-track restoration BWF masters, and access-tier FLACs.\n\nEvery run produces an A–F conformance score (labeled an Audio Preservation Conformance Score, FADGI-aligned — audio FADGI is pass/fail aim points, not a star rating), SHA-256 fixity manifests, and METS + PBCore repository XML. A PySide6 operator console fronts the pipeline with a local SQLite job history that is explicitly not treated as preservation truth, alongside scheduled fixity audits, BagIt transfer export, and experimental C2PA provenance signing.',
+        'SignalVault is a long-running headless pipeline for institutional-grade audio preservation. It ingests high-resolution transfers (24-bit/96 kHz vinyl rips, plus DSD/FLAC/MP3 via a universal decoder) and applies forensic restoration, segmentation, metadata enrichment, and analysis, then emits a tiered archival package following IASA-TC 04 and FADGI-aligned conventions. Before any DSP runs, a bit-exact raw copy of the source is sealed, and every transformation from that point on is logged as a PREMIS event, so the whole chain is defensible after the fact.\n\nThe preservation philosophy is that archival math must be static, never dynamic. Loudness normalization is always a single linear scalar, 10^((target − measured)/20) broadcast across the array, never a compressor, limiter, or envelope shaper, because any envelope alteration would disqualify the file as a preservation derivative. That rule shapes the output tiers: a forensic raw copy, an unsegmented full-side BWF preservation master with no DSP, per-track restoration BWF masters, and access-tier FLACs.\n\nEvery run produces an A–F conformance score (labeled an Audio Preservation Conformance Score, FADGI-aligned; audio FADGI is pass/fail aim points, not a star rating), SHA-256 fixity manifests, and METS + PBCore repository XML. A PySide6 operator console fronts the pipeline with a local SQLite job history that is explicitly not treated as preservation truth, alongside scheduled fixity audits, BagIt transfer export, and experimental C2PA provenance signing.',
       technicalSpecs: [
-        { label: 'Language',    value: 'Python — headless pipeline + PySide6 console' },
+        { label: 'Language',    value: 'Python · headless pipeline + PySide6 console' },
         { label: 'Target',      value: '24-bit / 96 kHz analog preservation (PCM_24/32/Float)' },
         { label: 'Conformance', value: 'Audio Preservation Conformance Score (FADGI-aligned), A–F' },
-        { label: 'Loudness',    value: 'EBU R128 single linear scalar — no compression/limiting' },
+        { label: 'Loudness',    value: 'EBU R128 single linear scalar · no compression/limiting' },
         { label: 'Standards',   value: 'IASA-TC 04, BWF (bext), METS + PBCore, PREMIS' },
         { label: 'Fixity',      value: 'SHA-256 manifests + scheduled audit CLI + BagIt export' },
         { label: 'Tiers',       value: 'Forensic raw → preservation BWF → restoration BWF → access FLAC' },
@@ -795,20 +795,20 @@ export const projects = [
   {
     id: 'liquidaudio',
     category: 'software',
-    title: 'LiquidAudio Pro — Archival Audio Extraction',
-    description: 'Windows desktop application for archival audio extraction from Blu-ray, DVD and SACD sources — native container parsers, FFmpeg-backed decoding, and per-extraction audit trails with source and payload hashes.',
+    title: 'LiquidAudio Pro: Archival Audio Extraction',
+    description: 'Windows desktop application for archival audio extraction from Blu-ray, DVD and SACD sources, using native container parsers, FFmpeg-backed decoding, and per-extraction audit trails with source and payload hashes.',
     tags: ['Python', 'PySide6 / Qt', 'FFmpeg', 'Blu-ray', 'DSD', 'FLAC', 'PyInstaller'],
     github: null,
     icon: 'album',
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'LiquidAudio Pro is a desktop application — not a pile of scripts — for pulling audio out of optical-disc sources and turning it into a clean archival result. It handles Blu-ray, DVD and SACD alongside PCM, WAV, FLAC, ALAC and DSD, which means dealing with the container and filesystem structures needed to find the right stream in the first place.\n\nMost of the work is in the parsers: Blu-ray MPLS playlists, MPEG transport-stream PAT/PMT tables, DVD IFO structures, DSF/DFF headers, WAV and WAV Extensible, and Blu-ray LPCM. On top of that sits demuxing, decoding, encoding, source inspection, candidate-file scanning, batch processing and metadata handling, with FFmpeg used where a mature codec implementation is the safer choice.\n\nThat last point drove one of the decisions I am most comfortable defending. An internal FLAC encoder was not standards-safe enough to trust, so rather than leave it enabled because it made the feature list longer, I disabled it and fell back to a known-good path. A shorter feature list that is correct beats a longer one that quietly is not.\n\nExtractions produce a report rather than just a file: source and destination hashes, payload CRCs, metadata, warnings and actions taken. Job state persists so an interrupted run can recover. The UI is a frameless, translucent Windows shell with high-DPI support, drag and drop, tray integration and a context-menu extraction command, and the project is packaged with PyInstaller behind release-ZIP validation and system checks.',
+        'LiquidAudio Pro is a desktop application, not a pile of scripts, for pulling audio out of optical-disc sources and turning it into a clean archival result. It handles Blu-ray, DVD and SACD alongside PCM, WAV, FLAC, ALAC and DSD, which means dealing with the container and filesystem structures needed to find the right stream in the first place.\n\nMost of the work is in the parsers: Blu-ray MPLS playlists, MPEG transport-stream PAT/PMT tables, DVD IFO structures, DSF/DFF headers, WAV and WAV Extensible, and Blu-ray LPCM. On top of that sits demuxing, decoding, encoding, source inspection, candidate-file scanning, batch processing and metadata handling, with FFmpeg used where a mature codec implementation is the safer choice.\n\nThat last point drove one of the decisions I am most comfortable defending. An internal FLAC encoder was not standards-safe enough to trust, so rather than leave it enabled because it made the feature list longer, I disabled it and fell back to a known-good path. A shorter feature list that is correct beats a longer one that quietly is not.\n\nExtractions produce a report rather than just a file: source and destination hashes, payload CRCs, metadata, warnings and actions taken. Job state persists so an interrupted run can recover. The UI is a frameless, translucent Windows shell with high-DPI support, drag and drop, tray integration and a context-menu extraction command, and the project is packaged with PyInstaller behind release-ZIP validation and system checks.',
       technicalSpecs: [
-        { label: 'Language',   value: 'Python — PySide6 / Qt desktop app' },
+        { label: 'Language',   value: 'Python · PySide6 / Qt desktop app' },
         { label: 'Sources',    value: 'Blu-ray, DVD, SACD, PCM, WAV, FLAC, ALAC, DSD' },
         { label: 'Parsers',    value: 'MPLS, MPEG-TS PAT/PMT, DVD IFO, DSF/DFF, WAV Extensible, LPCM' },
-        { label: 'Codecs',     value: 'FFmpeg integration — internal FLAC path disabled as unsafe' },
+        { label: 'Codecs',     value: 'FFmpeg integration · internal FLAC path disabled as unsafe' },
         { label: 'Integrity',  value: 'Source/destination hashes, payload CRCs, audit reports' },
         { label: 'Resilience', value: 'Persisted job state with crash recovery' },
         { label: 'Packaging',  value: 'PyInstaller, release-ZIP validation, system checks' },
@@ -820,20 +820,20 @@ export const projects = [
   {
     id: 'rigpilot',
     category: 'software',
-    title: 'RigPilot — Windows Hardware Control Suite',
-    description: 'A GPL-3.0 Windows desktop suite for safe, transactional hardware control — GPU fan/power/clock, continuous cooling curves, RGB routing, and monitoring — mediated entirely by capability-gated, signed-driver hardware adapters.',
+    title: 'RigPilot: Windows Hardware Control Suite',
+    description: 'A GPL-3.0 Windows desktop suite for safe, transactional hardware control (GPU fan/power/clock, continuous cooling curves, RGB routing, and monitoring) mediated entirely by capability-gated, signed-driver hardware adapters.',
     tags: ['.NET 10', 'WPF', 'C#', 'Windows Service', 'PawnIO', 'NVAPI/NVML', 'Hardware'],
     github: 'https://github.com/NiccTM/rigpilot',
     icon: 'memory',
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'RigPilot is a Windows desktop control suite inspired by G-Helper\'s low-friction workflow. Because desktop hardware has no universal control interface, every read or write is mediated by a capability-gated hardware adapter using a signed PawnIO path or a documented vendor API — never WinRing0 or a vulnerable-driver bypass. A boot-capable Windows service owns the hardware; the WPF dashboard, CLI, and crash-isolated adapter, automation, and effect hosts all talk to it over versioned, length-prefixed JSON on secured named pipes.\n\nSafety is the architecture, not a feature. Profiles apply transactionally: a rollback snapshot is persisted before the first write, each control domain is verified by read-back, and any failure or cancellation rolls back every attempted domain in reverse safety order. Voltage is never raised automatically and never applied at startup; a stale cooling sensor fails toward maximum cooling and firmware control; and capability labels — Verified, Experimental, Read-only, Blocked — are treated as evidence claims that are never widened for UI convenience.\n\nThe implemented surface includes NVAPI/NVML GPU fan, power-limit, and clock-offset control (arm-gated and Experimental, run out-of-process in a recyclable helper that fails safe to firmware if it dies), fan commissioning with bounded identification pulses, LibreHardwareMonitor telemetry through a signed PawnIO driver, and RGB routing across Windows Dynamic Lighting, an OpenRGB bridge, and verified adapters. It is extensible through Ed25519-signed .pcha adapter packs with a public SDK. Built on .NET 10 and WPF as a framework-dependent x64 deployment.',
+        'RigPilot is a Windows desktop control suite inspired by G-Helper\'s low-friction workflow. Because desktop hardware has no universal control interface, every read or write is mediated by a capability-gated hardware adapter using a signed PawnIO path or a documented vendor API, never WinRing0 or a vulnerable-driver bypass. A boot-capable Windows service owns the hardware; the WPF dashboard, CLI, and crash-isolated adapter, automation, and effect hosts all talk to it over versioned, length-prefixed JSON on secured named pipes.\n\nSafety is the architecture, not a feature. Profiles apply transactionally: a rollback snapshot is persisted before the first write, each control domain is verified by read-back, and any failure or cancellation rolls back every attempted domain in reverse safety order. Voltage is never raised automatically and never applied at startup; a stale cooling sensor fails toward maximum cooling and firmware control; and capability labels (Verified, Experimental, Read-only, Blocked) are treated as evidence claims that are never widened for UI convenience.\n\nThe implemented surface includes NVAPI/NVML GPU fan, power-limit, and clock-offset control (arm-gated and Experimental, run out-of-process in a recyclable helper that fails safe to firmware if it dies), fan commissioning with bounded identification pulses, LibreHardwareMonitor telemetry through a signed PawnIO driver, and RGB routing across Windows Dynamic Lighting, an OpenRGB bridge, and verified adapters. It is extensible through Ed25519-signed .pcha adapter packs with a public SDK. Built on .NET 10 and WPF as a framework-dependent x64 deployment.',
       technicalSpecs: [
-        { label: 'Framework',     value: '.NET 10, WPF — Windows service + isolated hosts' },
+        { label: 'Framework',     value: '.NET 10, WPF · Windows service + isolated hosts' },
         { label: 'IPC',           value: 'Versioned length-prefixed JSON over secured named pipes' },
         { label: 'Safety',        value: 'Transactional apply, pre-write rollback snapshot, read-back verify' },
-        { label: 'GPU control',   value: 'NVAPI/NVML fan/power/clock — arm-gated, fail-safe to firmware' },
+        { label: 'GPU control',   value: 'NVAPI/NVML fan/power/clock · arm-gated, fail-safe to firmware' },
         { label: 'Telemetry',     value: 'LibreHardwareMonitor via signed PawnIO driver' },
         { label: 'Cooling',       value: '5-point fan calibration, hysteresis, stale-sensor fail-safe' },
         { label: 'Lighting',      value: 'Windows Dynamic Lighting + OpenRGB + verified adapters' },
@@ -861,22 +861,22 @@ export const projects = [
   },
 ]
 
-// ─── Water Contact Sensor — UAS Aerospace Team ───────────────────────────────
+// ─── Water Contact Sensor -- UAS Aerospace Team ───────────────────────────────
 export const waterSenseAerospace = {
   title:       '2nd Year UAS Aerospace Team: Water Contact Sensor',
   descriptor:  'Schematic capture and PCB layout for a drone-mounted water detection system.',
   application: 'Detects when a tube extended from a UAV successfully contacts water inside a target barrel.',
-  team:        'UBCO UAS Aerospace Team — 2nd Year',
+  team:        'UBCO UAS Aerospace Team · 2nd Year',
   images: {
     schematic: {
       src:     '/Water_Sense_AerospaceTeam_SCH.jpg',
       label:   'Schematic Capture',
-      caption: 'Full schematic — sensor circuit, signal conditioning, connector pinout',
+      caption: 'Full schematic · sensor circuit, signal conditioning, connector pinout',
     },
     pcb: {
       src:     '/Water_Sense_AerospaceTeam_PCB.jpg',
       label:   'PCB Layout',
-      caption: 'Altium PCB layout — component placement and routing',
+      caption: 'Altium PCB layout · component placement and routing',
     },
   },
   technicalSpecs: [
@@ -901,7 +901,7 @@ export const archiveData = [
       {
         src:     '/RegaP2_CreekCD43MK2_LuxmanK202_v2.jpg',
         label:   'Rega P2 · Creek CD43 MK2 · Luxman K-202',
-        caption: 'Bedroom signal chain — turntable, CD player, cassette deck',
+        caption: 'Bedroom signal chain · turntable, CD player, cassette deck',
       },
       {
         src:     '/RegaP2_VINYL.jpg',
@@ -931,7 +931,7 @@ export const archiveData = [
 export const hardwareDiagnostics = {
   title:      'Hardware Diagnostics & Repair',
   descriptor: 'Full teardowns, thermal compound replacement, drive servicing, and OS-level software repair.',
-  spec:       'Component-level repair — thermal, mechanical, storage, OS.',
+  spec:       'Component-level repair: thermal, mechanical, storage, OS.',
   categories: [
     {
       key:         'compute',

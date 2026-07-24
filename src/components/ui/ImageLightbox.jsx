@@ -39,7 +39,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
   const displaySrc   = hiResSrc ?? thumbSrc(src)
   const hiResPending = thumbed && !hiResSrc
 
-  // Refs — single source of truth for transform; no React state updates during drag
+  // Refs -- single source of truth for transform; no React state updates during drag
   const scaleRef     = useRef(1)
   const offsetRef    = useRef({ x: 0, y: 0 })
   const draggingRef  = useRef(false)
@@ -47,7 +47,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
   const containerRef = useRef(null)
   const imgRef       = useRef(null)
 
-  // Write transform directly to DOM — zero React overhead
+  // Write transform directly to DOM -- zero React overhead
   const applyTransform = useCallback((s, ox, oy) => {
     if (imgRef.current) {
       imgRef.current.style.transform = `scale(${s}) translate(${ox}px, ${oy}px)`
@@ -68,7 +68,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
     return () => window.removeEventListener('keydown', h)
   }, [onClose])
 
-  // Scroll-to-zoom — fully imperative, no setState during wheel
+  // Scroll-to-zoom -- fully imperative, no setState during wheel
   useEffect(() => {
     const el = containerRef.current
     if (!el) return

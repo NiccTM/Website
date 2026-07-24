@@ -2,7 +2,7 @@ import { useRef, useEffect, Suspense, useCallback } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useGLTF, OrbitControls, Bounds, useBounds } from '@react-three/drei'
-// EffectComposer/Bloom removed — @react-three/postprocessing has version conflicts that crash the Canvas
+// EffectComposer/Bloom removed -- @react-three/postprocessing has version conflicts that crash the Canvas
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { useState } from 'react'
@@ -20,7 +20,7 @@ import WaterSenseDive from '../components/hardware/WaterSenseDive'
 
 useGLTF.preload('/PCB.gltf')
 
-// ─── Camera presets (unit direction vectors — distance computed by Bounds.fit) ─
+// ─── Camera presets (unit direction vectors -- distance computed by Bounds.fit) ─
 const CAM_DIRS = {
   topdown:   new THREE.Vector3(0,    1,     0.001),
   isometric: new THREE.Vector3(1,    1,     1    ),
@@ -300,7 +300,7 @@ function ReferenceGalleryStrip({ onSyncView }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function HardwarePage() {
-  usePageMeta('Hardware Lab', 'Interactive 3D PCB digital twin, BLDC motor deep-dive, and UAS aerospace water contact sensor — hardware engineering in Altium Designer and embedded C.')
+  usePageMeta('Hardware Lab', 'Interactive 3D PCB digital twin, BLDC motor deep-dive, and UAS aerospace water contact sensor. Hardware engineering in Altium Designer and embedded C.')
   const [canvasActive, setCanvasActive] = useState(false)
 
   // xray lives in the global store so the 3D scene and the toggle stay in sync
@@ -319,12 +319,12 @@ export default function HardwarePage() {
       <HardwareTabs />
 
       {/* Replaces an sr-only h1: the page used to open straight on the "PCB Lab
-          — Digital Twin" control strip, so a visitor got a toolbar before they
+          -- Digital Twin" control strip, so a visitor got a toolbar before they
           got any statement of what the page was. */}
       <PageHeader
         eyebrow="Altium · Embedded C · WebGL"
         title="Hardware Lab"
-        intro="Boards, motors and sensors — an Altium PCB you can orbit in 3D, a three-phase motor wound from scratch, and a water-contact sensor built for a UAS. In the gallery below the board, clicking a reference image swings the 3D view round to the orientation it was captured from."
+        intro="Boards, motors and sensors: an Altium PCB you can orbit in 3D, a three-phase motor wound from scratch, and a water-contact sensor built for a UAS. In the gallery below the board, clicking a reference image swings the 3D view round to the orientation it was captured from."
       />
 
       {/* ── Header ── */}
@@ -334,7 +334,7 @@ export default function HardwarePage() {
       >
         <div>
           <h2 className="font-mono-data tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
-            PCB Lab — Digital Twin
+            PCB Lab · Digital Twin
           </h2>
           <p className="font-sans text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
             Heartrate PCB · Altium Designer 24 · Drag to orbit · Scroll to zoom
@@ -365,7 +365,7 @@ export default function HardwarePage() {
         </div>
       </motion.div>
 
-      {/* ── PCB Digital Twin — full width ── */}
+      {/* ── PCB Digital Twin -- full width ── */}
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.45, delay: 0.1 }}
@@ -380,7 +380,7 @@ export default function HardwarePage() {
                 Failed to load 3D viewer
               </p>
               <p className="font-mono-data text-sm text-center max-w-sm" style={{ color: 'var(--text-secondary)' }}>
-                {err?.message || 'WebGL error — try refreshing the page'}
+                {err?.message || 'WebGL error. Try refreshing the page.'}
               </p>
             </div>
           )}>
@@ -394,7 +394,7 @@ export default function HardwarePage() {
             </Canvas>
           </ErrorBoundary>
         ) : (
-          /* Inactive placeholder — zero GPU cost */
+          /* Inactive placeholder -- zero GPU cost */
           <div
             className="relative flex items-center justify-center h-full cursor-pointer group overflow-hidden"
             style={{ background: 'transparent' }}
@@ -428,7 +428,7 @@ export default function HardwarePage() {
           </div>
         )}
 
-        {/* Pause button — visible only when canvas is running */}
+        {/* Pause button -- visible only when canvas is running */}
         {canvasActive && (
           <button
             onClick={() => setCanvasActive(false)}
@@ -452,8 +452,8 @@ export default function HardwarePage() {
       {/* ── Legend ── */}
       <div className="flex flex-wrap gap-5 mt-3">
         {[
-          { color: 'rgba(255,245,220,0.9)', label: 'LED dome — pulses with BPM' },
-          { color: 'rgba(6,95,70,0.5)',     label: 'Board body — semi-transparent in X-Ray mode' },
+          { color: 'rgba(255,245,220,0.9)', label: 'LED dome, pulses with BPM' },
+          { color: 'rgba(6,95,70,0.5)',     label: 'Board body, semi-transparent in X-Ray mode' },
           { color: 'var(--accent)',          label: 'Click a reference image to sync 3D orientation' },
         ].map(({ color, label }) => (
           <div key={label} className="flex items-center gap-2 font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
@@ -466,10 +466,10 @@ export default function HardwarePage() {
       {/* ── Altium Reference Gallery strip ── */}
       <ReferenceGalleryStrip onSyncView={handleSyncView} />
 
-      {/* ── BLDC Motor — Technical Deep Dive ── */}
+      {/* ── BLDC Motor -- Technical Deep Dive ── */}
       <MotorLab />
 
-      {/* ── UAS Aerospace — Water Contact Sensor ── */}
+      {/* ── UAS Aerospace -- Water Contact Sensor ── */}
       <WaterSenseDive />
 
     </section>

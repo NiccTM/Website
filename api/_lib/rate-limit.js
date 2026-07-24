@@ -11,7 +11,7 @@
  * change and no redeploy of logic.
  *
  * FAILS OPEN. If Redis is unreachable or errors, requests are allowed through.
- * For a portfolio site, a limiter outage must not take the site down with it —
+ * For a portfolio site, a limiter outage must not take the site down with it --
  * the threat here is bandwidth abuse, not data loss.
  *
  * Serverless functions cannot rate limit in memory: each instance has its own

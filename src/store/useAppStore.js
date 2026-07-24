@@ -2,9 +2,9 @@
  * Global Zustand store.
  *
  * Slices:
- *   bpm       — global BPM state (used by PCB Lab trace pulse)
- *   hardware  — gallery active index + one-shot PCB camera commands
- *   theme     — dark/light, persisted to localStorage
+ *   bpm       -- global BPM state (used by PCB Lab trace pulse)
+ *   hardware  -- gallery active index + one-shot PCB camera commands
+ *   theme     -- dark/light, persisted to localStorage
  */
 import { create } from 'zustand'
 

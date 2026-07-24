@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 const QUERY = '(prefers-reduced-motion: reduce)'
 
 /**
- * Tracks the OS "reduce motion" setting, and keeps tracking it — the user can
+ * Tracks the OS "reduce motion" setting, and keeps tracking it -- the user can
  * change it while the page is open.
  *
  * index.css already collapses CSS animations and transitions under this query,

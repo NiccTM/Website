@@ -15,7 +15,7 @@ const PROJECT_IMAGES = {
   firesense:          '/FireSense.jpg',
   consultation:       '/Remastered Photos/Canadian Parliament Building 1.jpg',
   whistler:           '/Remastered Photos/Kelowna Mountains.jpg',
-  // Software dashboards — 16:10 hero crops of a real app screen.
+  // Software dashboards -- 16:10 hero crops of a real app screen.
   algotraderos:       '/project-heroes/algotraderos.png',
   tracesight:         '/project-heroes/tracesight.png',
   signalvault:        '/project-heroes/signalvault.png',
@@ -107,7 +107,7 @@ function ProjectCard({ project, index, onExpand }) {
           </div>
         )}
 
-        {/* Specs overlay — CSS-driven slide-up on hover, always visible on touch */}
+        {/* Specs overlay -- CSS-driven slide-up on hover, always visible on touch */}
         <div
           className="hover-overlay absolute inset-x-0 bottom-0"
           style={{
@@ -138,7 +138,7 @@ function ProjectCard({ project, index, onExpand }) {
           </div>
         )}
 
-        {/* Expand icon — always visible on touch, hover-shown on desktop */}
+        {/* Expand icon -- always visible on touch, hover-shown on desktop */}
         {hasDetails && (
           <div className="absolute top-3 right-3">
             <span

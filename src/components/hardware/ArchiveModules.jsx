@@ -64,7 +64,7 @@ function ArchiveImage({ image, index }) {
           className="w-full h-full object-cover transition-all duration-500"
           /* objectPosition top: several of these are PORTRAIT photos (the hi-fi
              rack, the headphone, the GPU) shown in a 4:3 landscape box. Centred
-             cover-cropping sliced out the vertical middle — for the rack that
+             cover-cropping sliced out the vertical middle -- for the rack that
              meant a band of bare shelf with the turntable cropped away, which
              read as if the photo were rotated. Anchoring to the top keeps the
              subject, which in every one of these shots sits at the top. */
@@ -127,7 +127,7 @@ function ArchiveModule({ mod, moduleIndex }) {
 
       {/* Image grid */}
       {/* Single column under 480px. At 2 columns a phone card is ~182x136, which
-          is too small for a label plus a full caption — the scrim grew past the
+          is too small for a label plus a full caption -- the scrim grew past the
           card and buried the photo entirely. */}
       <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
         {mod.images.map((img, i) => (

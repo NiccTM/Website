@@ -37,7 +37,7 @@ function useCollection() {
         const isJson = (r.headers.get('content-type') ?? '').includes('application/json')
         if (!isJson) {
           throw new Error(
-            `API returned ${r.headers.get('content-type') ?? 'no content-type'} instead of JSON — the /api routes are not running.`
+            `API returned ${r.headers.get('content-type') ?? 'no content-type'} instead of JSON -- the /api routes are not running.`
           )
         }
         const json = await r.json()
@@ -90,12 +90,12 @@ function AlbumCard({ release, onClick }) {
       onClick={() => onClick(release)}
       className="group relative aspect-square rounded-lg overflow-hidden border-subtle text-left focus:outline-none focus-visible:ring-2"
       style={{ background: 'var(--bg-surface-2)', '--tw-ring-color': 'var(--accent)' }}
-      aria-label={`${release.artist} — ${release.title}`}
+      aria-label={`${release.artist} -- ${release.title}`}
     >
       {release.cover_image && !imgError ? (
         <img
           src={release.cover_image}
-          alt={`${release.artist} — ${release.title}`}
+          alt={`${release.artist} -- ${release.title}`}
           loading="lazy"
           decoding="async"
           onError={() => setImgError(true)}
@@ -128,7 +128,7 @@ function AlbumCard({ release, onClick }) {
   )
 }
 
-// ─── Skeleton grid — matches AlbumCard dimensions exactly ─────────────────────
+// ─── Skeleton grid -- matches AlbumCard dimensions exactly ─────────────────────
 
 function SkeletonGrid() {
   return (

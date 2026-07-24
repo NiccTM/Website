@@ -46,7 +46,7 @@ export default function NavBar() {
         aria-label="Main navigation"
       >
         <div className="flex items-center justify-between w-full max-w-[1600px] tv:max-w-[2400px] mx-auto px-5 sm:px-8 md:px-12 lg:px-20 xl:px-28 tv:px-40">
-        {/* Wordmark — always visible */}
+        {/* Wordmark -- always visible */}
         <NavLink
           to="/"
           className="font-display text-lg font-bold select-none shrink-0"
@@ -56,7 +56,7 @@ export default function NavBar() {
           Nic <span style={{ color: 'var(--accent)', fontStyle: 'italic' }}>Piraino</span>
         </NavLink>
 
-        {/* Desktop nav links — hidden on mobile */}
+        {/* Desktop nav links -- hidden on mobile */}
         <div className="hidden md:flex items-center gap-1">
           <div className="w-px h-4 mr-3" style={{ background: 'var(--border)' }} />
           {ROUTES.filter((r) => r.to !== '/').map(({ to, label }) => (
@@ -104,7 +104,7 @@ export default function NavBar() {
           </button>
         </div>
 
-        {/* Mobile hamburger — visible below md */}
+        {/* Mobile hamburger -- visible below md */}
         <button
           className="md:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5"
           onClick={() => setOpen((o) => !o)}
@@ -172,7 +172,7 @@ export default function NavBar() {
                 </NavLink>
               ))}
               <div className="h-px my-1" style={{ background: 'var(--border)' }} />
-              {/* Theme toggle — mobile */}
+              {/* Theme toggle -- mobile */}
               <button
                 onClick={() => { toggleDarkMode(); setOpen(false) }}
                 className="flex items-center gap-2 font-mono-data text-sm px-4 py-3 rounded-lg w-full text-left"
