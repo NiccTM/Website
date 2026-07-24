@@ -18,6 +18,7 @@ const HardwarePage    = lazy(() => import('./routes/HardwarePage'))
 const ArchivePage     = lazy(() => import('./routes/ArchivePage'))
 const SystemsPage     = lazy(() => import('./routes/SystemsPage'))
 const ReferencePage   = lazy(() => import('./routes/ReferencePage'))
+const AboutPage       = lazy(() => import('./routes/AboutPage'))
 const PhotographyPage = lazy(() => import('./routes/PhotographyPage'))
 const NotFound        = lazy(() => import('./routes/NotFound'))
 
@@ -36,6 +37,7 @@ export default function App() {
                 <Route path="archive"       element={<ArchivePage />}     />
                 <Route path="systems"       element={<SystemsPage />}     />
                 <Route path="reference"     element={<ReferencePage />}   />
+                <Route path="about"         element={<AboutPage />}       />
                 <Route path="photography"   element={<PhotographyPage />} />
                 <Route path="*"             element={<NotFound />}        />
               </Route>

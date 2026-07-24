@@ -37,6 +37,7 @@ const ROUTES = {
   systems:     'SystemsPage.jsx',
   photography: 'PhotographyPage.jsx',
   reference:   'ReferencePage.jsx',
+  about:       'AboutPage.jsx',
 }
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
