@@ -36,6 +36,7 @@ const ROUTES = {
   archive:     'ArchivePage.jsx',
   systems:     'SystemsPage.jsx',
   photography: 'PhotographyPage.jsx',
+  reference:   'ReferencePage.jsx',
 }
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -43,7 +44,10 @@ const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, 
 /** Pulls the ('Title', 'description') pair out of a route's usePageMeta call. */
 function readRouteMeta(file) {
   const src = readFileSync(join(ROOT, 'src/routes', file), 'utf8')
-  const m = src.match(/usePageMeta\(\s*'((?:[^'\\]|\\.)*)'\s*,\s*'((?:[^'\\]|\\.)*)'\s*\)/)
+  // The trailing `,?` matters: a multi-line call with a trailing comma before
+  // the closing paren is normal formatting, and without it this throws and
+  // fails the whole build.
+  const m = src.match(/usePageMeta\(\s*'((?:[^'\\]|\\.)*)'\s*,\s*'((?:[^'\\]|\\.)*)'\s*,?\s*\)/)
   if (!m) throw new Error(`prerender-meta: could not parse usePageMeta() in ${file}`)
   const unescape = (s) => s.replace(/\\'/g, "'").replace(/\\\\/g, '\\')
   return { title: unescape(m[1]), description: unescape(m[2]) }
