@@ -10,6 +10,7 @@ const ROUTES = [
   { to: '/archive',     label: 'Archive' },
   { to: '/photography', label: 'Photography' },
   { to: '/systems',     label: 'Systems' },
+  { to: '/reference',   label: 'Reference' },
 ]
 
 export default function NavBar() {
