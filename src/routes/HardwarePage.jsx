@@ -12,6 +12,7 @@ import ErrorBoundary  from '../components/ui/ErrorBoundary'
 import ImageLightbox  from '../components/ui/ImageLightbox'
 import { thumbSrc, displaySrc } from '../utils/thumbs'
 import { REFERENCE_IMAGES } from '../components/hardware/ReferenceGallery'
+import HardwareTabs   from '../components/layout/HardwareTabs'
 import MotorLab       from '../components/hardware/MotorLab'
 import WaterSenseDive from '../components/hardware/WaterSenseDive'
 
@@ -317,6 +318,8 @@ export default function HardwarePage() {
       {/* Visually hidden: the page leads with an h2 section label rather than a
           page title, so it had no h1 for screen readers or search engines. */}
       <h1 className="sr-only">Hardware Lab</h1>
+
+      <HardwareTabs />
 
       {/* ── Header ── */}
       <motion.div
