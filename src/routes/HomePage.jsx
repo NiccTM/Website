@@ -21,7 +21,7 @@ const HERO_PHOTOS = [
 const TAGLINES = [
   'Hardware Engineering & System Design',
   'PCB Designer · Motor Builder · ML Engineer',
-  'UBCO Rover Team · CIRC Competitor',
+  'Okanagan Rover Craft · CIRC Competitor',
   'Turning theory into hardware',
 ]
 
