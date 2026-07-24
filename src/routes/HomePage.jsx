@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { profile } from '../data/config'
+import { profile, bio } from '../data/config'
 import SocialLinks from '../components/ui/SocialLinks'
 import { displaySrc } from '../utils/thumbs'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
@@ -156,10 +156,10 @@ function Divider() {
    from work that has its own page — nothing here is invented, and there are no
    titles or dates I cannot support. */
 const ABOUT_FACTS = [
-  { label: 'Program',    value: `${profile.academics.program}, ${profile.academics.institution}` },
-  { label: 'Teams',      value: profile.academics.teams.join(' · ') },
-  { label: 'Experience', value: 'Precision metrology — Measurements International Ltd.', to: '/reference' },
-  { label: 'Based in',   value: profile.location },
+  { label: 'Studying', value: `${bio.program} — ${bio.school}` },
+  { label: 'Currently', value: `${bio.role}, ${bio.employer}`, to: '/reference' },
+  { label: 'Team',     value: profile.academics.teams.join(' · ') },
+  { label: 'Based in', value: profile.location },
 ]
 
 function About() {
@@ -170,7 +170,10 @@ function About() {
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.45 }}
       aria-labelledby="about-heading"
-      className="relative z-10 px-5 py-12 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
+      /* [&_p]:max-w-none overrides the global `p { max-width: 72ch }` reading
+         cap. Without it the prose stopped ~280px short of its grid column and
+         left a conspicuous gap before the facts panel. */
+      className="relative z-10 px-5 py-12 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full [&_p]:max-w-none"
     >
       <h2
         id="about-heading"
@@ -182,20 +185,31 @@ function About() {
 
       <div className="grid gap-8 lg:gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-start">
         <div>
-          <p className="font-sans mb-4" style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.8 }}>
-            I&rsquo;m an {profile.academics.program.toLowerCase()} student at UBC Okanagan working
-            mainly in hardware — PCB design, embedded systems, motor control, and precision analog.
-            I like problems where the answer has to be measured rather than argued about.
+          <p className="font-sans mb-4" style={{ color: 'var(--text-secondary)', fontSize: '1.15rem', lineHeight: 1.75 }}>
+            I build hardware that has to answer to an instrument — precision analog, PCB design,
+            embedded systems and electrical metrology.
           </p>
-          <p className="font-sans" style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.8 }}>
-            Most of what I build ends up on a bench with an instrument attached to it: a
-            three-phase motor wound from scratch, a waste classifier that has to work on real
-            rubbish, a 10&nbsp;V reference where the interesting part is how little it moves. The
-            write-ups here try to be honest about what was actually measured and what was only
-            calculated.
+          <p className="font-sans mb-4" style={{ color: 'var(--text-secondary)', fontSize: '1.02rem', lineHeight: 1.8 }}>
+            A schematic predicts what a circuit should do and a simulation models it, but the part
+            I care about starts once the board exists and has to demonstrate what it actually
+            does. A three-phase motor wound from scratch. A waste classifier that had to work on
+            real rubbish rather than a curated demo. A 10&nbsp;V reference where the whole point is
+            how little it moves.
+          </p>
+          <p className="font-sans" style={{ color: 'var(--text-secondary)', fontSize: '1.02rem', lineHeight: 1.8 }}>
+            The write-ups here separate what was <em>calculated</em> from what was{' '}
+            <em>simulated</em> and what was actually <em>measured</em>. They are three different
+            claims, and running them together is how a project ends up sounding better than it is.
           </p>
 
-          <div className="flex flex-wrap gap-3 mt-6">
+          <div className="flex flex-wrap gap-3 mt-7">
+            <Link
+              to="/about"
+              className="font-mono-data text-sm px-4 py-2 rounded-lg transition-colors duration-150"
+              style={{ color: 'var(--bg-base)', background: 'var(--accent)', border: '1px solid var(--accent)' }}
+            >
+              More about me
+            </Link>
             <Link
               to="/projects"
               className="font-mono-data text-sm px-4 py-2 rounded-lg transition-colors duration-150"

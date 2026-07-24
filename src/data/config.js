@@ -17,6 +17,17 @@ export const profile = {
   ],
 }
 
+// Shared by the home About teaser and the full /about page, so the two cannot
+// drift apart. Anything here has to be supportable — no invented dates or titles.
+export const bio = {
+  role:        'Hardware Engineering Intern',
+  employer:    'Measurements International Ltd.',
+  program:     'BASc Electrical Engineering + Master of Management',
+  school:      'UBC Okanagan',
+  expected:    'April 2029',
+  affiliation: 'Engineers & Geoscientists BC, since 2023',
+}
+
 // ─── Hardware Specs ───────────────────────────────────────────────────────────
 export const hardware = {
   pc: {

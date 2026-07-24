@@ -1,14 +1,14 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { usePageMeta } from '../hooks/usePageMeta'
-import { profile, contact } from '../data/config'
+import { profile, contact, bio } from '../data/config'
 
 const FACTS = [
-  { label: 'Program',   value: 'BASc Electrical Engineering + Master of Management' },
-  { label: 'School',    value: 'UBC Okanagan — expected April 2029' },
-  { label: 'Role',      value: 'Hardware Engineering Intern, Measurements International Ltd.' },
+  { label: 'Program',   value: bio.program },
+  { label: 'School',    value: `${bio.school} — expected ${bio.expected}` },
+  { label: 'Role',      value: `${bio.role}, ${bio.employer}` },
   { label: 'Team',      value: 'Okanagan Rover Craft — CIRC' },
-  { label: 'Affiliate', value: 'Engineers & Geoscientists BC, since 2023' },
+  { label: 'Affiliate', value: bio.affiliation },
   { label: 'Based in',  value: profile.location },
 ]
 
