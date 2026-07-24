@@ -116,8 +116,8 @@ export default function ReferencePage() {
         </span>
         <p className="font-mono-data text-sm" style={{ color: 'var(--text-muted)', lineHeight: 1.7 }}>
           Work carried out at {EMPLOYER} All hardware, designs, test data and
-          equipment shown remain the property of {EMPLOYER} Published with permission —
-          see the notice at the foot of this page.
+          equipment shown remain the property of {EMPLOYER} See the notice at the
+          foot of this page.
         </p>
       </motion.div>
 
@@ -287,7 +287,7 @@ export default function ReferencePage() {
 
         {[
           `This work was carried out at ${EMPLOYER} All hardware, schematics, circuit designs, board files, test data, measurement instruments and associated intellectual property described or shown on this page are and remain the property of ${EMPLOYER}`,
-          `This page is published with permission and describes engineering work I contributed to. It is not a product announcement, datasheet, specification or offer of sale, and it does not represent the views or positions of ${EMPLOYER}`,
+          `This page describes engineering work I contributed to. It is not a product announcement, datasheet, specification or offer of sale, and it does not represent the views or positions of ${EMPLOYER}`,
           'No confidential, proprietary or customer information is disclosed. The component selections and circuit topologies referenced here are drawn from publicly available manufacturer datasheets and application notes.',
           'Measured values shown are from a development configuration. They are not calibrated results, certified specifications, or claims of instrument accuracy, and no traceable uncertainty budget is presented or implied.',
         ].map((text) => (
