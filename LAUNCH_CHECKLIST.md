@@ -3,7 +3,7 @@
 ## 0. Pre-Deploy Actions (Developer)
 
 - [ ] **Add CV PDF** — place `NicPiraino_CV.pdf` in the `public/` directory. The Download CV button in the hero already points to `/NicPiraino_CV.pdf`.
-- [ ] **Confirm email address** — verify `contact.email` in `src/data/config.js` is correct before going live. Currently set to `nicpiraino@proton.me`.
+- [x] **Confirm email address** — `contact.email` in `src/data/config.js` is `nic.piraino2005@gmail.com`. Must stay in sync with the JSON-LD `email` in `index.html`.
 - [ ] **Confirm domain** — update the `<loc>` URLs in `public/sitemap.xml` and the `og:image` URL in `index.html` if your final domain differs from `nicpiraino.com`.
 
 ---
