@@ -13,6 +13,11 @@ function SectionFallback() {
 }
 
 const VinylArchive = lazy(() => import('../components/audio/VinylArchive'))
+/* Moved here from the home page. These diagrams document the same gear the
+   High-Fidelity Audio module above shows photos of (Rega Planar 2, Creek CD43,
+   Luxman, B&O, Martin Logan), so they belong beside it rather than being the
+   first thing a visitor met on the landing page. */
+const AudioSignalChain = lazy(() => import('../components/diagrams/AudioSignalChain'))
 
 export default function ArchivePage() {
   usePageMeta('Archive', 'Vinyl record collection, hardware diagnostics, and audio archive — a living record of gear, music, and engineering reference material.')
@@ -30,6 +35,16 @@ export default function ArchivePage() {
       </div>
 
       <ArchiveModules />
+
+      <div className="mx-5 sm:mx-8 md:mx-14 lg:mx-20 xl:mx-28 tv:mx-40">
+        <hr style={{ borderColor: 'var(--border)' }} />
+      </div>
+
+      <ErrorBoundary label="Audio Signal Chains">
+        <Suspense fallback={<SectionFallback />}>
+          <AudioSignalChain sectionId="section-audio" />
+        </Suspense>
+      </ErrorBoundary>
 
       <div className="mx-5 sm:mx-8 md:mx-14 lg:mx-20 xl:mx-28 tv:mx-40">
         <hr style={{ borderColor: 'var(--border)' }} />
