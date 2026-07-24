@@ -255,7 +255,7 @@ export default function AboutPage() {
             <p className="font-sans text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
               Vinyl and high-fidelity audio, including digitisation and archival workflows —
               measurable engineering meeting entirely subjective preference.{' '}
-              <Link to="/photography" style={{ color: 'var(--accent)' }}>Photography</Link>,
+              <Link to="/hobbies?tab=photography" style={{ color: 'var(--accent)' }}>Photography</Link>,
               drones and helicopters, custom PC builds and home networking.
             </p>
           </div>

@@ -1,4 +1,21 @@
 {
+  "redirects": [
+    {
+      "source": "/photography",
+      "destination": "/hobbies?tab=photography",
+      "permanent": true
+    },
+    {
+      "source": "/archive",
+      "destination": "/hobbies",
+      "permanent": true
+    },
+    {
+      "source": "/systems",
+      "destination": "/projects",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -13,16 +30,8 @@
       "destination": "/hardware.html"
     },
     {
-      "source": "/archive",
-      "destination": "/archive.html"
-    },
-    {
-      "source": "/systems",
-      "destination": "/systems.html"
-    },
-    {
-      "source": "/photography",
-      "destination": "/photography.html"
+      "source": "/hobbies",
+      "destination": "/hobbies.html"
     },
     {
       "source": "/reference",

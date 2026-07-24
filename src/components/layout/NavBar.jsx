@@ -3,15 +3,16 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAppStore } from '../../store/useAppStore'
 
+/* "Reference" alone was ambiguous -- it reads as a reference section or a job
+   reference, not a 10 V voltage standard. "Voltage Reference" matches the page
+   title and says what the page actually is. */
 const ROUTES = [
-  { to: '/',            label: 'Home' },
-  { to: '/projects',    label: 'Projects' },
-  { to: '/hardware',    label: 'Hardware' },
-  { to: '/archive',     label: 'Archive' },
-  { to: '/photography', label: 'Photography' },
-  { to: '/systems',     label: 'Systems' },
-  { to: '/reference',   label: 'Reference' },
-  { to: '/about',       label: 'About' },
+  { to: '/',          label: 'Home' },
+  { to: '/projects',  label: 'Projects' },
+  { to: '/hardware',  label: 'Hardware' },
+  { to: '/reference', label: 'Voltage Reference' },
+  { to: '/hobbies',   label: 'Hobbies' },
+  { to: '/about',     label: 'About' },
 ]
 
 export default function NavBar() {
@@ -59,7 +60,10 @@ export default function NavBar() {
               key={to}
               to={to}
               end={to === '/'}
-              className="relative font-sans text-sm px-3 py-1 transition-colors duration-150"
+              /* whitespace-nowrap: "Voltage Reference" wrapped to two lines at
+                 the md breakpoint, making the bar 24px taller than every other
+                 route and splitting the active pill across both lines. */
+              className="relative font-sans text-sm px-3 py-1 whitespace-nowrap transition-colors duration-150"
               style={({ isActive }) => ({
                 color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
                 borderRadius: 'var(--radius)',
