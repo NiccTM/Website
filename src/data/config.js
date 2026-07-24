@@ -6,7 +6,7 @@ export const profile = {
   academics: {
     institution: 'UBCO',
     program: 'Electrical Engineering',
-    teams: ['UBCO Rover Team', 'CIRC Competitor'],
+    teams: ['Okanagan Rover Craft (UBCO)', 'CIRC Competitor'],
   },
   github: 'https://github.com/NiccTM',
   interests: [
@@ -777,6 +777,31 @@ export const projects = [
             { src: '/project-shots/signalvault/08-export.png',     label: 'Export',     caption: 'BagIt transfer and archival package export' },
           ],
         },
+      ],
+      links: [],
+    },
+  },
+  {
+    id: 'liquidaudio',
+    category: 'software',
+    title: 'LiquidAudio Pro — Archival Audio Extraction',
+    description: 'Windows desktop application for archival audio extraction from Blu-ray, DVD and SACD sources — native container parsers, FFmpeg-backed decoding, and per-extraction audit trails with source and payload hashes.',
+    tags: ['Python', 'PySide6 / Qt', 'FFmpeg', 'Blu-ray', 'DSD', 'FLAC', 'PyInstaller'],
+    github: null,
+    icon: 'album',
+    awards: [],
+    expandedDetails: {
+      extendedDescription:
+        'LiquidAudio Pro is a desktop application — not a pile of scripts — for pulling audio out of optical-disc sources and turning it into a clean archival result. It handles Blu-ray, DVD and SACD alongside PCM, WAV, FLAC, ALAC and DSD, which means dealing with the container and filesystem structures needed to find the right stream in the first place.\n\nMost of the work is in the parsers: Blu-ray MPLS playlists, MPEG transport-stream PAT/PMT tables, DVD IFO structures, DSF/DFF headers, WAV and WAV Extensible, and Blu-ray LPCM. On top of that sits demuxing, decoding, encoding, source inspection, candidate-file scanning, batch processing and metadata handling, with FFmpeg used where a mature codec implementation is the safer choice.\n\nThat last point drove one of the decisions I am most comfortable defending. An internal FLAC encoder was not standards-safe enough to trust, so rather than leave it enabled because it made the feature list longer, I disabled it and fell back to a known-good path. A shorter feature list that is correct beats a longer one that quietly is not.\n\nExtractions produce a report rather than just a file: source and destination hashes, payload CRCs, metadata, warnings and actions taken. Job state persists so an interrupted run can recover. The UI is a frameless, translucent Windows shell with high-DPI support, drag and drop, tray integration and a context-menu extraction command, and the project is packaged with PyInstaller behind release-ZIP validation and system checks.',
+      technicalSpecs: [
+        { label: 'Language',   value: 'Python — PySide6 / Qt desktop app' },
+        { label: 'Sources',    value: 'Blu-ray, DVD, SACD, PCM, WAV, FLAC, ALAC, DSD' },
+        { label: 'Parsers',    value: 'MPLS, MPEG-TS PAT/PMT, DVD IFO, DSF/DFF, WAV Extensible, LPCM' },
+        { label: 'Codecs',     value: 'FFmpeg integration — internal FLAC path disabled as unsafe' },
+        { label: 'Integrity',  value: 'Source/destination hashes, payload CRCs, audit reports' },
+        { label: 'Resilience', value: 'Persisted job state with crash recovery' },
+        { label: 'Packaging',  value: 'PyInstaller, release-ZIP validation, system checks' },
+        { label: 'Testing',    value: 'Parsers, media handling, job state, UI and regression suites' },
       ],
       links: [],
     },
