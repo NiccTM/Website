@@ -13,6 +13,7 @@ import ImageLightbox  from '../components/ui/ImageLightbox'
 import { thumbSrc, displaySrc } from '../utils/thumbs'
 import { REFERENCE_IMAGES } from '../components/hardware/ReferenceGallery'
 import HardwareTabs   from '../components/layout/HardwareTabs'
+import PageHeader     from '../components/layout/PageHeader'
 import MotorLab       from '../components/hardware/MotorLab'
 import WaterSenseDive from '../components/hardware/WaterSenseDive'
 
@@ -315,11 +316,16 @@ export default function HardwarePage() {
   return (
     <section className="relative z-10 px-5 pt-8 pb-4 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40" id="section-hardware">
 
-      {/* Visually hidden: the page leads with an h2 section label rather than a
-          page title, so it had no h1 for screen readers or search engines. */}
-      <h1 className="sr-only">Hardware Lab</h1>
-
       <HardwareTabs />
+
+      {/* Replaces an sr-only h1: the page used to open straight on the "PCB Lab
+          — Digital Twin" control strip, so a visitor got a toolbar before they
+          got any statement of what the page was. */}
+      <PageHeader
+        eyebrow="Altium · Embedded C · WebGL"
+        title="Hardware Lab"
+        intro="Boards, motors and sensors — an Altium PCB you can orbit in 3D, a three-phase motor wound from scratch, and a water-contact sensor built for a UAS. In the gallery below the board, clicking a reference image swings the 3D view round to the orientation it was captured from."
+      />
 
       {/* ── Header ── */}
       <motion.div
