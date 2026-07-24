@@ -7,7 +7,6 @@ import SocialLinks from '../components/ui/SocialLinks'
 import { displaySrc } from '../utils/thumbs'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 
-const AudioSignalChain   = lazy(() => import('../components/diagrams/AudioSignalChain'))
 const SystemArchitecture = lazy(() => import('../components/diagrams/SystemArchitecture'))
 
 // ─── Hero carousel photos ──────────────────────────────────────────────────────
@@ -162,6 +161,94 @@ function SectionFallback() {
   )
 }
 
+/* Sits directly under the hero so the first thing below the fold is the
+   engineering, not a hobby. Every field comes from `profile` in config.js or
+   from work that has its own page — nothing here is invented, and there are no
+   titles or dates I cannot support. */
+const ABOUT_FACTS = [
+  { label: 'Program',    value: `${profile.academics.program}, ${profile.academics.institution}` },
+  { label: 'Teams',      value: profile.academics.teams.join(' · ') },
+  { label: 'Experience', value: 'Precision metrology — Measurements International Ltd.', to: '/reference' },
+  { label: 'Based in',   value: profile.location },
+]
+
+function About() {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.45 }}
+      aria-labelledby="about-heading"
+      className="relative z-10 px-5 py-12 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
+    >
+      <h2
+        id="about-heading"
+        className="font-mono-data text-base tracking-widest uppercase mb-5"
+        style={{ color: 'var(--accent)' }}
+      >
+        About
+      </h2>
+
+      <div className="grid gap-8 lg:gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-start">
+        <div>
+          <p className="font-sans mb-4" style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.8 }}>
+            I&rsquo;m an {profile.academics.program.toLowerCase()} student at UBC Okanagan working
+            mainly in hardware — PCB design, embedded systems, motor control, and precision analog.
+            I like problems where the answer has to be measured rather than argued about.
+          </p>
+          <p className="font-sans" style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.8 }}>
+            Most of what I build ends up on a bench with an instrument attached to it: a
+            three-phase motor wound from scratch, a waste classifier that has to work on real
+            rubbish, a 10&nbsp;V reference where the interesting part is how little it moves. The
+            write-ups here try to be honest about what was actually measured and what was only
+            calculated.
+          </p>
+
+          <div className="flex flex-wrap gap-3 mt-6">
+            <Link
+              to="/projects"
+              className="font-mono-data text-sm px-4 py-2 rounded-lg transition-colors duration-150"
+              style={{ color: 'var(--accent)', background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
+            >
+              View projects
+            </Link>
+            <Link
+              to="/hardware"
+              className="font-mono-data text-sm px-4 py-2 rounded-lg transition-colors duration-150"
+              style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
+            >
+              Hardware lab
+            </Link>
+          </div>
+        </div>
+
+        <dl
+          className="rounded-xl overflow-hidden w-full"
+          style={{ border: '1px solid var(--border)', background: 'var(--bg-surface-1)' }}
+        >
+          {ABOUT_FACTS.map(({ label, value, to }, i) => (
+            <div
+              key={label}
+              className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-4 px-4 py-3"
+              style={{ borderBottom: i < ABOUT_FACTS.length - 1 ? '1px solid var(--border)' : 'none' }}
+            >
+              <dt className="font-mono-data text-sm shrink-0 sm:w-28" style={{ color: 'var(--text-muted)' }}>
+                {label}
+              </dt>
+              <dd className="font-mono-data text-sm" style={{ color: 'var(--text-primary)' }}>
+                {to ? (
+                  <Link to={to} style={{ color: 'var(--accent)' }}>{value}</Link>
+                ) : value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </motion.section>
+  )
+}
+
 export default function HomePage() {
   usePageMeta(null, 'Nic Piraino — Hardware Engineering & System Design. Embedded systems, PCB design, audio electronics, and full-stack engineering.')
   return (
@@ -251,13 +338,12 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* ── Diagrams ────────────────────────────────────────────────────────── */}
+      {/* ── About ───────────────────────────────────────────────────────────── */}
       <Divider />
 
-      <Suspense fallback={<SectionFallback />}>
-        <AudioSignalChain sectionId="section-audio" />
-      </Suspense>
+      <About />
 
+      {/* ── Diagrams ────────────────────────────────────────────────────────── */}
       <Divider />
 
       <Suspense fallback={<SectionFallback />}>
