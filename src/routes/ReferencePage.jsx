@@ -39,7 +39,7 @@ function Heading({ children }) {
 
 function Body({ children }) {
   return (
-    <p className="font-sans mb-4 max-w-[72ch]" style={{ color: 'var(--text-secondary)', lineHeight: 1.75 }}>
+    <p className="font-sans mb-4" style={{ color: 'var(--text-secondary)', lineHeight: 1.75 }}>
       {children}
     </p>
   )
@@ -72,7 +72,7 @@ export default function ReferencePage() {
        1600px the photo ran the full container while the prose sat at ~68ch,
        leaving a very wide empty column to its right. Capping the whole article
        keeps the image and the text on the same measure. */
-    <section className="px-5 pt-12 pb-20 sm:px-8 md:px-10 max-w-[54rem] mx-auto w-full">
+    <section className="px-5 pt-12 pb-20 sm:px-8 md:px-14 lg:px-20 max-w-[72rem] mx-auto w-full [&_p]:max-w-none">
       {/* ── Header ── */}
       <motion.p
         initial={{ opacity: 0 }}
@@ -98,7 +98,7 @@ export default function ReferencePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.15 }}
-        className="font-sans mb-6 max-w-[72ch]"
+        className="font-sans mb-6"
         style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.75 }}
       >
         An ultra-stable 10&nbsp;V DC reference built around an ADR1000 ovenized buried-Zener
@@ -112,7 +112,7 @@ export default function ReferencePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="flex items-start gap-2.5 mb-12 px-4 py-3 rounded-lg max-w-[72ch]"
+        className="flex items-start gap-2.5 mb-12 px-4 py-3 rounded-lg"
         style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)' }}
       >
         <span aria-hidden="true" className="material-symbols-rounded shrink-0" style={{ color: 'var(--accent)', fontSize: '1.05rem', marginTop: '0.1rem' }}>
@@ -144,7 +144,7 @@ export default function ReferencePage() {
           <img
             src={displaySrc(BENCH_PHOTO)}
             srcSet={`${thumbSrc(BENCH_PHOTO)} 800w, ${displaySrc(BENCH_PHOTO)} 4000w`}
-            sizes="(max-width: 54rem) 100vw, 54rem"
+            sizes="(max-width: 72rem) 100vw, 72rem"
             width={7836}
             height={5876}
             alt="An HP 3458A 8½-digit multimeter reading 9.9999889 volts DC at the reference output"
@@ -153,7 +153,7 @@ export default function ReferencePage() {
             className="w-full h-full object-cover"
           />
         </div>
-        <figcaption className="font-mono-data text-sm mt-3 max-w-[72ch]" style={{ color: 'var(--text-muted)' }}>
+        <figcaption className="font-mono-data text-sm mt-3" style={{ color: 'var(--text-muted)' }}>
           Bench verification on an HP 3458A. The output reads 9.9999889&nbsp;V DC — roughly
           11&nbsp;ppm from nominal, in a pre-calibration development state. Not a calibrated
           result or a specification.
@@ -256,7 +256,7 @@ export default function ReferencePage() {
       >
         <Heading>Specifications</Heading>
         <div
-          className="rounded-xl overflow-hidden max-w-[46rem]"
+          className="rounded-xl overflow-hidden w-full"
           style={{ border: '1px solid var(--border)', background: 'var(--bg-surface-1)' }}
         >
           {SPECS.map(({ label, value }, i) => (
@@ -274,7 +274,7 @@ export default function ReferencePage() {
             </div>
           ))}
         </div>
-        <p className="font-mono-data text-sm mt-3 max-w-[46rem]" style={{ color: 'var(--text-muted)' }}>
+        <p className="font-mono-data text-sm mt-3 w-full" style={{ color: 'var(--text-muted)' }}>
           Indicative of a development configuration. Not a specification or a datasheet.
         </p>
       </motion.div>
@@ -286,7 +286,7 @@ export default function ReferencePage() {
         viewport={{ once: true, margin: '-40px' }}
         transition={{ duration: 0.4 }}
         aria-labelledby="legal-heading"
-        className="rounded-xl px-5 py-5 max-w-[72ch]"
+        className="rounded-xl px-5 py-5"
         style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)' }}
       >
         <h2
