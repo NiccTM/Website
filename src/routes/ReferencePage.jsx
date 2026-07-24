@@ -10,7 +10,7 @@ const EMPLOYER = 'Measurements International Ltd.'
 
 const SPECS = [
   { label: 'Reference',    value: 'ADR1000 buried-Zener, ovenized' },
-  { label: 'Raw output',   value: '~6.6 V, measured after warm-up' },
+  { label: 'Raw output',   value: '7.10724428 V, measured after warm-up' },
   { label: 'Previously',   value: 'LTZ1000 (pin-compatible)' },
   { label: 'Output stage', value: 'ADA4523-1 zero-drift amplifier' },
   { label: 'Support amp',  value: 'OPA2145' },
