@@ -74,21 +74,20 @@ export default function ReferencePage() {
        1600px the photo ran the full container while the prose sat at ~68ch,
        leaving a very wide empty column to its right. Capping the whole article
        keeps the image and the text on the same measure. */
-    <section className="px-5 pt-8 pb-20 sm:px-8 md:px-14 lg:px-20 max-w-[72rem] mx-auto w-full">
-      <HardwareTabs />
-
+    <section className="px-5 pt-12 pb-20 sm:px-8 md:px-14 lg:px-20 max-w-[72rem] mx-auto w-full">
       {/* ── Header ── */}
       <PageHeader
         eyebrow={`Precision Analog · ${EMPLOYER}`}
         title={<>ADR1000 10&nbsp;V Reference</>}
         size="article"
-        introClassName="mb-6"
         intro={<>
           An ultra-stable 10&nbsp;V DC reference built around an ADR1000 ovenized buried-Zener
           reference, scaled to 10&nbsp;V by a zero-drift amplifier and trimmed with fixed
           precision foil resistors instead of a potentiometer.
         </>}
       />
+
+      <HardwareTabs />
 
       {/* Ownership notice, stated up front rather than buried in a footer, so a
           reader knows whose work this is before reading any of it. */}

@@ -7,8 +7,9 @@ import { NavLink } from 'react-router-dom'
    LinkedIn instead of as "Hardware Lab". A ?tab= switch would have collapsed
    both into one set of meta.
    Rendered by each page inside its own container, so the bar lines up with the
-   content below it -- /hardware is full-bleed, /hardware/reference is capped at
-   an article measure. */
+   surrounding content -- /hardware is full-bleed, /hardware/reference is capped
+   at an article measure. It sits below the page header on both, so the route
+   introduces itself before offering the choice between its two sections. */
 const TABS = [
   { to: '/hardware',           end: true,  label: 'Hardware Lab' },
   { to: '/hardware/reference', end: false, label: 'Voltage Reference' },
