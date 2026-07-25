@@ -314,9 +314,7 @@ export default function HardwarePage() {
   }, [setPcbCommand, setXray])
 
   return (
-    <section className="relative z-10 px-5 pt-8 pb-4 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40" id="section-hardware">
-
-      <HardwareTabs />
+    <section className="relative z-10 px-5 pt-12 pb-4 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40" id="section-hardware">
 
       {/* Replaces an sr-only h1: the page used to open straight on the "PCB Lab
           -- Digital Twin" control strip, so a visitor got a toolbar before they
@@ -326,6 +324,8 @@ export default function HardwarePage() {
         title="Hardware Lab"
         intro="Boards, motors and sensors: an Altium PCB you can orbit in 3D, a three-phase motor wound from scratch, and a water-contact sensor built for a UAS. In the gallery below the board, clicking a reference image swings the 3D view round to the orientation it was captured from."
       />
+
+      <HardwareTabs />
 
       {/* ── Header ── */}
       <motion.div
