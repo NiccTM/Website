@@ -171,8 +171,26 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
 }
 
-/* Paragraphs -- comfortable reading width */
-p {
+/* Comfortable reading measure for long-form prose.
+   This used to be a bare `p { max-width: 72ch }`. As a global it applied to
+   every paragraph on the site -- spec values, captions, eyebrows, button
+   labels, node hints -- not just prose, and it silently won against layout
+   classes because a component setting a width on its container cannot see a
+   cap being applied to the text inside it. It cost three separate debugging
+   sessions: prose stopped ~280px short of its column on the home page and
+   again on the reference page, each time looking like a broken grid.
+
+   Opt-in instead. Anything that genuinely wants a reading measure asks for
+   `.prose-measure` on a container; everything else fills the box its layout
+   gives it, which is what a paragraph normally does.
+
+   Nothing opts in today, and that is the expected state rather than an
+   oversight: every prose container on the site already constrains its own
+   width (a grid column, or max-w-[72rem] on the article routes), so the cap
+   had nothing left to do once it stopped firing on captions and labels. It
+   stays as the named mechanism for the next block of long-form text that
+   needs a measure its container does not already give it. */
+.prose-measure p {
   max-width: 72ch;
 }
 

@@ -73,7 +73,7 @@ export default function AboutPage() {
   )
 
   return (
-    <section className="px-5 pt-12 pb-20 sm:px-8 md:px-14 lg:px-20 max-w-[72rem] mx-auto w-full [&_p]:max-w-none">
+    <section className="px-5 pt-12 pb-20 sm:px-8 md:px-14 lg:px-20 max-w-[72rem] mx-auto w-full">
       {/* ── Header ── */}
       <PageHeader
         eyebrow="About"
