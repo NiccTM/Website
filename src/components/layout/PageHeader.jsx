@@ -10,8 +10,10 @@ import { motion } from 'framer-motion'
      display -- gallery and lab routes running the full grid width
      article -- /about and /hardware/reference, capped at a 72rem measure,
                 where the display size overwhelms a column that narrow
-   `[&_p]:max-w-none` is deliberate: a global `p { max-width: 72ch }` in
-   index.css otherwise truncates the intro well short of its container. */
+   The intro width comes from `introClassName` alone. It used to also need
+   `[&_p]:max-w-none` to escape a global `p { max-width: 72ch }`; that rule is
+   now opt-in via `.prose-measure`, so the class here is the only thing setting
+   the measure. */
 const SIZES = {
   display: 'clamp(2.75rem, 2rem + 4vw, 7rem)',
   article: 'clamp(2.25rem, 1.7rem + 3vw, 4.5rem)',
@@ -59,7 +61,7 @@ export default function PageHeader({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className={`font-sans mb-8 [&_p]:max-w-none ${introClassName}`}
+          className={`font-sans mb-8 ${introClassName}`}
           style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.75 }}
         >
           {intro}

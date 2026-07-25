@@ -170,10 +170,11 @@ function About() {
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.45 }}
       aria-labelledby="about-heading"
-      /* [&_p]:max-w-none overrides the global `p { max-width: 72ch }` reading
-         cap. Without it the prose stopped ~280px short of its grid column and
-         left a conspicuous gap before the facts panel. */
-      className="relative z-10 px-5 py-12 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full [&_p]:max-w-none"
+      /* This section once needed [&_p]:max-w-none to escape a global
+         `p { max-width: 72ch }`, which stopped the prose ~280px short of its
+         grid column and left a conspicuous gap before the facts panel. That
+         rule is opt-in now, so the grid alone controls the width. */
+      className="relative z-10 px-5 py-12 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
     >
       <h2
         id="about-heading"
