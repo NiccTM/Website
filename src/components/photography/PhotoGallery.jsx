@@ -92,6 +92,25 @@ const PHOTOS = [
   { src: '/Remastered Photos/Blue & Yellow Sky.jpg',                        caption: 'Blue & Yellow Sky' },
   { src: '/Remastered Photos/Blue & Yellow Sky with Streetlight.jpg',       caption: 'Blue & Yellow Sky with Streetlight' },
   { src: '/Remastered Photos/Rusty AC Controls.jpg',                        caption: 'Rusty AC Controls' },
+
+  // ── Second 2026-07 batch ──
+  // Captions carry the correct spelling where the filename does not: the files
+  // on the source drive read "Catail", "Great-crest" and "Lawerence". Renaming
+  // them would orphan the generated thumbs/ and display/ tiers, so the filename
+  // stays as-is and only the visible text is corrected -- the same convention
+  // the older "St Lawerence" entries above already follow.
+  { src: '/Remastered Photos/Great-crest Flycatcher Sitting.jpg',           caption: 'Great Crested Flycatcher' },
+  { src: '/Remastered Photos/Great-crest Flycatcher on Branch.jpg',         caption: 'Great Crested Flycatcher on Branch' },
+  { src: '/Remastered Photos/Hummingbird Clearwing Moth.jpg',               caption: 'Hummingbird Clearwing Moth' },
+  { src: '/Remastered Photos/Lilypad Flower with Dragonfly.jpg',            caption: 'Lily Pad Flower with Dragonfly' },
+  { src: '/Remastered Photos/Lily Flower.jpg',                              caption: 'Lily Flower' },
+  { src: '/Remastered Photos/Red Berries with Blue Sky.jpg',                caption: 'Red Berries' },
+  { src: '/Remastered Photos/Catail.jpg',                                   caption: 'Cattail' },
+  { src: '/Remastered Photos/Big Tree.jpg',                                 caption: 'Big Tree' },
+  { src: '/Remastered Photos/Mac Johnston Reservoir.jpg',                   caption: 'Mac Johnston Reservoir' },
+  { src: '/Remastered Photos/St. Lawerence River with Blue Sky Clouds.jpg', caption: 'St. Lawrence River, Blue Sky' },
+  { src: '/Remastered Photos/Blue Sky Clouds.jpg',                          caption: 'Blue Sky Clouds' },
+  { src: '/Remastered Photos/Plane in Blue Sky.jpg',                        caption: 'Plane in Blue Sky' },
 ]
 
 const MIN_SCALE = 1
@@ -443,9 +462,10 @@ function Lightbox({ idx, onClose, onGo }) {
 // Every tile is a fixed 4:3 box so the grid lines up in exact rows and columns.
 // This replaced a masonry layout: masonry keeps each photo's own proportions, so
 // the columns necessarily end at different heights and never line up -- which read
-// as "not in line". All 82 gallery photos are landscape (56 at 4:3, 24 at 3:2),
-// so a 4:3 tile fits most exactly and only mildly centre-crops the 3:2 ones via
-// object-cover. The lightbox still loads the full, uncropped image on click.
+// as "not in line". All 94 gallery photos are landscape -- 56 at 4:3, 36 at 3:2
+// and 2 just under 4:3 -- so a 4:3 tile fits the majority exactly and only mildly
+// centre-crops the 3:2 ones via object-cover. The lightbox still loads the full,
+// uncropped image on click.
 function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
   const [loaded, setLoaded] = useState(false)
 
