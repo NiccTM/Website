@@ -6,7 +6,7 @@ import ErrorBoundary  from '../components/ui/ErrorBoundary'
 
 function SectionFallback() {
   return (
-    <div className="px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40">
+    <div className="px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
       <div className="h-64 rounded-xl border-subtle animate-pulse" style={{ background: 'var(--bg-surface-1)' }} />
     </div>
   )
@@ -14,7 +14,7 @@ function SectionFallback() {
 
 function Divider() {
   return (
-    <div className="mx-5 sm:mx-8 md:mx-14 lg:mx-20 xl:mx-28 tv:mx-40">
+    <div className="px-5 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
       <hr style={{ borderColor: 'var(--border)' }} />
     </div>
   )

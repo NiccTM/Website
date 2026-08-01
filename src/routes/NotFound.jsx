@@ -10,7 +10,7 @@ export default function NotFound() {
 
   return (
     <section
-      className="flex flex-col items-start justify-center min-h-[80vh] px-5 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40"
+      className="flex flex-col items-start justify-center min-h-[80vh] px-5 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
       style={{ background: 'transparent' }}
     >
       <motion.p

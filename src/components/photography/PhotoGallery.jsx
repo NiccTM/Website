@@ -519,7 +519,7 @@ export default function PhotoGallery() {
   const [lightboxIdx, setLightboxIdx] = useState(-1)
 
   return (
-    <section className="px-5 pt-2 pb-20 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40">
+    <section className="px-5 pt-2 pb-20 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
       {/* Header */}
       <h2 className="sr-only">Photography</h2>
       <motion.p

@@ -314,7 +314,7 @@ export default function HardwarePage() {
   }, [setPcbCommand, setXray])
 
   return (
-    <section className="relative z-10 px-5 pt-12 pb-4 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40" id="section-hardware">
+    <section className="relative z-10 px-5 pt-12 pb-4 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full" id="section-hardware">
 
       {/* Replaces an sr-only h1: the page used to open straight on the "PCB Lab
           -- Digital Twin" control strip, so a visitor got a toolbar before they
