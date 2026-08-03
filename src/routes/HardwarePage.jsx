@@ -416,11 +416,23 @@ export default function HardwarePage() {
               >
                 <span aria-hidden="true" className="material-symbols-rounded text-3xl" style={{ color: 'var(--accent-on-dark)' }}>play_arrow</span>
               </div>
-              {/* Fixed light text, not the theme tokens. The photo behind this
-                  is filtered to brightness(0.35) in both themes, but
-                  --text-primary is near-black in light mode, so this label was
-                  dark-on-dark and effectively unreadable there. */}
-              <div className="text-center" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.85)' }}>
+              {/* On its own plate, not floating on the photograph. Two earlier
+                  attempts were not enough: theme text was near-black in light
+                  mode, and plain white with a shadow still varied from 16.5:1
+                  over the dark board to 1.55:1 where a bright component sat
+                  behind it, measured off the rendered pixels. A text-shadow
+                  reads better to the eye but contributes nothing to contrast.
+                  A translucent plate makes the backdrop knowable instead of
+                  whatever the render happens to put there. */}
+              <div
+                className="text-center px-4 py-2.5 rounded-lg"
+                style={{
+                  background: 'rgba(10, 7, 18, 0.78)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                  border: '1px solid rgb(var(--accent-on-dark-rgb) / 0.22)',
+                }}
+              >
                 <p className="font-mono-data text-sm" style={{ color: 'rgba(255,255,255,0.94)' }}>
                   Click to activate 3D viewer
                 </p>
