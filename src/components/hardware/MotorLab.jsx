@@ -44,7 +44,7 @@ function ChallengeCard({ item, index }) {
       className="flex flex-col gap-4 p-5"
       style={{
         background: 'rgba(255,255,255,0.04)',
-        border: '1px solid rgba(0,229,255,0.12)',
+        border: '1px solid rgb(var(--accent-rgb) / 0.12)',
         borderRadius: 'var(--radius)',
       }}
     >
@@ -91,7 +91,7 @@ function ChallengeCard({ item, index }) {
       {/* Solution */}
       <div
         className="rounded px-3 py-2.5"
-        style={{ background: 'rgba(88,184,224,0.06)', border: '1px solid rgba(88,184,224,0.20)' }}
+        style={{ background: 'rgb(var(--accent-rgb) / 0.06)', border: '1px solid rgb(var(--accent-rgb) / 0.20)' }}
       >
         <p
           className="font-mono-data text-sm mb-1 tracking-wider uppercase"
@@ -116,7 +116,7 @@ function DigitalTwinPanel({ src, label, caption, icon }) {
     <>
       <div
         className="flex flex-col overflow-hidden cursor-zoom-in group"
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(0,229,255,0.12)', borderRadius: 'var(--radius)' }}
+        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgb(var(--accent-rgb) / 0.12)', borderRadius: 'var(--radius)' }}
         onClick={() => src && setOpen(true)}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
@@ -180,7 +180,7 @@ export default function MotorLab() {
         >
           BLDC Motor · Technical Deep Dive
         </h3>
-        <div className="flex-1 h-px ml-2" style={{ background: 'rgba(0,229,255,0.12)' }} />
+        <div className="flex-1 h-px ml-2" style={{ background: 'rgb(var(--accent-rgb) / 0.12)' }} />
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
           $94.92 / $100 CAD
         </span>
@@ -205,7 +205,7 @@ export default function MotorLab() {
       {/* Full-width motor demo video */}
       <div
         className="overflow-hidden mb-6"
-        style={{ background: 'rgba(2,13,26,0.6)', border: '1px solid rgba(0,229,255,0.12)', borderRadius: 'var(--radius)' }}
+        style={{ background: 'rgba(2,13,26,0.6)', border: '1px solid rgb(var(--accent-rgb) / 0.12)', borderRadius: 'var(--radius)' }}
       >
         <video
           src="/motor_cmp.mp4"

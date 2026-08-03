@@ -190,7 +190,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
             className="absolute top-4 left-4 flex items-center gap-2 font-mono-data text-xs px-2.5 py-1.5 pointer-events-none"
             style={{ background: '#17100a', border: '1px solid #281c10', borderRadius: 'var(--radius)', color: 'rgba(255,255,255,0.6)' }}
           >
-            <span aria-hidden="true" className="material-symbols-rounded animate-spin" style={{ fontSize: '0.95rem', color: '#58b8e0' }}>
+            <span aria-hidden="true" className="material-symbols-rounded animate-spin" style={{ fontSize: '0.95rem', color: 'var(--accent-on-dark)' }}>
               progress_activity
             </span>
             Loading full resolution…
@@ -229,7 +229,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
           <button
             onClick={reset}
             className="flex items-center justify-center w-9 h-9"
-            style={{ color: scale > 1 ? '#58b8e0' : 'var(--text-muted)' }}
+            style={{ color: scale > 1 ? 'var(--accent-on-dark)' : 'var(--text-muted)' }}
             aria-label="Fit to screen"
           >
             <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>fit_screen</span>
@@ -240,7 +240,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
         {scale > 1 && (
           <div
             className="absolute left-4 bottom-4 font-mono-data text-xs px-2 py-1"
-            style={{ background: '#17100a', border: '1px solid #281c10', borderRadius: 'var(--radius)', color: '#58b8e0' }}
+            style={{ background: '#17100a', border: '1px solid #281c10', borderRadius: 'var(--radius)', color: 'var(--accent-on-dark)' }}
           >
             {Math.round(scale * 100)}%
           </div>

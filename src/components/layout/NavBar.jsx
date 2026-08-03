@@ -164,7 +164,7 @@ export default function NavBar() {
                   className="font-sans text-base px-4 py-3 rounded-lg transition-colors duration-150"
                   style={({ isActive }) => ({
                     color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
-                    background: isActive ? 'rgba(88,184,224,0.08)' : 'transparent',
+                    background: isActive ? 'rgb(var(--accent-rgb) / 0.10)' : 'transparent',
                     fontWeight: isActive ? 500 : 400,
                   })}
                 >

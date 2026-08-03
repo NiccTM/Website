@@ -38,9 +38,9 @@ function ArchNode({ data }) {
 const nodeTypes = { archNode: ArchNode }
 
 const edgeStyle = {
-  stroke: '#00E5FF',
+  stroke: 'var(--flow-edge)',
   strokeWidth: 2,
-  filter: 'drop-shadow(0 0 4px rgba(0,229,255,0.8)) drop-shadow(0 0 2px #00E5FF)',
+  filter: 'drop-shadow(0 0 4px var(--flow-edge-glow)) drop-shadow(0 0 2px var(--flow-edge))',
 }
 
 const initialEdges = feeblePresenceArch.edges.map((e) => ({
