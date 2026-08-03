@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nic Piraino">
+  <!-- Echoes the wordmark: dark ground, italic serif initial in cyan, and the
+       Aero specular across the top lip that the site's glass panels carry. -->
+  <defs>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"   stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="#0c0814"/>
+  <rect width="64" height="64" rx="14" fill="url(#gloss)"/>
+  <rect x="0.5" y="0.5" width="63" height="63" rx="13.5"
+        fill="none" stroke="#00E5FF" stroke-opacity="0.30"/>
+
+  <text x="32" y="47"
+        text-anchor="middle"
+        font-family="Playfair Display, Georgia, 'Times New Roman', serif"
+        font-style="italic" font-weight="700" font-size="42"
+        fill="#00E5FF">P</text>
+</svg>
