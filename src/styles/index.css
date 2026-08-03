@@ -5,10 +5,11 @@
 /* ════════════════════════════════════════════════════════════════════════════
    DARK MODE -- default (:root)
    Liminal Dusk: deep purple-indigo night, muted cyan throughout.
-   The palette used to pair that cyan with a warm amber for buttons. The amber
-   is gone from the UI -- it was the only warm object in a cool scheme and it
-   failed label contrast -- and survives only as --blob-2, an 8% background
-   wash that keeps the composition from going entirely monochrome.
+   The palette used to pair that cyan with a warm amber, for buttons and for
+   one background blob. Both are gone: the button amber failed label contrast
+   and was the loudest object in a cool scheme, and the blob was the last warm
+   patch in the ambient layer. The scheme is now cool end to end, and the only
+   warmth on the site comes from the photographs, which is where it belongs.
    ════════════════════════════════════════════════════════════════════════════ */
 :root {
   /* ── Liquid Glass tokens ────────────────────────────────────────────────── */
@@ -50,7 +51,6 @@
      3:1. */
   --accent-on-dark:     #5FD2E0;
   --accent-on-dark-rgb: 95 210 224;
-  --accent-warm:    #E8A832;
   --border:         rgba(180, 140, 255, 0.18);
   --border-accent:  rgb(var(--accent-rgb) / 0.35);
   --radius:         16px;
@@ -80,9 +80,14 @@
   --aurora-2: rgba(70, 220, 180, 0.16);
   --aurora-3: rgba(150, 110, 235, 0.20);
 
-  /* Mesh blobs -- cyan left, amber warm, deep purple center, lavender hint */
+  /* Mesh blobs -- cyan left, sea green right, deep purple centre, lavender
+     hint. blob-2 was an amber wash, the last warm object in the scheme. It is
+     now the same sea green as the aurora's middle stop, so the ambient layer
+     reads as one system rather than a cool wash with a warm patch in the
+     bottom-right corner. Alpha nudged 0.08 -> 0.10 because a green at this
+     opacity carries less against the purple base than the amber did. */
   --blob-1: rgb(var(--accent-rgb) / 0.07);
-  --blob-2: rgba(232, 168, 50, 0.08);
+  --blob-2: rgba(70, 220, 180, 0.10);
   --blob-3: rgba(90, 40, 160, 0.55);
   --blob-4: rgba(200, 160, 255, 0.04);
 
@@ -145,7 +150,6 @@
   /* Unchanged across themes on purpose -- see the dark-mode note. */
   --accent-on-dark:     #5FD2E0;
   --accent-on-dark-rgb: 95 210 224;
-  --accent-warm:    #c07820;
   --border:         rgba(255, 255, 255, 0.60);
   --border-accent:  rgb(var(--accent-rgb) / 0.40);
 
