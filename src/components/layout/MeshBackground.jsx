@@ -17,22 +17,30 @@ export default function MeshBackground() {
         pointerEvents: 'none',
       }}
     >
+      {/* Aurora ribbon, behind the blobs. Frutiger Aero's signature sweep. */}
+      <div className="aurora" />
+
       {/* Pastel gradient blobs */}
       <div className="mesh-blob mesh-blob-1" />
       <div className="mesh-blob mesh-blob-2" />
       <div className="mesh-blob mesh-blob-3" />
       <div className="mesh-blob mesh-blob-4" />
 
-      {/* Subtle film-grain / CRT noise overlay */}
+      {/* Film-grain / CRT noise. Was 0.03 over a 200px tile, which is close
+          enough to nothing that the texture may as well not have shipped.
+          0.055 over a 160px tile is still subtle at a glance but survives
+          being looked at, and grain is the cheapest honest signal that a
+          human chose the surface -- machine-clean flatness is the thing that
+          reads as generated. */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          opacity: 0.03,
+          opacity: 0.055,
           mixBlendMode: 'overlay',
           backgroundImage: NOISE_URL,
           backgroundRepeat: 'repeat',
-          backgroundSize: '200px 200px',
+          backgroundSize: '160px 160px',
           pointerEvents: 'none',
         }}
       />

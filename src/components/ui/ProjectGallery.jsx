@@ -70,11 +70,11 @@ function ProjectCard({ project, index, onExpand }) {
 
   return (
     <motion.div
-      custom={index}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.45, ease: 'easeOut', delay: index * 0.06 }}
+      /* Contents do not perform. Repeated grid items used to stagger in on
+         scroll, index by index, which is the pattern every generated portfolio
+         template ships with -- and with 13 cards it read as a slideshow. The
+         section around them still announces itself; the items inside are just
+         there. */
       onClick={hasDetails ? onExpand : undefined}
       className="glass-card card-hover-scale group relative flex flex-col overflow-hidden rounded-xl"
       style={{
@@ -193,7 +193,7 @@ function SectionHeading({ label, icon, index }) {
       initial={{ opacity: 0, x: -8 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
+      transition={{ duration: 0.3 }}
       className="flex items-center gap-3 mb-6"
     >
       <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{icon}</span>

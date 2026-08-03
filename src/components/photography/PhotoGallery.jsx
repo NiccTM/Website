@@ -466,15 +466,16 @@ function Lightbox({ idx, onClose, onGo }) {
 // and 2 just under 4:3 -- so a 4:3 tile fits the majority exactly and only mildly
 // centre-crops the 3:2 ones via object-cover. The lightbox still loads the full,
 // uncropped image on click.
-function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
+/* No scroll-entrance animation. 94 tiles staggering in eight at a time is the
+   single most template-looking thing the gallery did, and it made the grid feel
+   like a slideshow being played at you rather than a wall of photographs you
+   are looking through. The images already fade as they decode, which is a real
+   event; the tile itself just exists. */
+function PhotoTile({ photo, flatIdx, onOpen }) {
   const [loaded, setLoaded] = useState(false)
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.5, ease: 'easeOut', delay: (animIndex % 8) * 0.04 }}
+    <div
       className="img-hover-scale group relative overflow-hidden rounded-lg cursor-pointer"
       onClick={() => onOpen(flatIdx)}
       onContextMenu={(e) => e.preventDefault()}
@@ -507,7 +508,7 @@ function PhotoTile({ photo, animIndex, flatIdx, onOpen }) {
           {photo.caption}
         </p>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -556,7 +557,7 @@ export default function PhotoGallery() {
           kept each photo's own height and therefore never ended level. */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
         {PHOTOS.map((photo, i) => (
-          <PhotoTile key={photo.src} photo={photo} animIndex={i} flatIdx={i} onOpen={setLightboxIdx} />
+          <PhotoTile key={photo.src} photo={photo} flatIdx={i} onOpen={setLightboxIdx} />
         ))}
       </div>
 

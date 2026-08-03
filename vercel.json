@@ -47,6 +47,10 @@
       "destination": "/about.html"
     },
     {
+      "source": "/colophon",
+      "destination": "/colophon.html"
+    },
+    {
       "source": "/((?!.*\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
     }

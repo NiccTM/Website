@@ -52,6 +52,13 @@
   --glass-inset:      rgba(255, 255, 255, 0.06);
   --glass-outer:      0 8px 32px rgba(0,0,0,0.45);
 
+  /* Aurora ribbon -- cyan, sea green, violet. Muted rather than saturated:
+     Gen X / Gen Z Soft Club is the restraint that keeps Aero from turning into
+     costume, and a bright aurora over a portfolio reads as a screensaver. */
+  --aurora-1: rgba(0, 229, 255, 0.20);
+  --aurora-2: rgba(70, 220, 180, 0.16);
+  --aurora-3: rgba(150, 110, 235, 0.20);
+
   /* Mesh blobs -- cyan left, amber warm, deep purple center, lavender hint */
   --blob-1: rgba(0, 229, 255, 0.07);
   --blob-2: rgba(232, 168, 50, 0.08);
@@ -84,6 +91,17 @@
    LIGHT MODE -- Dreamcore Verdant: vivid sky, mint grass, lavender dusk haze
    ════════════════════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
+  /* Specular highlight. White at 0.18 is the dark-mode value and it vanishes
+     against a pale glass panel, so the gloss only existed on one theme until
+     this was added. */
+  --lg-specular: rgba(255, 255, 255, 0.85);
+
+  /* Aurora ribbon -- daylight sky version: the same sweep, warmer and fainter
+     so it never fights the pale background. */
+  --aurora-1: rgba(90, 190, 255, 0.28);
+  --aurora-2: rgba(120, 225, 190, 0.22);
+  --aurora-3: rgba(180, 150, 245, 0.24);
+
   /* Palette */
   --bg-base:        #c2d8f2;
   --bg-surface-1:   #d6eaf8;
@@ -334,6 +352,38 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   80%  { transform: translate(-8%, 10%) scale(0.94); }
 }
 
+/* Aurora band. The one Frutiger Aero motif the background was missing: the
+   blobs give ambient colour but nothing sweeps. This is a wide, heavily
+   blurred multi-hue ribbon skewed across the upper third, drifting far slower
+   than the blobs so it reads as atmosphere rather than animation. Kept under
+   0.5 opacity and behind everything -- it should be noticed on the second
+   look, not the first. */
+.aurora {
+  position: absolute;
+  top: -18%;
+  left: -25%;
+  width: 150%;
+  height: 62%;
+  pointer-events: none;
+  transform: rotate(-8deg);
+  filter: blur(90px);
+  opacity: 0.42;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    var(--aurora-1) 22%,
+    var(--aurora-2) 44%,
+    var(--aurora-3) 64%,
+    transparent 88%
+  );
+  animation: aurora-drift 48s ease-in-out infinite;
+}
+
+@keyframes aurora-drift {
+  0%, 100% { transform: rotate(-8deg) translateX(0)     scaleY(1);    }
+  50%      { transform: rotate(-6deg) translateX(-4vw)  scaleY(1.12); }
+}
+
 .mesh-blob { position: absolute; border-radius: 50%; pointer-events: none; }
 .mesh-blob-1 {
   width: 70vw; height: 70vw;
@@ -431,14 +481,47 @@ html, body { overflow-x: hidden; max-width: 100vw; }
     box-shadow: inset 0 1px 1px var(--glass-inset);
   }
 
-  /* Heavy Aero glass card */
+  /* Heavy Aero glass card.
+     The top-edge specular is the thing that reads as glass rather than as a
+     translucent rectangle: real glass catches a hard line of light on its
+     upper lip. --lg-specular was defined for exactly this and then never
+     referenced by anything, so every panel on the site was flat fill plus a
+     border. One inset highlight is enough; a full gloss sweep across the card
+     would wash out the photography these cards are mostly made of. */
   .glass-card {
     background: var(--glass-bg);
     backdrop-filter: blur(24px) saturate(120%);
     -webkit-backdrop-filter: blur(24px) saturate(120%);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
-    box-shadow: inset 0 0 15px var(--glass-inset), var(--glass-outer);
+    box-shadow:
+      inset 0 1px 0 var(--lg-specular),
+      inset 0 0 15px var(--glass-inset),
+      var(--glass-outer);
+  }
+
+  /* Gloss sweep for panels with no photograph underneath -- spec tables, the
+     facts panel, the legal notice. This is the Aero highlight proper: light
+     falling across the top third of a curved surface. Sits behind content via
+     a negative z-index on the pseudo-element rather than an overlay, so text
+     never dims. */
+  .aero-gloss {
+    position: relative;
+    isolation: isolate;
+  }
+  .aero-gloss::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    /* Capped, not a bare percentage: on a ten-row spec table 38% is nearly
+       300px, which stops reading as light on a curved lip and starts reading
+       as a background wash. */
+    height: min(38%, 140px);
+    border-radius: inherit;
+    background: linear-gradient(to bottom, var(--lg-specular) 0%, transparent 100%);
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: -1;
   }
 
   /* Typography */
@@ -510,8 +593,9 @@ html, body { overflow-x: hidden; max-width: 100vw; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  /* Blob drifts are purely decorative -- stop them entirely */
+  /* Blob and aurora drifts are purely decorative -- stop them entirely */
   .mesh-blob { animation: none !important; }
+  .aurora    { animation: none !important; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
