@@ -241,8 +241,19 @@ export default function ProjectGallery() {
                   matter what is inside. Leading each section with one wider
                   card breaks the repeat, gives the strongest piece of work room
                   to show its photograph properly, and states an opinion about
-                  which project matters most. */}
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 tv:grid-cols-4">
+                  which project matters most.
+
+                  The column count is chosen so the section always tiles flush.
+                  A 2-wide feature plus n-1 singles occupies n+1 cells, so a
+                  three-column grid only fills exactly when (n+1) is a multiple
+                  of three. Competitive Design has three projects, which left a
+                  two-cell hole and a card floating alone in the second row --
+                  it read as a bug rather than as deliberate asymmetry. Those
+                  sections drop to two columns, where the feature runs full
+                  width and the remaining pair sits beneath it. */}
+              <div className={`grid gap-4 grid-cols-1 sm:grid-cols-2${
+                (sectionProjects.length + 1) % 3 === 0 ? ' lg:grid-cols-3' : ''
+              }`}>
                 {sectionProjects.map((project, i) => (
                   <ProjectCard
                     key={project.id}
