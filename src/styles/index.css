@@ -4,7 +4,11 @@
 
 /* ════════════════════════════════════════════════════════════════════════════
    DARK MODE -- default (:root)
-   Liminal Dusk: deep purple-indigo night, cyan + warm amber
+   Liminal Dusk: deep purple-indigo night, muted cyan throughout.
+   The palette used to pair that cyan with a warm amber for buttons. The amber
+   is gone from the UI -- it was the only warm object in a cool scheme and it
+   failed label contrast -- and survives only as --blob-2, an 8% background
+   wash that keeps the composition from going entirely monochrome.
    ════════════════════════════════════════════════════════════════════════════ */
 :root {
   /* ── Liquid Glass tokens ────────────────────────────────────────────────── */
@@ -94,11 +98,18 @@
   --flow-edge:         var(--accent);
   --flow-edge-glow:    rgb(var(--accent-rgb) / 0.7);
 
-  /* Buttons -- warm amber gel for dark mode */
-  --btn-primary-grad:   linear-gradient(to bottom, #f5c842 0%, #d4820a 42%, #8a4800 100%);
-  --btn-primary-top:    rgba(255, 210, 100, 0.70);
-  --btn-primary-shadow: 0 4px 18px rgba(232, 168, 50, 0.50);
-  --btn-primary-hover:  0 6px 24px rgba(232, 168, 50, 0.65);
+  /* Buttons -- cool teal gel, in the accent family rather than against it.
+     This was a warm amber, which made the primary CTA the loudest and only
+     warm object in a cool palette. It also failed contrast: the label is
+     #fff at 14px/600, and white on the old #d4820a mid stop was 3.00:1,
+     under the 4.5:1 AA floor for normal text. The mid stop here is 4.99:1,
+     and the text sits below it where the gradient is darker still.
+     The Aero gel shape is unchanged: bright lip, saturated middle, deep
+     bottom, so it still reads as a moulded button rather than a flat fill. */
+  --btn-primary-grad:   linear-gradient(to bottom, #5BC4D4 0%, #1E7A8A 38%, #0C424D 100%);
+  --btn-primary-top:    rgba(190, 240, 250, 0.70);
+  --btn-primary-shadow: 0 4px 18px rgb(var(--accent-rgb) / 0.38);
+  --btn-primary-hover:  0 6px 24px rgb(var(--accent-rgb) / 0.55);
   --btn-outline-bg:     rgba(180, 140, 255, 0.06);
   --btn-outline-border: rgba(180, 140, 255, 0.28);
   --btn-outline-color:  var(--text-secondary);
@@ -174,11 +185,13 @@
   --flow-edge:         #2a7cc8;
   --flow-edge-glow:    rgba(42, 124, 200, 0.55);
 
-  /* Buttons -- sky blue gel for light mode */
-  --btn-primary-grad:   linear-gradient(to bottom, #c8e8f8 0%, #5cb0e8 42%, #2a78c2 100%);
+  /* Buttons -- sky blue gel. Deepened for the same reason as dark mode: the
+     old #5cb0e8 mid stop put white label text at 2.38:1, the worst contrast
+     on the site. #24689F is 5.91:1. */
+  --btn-primary-grad:   linear-gradient(to bottom, #7FC4EE 0%, #24689F 40%, #10456F 100%);
   --btn-primary-top:    rgba(255, 255, 255, 0.85);
-  --btn-primary-shadow: 0 4px 14px rgba(42, 120, 194, 0.38);
-  --btn-primary-hover:  0 6px 22px rgba(42, 120, 194, 0.52);
+  --btn-primary-shadow: 0 4px 14px rgb(var(--accent-rgb) / 0.40);
+  --btn-primary-hover:  0 6px 22px rgb(var(--accent-rgb) / 0.55);
   --btn-outline-bg:     rgba(255, 255, 255, 0.30);
   --btn-outline-border: rgba(255, 255, 255, 0.68);
   --btn-outline-color:  var(--text-secondary);
