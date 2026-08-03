@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, Link } from 'react-router-dom'
 import { useEffect } from 'react'
 import NavBar from './NavBar'
 import MeshBackground from './MeshBackground'
@@ -53,6 +53,19 @@ export default function AppShell() {
         <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
           © {new Date().getFullYear()} Nic Piraino
         </p>
+
+        {/* The colophon lives here rather than in the top nav: it is the
+            traditional place for one, and it keeps the main nav at four items.
+            py-1 holds the 24px target height the rest of the footer uses. */}
+        <Link
+          to="/colophon"
+          className="py-1 font-mono-data text-xs transition-colors duration-200"
+          style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+        >
+          Colophon
+        </Link>
         {/* The site had no contact method at all: contact.email existed in
             config.js and was imported by HomePage but never rendered. A
             portfolio needs one reachable address, so it lives in the footer

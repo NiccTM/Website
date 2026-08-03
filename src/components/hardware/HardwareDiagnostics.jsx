@@ -38,10 +38,6 @@ function DiagnosticImage({ image, index }) {
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-24px' }}
-        transition={{ duration: 0.35, delay: index * 0.06 }}
         onHoverStart={() => setHovered(true)}
         onHoverEnd={() => setHovered(false)}
         onClick={() => setLightbox(true)}

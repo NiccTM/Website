@@ -38,6 +38,7 @@ const ROUTES = {
   'hardware/reference':  'ReferencePage.jsx',
   hobbies:               'HobbiesPage.jsx',
   about:                 'AboutPage.jsx',
+  colophon:              'ColophonPage.jsx',
 }
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')

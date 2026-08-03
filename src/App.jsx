@@ -18,6 +18,7 @@ const HardwarePage    = lazy(() => import('./routes/HardwarePage'))
 const HobbiesPage     = lazy(() => import('./routes/HobbiesPage'))
 const ReferencePage   = lazy(() => import('./routes/ReferencePage'))
 const AboutPage       = lazy(() => import('./routes/AboutPage'))
+const ColophonPage    = lazy(() => import('./routes/ColophonPage'))
 const NotFound        = lazy(() => import('./routes/NotFound'))
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
                 <Route path="hardware/reference" element={<ReferencePage />} />
                 <Route path="hobbies"            element={<HobbiesPage />}   />
                 <Route path="about"              element={<AboutPage />}     />
+                <Route path="colophon"           element={<ColophonPage />}  />
 
                 {/* Retired routes. /photography and /archive merged into
                     /hobbies; /reference moved under /hardware; /systems was
