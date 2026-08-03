@@ -22,11 +22,16 @@ const PROJECT_IMAGES = {
   rigpilot:           '/project-heroes/rigpilot.png',
 }
 
-// Gradient placeholders for projects without photos
-const CATEGORY_GRADIENTS = {
-  competitive: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-  practice:    'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
-  software:    'linear-gradient(135deg, #0f1923 0%, #1a2e1a 100%)',
+/* Placeholder for a project with no photograph. This used to be
+   linear-gradient(135deg, #1a1a2e, #16213e, #0f3460) -- a blue-to-purple
+   diagonal, which is the single most documented visual signature of a
+   generated site, and it was rendering on the LiquidAudio card. A flat
+   surface tint from the site's own palette says "no photo yet" without
+   pretending to be artwork. */
+const CATEGORY_PLACEHOLDER = {
+  competitive: 'var(--bg-surface-2)',
+  practice:    'var(--bg-surface-1)',
+  software:    'var(--bg-surface-3)',
 }
 
 const AWARD_STYLES = {
@@ -61,7 +66,7 @@ function ProjectAward({ award }) {
   )
 }
 
-function ProjectCard({ project, index, onExpand }) {
+function ProjectCard({ project, featured = false, onExpand }) {
   const hasDetails   = !!project.expandedDetails
   const heroImage    = PROJECT_IMAGES[project.id]
   const fallbackImage = !heroImage && project.expandedDetails?.subSystems
@@ -76,7 +81,9 @@ function ProjectCard({ project, index, onExpand }) {
          section around them still announces itself; the items inside are just
          there. */
       onClick={hasDetails ? onExpand : undefined}
-      className="glass-card card-hover-scale group relative flex flex-col overflow-hidden rounded-xl"
+      className={`glass-card card-hover-scale group relative flex flex-col overflow-hidden rounded-xl${
+        featured ? ' sm:col-span-2' : ''
+      }`}
       style={{
         cursor: hasDetails ? 'pointer' : 'default',
       }}
@@ -84,7 +91,7 @@ function ProjectCard({ project, index, onExpand }) {
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
     >
       {/* ── Image area ── */}
-      <div className="relative overflow-hidden" style={{ paddingTop: '62%' }}>
+      <div className="relative overflow-hidden" style={{ paddingTop: featured ? '34%' : '62%' }}>
         {displayImage ? (
           // card-img class receives CSS transform via .card-hover-scale:hover .card-img
           <img
@@ -97,7 +104,7 @@ function ProjectCard({ project, index, onExpand }) {
         ) : (
           <div
             className="absolute inset-0"
-            style={{ background: CATEGORY_GRADIENTS[project.category] ?? CATEGORY_GRADIENTS.practice }}
+            style={{ background: CATEGORY_PLACEHOLDER[project.category] ?? CATEGORY_PLACEHOLDER.practice }}
           >
             <div className="absolute inset-0 flex items-center justify-center opacity-10">
               <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '5rem', color: '#fff' }}>
@@ -168,7 +175,7 @@ function ProjectCard({ project, index, onExpand }) {
         <h3 className="font-display font-bold leading-snug fluid-xl" style={{ color: 'var(--text-primary)', fontSize: 'clamp(0.95rem, 0.85rem + 0.4vw, 1.2rem)' }}>
           {project.title}
         </h3>
-        <p className="font-sans leading-relaxed line-clamp-2" style={{ color: 'var(--text-secondary)', fontSize: 'clamp(0.78rem, 0.72rem + 0.25vw, 0.9rem)' }}>
+        <p className={`font-sans leading-relaxed${featured ? '' : ' line-clamp-2'}`} style={{ color: 'var(--text-secondary)', fontSize: 'clamp(0.78rem, 0.72rem + 0.25vw, 0.9rem)' }}>
           {project.description}
         </p>
         <div className="flex flex-wrap gap-1.5 mt-1">
@@ -224,12 +231,20 @@ export default function ProjectGallery() {
           return (
             <div key={section.key}>
               <SectionHeading label={section.label} icon={section.icon} index={si} />
+              {/* The first project in each section spans two columns. A grid of
+                  equal thirds -- image, heading, truncated paragraph, keyword
+                  pills -- is the most recognisable generated-portfolio layout
+                  there is, and three of them in a row read as a template no
+                  matter what is inside. Leading each section with one wider
+                  card breaks the repeat, gives the strongest piece of work room
+                  to show its photograph properly, and states an opinion about
+                  which project matters most. */}
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 tv:grid-cols-4">
                 {sectionProjects.map((project, i) => (
                   <ProjectCard
                     key={project.id}
                     project={project}
-                    index={i}
+                    featured={i === 0}
                     onExpand={() => setActiveProject(project)}
                   />
                 ))}

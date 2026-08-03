@@ -18,12 +18,6 @@ const HERO_PHOTOS = [
   '/Remastered Photos/Clouds from Above.jpg',
 ]
 
-const TAGLINES = [
-  'Hardware Engineering & System Design',
-  'PCB Designer · Motor Builder · ML Engineer',
-  'Okanagan Rover Craft · CIRC Competitor',
-  'Turning theory into hardware',
-]
 
 function HeroCarousel() {
   const [current, setCurrent] = useState(0)
@@ -108,38 +102,6 @@ function HeroCarousel() {
         ))}
       </div>
     </div>
-  )
-}
-
-function RotatingTagline() {
-  const [idx, setIdx] = useState(0)
-  const reducedMotion = usePrefersReducedMotion()
-
-  useEffect(() => {
-    // Same WCAG 2.2.2 reasoning as the carousel: auto-changing text is moving
-    // content. With reduced motion requested it settles on the first tagline
-    // rather than cycling. It carries no pause button of its own because the
-    // hero's control already covers the one piece of auto-advancing imagery;
-    // a lone line of text that stops on request is the lower-risk trade.
-    if (reducedMotion) return
-    const id = setInterval(() => setIdx((i) => (i + 1) % TAGLINES.length), 3500)
-    return () => clearInterval(id)
-  }, [reducedMotion])
-
-  return (
-    <AnimatePresence mode="wait">
-      <motion.p
-        key={idx}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="font-sans text-lg sm:text-xl font-light"
-        style={{ color: 'var(--text-secondary)' }}
-      >
-        {TAGLINES[idx]}
-      </motion.p>
-    </AnimatePresence>
   )
 }
 
@@ -301,27 +263,19 @@ export default function HomePage() {
             <span style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Piraino</span>
           </h1>
 
-          {/* Rotating tagline */}
-          <div style={{ minHeight: '2rem' }} className="mb-6">
-            <RotatingTagline />
-          </div>
-
-          {/* Team pills */}
-          <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
-            {profile.academics.teams.map((team) => (
-              <span
-                key={team}
-                className="font-mono-data px-3 py-1 rounded-full text-xs"
-                style={{
-                  color: 'var(--accent)',
-                  border: '1px solid rgba(0,229,255,0.3)',
-                  background: 'rgba(0,229,255,0.06)',
-                }}
-              >
-                {team}
-              </span>
-            ))}
-          </div>
+          {/* One fixed line, and no pills under it. The tagline cycled through
+              four phrases while the pills directly beneath repeated one of
+              them, so the hero said "Okanagan Rover Craft, CIRC Competitor"
+              twice in two shapes at once. Auto-cycling text is also a close
+              relative of the scrolling ticker bar generated sites lean on. One
+              true sentence about what I currently do beats four rotating ones,
+              and the teams are still listed in the About panel below. */}
+          <p
+            className="font-sans text-lg sm:text-xl font-light mb-6"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            {bio.role}, {bio.employer}
+          </p>
 
           {/* CTAs */}
           <div className="flex flex-wrap gap-3 mb-8 justify-center md:justify-start">
