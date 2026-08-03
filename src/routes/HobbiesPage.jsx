@@ -146,12 +146,20 @@ export default function HobbiesPage() {
         </div>
       </section>
 
-      {/* ── Panel ── */}
+      {/* ── Panel ──
+          The four Audio & Workshop sections each carry py-10, which is the
+          right rhythm between them and 40px too much on the first one: it
+          stacked on the tablist's own margin and left an 80px hole under the
+          tabs, against 48px on the Photography tab, so the same page had two
+          different openings depending on which tab you were on. Overriding
+          only the first section keeps the spacing between sections intact.
+          Photography already opens at pt-2, so this is a no-op there. */}
       <div
         role="tabpanel"
         id={`panel-${active}`}
         aria-labelledby={`tab-${active}`}
         tabIndex={0}
+        className="[&>section:first-of-type]:pt-2"
       >
         <ErrorBoundary label={active === 'photography' ? 'Photo Gallery' : 'Audio & Workshop'}>
           <Suspense fallback={<SectionFallback />}>
