@@ -27,11 +27,28 @@
   --text-primary:   #ede8ff;
   --text-secondary: #c0b4e0;
   --text-muted:     #9080b8;
-  --accent:         #00E5FF;
-  --accent-dim:     #00b8cc;
+  /* Muted rather than maximally saturated. The old #00E5FF is 100% saturation, which
+     serves the Frutiger Aero / Y2K half of the brief and fights the Gen X /
+     Gen Z Soft Club half, whose whole character is low-saturation cool. This
+     keeps the hue and drops the neon. Contrast against --bg-base is 11.1:1,
+     so nothing regresses on legibility.
+     --accent-rgb exists so alpha variants can be written as
+     rgb(var(--accent-rgb) / 0.3) instead of hardcoding the channels, which is
+     how 28 copies of the old cyan ended up scattered through the components
+     and stayed neon in light mode. */
+  --accent:         #5FD2E0;
+  --accent-rgb:     95 210 224;
+  --accent-dim:     #3FA9B8;
+
+  /* For surfaces that are dark in BOTH themes -- the lightbox, award badges,
+     the spec overlay on project cards. These cannot follow --accent, because
+     in light mode that is a mid-blue and would sit on near-black at roughly
+     3:1. */
+  --accent-on-dark:     #5FD2E0;
+  --accent-on-dark-rgb: 95 210 224;
   --accent-warm:    #E8A832;
   --border:         rgba(180, 140, 255, 0.18);
-  --border-accent:  rgba(0, 229, 255, 0.35);
+  --border-accent:  rgb(var(--accent-rgb) / 0.35);
   --radius:         16px;
 
   /* Navigation */
@@ -55,12 +72,12 @@
   /* Aurora ribbon -- cyan, sea green, violet. Muted rather than saturated:
      Gen X / Gen Z Soft Club is the restraint that keeps Aero from turning into
      costume, and a bright aurora over a portfolio reads as a screensaver. */
-  --aurora-1: rgba(0, 229, 255, 0.20);
+  --aurora-1: rgb(var(--accent-rgb) / 0.20);
   --aurora-2: rgba(70, 220, 180, 0.16);
   --aurora-3: rgba(150, 110, 235, 0.20);
 
   /* Mesh blobs -- cyan left, amber warm, deep purple center, lavender hint */
-  --blob-1: rgba(0, 229, 255, 0.07);
+  --blob-1: rgb(var(--accent-rgb) / 0.07);
   --blob-2: rgba(232, 168, 50, 0.08);
   --blob-3: rgba(90, 40, 160, 0.55);
   --blob-4: rgba(200, 160, 255, 0.04);
@@ -69,13 +86,13 @@
   --flow-bg:           rgba(12, 8, 20, 0.65);
   --flow-bg-border:    rgba(180, 140, 255, 0.14);
   --flow-node-bg:      rgba(255, 255, 255, 0.04);
-  --flow-node-border:  rgba(0, 229, 255, 0.22);
+  --flow-node-border:  rgb(var(--accent-rgb) / 0.22);
   --flow-node-inset:   rgba(255, 255, 255, 0.06);
   --flow-panel-bg:     rgba(19, 13, 31, 0.92);
-  --flow-panel-border: rgba(0, 229, 255, 0.2);
+  --flow-panel-border: rgb(var(--accent-rgb) / 0.2);
   --flow-controls-bg:  rgba(19, 13, 31, 0.88);
-  --flow-edge:         #00E5FF;
-  --flow-edge-glow:    rgba(0, 229, 255, 0.7);
+  --flow-edge:         var(--accent);
+  --flow-edge-glow:    rgb(var(--accent-rgb) / 0.7);
 
   /* Buttons -- warm amber gel for dark mode */
   --btn-primary-grad:   linear-gradient(to bottom, #f5c842 0%, #d4820a 42%, #8a4800 100%);
@@ -111,10 +128,15 @@
   --text-secondary: #1e3550;
   --text-muted:     #3d5870;
   --accent:         #2a7cc8;
+  --accent-rgb:     42 124 200;
   --accent-dim:     #1d62a8;
+
+  /* Unchanged across themes on purpose -- see the dark-mode note. */
+  --accent-on-dark:     #5FD2E0;
+  --accent-on-dark-rgb: 95 210 224;
   --accent-warm:    #c07820;
   --border:         rgba(255, 255, 255, 0.60);
-  --border-accent:  rgba(42, 124, 200, 0.40);
+  --border-accent:  rgb(var(--accent-rgb) / 0.40);
 
   /* Navigation */
   --nav-bg:           rgba(255, 255, 255, 0.58);

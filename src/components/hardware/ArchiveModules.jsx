@@ -46,7 +46,7 @@ function ArchiveImage({ image, index }) {
           background: 'rgba(255,255,255,0.04)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          border: '1px solid rgba(0,229,255,0.14)',
+          border: '1px solid rgb(var(--accent-rgb) / 0.14)',
           boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.12)',
           borderRadius: 'var(--radius)',
           aspectRatio: '4/3',
@@ -114,7 +114,7 @@ function ArchiveModule({ mod, moduleIndex }) {
         >
           {scrambled}
         </h2>
-        <div className="flex-1 h-px" style={{ background: 'rgba(0,229,255,0.12)' }} />
+        <div className="flex-1 h-px" style={{ background: 'rgb(var(--accent-rgb) / 0.12)' }} />
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{mod.spec}</span>
       </div>
       <p className="font-mono-data text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>

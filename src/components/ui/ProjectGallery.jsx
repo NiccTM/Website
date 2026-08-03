@@ -37,8 +37,11 @@ const CATEGORY_PLACEHOLDER = {
 const AWARD_STYLES = {
   gold:     { bg: 'rgba(10,8,0,0.72)',  border: 'rgba(255,215,0,0.6)',   text: '#FFD700', icon: 'emoji_events' },
   bronze:   { bg: 'rgba(10,6,0,0.72)', border: 'rgba(205,127,50,0.6)',  text: '#CD7F32', icon: 'military_tech' },
-  cyan:     { bg: 'rgba(0,8,14,0.72)', border: 'rgba(88,184,224,0.55)', text: '#58b8e0', icon: 'stars' },
-  practice: { bg: 'rgba(0,8,14,0.72)', border: 'rgba(88,184,224,0.45)', text: '#58b8e0', icon: 'gavel' },
+  /* These badges sit on a near-black plate in both themes, so they use
+     --accent-on-dark rather than --accent: the light-mode accent is a mid
+     blue and would land at roughly 3:1 here. */
+  cyan:     { bg: 'rgba(0,8,14,0.72)', border: 'rgb(var(--accent-on-dark-rgb) / 0.55)', text: 'var(--accent-on-dark)', icon: 'stars' },
+  practice: { bg: 'rgba(0,8,14,0.72)', border: 'rgb(var(--accent-on-dark-rgb) / 0.45)', text: 'var(--accent-on-dark)', icon: 'gavel' },
 }
 
 const SECTIONS = [
@@ -87,7 +90,7 @@ function ProjectCard({ project, featured = false, onExpand }) {
       style={{
         cursor: hasDetails ? 'pointer' : 'default',
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(0,229,255,0.35)' }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--border-accent)' }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
     >
       {/* ── Image area ── */}
@@ -126,7 +129,7 @@ function ProjectCard({ project, featured = false, onExpand }) {
         >
           {project.expandedDetails?.technicalSpecs?.slice(0, 3).map((s) => (
             <div key={s.label} className="flex gap-2 mb-1">
-              <span className="font-mono-data shrink-0" style={{ color: '#00E5FF', minWidth: '72px', fontSize: '0.875rem' }}>
+              <span className="font-mono-data shrink-0" style={{ color: 'var(--accent-on-dark)', minWidth: '72px', fontSize: '0.875rem' }}>
                 {s.label}
               </span>
               <span className="font-mono-data" style={{ color: 'rgba(255,255,255,0.88)', fontSize: '0.875rem' }}>
@@ -151,7 +154,7 @@ function ProjectCard({ project, featured = false, onExpand }) {
             <span
               className="material-symbols-rounded text-sm flex items-center justify-center rounded-full"
               style={{
-                color: '#58b8e0',
+                color: 'var(--accent-on-dark)',
                 background: 'rgba(10,10,10,0.65)',
                 width: '32px',
                 height: '32px',

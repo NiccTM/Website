@@ -370,7 +370,7 @@ export default function HardwarePage() {
         initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.45, delay: 0.1 }}
         className="relative w-full aspect-video sm:aspect-auto sm:h-[60vh] sm:max-h-[820px] rounded-xl overflow-hidden"
-        style={{ border: '1px solid rgba(0,229,255,0.15)', background: 'rgba(2,13,26,0.5)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
+        style={{ border: '1px solid rgb(var(--accent-rgb) / 0.15)', background: 'rgba(2,13,26,0.5)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
       >
         {canvasActive ? (
           <ErrorBoundary label="PCB Canvas" fallback={(err) => (
@@ -412,15 +412,19 @@ export default function HardwarePage() {
             <div className="relative flex flex-col items-center gap-4 z-10">
               <div
                 className="flex items-center justify-center w-16 h-16 rounded-full transition-all duration-200 group-hover:scale-110"
-                style={{ background: 'rgba(88,184,224,0.18)', border: '1px solid rgba(88,184,224,0.50)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
+                style={{ background: 'rgb(var(--accent-on-dark-rgb) / 0.18)', border: '1px solid rgb(var(--accent-on-dark-rgb) / 0.50)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
               >
-                <span aria-hidden="true" className="material-symbols-rounded text-3xl" style={{ color: '#58b8e0' }}>play_arrow</span>
+                <span aria-hidden="true" className="material-symbols-rounded text-3xl" style={{ color: 'var(--accent-on-dark)' }}>play_arrow</span>
               </div>
-              <div className="text-center">
-                <p className="font-mono-data text-sm" style={{ color: 'var(--text-primary)' }}>
+              {/* Fixed light text, not the theme tokens. The photo behind this
+                  is filtered to brightness(0.35) in both themes, but
+                  --text-primary is near-black in light mode, so this label was
+                  dark-on-dark and effectively unreadable there. */}
+              <div className="text-center" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.85)' }}>
+                <p className="font-mono-data text-sm" style={{ color: 'rgba(255,255,255,0.94)' }}>
                   Click to activate 3D viewer
                 </p>
-                <p className="font-mono-data text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+                <p className="font-mono-data text-xs mt-1" style={{ color: 'rgba(255,255,255,0.72)' }}>
                   PCB.gltf · WebGL · Interactive
                 </p>
               </div>

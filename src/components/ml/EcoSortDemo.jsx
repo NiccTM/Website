@@ -72,7 +72,7 @@ function BoundingBox({ pred, crop, imgEl, confThreshold }) {
   if (!imgEl) return null
   const { left, top, width, height } = mapBox(pred, crop, imgEl)
   const above       = pred.confidence >= confThreshold
-  const borderColor = above ? '#58b8e0' : 'rgba(255,59,48,0.70)'
+  const borderColor = above ? 'var(--accent)' : 'rgba(255,59,48,0.70)'
   const labelBg     = above ? 'rgba(58,144,184,0.92)' : 'rgba(140,20,15,0.88)'
   // If the box is too close to the top, flip the label inside instead of above
   const labelAbove  = top > 22
@@ -389,7 +389,7 @@ export default function EcoSortDemo({ sectionId }) {
                             {p.class}
                           </td>
                           <td className="font-mono-data text-sm py-1 tabular-nums"
-                            style={{ color: above ? 'var(--accent)' : 'rgba(88,184,224,0.4)' }}>
+                            style={{ color: above ? 'var(--accent)' : 'rgb(var(--accent-rgb) / 0.4)' }}>
                             {(p.confidence * 100).toFixed(1)}%
                           </td>
                         </tr>

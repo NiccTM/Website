@@ -72,8 +72,8 @@ function SubSystemSection({ sys, onOpen }) {
 const AWARD_STYLES = {
   gold:     { bg: 'rgba(255,215,0,0.10)',  border: 'rgba(255,215,0,0.40)',  text: '#FFD700', icon: 'emoji_events' },
   bronze:   { bg: 'rgba(205,127,50,0.10)', border: 'rgba(205,127,50,0.40)', text: '#CD7F32', icon: 'military_tech' },
-  cyan:     { bg: 'rgba(0,229,255,0.08)',  border: 'rgba(0,229,255,0.35)',  text: 'var(--accent)', icon: 'stars' },
-  practice: { bg: 'rgba(0,229,255,0.06)',  border: 'rgba(0,229,255,0.25)',  text: 'var(--accent)', icon: 'gavel' },
+  cyan:     { bg: 'rgb(var(--accent-rgb) / 0.08)',  border: 'rgb(var(--accent-rgb) / 0.35)',  text: 'var(--accent)', icon: 'stars' },
+  practice: { bg: 'rgb(var(--accent-rgb) / 0.06)',  border: 'rgb(var(--accent-rgb) / 0.25)',  text: 'var(--accent)', icon: 'gavel' },
 }
 
 export default function ProjectModal({ project, onClose }) {
