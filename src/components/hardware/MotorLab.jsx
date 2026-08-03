@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ImageLightbox from '../ui/ImageLightbox'
-import { thumbSrc, displaySrc } from '../../utils/thumbs'
+import { thumbSrc } from '../../utils/thumbs'
 
 // ─── Challenge / Solution card data ───────────────────────────────────────────
 const CHALLENGES = [
@@ -214,7 +214,12 @@ export default function MotorLab() {
              video bytes for an 11.3 MB file on page load. The poster stands in
              until the viewer actually presses play. */
           preload="none"
-          poster={displaySrc('/motor-proto.jpg')}
+          /* thumbSrc, not displaySrc. A poster is fetched eagerly -- the
+             loading attribute does not apply to it -- so the display tier put
+             1,309 KB on the wire before anyone pressed play, on a page already
+             failing LCP. The 800px tier is 99 KB and this element is at most
+             420px tall. */
+          poster={thumbSrc('/motor-proto.jpg')}
           loading="lazy"
           controls
           loop
