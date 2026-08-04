@@ -447,6 +447,48 @@ canvas, img, video, .no-theme-transition {
   font-style: normal;
 }
 
+/* ── Metric-matched fallbacks for Playfair Display ────────────────────────────
+   Exo 2 got one of these and Playfair never did, which left the single largest
+   piece of text on every route -- the PageHeader <h1>, weight 900 -- swapping
+   from a serif that is 10% wider. That reflows the heading, which changes the
+   height of everything under it, and it was the whole of /colophon's 0.0352
+   CLS: the heading and the paragraph below it both moved.
+
+   TWO faces, not one, because the candidates need corrections in OPPOSITE
+   directions. Measured with canvas measureText against this site's own Playfair
+   file, summed over the seven h1 strings the site actually renders:
+
+       Georgia            4470.6px    Playfair is 90.4% of it  (89.2% at wght 700)
+       Times New Roman    3721.0px    Playfair is 108.6% of it (107.1% at 700)
+
+   Exo 2's three candidates sit within 2.9% of each other so one size-adjust
+   covers them all. Georgia and Times are 20% apart, so a single value would fix
+   one platform and make the other materially worse. Georgia is on Windows and
+   macOS; Android has neither Georgia nor a Times metric-clone under that name,
+   and falls through to the generic serif, which is why the second face exists.
+
+   A @font-face whose only sources are local() and which resolves to nothing is
+   simply unavailable, and the browser continues down the family list -- so the
+   ordering in tailwind.config (Playfair, then these two, then Georgia, serif)
+   picks the right correction per platform on its own.
+
+   The 900 figure is the one used: the h1 is the element that shifts, and the
+   1.2% spread against weight 700 is far below the width of a word. */
+@font-face {
+  font-family: 'Playfair Fallback';
+  src: local('Georgia');
+  size-adjust: 90.4%;
+  font-weight: 100 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Playfair Fallback Serif';
+  src: local('Times New Roman'), local('Times'), local('Liberation Serif'), local('Tinos');
+  size-adjust: 108.6%;
+  font-weight: 100 900;
+  font-style: normal;
+}
+
 /* ── Material Symbols ─────────────────────────────────────────────────────── */
 .material-symbols-rounded {
   /* THIS LINE IS THE WHOLE THING. Without it the class styles a box and sets a
@@ -817,7 +859,10 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   .text-on-glass {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
   }
-  .font-display { font-family: 'Playfair Display', Georgia, serif; }
+  /* Must stay in step with tailwind.config's `display` stack -- this rule is
+     what actually applies, and leaving the metric-matched fallbacks out of it
+     would silently undo them. */
+  .font-display { font-family: 'Playfair Display', 'Playfair Fallback', 'Playfair Fallback Serif', Georgia, serif; }
 
   .px-safe {
     padding-left:  max(1.25rem, env(safe-area-inset-left));

@@ -52,7 +52,10 @@ export default {
         // verified at 412px rather than 390px.
         sans:    ['"Exo 2"', '"Exo 2 Fallback"', '"Segoe UI"', 'Tahoma', 'system-ui', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', '"DejaVu Sans"', 'sans-serif'],
         mono:    ['"Exo 2"', '"Exo 2 Fallback"', '"Segoe UI"', 'system-ui', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', '"DejaVu Sans"', 'sans-serif'],
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        // Two metric-matched fallbacks, in this order: Georgia needs Playfair
+        // scaled DOWN to 90.4% and Times needs it scaled UP to 108.6%, so one
+        // face cannot serve both. See the @font-face pair in styles/index.css.
+        display: ['"Playfair Display"', '"Playfair Fallback"', '"Playfair Fallback Serif"', 'Georgia', 'serif'],
       },
 
       colors: {
