@@ -211,7 +211,11 @@ html { scroll-behavior: smooth; }
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Exo 2', 'Segoe UI', Tahoma, system-ui, sans-serif;
+  /* 'Exo 2 Fallback' sits second in every Exo 2 stack, including this one and
+     .font-mono-data below, which are hardcoded here and bypass
+     tailwind.config. Omitting it from these two would leave body copy
+     re-wrapping on swap -- which is most of the text on the site. */
+  font-family: 'Exo 2', 'Exo 2 Fallback', 'Segoe UI', Tahoma, system-ui, sans-serif;
   font-size: clamp(0.9rem, 0.82rem + 0.35vw, 1.05rem);
   font-weight: 400;
   line-height: 1.75;
@@ -287,6 +291,41 @@ button, input, select, textarea {
 /* Exclude elements that shouldn't animate on theme switch */
 canvas, img, video, .no-theme-transition {
   transition: none !important;
+}
+
+/* ── Metric-matched fallback for Exo 2 ────────────────────────────────────────
+   Exo 2 loads with font-display: swap, so text paints first in a local font and
+   is re-laid-out when the webfont arrives. The two are not the same width, so
+   paragraphs re-wrap and everything below them jumps.
+
+   Exo 2 is wider than every local candidate: 2.87% over Segoe UI, 2.15% over
+   Arial and Helvetica, measured with canvas measureText over this site's own
+   copy rather than taken from a table. size-adjust scales the fallback up to
+   meet it, so text occupies the space the real font will need and the swap
+   stops changing line counts.
+
+   102.6% splits those two candidates, keeping the error under half a percent
+   whichever a machine has. Roboto is deliberately not in the src list: it is
+   12.3% narrower, too far off to match with the same number. Where none of the
+   locals exist the face does not resolve and the stack falls through to its
+   next entry unadjusted, exactly as before.
+
+   No ascent/descent overrides: line-height is set explicitly almost everywhere
+   here, so vertical metrics barely affect wrapping, and guessing Exo 2's real
+   vertical metrics could easily make things worse.
+
+   MEASURE AT 412px, NOT 390px. This was built, tested at 390x844, found to
+   change nothing, and reverted -- then Lighthouse kept reporting CLS 0.019 on
+   /hobbies. Lighthouse emulates 412x823, and at that width the intro paragraph
+   is exactly one word from wrapping: the swap adds a line, and the tab row and
+   everything under it drop 29px. At 390px it already wraps either way, so the
+   shift is invisible. A single viewport is not evidence. */
+@font-face {
+  font-family: 'Exo 2 Fallback';
+  src: local('Segoe UI'), local('Helvetica Neue'), local('Arial');
+  size-adjust: 102.6%;
+  font-weight: 100 900;
+  font-style: normal;
 }
 
 /* ── Material Symbols ─────────────────────────────────────────────────────── */
@@ -620,7 +659,7 @@ html, body { overflow-x: hidden; max-width: 100vw; }
        Fine for readouts. Anything that must column-align (box-drawing frames,
        padded tables) needs a genuine fixed-pitch stack with letter-spacing: 0
        -- there is no such class in use now that the terminal console is gone. */
-    font-family: 'Exo 2', 'Segoe UI', Tahoma, system-ui, 'Segoe UI Symbol',
+    font-family: 'Exo 2', 'Exo 2 Fallback', 'Segoe UI', Tahoma, system-ui, 'Segoe UI Symbol',
       'Apple Symbols', 'Noto Sans Symbols 2', 'DejaVu Sans', sans-serif;
     /* No font-size override -- let Tailwind text-xs/sm/base classes control size */
     line-height: 1.6;
