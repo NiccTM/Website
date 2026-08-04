@@ -18,7 +18,14 @@ import MotorLab       from '../components/hardware/MotorLab'
 import WaterSenseDive from '../components/hardware/WaterSenseDive'
 
 
-useGLTF.preload('/PCB.gltf')
+/* No useGLTF.preload here, deliberately.
+   It used to run at module scope, which meant PCB.gltf and PCB.bin -- 382 KB
+   between them -- downloaded on every visit to this page, whether or not
+   anyone ever pressed play. That made the "click to activate, zero cost"
+   placeholder a claim the page did not honour, and on a route that is
+   bandwidth-bound (2.72 MB, LCP 6.1s at 5 Mbps) it was 382 KB competing with
+   the image that actually decides LCP. useGLTF fetches the model on first
+   render of PCBModel instead, which only happens after activation. */
 
 // ─── Camera presets (unit direction vectors -- distance computed by Bounds.fit) ─
 const CAM_DIRS = {
@@ -400,10 +407,16 @@ export default function HardwarePage() {
             style={{ background: 'transparent' }}
             onClick={() => setCanvasActive(true)}
           >
-            {/* PCB preview photo */}
+            {/* PCB preview photo. This is the LCP element for the route, so it
+                is marked high priority: everything else here -- the gallery
+                strip, the motor panels, the three.js chunk -- competes for the
+                same connection, and without a hint the browser treats them all
+                as equal. It is also above the fold, so it must not be lazy. */}
             <img
-              src={displaySrc('/Screenshot 2026-03-31 125242.png')}
+              src={displaySrc('/Screenshot 2026-03-31 125242.jpg')}
               alt="PCB preview"
+              fetchpriority="high"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:scale-[1.02]"
               style={{ filter: 'brightness(0.35) saturate(0.6)' }}
             />
