@@ -294,6 +294,38 @@ canvas, img, video, .no-theme-transition {
   font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
   user-select: none;
   line-height: 1;
+
+  /* Reserve exactly one em, whatever is inside.
+     An icon here is a LIGATURE: the markup says <span>computer</span> and the
+     font turns that word into a glyph. Until the font arrives the browser has
+     no reason not to lay out the literal word, so every icon starts life three
+     to four times wider than it ends up. Measured on /hobbies: 54-78px at a
+     15-17px font-size before the font loaded, 1.01-1.02em after. That reflowed
+     the section headers and was the entirety of that route's 0.019 CLS -- one
+     shift, a badge dropping from three lines to two while the block beneath it
+     gained one and slid up 24px.
+
+     Boxing the span at 1em means the placeholder text cannot push anything
+     around; it is clipped instead, and the glyph drops into a slot that is
+     already the right size. Both routes measure 0.0000 with zero shift entries
+     afterwards.
+
+     letter-spacing: 0 matters. Body copy sets 0.015em and .font-mono-data sets
+     0.025em, both inherited here, and that tracking is why the measured ratio
+     was 1.02 rather than 1.00 -- leaving it would clip the right edge of every
+     glyph against the 1em box. */
+  display: inline-block;
+  width: 1em;
+  /* flex-shrink: 0 is not optional. Many of these sit directly inside flex
+     rows, where a flex item's width is only a basis and the default
+     flex-shrink: 1 lets it be squeezed below it. Measured without this: the
+     Compute section header's icon rendered 7px wide in a 15.2px box, ratio
+     0.46, so overflow: hidden was cutting the glyph in half. */
+  flex-shrink: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  letter-spacing: 0;
+  vertical-align: middle;
 }
 
 /* ── Touch target minimum sizes (WCAG 2.5.5) ─────────────────────────────── */
