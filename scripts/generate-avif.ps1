@@ -39,6 +39,29 @@
   full-screen photo smaller is not worth it. Grid tiles are the bytes that
   decide page weight.
 
+  UNDERSIZED SOURCES
+  generate-thumbnails.ps1 caps width at 800 but never upscales, so a thumb
+  narrower than 800px means the ORIGINAL was already smaller. Those images get
+  stretched by the layout rather than shrunk -- the featured card on /projects
+  renders its image at ~1200 CSS px, and about 2700 device px on a 2x screen --
+  and compression artifacts are magnified by exactly that factor.
+
+  So anything under -SmallWidth is encoded at -SmallCrf instead. Measured on the
+  one file this currently affects, a 384x512 photo:
+
+      crf 16   30 KB   SSIM 0.994
+      crf 20   28 KB   SSIM 0.991     <- SmallCrf
+      crf 24   24 KB   SSIM 0.983
+      crf 32   14 KB   SSIM 0.945     <- what the thumbs default would have given
+
+  14 KB is not worth SSIM 0.945 on an image that is about to be tripled in size.
+  These files are small by definition, so the high-quality setting costs almost
+  nothing in total.
+
+  This raises the floor; it does not fix the source. An image that has to be
+  upscaled 3x will look soft no matter how it is encoded. The real fix is a
+  higher-resolution original.
+
   Re-run after adding images:  powershell -File scripts/generate-avif.ps1
   Up-to-date .avif files are skipped; -Force re-encodes everything.
 
@@ -53,6 +76,10 @@
 param(
     [int]$ThumbCrf   = 32,
     [int]$DisplayCrf = 28,
+    # Sources already narrower than the thumbs tier get encoded at near-lossless
+    # quality instead. See UNDERSIZED SOURCES in the description.
+    [int]$SmallCrf   = 20,
+    [int]$SmallWidth = 800,
     [int]$CpuUsed    = 6,
     [string]$FfmpegPath = 'ffmpeg',
     [switch]$IncludeDisplay,
@@ -60,6 +87,9 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+
+# Used only to read intrinsic width, so undersized sources can be spotted.
+Add-Type -AssemblyName System.Drawing
 
 $ffmpeg = (Get-Command $FfmpegPath -ErrorAction SilentlyContinue).Source
 if (-not $ffmpeg) { throw "ffmpeg not found. Pass -FfmpegPath 'C:\path\to\ffmpeg.exe'." }
@@ -77,11 +107,18 @@ $dirs = Get-ChildItem $pub -Directory -Recurse |
 $made = 0; $skipped = 0; $failed = 0; $srcBytes = 0; $outBytes = 0
 
 foreach ($dir in $dirs) {
-    $crf = if ($dir.Name -eq 'display') { $DisplayCrf } else { $ThumbCrf }
+    $tierCrf = if ($dir.Name -eq 'display') { $DisplayCrf } else { $ThumbCrf }
 
     Get-ChildItem (Join-Path $dir.FullName '*') -File -Include *.jpg, *.jpeg, *.png | ForEach-Object {
         $src = $_
         $out = Join-Path $src.DirectoryName ($src.BaseName + '.avif')
+
+        # A thumb narrower than SmallWidth means the original was already that
+        # small, since generate-thumbnails.ps1 downscales but never upscales.
+        # Those get displayed larger than life, so encode them near-lossless.
+        $width = 0
+        try { $probe = [System.Drawing.Image]::FromFile($src.FullName); $width = $probe.Width; $probe.Dispose() } catch { }
+        $crf = if ($dir.Name -ne 'display' -and $width -gt 0 -and $width -lt $SmallWidth) { $SmallCrf } else { $tierCrf }
 
         # Skip when the .avif is already newer than its source, so re-running
         # after adding a handful of photos costs seconds rather than minutes.
