@@ -2,6 +2,7 @@ import { lazy, Suspense, useRef, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { usePageMeta } from '../hooks/usePageMeta'
 import PageHeader from '../components/layout/PageHeader'
+import WhenVisible from '../components/ui/WhenVisible'
 import ErrorBoundary from '../components/ui/ErrorBoundary'
 
 /* /photography and /archive used to be two separate nav items. They are the
@@ -49,12 +50,22 @@ function AudioPanel() {
       <Divider />
       <ArchiveModules />
       <Divider />
+      {/* Both are below the fold, and lazy() alone does not defer the fetch --
+          mounting a lazy component on first render downloads its chunk right
+          away. The signal chains pull React Flow (~43 KB gzip) and the vinyl
+          archive fetches the Discogs collection and 50 sleeves, all of it
+          competing with the top of the page, whose LCP is a paragraph of text
+          held up behind exactly this kind of contention. */}
       <ErrorBoundary label="Audio Signal Chains">
-        <AudioSignalChain sectionId="section-audio" />
+        <WhenVisible>
+          <AudioSignalChain sectionId="section-audio" />
+        </WhenVisible>
       </ErrorBoundary>
       <Divider />
       <ErrorBoundary label="Vinyl Archive">
-        <VinylArchive />
+        <WhenVisible>
+          <VinylArchive />
+        </WhenVisible>
       </ErrorBoundary>
     </>
   )
