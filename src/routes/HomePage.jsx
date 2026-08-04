@@ -61,18 +61,39 @@ function HeroCarousel() {
              genuinely needs it.
 
              fetchpriority lifts the first slide, which is the only one that
-             can ever be the LCP candidate. */
+             should ever be the LCP candidate -- see the note on the transition
+             below for why that was not true. */
           srcSet={`${thumbSrc(HERO_PHOTOS[current])} 800w, ${displaySrc(HERO_PHOTOS[current])} 4000w`}
           sizes="(max-width: 767px) 100vw, 55vw"
           fetchpriority={current === 0 ? 'high' : 'auto'}
           src={thumbSrc(HERO_PHOTOS[current])}
           alt=""
-          initial={{ opacity: 0, scale: 1.04 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.98 }}
+          /* Cross-fade only, no Ken Burns zoom.
+
+             This was changed to try to stop the carousel inflating LCP: each
+             slide entered at scale 1.04, so an incoming image was briefly
+             larger than the settled one, and LCP only records a candidate that
+             is larger than the current one. Measured after the change, it did
+             NOT work -- the second photo still won LCP at 6832ms. Recorded
+             here so nobody re-derives the same wrong theory.
+
+             What the measurement did establish is that the carousel is the
+             cause. Emulating prefers-reduced-motion, which this component
+             already honours by not auto-advancing, drops LCP to 2604ms on a
+             text node and no image becomes a candidate at all. The images are
+             fine: first paint is 388ms and every bundle has executed by
+             1216ms. The metric is chasing the slideshow, and in the field it
+             is finalised at the first user interaction, so only a visitor who
+             sits perfectly still for five seconds ever sees it.
+
+             willChange drops transform with the scale; hinting a property
+             nothing animates just pins a compositor layer for no reason. */
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 1.2, ease: 'easeInOut' }}
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ willChange: 'opacity, transform' }}
+          style={{ willChange: 'opacity' }}
         />
       </AnimatePresence>
       {/* Gradient fade to right on desktop -- only last 20% */}
