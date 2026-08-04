@@ -163,7 +163,20 @@ export default defineConfig(({ mode }) => {
               names.some((n) => id.includes(`node_modules/${n}/`) || id.includes(`node_modules\\${n}\\`))
             if (inPkg('react', 'react-dom', 'react-router-dom', 'react-router')) return 'vendor-react'
             if (inPkg('three', '@react-three/fiber', '@react-three/drei')) return 'vendor-three'
-            if (inPkg('reactflow', '@reactflow')) return 'vendor-flow'
+            /* reactflow deliberately has NO rule here. Forcing it into a named
+               manual chunk pinned it into the entry's static import graph:
+               dist/index.html emitted a modulepreload for vendor-flow, so all
+               273 KB downloaded on / and /about, which have no diagram on them
+               at all. Measured on production: 91 KB gzip, about half the home
+               page's script. Without a rule, rolldown lets it follow the two
+               lazy() diagram imports and it is fetched only when a diagram
+               renders. vendor-three keeps its rule and stays async, so this is
+               not a general problem with manualChunks -- the difference seems
+               to be that reactflow has two dynamic importers and three has one,
+               though that mechanism is a guess. The behaviour is not: removing
+               the rule is what makes the preload go away. Re-check
+               dist/index.html for a vendor-flow modulepreload before adding any
+               rule back. */
             if (inPkg('framer-motion', 'motion-dom', 'motion-utils')) return 'vendor-motion'
             if (inPkg('zustand')) return 'vendor-store'
           },
