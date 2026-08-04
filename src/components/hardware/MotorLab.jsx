@@ -246,7 +246,10 @@ export default function MotorLab() {
       {/* Digital Twin: CAD cross-section + physical prototype */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         <DigitalTwinPanel
-          src="/motor-cad.mp4"
+          /* _cmp suffix is load-bearing, not decoration: .gitignore ignores
+             *.mp4 wholesale and re-includes only !*_cmp.mp4, so a video named
+             anything else is silently never committed. */
+          src="/motor-cad_cmp.mp4"
           poster="/motor-cad-poster.jpg"
           label="CAD Cross-Section"
           caption="9-pole stator · 16-pole rotor · Wye winding geometry"
