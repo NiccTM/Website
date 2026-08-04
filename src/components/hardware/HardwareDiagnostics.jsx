@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { hardwareDiagnostics } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc } from '../../utils/thumbs'
+import { gridColsFor } from '../../utils/gridCols'
 import Picture from '../ui/Picture'
 
 // ─── Data-decode scramble (same logic as ProjectGallery) ─────────────────────
@@ -83,8 +84,12 @@ function DiagnosticImage({ image, index }) {
               'linear-gradient(to top, rgba(0,20,60,0.92) 0%, rgba(0,20,60,0.86) 55%, rgba(0,20,60,0.55) 85%, rgba(0,20,60,0) 100%)',
           }}
         >
-          <p className="font-mono-data text-sm font-medium line-clamp-2" style={{ color: '#ffffff' }}>{image.label}</p>
-          <p className="font-mono-data mt-0.5 line-clamp-2" style={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.875rem' }}>{image.caption}</p>
+          {/* No line-clamp. These captions run 80-95 characters and were being
+              cut mid-item -- "software repair - SSD..." -- which loses the last
+              thing in a list that is nothing but items. They are terse work
+              notes, not padding, so the scrim grows by a line instead. */}
+          <p className="font-mono-data text-sm font-medium" style={{ color: '#ffffff' }}>{image.label}</p>
+          <p className="font-mono-data mt-0.5" style={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.875rem' }}>{image.caption}</p>
         </div>
 
         {/* Zoom icon */}
@@ -105,6 +110,14 @@ function DiagnosticImage({ image, index }) {
 
 // ─── Category section ─────────────────────────────────────────────────────────
 function CategorySection({ category, sectionIndex }) {
+  // Columns capped to the tile count; see utils/gridCols for why the width is
+  // capped alongside them. ArchiveModules renders the sections directly below
+  // these and uses the same helper, so a one-photo category looks the same
+  // whichever component drew it.
+  const gridCols = gridColsFor(
+    category.images.length,
+    'grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5',
+  )
   return (
     <div className="mb-8">
       <motion.div
@@ -125,7 +138,7 @@ function CategorySection({ category, sectionIndex }) {
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{category.description}</span>
       </motion.div>
 
-      <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <div className={`grid gap-3 ${gridCols}`}>
         {category.images.map((img, i) => (
           <DiagnosticImage key={img.src} image={img} index={i} />
         ))}
