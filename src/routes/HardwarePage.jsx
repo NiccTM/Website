@@ -6,6 +6,7 @@ import { useAppStore } from '../store/useAppStore'
 import ErrorBoundary  from '../components/ui/ErrorBoundary'
 import ImageLightbox  from '../components/ui/ImageLightbox'
 import { thumbSrc, displaySrc } from '../utils/thumbs'
+import Picture from '../components/ui/Picture'
 import { REFERENCE_IMAGES } from '../components/hardware/ReferenceGallery'
 import HardwareTabs   from '../components/layout/HardwareTabs'
 import PageHeader     from '../components/layout/PageHeader'
@@ -93,7 +94,7 @@ function ReferenceGalleryStrip({ onSyncView }) {
             }}
             onClick={() => handleClick(img, i)}
           >
-            <img
+            <Picture
               src={thumbSrc(img.src)}
               alt={img.label}
               loading="lazy"

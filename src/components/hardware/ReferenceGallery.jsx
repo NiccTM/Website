@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { useAppStore } from '../../store/useAppStore'
 import { thumbSrc, displaySrc } from '../../utils/thumbs'
+import Picture from '../ui/Picture'
 
 // ─── Image manifest ───────────────────────────────────────────────────────────
 // Files confirmed in /public/ (all .png)
@@ -118,7 +119,7 @@ export default function ReferenceGallery({ onSyncView }) {
             }}
             onClick={() => handleClick(img, i)}
           >
-            <img
+            <Picture
               src={thumbSrc(img.src)}
               alt={img.label}
               loading="lazy"

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc } from '../../utils/thumbs'
+import Picture from '../ui/Picture'
 
 // ─── Challenge / Solution card data ───────────────────────────────────────────
 const CHALLENGES = [
@@ -127,7 +128,7 @@ function DigitalTwinPanel({ src, label, caption, icon }) {
         >
           {src ? (
             <>
-              <img
+              <Picture
                 src={thumbSrc(src)}
                 alt={label}
                 loading="lazy"

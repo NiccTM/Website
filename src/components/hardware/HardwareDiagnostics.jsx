@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { hardwareDiagnostics } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc } from '../../utils/thumbs'
+import Picture from '../ui/Picture'
 
 // ─── Data-decode scramble (same logic as ProjectGallery) ─────────────────────
 const SCRAMBLE_CHARS = '0123456789ABCDEF#&%$@!?<>[]{}|'
@@ -49,7 +50,7 @@ function DiagnosticImage({ image, index }) {
           aspectRatio: '4/3',
         }}
       >
-        <img
+        <Picture
           src={thumbSrc(image.src)}
           alt={image.label}
           loading="lazy"

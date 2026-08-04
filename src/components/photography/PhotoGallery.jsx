@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 // right now". The 2560px tier is what the lightbox loads -- originals live in
 // originals/ and are no longer deployed.
 import { thumbSrc, displaySrc as fullResSrc } from '../../utils/thumbs'
+import Picture from '../ui/Picture'
 
 // ─── All photos from /public/Remastered Photos/ ───────────────────────────────
 const PHOTOS = [
@@ -481,7 +482,7 @@ function PhotoTile({ photo, flatIdx, onOpen }) {
       onContextMenu={(e) => e.preventDefault()}
       style={{ aspectRatio: '4 / 3' }}
     >
-      <img
+      <Picture
         src={thumbSrc(photo.src)}
         alt={photo.caption}
         className="w-full h-full object-cover block rounded-lg"
