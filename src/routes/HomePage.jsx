@@ -40,7 +40,20 @@ function HeroCarousel() {
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <AnimatePresence mode="sync">
+      {/* initial={false} suppresses the enter animation on the FIRST slide
+          only; swapping to a later photo still cross-fades.
+
+          This is not a taste decision. Chrome will not accept an element as a
+          Largest Contentful Paint candidate if its first paint happens at
+          opacity 0, and it does not reconsider once the opacity rises. The
+          hero is by far the largest thing on this page, so fading it in from
+          zero left Lighthouse with no LCP candidate at all: mobile reported
+          NO_LCP, which zeroes LCP, Total Blocking Time and Time to Interactive
+          together and took the Performance score to 0/100 on a page that
+          renders correctly and scores 100 for Accessibility, Best Practices
+          and SEO. /about and /projects were unaffected -- they score 88 and 69
+          -- which is what isolated it to this component. */}
+      <AnimatePresence mode="sync" initial={false}>
         <motion.img
           key={current}
           /* The hero was serving the 4000px display tier to everyone. It
