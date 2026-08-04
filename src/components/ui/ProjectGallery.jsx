@@ -4,24 +4,10 @@ import { projects } from '../../data/config'
 import ProjectModal from './ProjectModal'
 import { thumbSrc } from '../../utils/thumbs'
 import Picture from './Picture'
-
-// ─── Card-level hero images keyed by project id ───────────────────────────────
-const PROJECT_IMAGES = {
-  'bldc-motor':       '/motor-proto.jpg',
-  'water-contact':    '/Water_Sense_AerospaceTeam_PCB.jpg',
-  ecosort:            '/20260321_210541.jpg',
-  'feeble-presence':  '/Water wavy August 9.jpg',
-  'delorean-apsc171': '/DeLorean.png',
-  unbox:              '/UnBox.jpg',
-  firesense:          '/FireSense.jpg',
-  consultation:       '/Remastered Photos/Canadian Parliament Building 1.jpg',
-  whistler:           '/Remastered Photos/Kelowna Mountains.jpg',
-  // Software dashboards -- 16:10 hero crops of a real app screen.
-  algotraderos:       '/project-heroes/algotraderos.png',
-  tracesight:         '/project-heroes/tracesight.png',
-  signalvault:        '/project-heroes/signalvault.png',
-  rigpilot:           '/project-heroes/rigpilot.png',
-}
+/* PROJECT_IMAGES and SECTIONS moved to data/projectImages.js so the build's
+   prerender step can read them too -- it preloads this page's LCP image, which
+   is whatever the first card here renders, and it cannot import a .jsx file. */
+import { SECTIONS, projectCardImage } from '../../data/projectImages'
 
 /* Placeholder for a project with no photograph. This used to be
    linear-gradient(135deg, #1a1a2e, #16213e, #0f3460) -- a blue-to-purple
@@ -45,12 +31,6 @@ const AWARD_STYLES = {
   practice: { bg: 'rgba(0,8,14,0.72)', border: 'rgb(var(--accent-on-dark-rgb) / 0.45)', text: 'var(--accent-on-dark)', icon: 'gavel' },
 }
 
-const SECTIONS = [
-  { key: 'competitive', label: 'Competitive Design',    icon: 'emoji_events' },
-  { key: 'practice',    label: 'Professional Practice', icon: 'gavel' },
-  { key: 'software',    label: 'Software & Personal',   icon: 'code' },
-]
-
 function ProjectAward({ award }) {
   const style = AWARD_STYLES[award.tier] ?? AWARD_STYLES.cyan
   return (
@@ -72,10 +52,7 @@ function ProjectAward({ award }) {
 
 function ProjectCard({ project, featured = false, priority = false, onExpand }) {
   const hasDetails   = !!project.expandedDetails
-  const heroImage    = PROJECT_IMAGES[project.id]
-  const fallbackImage = !heroImage && project.expandedDetails?.subSystems
-    ?.flatMap((s) => s.images)?.[0]?.src
-  const displayImage = heroImage || fallbackImage || null
+  const displayImage = projectCardImage(project)
 
   return (
     <motion.div

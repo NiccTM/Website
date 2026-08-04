@@ -21,9 +21,12 @@
  * Anything unparseable is a hard error: shipping silently wrong social previews
  * is worse than failing the build.
  */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { projects } from '../src/data/config.js'
+import { firstProjectImage } from '../src/data/projectImages.js'
+import { thumbSrc, avifThumbSrc } from '../src/utils/thumbs.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const SITE = 'https://nicpiraino.com'
@@ -102,8 +105,47 @@ function preloadTags(routeKey) {
   return files.map((f) => `    <link rel="modulepreload" crossorigin href="/${f}">`).join('\n') + '\n'
 }
 
+/*
+ * LCP IMAGE PRELOADING
+ *
+ * A modulepreload gets the route's CODE moving early, but the route's LCP IMAGE
+ * is still invisible to the browser until that code has run and rendered. On
+ * /projects that showed up as a Load Delay of 2,293ms against a Load Time of
+ * 791ms -- 67% of LCP spent not asking for a file that takes under a second to
+ * arrive. The card was already loading="eager" with fetchpriority="high", which
+ * is why an earlier attempt at this did nothing: priority cannot help a request
+ * that has not been discovered. Only the HTML can start it before React mounts.
+ *
+ * The href is COMPUTED from the same module the grid renders from, never
+ * hardcoded, so reordering the projects moves the preload with it. A stale
+ * preload would be worse than none: a second image fetched at high priority
+ * while the real LCP element is still discovered late.
+ *
+ * The tag has to match what <picture> will choose or the image downloads twice.
+ * Picture renders <source type="image/avif"> with an <img> jpg/png fallback, so
+ * the preload mirrors it: type="image/avif" + imagesrcset. A browser that
+ * cannot decode AVIF ignores the tag on the type and loads the <img> as before,
+ * which is the same outcome it had without any of this.
+ */
+const LCP_IMAGE = { projects: firstProjectImage(projects) }
+
+function lcpImageTag(routeKey) {
+  const src = LCP_IMAGE[routeKey]
+  if (!src) return ''
+
+  const avif = avifThumbSrc(src)
+  if (!avif) throw new Error(`prerender-meta: no thumbnail derivative for the /${routeKey} LCP image "${src}"`)
+
+  // The file has to exist, or this preloads a 404 at high priority.
+  const onDisk = join(ROOT, 'public', decodeURIComponent(avif).replace(/^\//, ''))
+  if (!existsSync(onDisk)) throw new Error(`prerender-meta: ${avif} is not in public/ -- run scripts/generate-avif.ps1`)
+
+  const href = encodeURI(avif)
+  return `    <link rel="preload" as="image" type="image/avif" imagesrcset="${href}" fetchpriority="high">\n`
+}
+
 function injectPreloads(html, routeKey) {
-  const tags = preloadTags(routeKey)
+  const tags = lcpImageTag(routeKey) + preloadTags(routeKey)
   if (!tags) return html
   if (!html.includes('</head>')) throw new Error('prerender-meta: </head> not found in dist/index.html')
   return html.replace('</head>', tags + '</head>')
