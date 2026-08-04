@@ -32,3 +32,20 @@ export const thumbSrc = (src) =>
  */
 export const displaySrc = (src) =>
   hasThumb(src) ? src.replace(/\/([^/]+)$/, '/display/$1') : src
+
+/**
+ * The AVIF sibling of the thumbs tier, or null when no derivative was built.
+ *
+ * components/ui/Picture.jsx normally handles AVIF through a <source>, which is
+ * the safe way to do it because a browser that cannot decode AVIF falls back to
+ * the <img>. This exists for the one place that cannot use <picture> at all:
+ * a <video poster> takes a single URL and has no negotiation.
+ *
+ * Use it only where the same AVIF is already being fetched for something else
+ * on the page, so it costs nothing and a browser without AVIF support loses
+ * only a poster frame rather than an image.
+ */
+export const avifThumbSrc = (src) => {
+  if (!hasThumb(src)) return null
+  return thumbSrc(src).replace(/\.(jpe?g|png)$/i, '.avif')
+}
