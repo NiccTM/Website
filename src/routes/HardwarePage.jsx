@@ -255,11 +255,19 @@ export default function HardwarePage() {
             </Suspense>
           </ErrorBoundary>
         ) : (
-          /* Inactive placeholder -- zero GPU cost */
-          <div
-            className="relative flex items-center justify-center h-full cursor-pointer group overflow-hidden"
-            style={{ background: 'transparent' }}
+          /* Inactive placeholder -- zero GPU cost.
+
+             A <button>, not a <div onClick>. It was a div, which meant the
+             single most important control on the page could not be reached by
+             keyboard at all: no tab stop, no Enter/Space, and nothing announced
+             to a screen reader. w-full h-full keeps the whole frame clickable
+             exactly as before. */
+          <button
+            type="button"
+            className="relative flex items-center justify-center w-full h-full cursor-pointer group overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-0"
+            style={{ background: 'transparent', '--tw-ring-color': 'var(--accent-on-dark)' }}
             onClick={() => setCanvasActive(true)}
+            aria-label="Activate the interactive 3D PCB viewer"
           >
             {/* PCB preview photo. Above the fold, so still eager and still
                 high priority: the gallery strip, the motor panels and the
@@ -284,13 +292,44 @@ export default function HardwarePage() {
             />
 
             {/* Click-to-activate overlay */}
-            <div className="relative flex flex-col items-center gap-4 z-10">
-              <div
-                className="flex items-center justify-center w-16 h-16 rounded-full transition-all duration-200 group-hover:scale-110"
-                style={{ background: 'rgb(var(--accent-on-dark-rgb) / 0.18)', border: '1px solid rgb(var(--accent-on-dark-rgb) / 0.50)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
+            <span className="relative flex flex-col items-center gap-4 z-10">
+              {/* The triangle is an inline SVG, not the material-symbols
+                  play_arrow ligature. Icon ligatures lay out as their own name
+                  until the 67 KB icon font arrives, and this one is both above
+                  the fold and the largest thing on the page -- it rendered as
+                  the word "pla", clipped mid-letter by the 1em box. The icon
+                  font is on font-display: block now so nothing shows text any
+                  more, but "shows nothing" is still wrong for the primary
+                  control of the route. Twelve bytes of path beat a 67 KB
+                  dependency for a shape this simple.
+
+                  The path is nudged right of geometric centre on purpose: a
+                  triangle's visual weight sits behind its tip, so centring its
+                  bounding box makes it look like it is sliding left. Centroid
+                  here is x=12.33 in a box centred on 12. */}
+              <span
+                className="flex items-center justify-center w-20 h-20 rounded-full transition-all duration-200 ease-out group-hover:scale-[1.08]"
+                style={{
+                  background: 'radial-gradient(circle at 50% 35%, rgb(var(--accent-on-dark-rgb) / 0.30), rgb(var(--accent-on-dark-rgb) / 0.12))',
+                  border: '1px solid rgb(var(--accent-on-dark-rgb) / 0.55)',
+                  /* Three shadows doing three jobs: a wide soft ring that reads
+                     as a halo against the board photo, a drop shadow to lift the
+                     disc off it, and an inset top highlight so the disc looks
+                     like a physical lens rather than a flat swatch. */
+                  boxShadow: '0 0 0 12px rgb(var(--accent-on-dark-rgb) / 0.10), 0 0 28px 4px rgb(var(--accent-on-dark-rgb) / 0.18), 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 1px rgb(255 255 255 / 0.22)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                }}
               >
-                <span aria-hidden="true" className="material-symbols-rounded text-3xl" style={{ color: 'var(--accent-on-dark)' }}>play_arrow</span>
-              </div>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  className="w-9 h-9"
+                  style={{ fill: 'var(--accent-on-dark)', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.35))' }}
+                >
+                  <path d="M9 5.5 19 12 9 18.5Z" />
+                </svg>
+              </span>
               {/* On its own plate, not floating on the photograph. Two earlier
                   attempts were not enough: theme text was near-black in light
                   mode, and plain white with a shadow still varied from 16.5:1
@@ -299,8 +338,12 @@ export default function HardwarePage() {
                   reads better to the eye but contributes nothing to contrast.
                   A translucent plate makes the backdrop knowable instead of
                   whatever the render happens to put there. */}
-              <div
-                className="text-center px-4 py-2.5 rounded-lg"
+              {/* span, not div/p. The wrapper is a <button> now, and a button's
+                  content model is phrasing content -- a <p> inside it is invalid
+                  and browsers will close the button early to recover, which
+                  silently drops the rest of the overlay out of the control. */}
+              <span
+                className="block text-center px-4 py-2.5 rounded-lg"
                 style={{
                   background: 'rgba(10, 7, 18, 0.78)',
                   backdropFilter: 'blur(8px)',
@@ -308,15 +351,15 @@ export default function HardwarePage() {
                   border: '1px solid rgb(var(--accent-on-dark-rgb) / 0.22)',
                 }}
               >
-                <p className="font-mono-data text-sm" style={{ color: 'rgba(255,255,255,0.94)' }}>
+                <span className="block font-mono-data text-sm" style={{ color: 'rgba(255,255,255,0.94)' }}>
                   Click to activate 3D viewer
-                </p>
-                <p className="font-mono-data text-xs mt-1" style={{ color: 'rgba(255,255,255,0.72)' }}>
-                  PCB.gltf · WebGL · Interactive
-                </p>
-              </div>
-            </div>
-          </div>
+                </span>
+                <span className="block font-mono-data text-xs mt-1" style={{ color: 'rgba(255,255,255,0.72)' }}>
+                  PCB.glb · WebGL · Interactive
+                </span>
+              </span>
+            </span>
+          </button>
         )}
 
         {/* Pause button -- visible only when canvas is running */}
