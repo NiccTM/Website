@@ -70,7 +70,7 @@ function ProjectAward({ award }) {
   )
 }
 
-function ProjectCard({ project, featured = false, onExpand }) {
+function ProjectCard({ project, featured = false, priority = false, onExpand }) {
   const hasDetails   = !!project.expandedDetails
   const heroImage    = PROJECT_IMAGES[project.id]
   const fallbackImage = !heroImage && project.expandedDetails?.subSystems
@@ -106,10 +106,19 @@ function ProjectCard({ project, featured = false, onExpand }) {
       <div className={`relative overflow-hidden pt-[62%]${featured ? ' lg:pt-[34%]' : ''}`}>
         {displayImage ? (
           // card-img class receives CSS transform via .card-hover-scale:hover .card-img
+          /* The first card on the page is above the fold and is the route's
+             LCP element, so it must not be lazy. It was: Lighthouse measured
+             Load Delay 6,245ms against a Load Time of 117ms -- the file itself
+             took a tenth of a second, and the browser spent six seconds not
+             asking for it. loading="lazy" defers the request until layout has
+             proved the element is in view, which for the topmost image on the
+             page is pure delay, and fetchpriority then puts it ahead of the
+             dozen cards below that genuinely are lazy. */
           <Picture
             src={thumbSrc(displayImage)}
             alt={project.title}
-            loading="lazy"
+            loading={priority ? 'eager' : 'lazy'}
+            fetchpriority={priority ? 'high' : undefined}
             decoding="async"
             className="card-img absolute inset-0 w-full h-full object-cover"
           />
@@ -276,6 +285,11 @@ export default function ProjectGallery() {
                     key={project.id}
                     project={project}
                     featured={i === 0 && (sectionProjects.length + 1) % 3 === 0}
+                    /* Only the very first card of the first section: that is
+                       the one image guaranteed to be above the fold on every
+                       viewport, and marking more than one as high priority
+                       just re-creates the contention it is meant to avoid. */
+                    priority={si === 0 && i === 0}
                     onExpand={() => setActiveProject(project)}
                   />
                 ))}

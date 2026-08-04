@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
 import PageHeader     from '../components/layout/PageHeader'
 import ProjectGallery from '../components/ui/ProjectGallery'
+import WhenVisible from '../components/ui/WhenVisible'
 import ErrorBoundary  from '../components/ui/ErrorBoundary'
 
 function SectionFallback() {
@@ -62,18 +63,24 @@ export default function ProjectsPage() {
 
       {/* EcoSort ML */}
       <ErrorBoundary label="EcoSort ML Demo">
-        <Suspense fallback={<SectionFallback />}>
-          <EcoSortDemo sectionId="section-ecosort" />
-        </Suspense>
+        <WhenVisible>
+          <Suspense fallback={<SectionFallback />}>
+            <EcoSortDemo sectionId="section-ecosort" />
+          </Suspense>
+        </WhenVisible>
       </ErrorBoundary>
 
       <Divider />
 
-      {/* Feeble Presence architecture */}
+      {/* Feeble Presence architecture. WhenVisible, because lazy() alone only
+          splits the chunk -- mounting it on first render still downloads React
+          Flow immediately, at the bottom of a page whose LCP is at the top. */}
       <ErrorBoundary label="Feeble Presence Architecture">
-        <Suspense fallback={<SectionFallback />}>
-          <SystemArchitecture />
-        </Suspense>
+        <WhenVisible>
+          <Suspense fallback={<SectionFallback />}>
+            <SystemArchitecture />
+          </Suspense>
+        </WhenVisible>
       </ErrorBoundary>
 
       <div className="h-6" />
