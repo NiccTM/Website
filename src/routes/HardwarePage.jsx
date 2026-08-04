@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { useAppStore } from '../store/useAppStore'
 import ErrorBoundary  from '../components/ui/ErrorBoundary'
 import ImageLightbox  from '../components/ui/ImageLightbox'
-import { thumbSrc, displaySrc } from '../utils/thumbs'
+import { thumbSrc } from '../utils/thumbs'
 import Picture from '../components/ui/Picture'
 import { REFERENCE_IMAGES } from '../components/hardware/ReferenceGallery'
 import HardwareTabs   from '../components/layout/HardwareTabs'
@@ -261,13 +261,21 @@ export default function HardwarePage() {
             style={{ background: 'transparent' }}
             onClick={() => setCanvasActive(true)}
           >
-            {/* PCB preview photo. This is the LCP element for the route, so it
-                is marked high priority: everything else here -- the gallery
-                strip, the motor panels, the three.js chunk -- competes for the
-                same connection, and without a hint the browser treats them all
-                as equal. It is also above the fold, so it must not be lazy. */}
-            <img
-              src={displaySrc('/Screenshot 2026-03-31 125242.jpg')}
+            {/* PCB preview photo. Above the fold, so still eager and still
+                high priority: the gallery strip, the motor panels and the
+                three.js chunk all compete for the same connection.
+
+                thumbSrc, not displaySrc. The display tier is the source's full
+                1476px and weighed 177 KB; this renders 348 CSS px wide, and it
+                is drawn at brightness(0.35) behind an overlay, so the extra
+                pixels were buying nothing at all. The 800px thumb has an AVIF
+                sibling, which <Picture> offers -- 177 KB becomes roughly 20.
+
+                The route's LCP element is not this image, despite what the
+                comment here used to claim: Lighthouse reports it as the intro
+                paragraph, held up behind images saturating the connection. */}
+            <Picture
+              src={thumbSrc('/Screenshot 2026-03-31 125242.jpg')}
               alt="PCB preview"
               fetchpriority="high"
               decoding="async"

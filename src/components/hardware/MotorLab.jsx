@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import ImageLightbox from '../ui/ImageLightbox'
-import { thumbSrc } from '../../utils/thumbs'
+import { thumbSrc, avifThumbSrc } from '../../utils/thumbs'
 import Picture from '../ui/Picture'
 
 // ─── Challenge / Solution card data ───────────────────────────────────────────
@@ -109,16 +110,47 @@ function ChallengeCard({ item, index }) {
 }
 
 // ─── Digital Twin image pair ──────────────────────────────────────────────────
-function DigitalTwinPanel({ src, label, caption, icon }) {
+/* The CAD cross-section used to be motor-cad.gif: 800x499, 10 seconds at
+   12.5fps, 608 KB, rendered into a panel 165 CSS px wide. It was the largest
+   asset on /hardware by a wide margin and, on a throttled link, most of what
+   was delaying the route's LCP -- which is a paragraph of TEXT, held up behind
+   images saturating the connection rather than by anything about itself.
+
+   Re-encoded to H.264 at 480px it is 37 KB, six percent of the GIF. An
+   animation of that length is video, and a video codec compresses it about
+   sixteen times better than an image format can: animated WebP at the same
+   width only reached 62% of the GIF, which is why this is an <video> rather
+   than a format swap.
+
+   It also fixes something the GIF got wrong. A GIF loops forever with no way
+   to stop it, which fails WCAG 2.2.2 Pause, Stop, Hide for anything moving
+   longer than five seconds. This has a pause control, and does not autoplay at
+   all under prefers-reduced-motion. */
+const isVideo = (s) => typeof s === 'string' && s.endsWith('.mp4')
+
+function DigitalTwinPanel({ src, label, caption, icon, poster }) {
   const [hovered, setHovered] = useState(false)
   const [open, setOpen] = useState(false)
+  const reducedMotion = usePrefersReducedMotion()
+  const [playing, setPlaying] = useState(!reducedMotion)
+  const videoRef = useRef(null)
+  const video = isVideo(src)
+
+  function togglePlay(e) {
+    e.stopPropagation()
+    const el = videoRef.current
+    if (!el) return
+    if (el.paused) { el.play(); setPlaying(true) } else { el.pause(); setPlaying(false) }
+  }
 
   return (
     <>
       <div
-        className="flex flex-col overflow-hidden cursor-zoom-in group"
+        className={`flex flex-col overflow-hidden group${video ? '' : ' cursor-zoom-in'}`}
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgb(var(--accent-rgb) / 0.12)', borderRadius: 'var(--radius)' }}
-        onClick={() => src && setOpen(true)}
+        /* Video panels do not open the lightbox -- it renders an <img>, and the
+           clip is already playing at the size it is worth seeing. */
+        onClick={() => src && !video && setOpen(true)}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -126,7 +158,31 @@ function DigitalTwinPanel({ src, label, caption, icon }) {
           className="relative flex items-center justify-center overflow-hidden"
           style={{ background: 'rgba(2,13,26,0.6)', aspectRatio: '4/3', minHeight: '160px' }}
         >
-          {src ? (
+          {video ? (
+            <>
+              <video
+                ref={videoRef}
+                src={src}
+                poster={poster}
+                autoPlay={!reducedMotion}
+                loop
+                muted
+                playsInline
+                aria-label={`${label}. ${caption}`}
+                className="w-full h-full object-cover"
+              />
+              <button
+                onClick={togglePlay}
+                aria-label={playing ? `Pause ${label} animation` : `Play ${label} animation`}
+                className="absolute bottom-2 right-2 grid place-items-center w-8 h-8 rounded-full"
+                style={{ background: 'rgba(3,7,18,0.72)', color: 'var(--accent)', border: '1px solid rgb(var(--accent-rgb) / 0.35)' }}
+              >
+                <span aria-hidden="true" className="material-symbols-rounded text-base">
+                  {playing ? 'pause' : 'play_arrow'}
+                </span>
+              </button>
+            </>
+          ) : src ? (
             <>
               <Picture
                 src={thumbSrc(src)}
@@ -190,7 +246,8 @@ export default function MotorLab() {
       {/* Digital Twin: CAD cross-section + physical prototype */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         <DigitalTwinPanel
-          src="/motor-cad.gif"
+          src="/motor-cad.mp4"
+          poster="/motor-cad-poster.jpg"
           label="CAD Cross-Section"
           caption="9-pole stator · 16-pole rotor · Wye winding geometry"
           icon="view_in_ar"
@@ -215,12 +272,20 @@ export default function MotorLab() {
              video bytes for an 11.3 MB file on page load. The poster stands in
              until the viewer actually presses play. */
           preload="none"
-          /* thumbSrc, not displaySrc. A poster is fetched eagerly -- the
-             loading attribute does not apply to it -- so the display tier put
-             1,309 KB on the wire before anyone pressed play, on a page already
-             failing LCP. The 800px tier is 99 KB and this element is at most
-             420px tall. */
-          poster={thumbSrc('/motor-proto.jpg')}
+          /* Not the display tier: a poster is fetched eagerly -- the loading
+             attribute does not apply to it -- so display/ put 1,309 KB on the
+             wire before anyone pressed play, and this element is at most 420px
+             tall.
+
+             The AVIF rather than the 800px JPEG, and specifically the SAME
+             AVIF the DigitalTwinPanel above already renders for this photo, so
+             the browser serves it from cache and the poster costs nothing.
+             Measured before this: motor-proto.jpg (99 KB) and
+             motor-proto.avif (42 KB) both went over the wire, the same
+             photograph twice, because <video poster> takes one URL and cannot
+             negotiate a format the way <picture> does. A browser with no AVIF
+             support now shows no poster frame, which is the whole cost. */
+          poster={avifThumbSrc('/motor-proto.jpg') ?? thumbSrc('/motor-proto.jpg')}
           loading="lazy"
           controls
           loop
