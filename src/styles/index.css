@@ -383,12 +383,32 @@ canvas, img, video, .no-theme-transition {
   src: url('/fonts/playfair-900.woff2') format('woff2');
 }
 /* Variable across weight 100-700, which is why the icon class can set
-   'wght' 300 through font-variation-settings. */
+   'wght' 300 through font-variation-settings.
+
+   font-display: BLOCK here, alone among these faces, and deliberately.
+
+   These icons are ligatures: the markup says <span>play_arrow</span> and the
+   font turns that word into a glyph. Under swap the browser paints the literal
+   word first, so until the 67 KB icon file lands, every icon on the page is a
+   fragment of its own name -- the 3D viewer's play button rendered as "pla",
+   clipped mid-letter by the 1em box below. That box stops it shifting layout,
+   but it cannot stop it being visible, and text where an icon belongs looks
+   like the page is broken.
+
+   block gives roughly 3s of invisible-but-reserved space instead, which is the
+   right trade for content that carries no meaning as text. Google serve the
+   icon fonts with display=block for this exact reason. Lighthouse's
+   "font-display" audit is written for text faces and will grumble; it is a
+   weight-0 diagnostic and does not touch the score. The site's actual text
+   faces above all stay on swap.
+
+   Anything above the fold that MUST be right on the first frame should not be
+   a ligature at all -- see the inline SVG play triangle in HardwarePage. */
 @font-face {
   font-family: 'Material Symbols Rounded';
   font-style: normal;
   font-weight: 100 700;
-  font-display: swap;
+  font-display: block;
   src: url('/fonts/material-symbols-rounded.woff2') format('woff2');
 }
 
@@ -429,6 +449,34 @@ canvas, img, video, .no-theme-transition {
 
 /* ── Material Symbols ─────────────────────────────────────────────────────── */
 .material-symbols-rounded {
+  /* THIS LINE IS THE WHOLE THING. Without it the class styles a box and sets a
+     variation axis for a font it never actually asks for, so every icon on the
+     site renders as its own name in the body font -- "pla" where the play
+     triangle belongs, "vis" for the X-Ray toggle, "ce" for Reset.
+
+     It went missing when the fonts were self-hosted. Google's css2 response is
+     not only @font-face rules: it also ships the .material-symbols-rounded
+     class itself, carrying font-family and the ligature settings. Self-hosting
+     copied the @font-face blocks and left the class behind, and this file's own
+     .material-symbols-rounded had never needed to declare font-family because
+     Google's had always been there to do it. Nothing failed loudly -- the font
+     was simply never requested, which also made the "fonts 87 KB -> 53 KB"
+     figure from that change partly an artefact of a 67 KB file no longer being
+     fetched at all.
+
+     If icons ever revert to showing their own names, look here first. */
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal;
+  font-style: normal;
+  text-transform: none;
+  direction: ltr;
+  /* Ligatures are the entire mechanism: the markup says <span>play_arrow</span>
+     and the font substitutes a glyph. Anything that disables ligatures turns
+     every icon back into text. */
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  word-wrap: normal;
+
   font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
   user-select: none;
   line-height: 1;
