@@ -85,8 +85,13 @@ function ProjectCard({ project, featured = false, onExpand }) {
          section around them still announces itself; the items inside are just
          there. */
       onClick={hasDetails ? onExpand : undefined}
+      /* lg, not sm. The three-column grid only exists from lg up, so below that
+         a spanning feature swallowed the entire two-column row and left the
+         next card on its own -- one card per row, which is the thing the wide
+         feature is supposed to avoid. At sm every card is a single cell and the
+         section tiles two across. */
       className={`glass-card card-hover-scale group relative flex flex-col overflow-hidden rounded-xl${
-        featured ? ' sm:col-span-2' : ''
+        featured ? ' lg:col-span-2' : ''
       }`}
       style={{
         cursor: hasDetails ? 'pointer' : 'default',
@@ -95,7 +100,10 @@ function ProjectCard({ project, featured = false, onExpand }) {
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
     >
       {/* ── Image area ── */}
-      <div className="relative overflow-hidden" style={{ paddingTop: featured ? '34%' : '62%' }}>
+      {/* Aspect follows the span, so it has to switch at the same breakpoint.
+          A 34% banner crop on a card that is only one column wide is a letterbox
+          sliver; it earns that shape only once the card is actually two columns. */}
+      <div className={`relative overflow-hidden pt-[62%]${featured ? ' lg:pt-[34%]' : ''}`}>
         {displayImage ? (
           // card-img class receives CSS transform via .card-hover-scale:hover .card-img
           <Picture
@@ -242,31 +250,32 @@ export default function ProjectGallery() {
           return (
             <div key={section.key}>
               <SectionHeading label={section.label} icon={section.icon} index={si} />
-              {/* The first project in each section spans two columns. A grid of
-                  equal thirds -- image, heading, truncated paragraph, keyword
-                  pills -- is the most recognisable generated-portfolio layout
-                  there is, and three of them in a row read as a template no
-                  matter what is inside. Leading each section with one wider
-                  card breaks the repeat, gives the strongest piece of work room
-                  to show its photograph properly, and states an opinion about
-                  which project matters most.
+              {/* Every section is three columns from lg up, so cards always sit
+                  several to a row. Dropping a section to two columns to make it
+                  tile -- which is what this did before -- meant its feature ran
+                  the entire width and the section read as one card per row.
 
-                  The column count is chosen so the section always tiles flush.
-                  A 2-wide feature plus n-1 singles occupies n+1 cells, so a
-                  three-column grid only fills exactly when (n+1) is a multiple
-                  of three. Competitive Design has three projects, which left a
-                  two-cell hole and a card floating alone in the second row --
-                  it read as a bug rather than as deliberate asymmetry. Those
-                  sections drop to two columns, where the feature runs full
-                  width and the remaining pair sits beneath it. */}
-              <div className={`grid gap-4 grid-cols-1 sm:grid-cols-2${
-                (sectionProjects.length + 1) % 3 === 0 ? ' lg:grid-cols-3' : ''
-              }`}>
+                  What flexes instead is whether the first card spans two
+                  columns. A 2-wide feature plus n-1 singles occupies n+1 cells,
+                  so it only fills a three-column grid exactly when (n+1) is a
+                  multiple of three; otherwise the section ends on a card
+                  floating alone beside a two-cell hole, which reads as a bug
+                  rather than as deliberate asymmetry.
+
+                  So the feature spans when n+1 divides by three and stays a
+                  single cell when n does. Professional Practice (2) and
+                  Software & Personal (8) keep their wide lead card; Competitive
+                  Design (3) tiles as an even row of three instead. Leading with
+                  a wider card is still the default wherever the arithmetic
+                  allows, because a page of nothing but equal thirds is the most
+                  recognisable generated-portfolio layout there is -- but a hole
+                  in the grid is a worse tell than a tidy row. */}
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {sectionProjects.map((project, i) => (
                   <ProjectCard
                     key={project.id}
                     project={project}
-                    featured={i === 0}
+                    featured={i === 0 && (sectionProjects.length + 1) % 3 === 0}
                     onExpand={() => setActiveProject(project)}
                   />
                 ))}
