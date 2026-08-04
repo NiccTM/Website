@@ -293,6 +293,105 @@ canvas, img, video, .no-theme-transition {
   transition: none !important;
 }
 
+/* ── Self-hosted webfonts ─────────────────────────────────────────────────────
+   These were loaded from fonts.googleapis.com until now. That is a serial
+   three-origin chain: the HTML asks googleapis.com for a stylesheet, the
+   stylesheet is render-blocking, and only once it returns does the browser
+   learn the font files live on gstatic.com -- a third origin, another
+   connection. The bytes could not start before 543ms because nothing knew
+   their URLs until then. Same-origin, they are preloadable and start at ~0ms.
+
+   The shared-cache argument that used to justify Google Fonts died around 2020,
+   when every major browser partitioned the HTTP cache by top-level site to
+   close a tracking vector. Nobody has ever arrived here with Exo 2 already
+   cached.
+
+   Files are the exact woff2 payloads Google served for this site's own request
+   URL, including the &icon_names= subset of Material Symbols -- so the icon
+   font is still the 67 KB subset rather than the 5,220 KB full variable font.
+   Ten faces, 121 KB total, and only the faces actually rendered download.
+
+   Regenerate by refetching the css2 URL with a modern user-agent and saving
+   each url() it returns; the request is recorded in public/fonts/LICENSES.txt.
+
+   No unicode-range here, because Google's response for this URL has none: the
+   icon_names parameter switches it to pre-subsetted files rather than the usual
+   per-script slices. Characters outside those subsets fall through to the
+   symbol families in tailwind.config, exactly as they did before.
+   ──────────────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/exo2-300.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/exo2-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Exo 2';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/exo2-400i.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/exo2-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/exo2-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/exo2-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/playfair-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/playfair-700i.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/playfair-900.woff2') format('woff2');
+}
+/* Variable across weight 100-700, which is why the icon class can set
+   'wght' 300 through font-variation-settings. */
+@font-face {
+  font-family: 'Material Symbols Rounded';
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: swap;
+  src: url('/fonts/material-symbols-rounded.woff2') format('woff2');
+}
+
 /* ── Metric-matched fallback for Exo 2 ────────────────────────────────────────
    Exo 2 loads with font-display: swap, so text paints first in a local font and
    is re-laid-out when the webfont arrives. The two are not the same width, so
