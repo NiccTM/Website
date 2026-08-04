@@ -56,7 +56,22 @@ const MODEL_URL = '/models/PCB.glb'
    Draco, so that loader would never be used -- but this site's CSP is
    connect-src 'self' and there is no reason to leave a third-party fetch path
    wired up at all. Meshopt's decoder is bundled (drei gets it from three-stdlib
-   and enables it by default), so nothing here touches the network. */
+   and enables it by default), so nothing here touches the network.
+
+   THE MESHOPT DECODER IS WEBASSEMBLY, AND THE CSP HAS TO ALLOW IT.
+   vercel.json's script-src carries 'wasm-unsafe-eval' for this and only this.
+   Without it WebAssembly.instantiate() throws a CSP CompileError, the model
+   fails to load, and the whole viewer drops to its ErrorBoundary.
+
+   This was shipped broken once: it was tested against a local static server
+   that served no CSP headers at all, so it passed locally and failed on the
+   first production load. Any local check of this route has to send the real
+   headers or it is not testing the thing that breaks.
+
+   'wasm-unsafe-eval' is the narrow directive meant for exactly this -- it
+   permits WebAssembly compilation and nothing else. It does NOT permit eval()
+   or new Function() on strings, which is what 'unsafe-eval' would have opened
+   up. The binary is bundled in the site's own JS, so it is 'self' anyway. */
 const USE_DRACO = false
 
 // Material names assigned by scripts/optimize-pcb.mjs
