@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
@@ -19,24 +19,24 @@ const HERO_PHOTOS = [
 ]
 
 
+/* The hero no longer advances on its own; the dots below it are the only way
+   to change photo.
+
+   It used to swap every five seconds, and that was the single thing keeping
+   the home page from passing LCP. Every slide that painted became a fresh
+   largest-contentful-paint candidate, so the metric measured the slideshow
+   instead of the load: 6832ms, on a page whose first paint is 388ms and whose
+   JavaScript has finished by 1216ms. Pausing the rotation was measured at
+   2604ms with no image candidate at all, which is what identified the cause.
+
+   Two things fall out of this. WCAG 2.2.2 Pause, Stop, Hide only applies to
+   content that moves automatically, so the pause button is gone -- a control
+   that pauses nothing is worse than no control. And the other six photos are
+   no longer fetched on a timer, so a visitor who never touches the dots
+   downloads exactly one hero image. */
 function HeroCarousel() {
   const [current, setCurrent] = useState(0)
-  const [paused, setPaused] = useState(false)
   const reducedMotion = usePrefersReducedMotion()
-
-  // WCAG 2.2.2 Pause, Stop, Hide is Level A: content that starts moving on its
-  // own, runs past five seconds and sits alongside other content needs a way to
-  // stop it. This carousel had none. It now stops on request, and does not
-  // start at all when the OS asks for reduced motion -- the CSS reduced-motion
-  // block cannot help here, since this is a timer swapping state, not an
-  // animation.
-  const stopped = paused || reducedMotion
-
-  useEffect(() => {
-    if (stopped) return
-    const id = setInterval(() => setCurrent((c) => (c + 1) % HERO_PHOTOS.length), 5000)
-    return () => clearInterval(id)
-  }, [stopped])
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -60,38 +60,31 @@ function HeroCarousel() {
              28 KB, and srcset can still upgrade to 4000w on a display that
              genuinely needs it.
 
-             fetchpriority lifts the first slide, which is the only one that
-             should ever be the LCP candidate -- see the note on the transition
-             below for why that was not true. */
+             fetchpriority lifts the first slide, which is now the only one
+             that can be the LCP candidate at all, since nothing swaps unless
+             a visitor presses a dot. */
           srcSet={`${thumbSrc(HERO_PHOTOS[current])} 800w, ${displaySrc(HERO_PHOTOS[current])} 4000w`}
           sizes="(max-width: 767px) 100vw, 55vw"
           fetchpriority={current === 0 ? 'high' : 'auto'}
           src={thumbSrc(HERO_PHOTOS[current])}
           alt=""
-          /* Cross-fade only, no Ken Burns zoom.
-
-             This was changed to try to stop the carousel inflating LCP: each
-             slide entered at scale 1.04, so an incoming image was briefly
-             larger than the settled one, and LCP only records a candidate that
-             is larger than the current one. Measured after the change, it did
-             NOT work -- the second photo still won LCP at 6832ms. Recorded
-             here so nobody re-derives the same wrong theory.
-
-             What the measurement did establish is that the carousel is the
-             cause. Emulating prefers-reduced-motion, which this component
-             already honours by not auto-advancing, drops LCP to 2604ms on a
-             text node and no image becomes a candidate at all. The images are
-             fine: first paint is 388ms and every bundle has executed by
-             1216ms. The metric is chasing the slideshow, and in the field it
-             is finalised at the first user interaction, so only a visitor who
-             sits perfectly still for five seconds ever sees it.
+          /* Cross-fade only, no Ken Burns zoom. The scale was removed while
+             chasing the LCP problem, on the theory that an incoming slide at
+             1.04 was briefly larger than the settled one. It was not the
+             cause -- the second photo still won LCP at 6832ms afterwards --
+             but a plain cross-fade is the right transition for something a
+             person triggers deliberately, so it stays.
 
              willChange drops transform with the scale; hinting a property
              nothing animates just pins a compositor layer for no reason. */
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: 'easeInOut' }}
+          /* Still honours reduced motion, just for a different reason: the
+             fade is now only ever triggered by someone pressing a dot, and a
+             user-initiated change should still be instant if the OS asks for
+             it. */
+          transition={{ duration: reducedMotion ? 0 : 1.2, ease: 'easeInOut' }}
           className="absolute inset-0 w-full h-full object-cover"
           style={{ willChange: 'opacity' }}
         />
@@ -108,20 +101,6 @@ function HeroCarousel() {
           24x24 hit area -- WCAG 2.2 AA 2.5.8 (Target Size Minimum) sets 24x24
           CSS px as the floor, and a 6x6 tap target is genuinely hard to hit. */}
       <div className="absolute bottom-4 left-4 flex items-center">
-        {/* Pause/resume -- the WCAG 2.2.2 mechanism. Hidden when the OS already
-            asks for reduced motion, since nothing is moving to pause. */}
-        {!reducedMotion && (
-          <button
-            onClick={() => setPaused((p) => !p)}
-            aria-label={paused ? 'Resume photo slideshow' : 'Pause photo slideshow'}
-            className="grid place-items-center mr-1"
-            style={{ width: '28px', height: '28px', color: 'rgba(255,255,255,0.8)' }}
-          >
-            <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.05rem' }}>
-              {paused ? 'play_arrow' : 'pause'}
-            </span>
-          </button>
-        )}
         {HERO_PHOTOS.map((_, i) => (
           <button
             key={i}
