@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { archiveData } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc } from '../../utils/thumbs'
+import { gridColsFor } from '../../utils/gridCols'
 import Picture from '../ui/Picture'
 
 // ─── Data-decode scramble ─────────────────────────────────────────────────────
@@ -125,8 +126,14 @@ function ArchiveModule({ mod, moduleIndex }) {
       {/* Image grid */}
       {/* Single column under 480px. At 2 columns a phone card is ~182x136, which
           is too small for a label plus a full caption -- the scrim grew past the
-          card and buried the photo entirely. */}
-      <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+          card and buried the photo entirely.
+          Above that, columns are capped to the number of images, and the width
+          capped with them, for the reason given over GRID_FOR_COUNT in
+          HardwareDiagnostics: these modules hold one or two photos each, and a
+          lone thumbnail in a four-column track reads as a grid that failed to
+          fill. Both files need the same treatment because they render adjacent
+          sections of the same page -- fixing only one made the mismatch worse. */}
+      <div className={`grid gap-3 ${gridColsFor(mod.images.length, 'grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4')}`}>
         {mod.images.map((img, i) => (
           <ArchiveImage key={img.src} image={img} index={i} />
         ))}

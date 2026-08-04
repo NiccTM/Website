@@ -179,7 +179,14 @@ function ProjectCard({ project, featured = false, onExpand }) {
         <h3 className="font-display font-bold leading-snug fluid-xl" style={{ color: 'var(--text-primary)', fontSize: 'clamp(0.95rem, 0.85rem + 0.4vw, 1.2rem)' }}>
           {project.title}
         </h3>
-        <p className={`font-sans leading-relaxed${featured ? '' : ' line-clamp-2'}`} style={{ color: 'var(--text-secondary)', fontSize: 'clamp(0.78rem, 0.72rem + 0.25vw, 0.9rem)' }}>
+        {/* No line-clamp. Every description used to be cut off mid-word with an
+            ellipsis -- "automated waste...", "software repair - SSD..." -- and a
+            truncated blurb sitting above a row of keyword pills is the single
+            most recognisable generated-portfolio pattern there is. The blurbs
+            are now written short enough to finish on their own, and the full
+            write-up lives in expandedDetails, which the modal shows. Cards in a
+            grid row stretch to the tallest, so nothing breaks if one runs long. */}
+        <p className="font-sans leading-relaxed" style={{ color: 'var(--text-secondary)', fontSize: 'clamp(0.78rem, 0.72rem + 0.25vw, 0.9rem)' }}>
           {project.description}
         </p>
         <div className="flex flex-wrap gap-1.5 mt-1">
