@@ -254,6 +254,25 @@ h1, h2, h3, h4, h5, h6 {
 /* Links */
 a { text-decoration: none; }
 
+/* Links sitting INSIDE a paragraph are underlined; nav items, buttons and
+   card links are not. WCAG 1.4.1 Use of Color: when colour is the only thing
+   marking a link inside a block of text, it needs 3:1 contrast against the
+   surrounding words. The accent against body text measures 1.08:1, so colour
+   alone cannot carry it -- Lighthouse flagged exactly this on /about and
+   /colophon, which is what kept them off 100 for accessibility.
+
+   The desaturation earlier in this palette work made it worse, not better: a
+   muted cyan sits closer to the lavender body text than the old neon did.
+   Underlining is the fix that does not require picking the accent for its
+   contrast against paragraph text rather than for how it looks. */
+p a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: rgb(var(--accent-rgb) / 0.55);
+}
+p a:hover { text-decoration-color: var(--accent); }
+
 /* Smooth transitions on interactive elements */
 button, input, select, textarea {
   transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
