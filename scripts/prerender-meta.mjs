@@ -41,7 +41,73 @@ const ROUTES = {
   colophon:              'ColophonPage.jsx',
 }
 
+/* Which route component each shell should preload. Keyed the same way as
+   ROUTES, plus '' for the home page, whose shell is dist/index.html itself. */
+const PRELOAD_SRC = {
+  '':                    'src/routes/HomePage.jsx',
+  projects:              'src/routes/ProjectsPage.jsx',
+  hardware:              'src/routes/HardwarePage.jsx',
+  'hardware/reference':  'src/routes/ReferencePage.jsx',
+  hobbies:               'src/routes/HobbiesPage.jsx',
+  about:                 'src/routes/AboutPage.jsx',
+  colophon:              'src/routes/ColophonPage.jsx',
+}
+
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+
+/*
+ * ROUTE CHUNK PRELOADING
+ *
+ * Every route component is behind lazy(), so the browser cannot discover its
+ * chunk until the entry bundle has downloaded, parsed and run. Profiled on the
+ * home page under mobile throttling, that showed up as a clean two-stage
+ * waterfall: the entry chunks finished at 1101ms, and HomePage.js -- all of
+ * 8 KB -- did not even START until 1174ms, landing at 1405ms against an FCP of
+ * 1848ms. The main thread was idle 94% of that time. It was never CPU; it was
+ * a second round trip for a file the browser could have fetched at 220ms if
+ * anything had told it the file existed.
+ *
+ * A modulepreload in the shell tells it. Measured A/B on the built output,
+ * five runs each: median FCP 1904ms -> 1732ms.
+ *
+ * Each shell preloads only its OWN route, which is the point of doing it here
+ * rather than in index.html: /projects.html preloads the projects chunk, not
+ * the home one. Chunks the entry already pulls in are skipped, since those are
+ * preloaded by Vite's own tags.
+ */
+const manifest = JSON.parse(readFileSync(join(ROOT, 'dist/.vite/manifest.json'), 'utf8'))
+
+/** Transitive chunk files reachable from a manifest key. */
+function collectChunks(key, seen = new Set()) {
+  if (seen.has(key)) return seen
+  seen.add(key)
+  const entry = manifest[key]
+  if (!entry) return seen
+  for (const imp of entry.imports ?? []) collectChunks(imp, seen)
+  return seen
+}
+
+const toFiles = (keys) =>
+  [...keys].map((k) => manifest[k]?.file).filter(Boolean)
+
+// Everything the entry already loads. index.html is the entry's manifest key.
+const entryFiles = new Set(toFiles(collectChunks('index.html')))
+
+function preloadTags(routeKey) {
+  const src = PRELOAD_SRC[routeKey]
+  if (!src) return ''
+  if (!manifest[src]) throw new Error(`prerender-meta: ${src} missing from the build manifest`)
+  const files = toFiles(collectChunks(src)).filter((f) => !entryFiles.has(f))
+  if (!files.length) return ''
+  return files.map((f) => `    <link rel="modulepreload" crossorigin href="/${f}">`).join('\n') + '\n'
+}
+
+function injectPreloads(html, routeKey) {
+  const tags = preloadTags(routeKey)
+  if (!tags) return html
+  if (!html.includes('</head>')) throw new Error('prerender-meta: </head> not found in dist/index.html')
+  return html.replace('</head>', tags + '</head>')
+}
 
 /** Pulls the ('Title', 'description') pair out of a route's usePageMeta call. */
 function readRouteMeta(file) {
@@ -81,11 +147,21 @@ for (const [route, file] of Object.entries(ROUTES)) {
   html = replaceTag(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${d}$2`, 'twitter:description')
   html = replaceTag(html, /(<link\s+rel="canonical"\s+href=")[^"]*(")/, `$1${url}$2`, 'canonical')
 
+  html = injectPreloads(html, route)
+
   const outFile = join(ROOT, `dist/${route}.html`)
   mkdirSync(dirname(outFile), { recursive: true })
   writeFileSync(outFile, html)
   console.log(`  prerendered /${route}  ->  ${fullTitle}`)
   written++
 }
+
+/* The home page has no separate shell -- it IS dist/index.html -- so its
+   preloads are written back into the file. This has to happen AFTER the loop
+   above, which builds every other shell from `shell`, the copy read before any
+   of this ran. Doing it first would stamp the home page's chunks onto all six
+   other routes. */
+writeFileSync(join(ROOT, 'dist/index.html'), injectPreloads(shell, ''))
+console.log('  preloaded home route chunks into dist/index.html')
 
 console.log(`prerender-meta: wrote ${written} route shells`)

@@ -1,7 +1,21 @@
 import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useAppStore } from '../../store/useAppStore'
+
+/* NO framer-motion in this file, deliberately.
+ *
+ * AppShell imports NavBar statically, so whatever NavBar imports is on the
+ * critical path of every route. framer-motion is 117 KB raw / 40 KB gzip, and
+ * it was being pulled in ahead of first paint on the home page to run a nav
+ * fade, three hamburger transforms and a drawer height tween -- all of which
+ * CSS does natively. Profiling put the main thread 94% idle before FCP, so the
+ * cost was never execution; it was 40 KB of critical-path download on a link
+ * where every kilobyte is ~5ms.
+ *
+ * The one thing genuinely lost is the active pill's shared-layout slide, which
+ * used layoutId and has no CSS equivalent. It is now a border that transitions
+ * in place. See the CSS REPLACEMENTS block in styles/index.css.
+ */
 
 /* The voltage reference lives under Hardware as /hardware/reference, reached
    from the sub-nav there rather than from a top-level item of its own. */
@@ -27,12 +41,11 @@ export default function NavBar() {
 
   return (
     <>
-      <motion.nav
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        className="sticky top-0 z-50 w-full"
+      <nav
+        className="anim-rise sticky top-0 z-50 w-full"
         style={{
+          '--anim-dur': '0.35s',
+          '--rise-from': '-8px',
           background: 'var(--nav-bg)',
           backdropFilter: 'blur(20px) saturate(150%)',
           WebkitBackdropFilter: 'blur(20px) saturate(150%)',
@@ -75,12 +88,18 @@ export default function NavBar() {
               })}
             >
               {label}
+              {/* Was a layoutId pill that slid between items. That is the one
+                  framer-motion feature here with no CSS equivalent, so the
+                  slide is gone and the border fades in on the active item
+                  instead. */}
               {isSection(pathname, to) && (
-                <motion.span
-                  layoutId="nav-pill"
-                  className="absolute inset-0 pointer-events-none"
-                  style={{ border: '1px solid var(--border-accent)', borderRadius: 'var(--radius)' }}
-                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                <span
+                  className="anim-fade absolute inset-0 pointer-events-none"
+                  style={{
+                    '--anim-dur': '0.25s',
+                    border: '1px solid var(--border-accent)',
+                    borderRadius: 'var(--radius)',
+                  }}
                 />
               )}
             </NavLink>
@@ -111,45 +130,47 @@ export default function NavBar() {
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
         >
-          <motion.span
-            animate={{ rotate: open ? 45 : 0, y: open ? 8 : 0 }}
-            transition={{ duration: 0.22 }}
-            className="block w-5 h-[1.5px]"
-            style={{ background: 'var(--text-primary)', borderRadius: '1px' }}
+          <span
+            className="burger-bar block w-5 h-[1.5px]"
+            style={{
+              background: 'var(--text-primary)', borderRadius: '1px',
+              transform: open ? 'translateY(8px) rotate(45deg)' : 'none',
+            }}
           />
-          <motion.span
-            animate={{ opacity: open ? 0 : 1 }}
-            transition={{ duration: 0.15 }}
-            className="block w-5 h-[1.5px]"
-            style={{ background: 'var(--text-primary)', borderRadius: '1px' }}
+          <span
+            className="burger-bar block w-5 h-[1.5px]"
+            style={{
+              background: 'var(--text-primary)', borderRadius: '1px',
+              opacity: open ? 0 : 1,
+            }}
           />
-          <motion.span
-            animate={{ rotate: open ? -45 : 0, y: open ? -8 : 0 }}
-            transition={{ duration: 0.22 }}
-            className="block w-5 h-[1.5px]"
-            style={{ background: 'var(--text-primary)', borderRadius: '1px' }}
+          <span
+            className="burger-bar block w-5 h-[1.5px]"
+            style={{
+              background: 'var(--text-primary)', borderRadius: '1px',
+              transform: open ? 'translateY(-8px) rotate(-45deg)' : 'none',
+            }}
           />
         </button>
         </div>
-      </motion.nav>
+      </nav>
 
-      {/* Mobile drawer */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="sticky top-[49px] z-40 md:hidden overflow-hidden"
-            style={{
-              background: 'var(--nav-mobile-bg)',
-              backdropFilter: 'blur(20px) saturate(150%)',
-              WebkitBackdropFilter: 'blur(20px) saturate(150%)',
-              borderBottom: '1px solid var(--nav-mobile-border)',
-              boxShadow: 'var(--nav-shadow)',
-            }}
-          >
+      {/* Mobile drawer. Always mounted now, opened by data-open rather than by
+          AnimatePresence; the CSS handles the height tween and takes the
+          contents out of the tab order while closed. */}
+      <div
+        data-open={open ? 'true' : 'false'}
+        className="nav-drawer sticky top-[49px] z-40 grid md:hidden overflow-hidden"
+        style={{
+          background: 'var(--nav-mobile-bg)',
+          backdropFilter: 'blur(20px) saturate(150%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(150%)',
+          /* none, not a transparent 1px: the closed drawer collapses to exactly
+             0 and a leftover border would leave a 1px band under the nav. */
+          borderBottom: open ? '1px solid var(--nav-mobile-border)' : 'none',
+          boxShadow: open ? 'var(--nav-shadow)' : 'none',
+        }}
+      >
             {/* A <nav> landmark, not a plain div: the drawer renders outside
                 the main <nav> above, so without this the mobile route links
                 belong to no navigation landmark at all and a screen-reader
@@ -184,9 +205,7 @@ export default function NavBar() {
                 {darkMode ? 'Light mode' : 'Dark mode'}
               </button>
             </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </>
   )
 }

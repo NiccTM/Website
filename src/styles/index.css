@@ -642,6 +642,86 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
+   CSS REPLACEMENTS FOR FRAMER-MOTION ON THE CRITICAL PATH
+
+   framer-motion is 117 KB raw and was on the home page's critical path, not
+   because the home page needs an animation library but because NavBar imports
+   it and NavBar is loaded eagerly through AppShell. Every one of the uses it
+   was carrying there was an opacity or transform tween that CSS does natively.
+
+   Only these three components were converted -- NavBar, HomePage, SocialLinks,
+   the ones needed to paint "/" -- so framer-motion now loads only with the
+   routes that genuinely use it for layout work.
+
+   Nothing here needs its own reduced-motion handling: the block below already
+   collapses every animation and transition on the page to 0.01ms.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(var(--rise-from, 16px)); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* backwards fill so the element is already at opacity 0 during any delay,
+   rather than flashing at full opacity for the length of the delay first. */
+.anim-rise { animation: rise-in var(--anim-dur, 0.7s) ease-out var(--anim-delay, 0s) backwards; }
+.anim-fade { animation: fade-in var(--anim-dur, 0.4s) ease-out var(--anim-delay, 0s) backwards; }
+
+/* Hero slides are stacked and cross-faded by toggling opacity, which replaces
+   AnimatePresence. The first slide renders at opacity 1 with no animation on
+   it at all -- deliberately, and it must stay that way: Chrome refuses an
+   element as a Largest Contentful Paint candidate if its first paint happens
+   at opacity 0 and never reconsiders. Animating it in is what produced NO_LCP
+   and a Performance score of 0. */
+.hero-slide {
+  transition-property: opacity;
+  transition-timing-function: ease-in-out;
+  will-change: opacity;
+}
+
+/* Hamburger bars: replaces three motion.spans. */
+.burger-bar { transition: transform 0.22s ease, opacity 0.15s ease; }
+
+/* Mobile drawer: replaces an AnimatePresence height 0 <-> auto tween. CSS
+   cannot transition to height:auto, but a grid row CAN go 0fr -> 1fr, which
+   resolves to the child's natural height. The child needs min-height:0 or it
+   refuses to shrink below its content.
+
+   visibility, not just opacity and height. AnimatePresence used to UNMOUNT the
+   drawer when closed; this markup leaves it in the DOM, so without visibility
+   its five links and the theme toggle would stay in the tab order and in the
+   accessibility tree while the menu is shut. visibility:hidden removes both,
+   and because it is a discrete property it holds until the transition ends
+   rather than cutting the close animation short.
+
+   No `display` here on purpose: setting it would fight Tailwind's md:hidden on
+   the same element. The element carries `grid md:hidden` instead, so the
+   breakpoint still wins. */
+.nav-drawer {
+  /* minmax(0, ...), not a bare 0fr. A bare `0fr` track is `minmax(auto, 0fr)`,
+     and that auto floor is the item's min-content size -- which still includes
+     the drawer nav's 16px top and bottom padding even with min-height:0 on it.
+     Measured: the closed drawer stayed 33px tall and pushed every mobile page
+     down by that much. An explicit 0 minimum collapses it properly. */
+  grid-template-rows: minmax(0, 0fr);
+  transition: grid-template-rows 0.25s ease-in-out, opacity 0.25s ease-in-out,
+              visibility 0.25s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+}
+.nav-drawer[data-open='true'] {
+  grid-template-rows: minmax(0, 1fr);
+  opacity: 1;
+  visibility: visible;
+}
+.nav-drawer > * { min-height: 0; overflow: hidden; }
+
+/* ════════════════════════════════════════════════════════════════════════════
    REDUCED MOTION -- freeze all decorative animations
    ════════════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {

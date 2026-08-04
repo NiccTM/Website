@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { profile, bio } from '../data/config'
 import SocialLinks from '../components/ui/SocialLinks'
@@ -36,26 +35,39 @@ const HERO_PHOTOS = [
    downloads exactly one hero image. */
 function HeroCarousel() {
   const [current, setCurrent] = useState(0)
+  /* Which slides have ever been shown. Only these are in the DOM, so a visitor
+     who never presses a dot still downloads exactly one hero image, and the
+     set grows one photo at a time as they click.
+
+     This exists because the cross-fade is now CSS rather than AnimatePresence,
+     and CSS can only fade between two elements that are both present. Swapping
+     src on a single <img> would cut, not fade. */
+  const [shown, setShown] = useState(() => [0])
   const reducedMotion = usePrefersReducedMotion()
+
+  function show(i) {
+    setCurrent(i)
+    setShown((s) => (s.includes(i) ? s : [...s, i]))
+  }
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* initial={false} suppresses the enter animation on the FIRST slide
-          only; swapping to a later photo still cross-fades.
-
-          This is not a taste decision. Chrome will not accept an element as a
-          Largest Contentful Paint candidate if its first paint happens at
-          opacity 0, and it does not reconsider once the opacity rises. The
-          hero is by far the largest thing on this page, so fading it in from
-          zero left Lighthouse with no LCP candidate at all: mobile reported
-          NO_LCP, which zeroes LCP, Total Blocking Time and Time to Interactive
+      {/* The first slide paints at opacity 1 with NO animation on it. That is
+          not a taste decision. Chrome will not accept an element as a Largest
+          Contentful Paint candidate if its first paint happens at opacity 0,
+          and it does not reconsider once the opacity rises. The hero is by far
+          the largest thing on this page, so fading it in from zero left
+          Lighthouse with no LCP candidate at all: mobile reported NO_LCP,
+          which zeroes LCP, Total Blocking Time and Time to Interactive
           together and took the Performance score to 0/100 on a page that
           renders correctly and scores 100 for Accessibility, Best Practices
-          and SEO. /about and /projects were unaffected -- they score 88 and 69
-          -- which is what isolated it to this component. */}
-      <AnimatePresence mode="sync" initial={false}>
-        <motion.img
-          key={current}
+          and SEO.
+
+          Slides are stacked and cross-faded by toggling opacity, which is what
+          AnimatePresence used to do. Only visited slides are mounted. */}
+      {shown.map((i) => (
+        <img
+          key={i}
           /* The hero was serving the 4000px display tier to everyone. It
              renders about 55vw wide, so on a 1440px laptop that is a 1,614 KB
              file doing the job of a 28 KB one, and it was the LCP element:
@@ -76,32 +88,22 @@ function HeroCarousel() {
              fetchpriority lifts the first slide, which is now the only one
              that can be the LCP candidate at all, since nothing swaps unless
              a visitor presses a dot. */
-          srcSet={`${thumbSrc(HERO_PHOTOS[current])} 800w, ${displaySrc(HERO_PHOTOS[current])} 4000w`}
+          srcSet={`${thumbSrc(HERO_PHOTOS[i])} 800w, ${displaySrc(HERO_PHOTOS[i])} 4000w`}
           sizes="(max-width: 767px) 100vw, 55vw"
-          fetchpriority={current === 0 ? 'high' : 'auto'}
-          src={thumbSrc(HERO_PHOTOS[current])}
+          fetchpriority={i === 0 ? 'high' : 'auto'}
+          src={thumbSrc(HERO_PHOTOS[i])}
           alt=""
-          /* Cross-fade only, no Ken Burns zoom. The scale was removed while
-             chasing the LCP problem, on the theory that an incoming slide at
-             1.04 was briefly larger than the settled one. It was not the
-             cause -- the second photo still won LCP at 6832ms afterwards --
-             but a plain cross-fade is the right transition for something a
-             person triggers deliberately, so it stays.
-
-             willChange drops transform with the scale; hinting a property
-             nothing animates just pins a compositor layer for no reason. */
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          /* Still honours reduced motion, just for a different reason: the
-             fade is now only ever triggered by someone pressing a dot, and a
-             user-initiated change should still be instant if the OS asks for
-             it. */
-          transition={{ duration: reducedMotion ? 0 : 1.2, ease: 'easeInOut' }}
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ willChange: 'opacity' }}
+          aria-hidden={i === current ? undefined : 'true'}
+          className="hero-slide absolute inset-0 w-full h-full object-cover"
+          /* Reduced motion still applies, for a different reason than usual:
+             the fade is only ever triggered by someone pressing a dot, and a
+             user-initiated change should be instant if the OS asks for it. */
+          style={{
+            opacity: i === current ? 1 : 0,
+            transitionDuration: reducedMotion ? '0ms' : '1200ms',
+          }}
         />
-      </AnimatePresence>
+      ))}
       {/* Gradient fade to right on desktop -- only last 20% */}
       <div className="absolute inset-0 hidden md:block" style={{ background: 'linear-gradient(to right, transparent 80%, var(--hero-gradient-to) 100%)' }} />
       {/* Light scrim so the dot indicators keep contrast against the photo.
@@ -117,7 +119,7 @@ function HeroCarousel() {
         {HERO_PHOTOS.map((_, i) => (
           <button
             key={i}
-            onClick={() => setCurrent(i)}
+            onClick={() => show(i)}
             aria-label={`Show photo ${i + 1} of ${HERO_PHOTOS.length}`}
             aria-current={i === current ? 'true' : undefined}
             className="grid place-items-center"
@@ -161,11 +163,12 @@ const ABOUT_FACTS = [
 
 function About() {
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.45 }}
+    /* This had a whileInView scroll reveal. It is gone rather than
+       reimplemented: an IntersectionObserver to fade in a block of prose is the
+       pattern that was stripped from 117 other elements on this site for
+       reading as generated, and it was the last thing keeping framer-motion in
+       this file. The section renders visible. */
+    <section
       aria-labelledby="about-heading"
       /* This section once needed [&_p]:max-w-none to escape a global
          `p { max-width: 72ch }`, which stopped the prose ~280px short of its
@@ -247,7 +250,7 @@ function About() {
           ))}
         </dl>
       </div>
-    </motion.section>
+    </section>
   )
 }
 
@@ -263,11 +266,8 @@ export default function HomePage() {
         </div>
 
         {/* Bottom (mobile) / Right (desktop): Editorial text */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: 'easeOut', delay: 0.2 }}
-          className="relative z-10 flex flex-col items-center md:items-start justify-center
+        <div
+          className="anim-rise relative z-10 flex flex-col items-center md:items-start justify-center
                      text-center md:text-left
                      px-6 py-10 sm:px-10 md:py-0 md:px-14 lg:px-20 xl:px-24 tv:px-32 md:w-[45%]"
           style={{
@@ -275,6 +275,9 @@ export default function HomePage() {
             backdropFilter: 'blur(20px) saturate(130%)',
             WebkitBackdropFilter: 'blur(20px) saturate(130%)',
             boxShadow: 'var(--hero-panel-glow)',
+            '--anim-dur': '0.7s',
+            '--anim-delay': '0.2s',
+            '--rise-from': '18px',
           }}
         >
           {/* Eyebrow */}
@@ -329,7 +332,7 @@ export default function HomePage() {
           </div>
 
           <SocialLinks />
-        </motion.div>
+        </div>
       </section>
 
       {/* ── About ───────────────────────────────────────────────────────────── */}
