@@ -46,8 +46,12 @@ export default {
       // fall through to a fallback. The symbol families below make that fallback
       // explicit and consistent across platforms instead of OS-dependent.
       fontFamily: {
-        sans:    ['"Exo 2"', '"Segoe UI"', 'Tahoma', 'system-ui', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', '"DejaVu Sans"', 'sans-serif'],
-        mono:    ['"Exo 2"', '"Segoe UI"', 'system-ui', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', '"DejaVu Sans"', 'sans-serif'],
+        // "Exo 2 Fallback" is a size-adjusted @font-face in styles/index.css, so
+        // text laid out before the webfont arrives takes the width it will take
+        // afterwards. See the comment over that rule, including why it has to be
+        // verified at 412px rather than 390px.
+        sans:    ['"Exo 2"', '"Exo 2 Fallback"', '"Segoe UI"', 'Tahoma', 'system-ui', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', '"DejaVu Sans"', 'sans-serif'],
+        mono:    ['"Exo 2"', '"Exo 2 Fallback"', '"Segoe UI"', 'system-ui', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', '"DejaVu Sans"', 'sans-serif'],
         display: ['"Playfair Display"', 'Georgia', 'serif'],
       },
 
