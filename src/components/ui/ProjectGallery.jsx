@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { projects } from '../../data/config'
 import ProjectModal from './ProjectModal'
 import { thumbSrc } from '../../utils/thumbs'
+import Picture from './Picture'
 
 // ─── Card-level hero images keyed by project id ───────────────────────────────
 const PROJECT_IMAGES = {
@@ -97,7 +98,7 @@ function ProjectCard({ project, featured = false, onExpand }) {
       <div className="relative overflow-hidden" style={{ paddingTop: featured ? '34%' : '62%' }}>
         {displayImage ? (
           // card-img class receives CSS transform via .card-hover-scale:hover .card-img
-          <img
+          <Picture
             src={thumbSrc(displayImage)}
             alt={project.title}
             loading="lazy"

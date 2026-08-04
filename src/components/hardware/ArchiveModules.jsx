@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { archiveData } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc } from '../../utils/thumbs'
+import Picture from '../ui/Picture'
 
 // ─── Data-decode scramble ─────────────────────────────────────────────────────
 const SCRAMBLE_CHARS = '0123456789ABCDEF#&%$@!?<>[]{}|'
@@ -52,7 +53,7 @@ function ArchiveImage({ image, index }) {
           aspectRatio: '4/3',
         }}
       >
-        <img
+        <Picture
           src={thumbSrc(image.src)}
           loading="lazy"
           decoding="async"

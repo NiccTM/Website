@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { waterSenseAerospace as data } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc } from '../../utils/thumbs'
+import Picture from '../ui/Picture'
 
 function DigitalTwinPanel({ src, label, caption, icon }) {
   const [open, setOpen] = useState(false)
@@ -20,7 +21,7 @@ function DigitalTwinPanel({ src, label, caption, icon }) {
         >
           {src ? (
             <>
-              <img src={thumbSrc(src)} alt={label} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" onError={(e) => { e.currentTarget.style.opacity = '0' }} />
+              <Picture src={thumbSrc(src)} alt={label} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" onError={(e) => { e.currentTarget.style.opacity = '0' }} />
               <div
                 className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                 style={{ background: 'rgba(0,20,60,0.35)' }}

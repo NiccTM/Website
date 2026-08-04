@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { thumbSrc } from '../../utils/thumbs'
+import Picture from './Picture'
 import ImageLightbox from './ImageLightbox'
 
 function SubSystemImage({ src, label, caption, onOpen }) {
@@ -20,7 +21,7 @@ function SubSystemImage({ src, label, caption, onOpen }) {
       onMouseLeave={() => setHovered(false)}
     >
       <div style={{ aspectRatio: '4/3', overflow: 'hidden', background: 'var(--bg-surface-3)' }}>
-        <img
+        <Picture
           src={thumbSrc(src)}
           alt={label}
           loading="lazy"
