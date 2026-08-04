@@ -8,13 +8,13 @@ import { thumbSrc, displaySrc } from '../../utils/thumbs'
 // Files confirmed in /public/ (all .png)
 export const REFERENCE_IMAGES = [
   {
-    src:     '/Screenshot 2026-03-31 125242.png',
+    src:     '/Screenshot 2026-03-31 125242.jpg',
     label:   '3D Assembly View',
     caption: 'Top-side component render · Heartbeat Hotel Rev. A',
     view:    'isometric',
   },
   {
-    src:     '/Screenshot 2026-03-31 125305.png',
+    src:     '/Screenshot 2026-03-31 125305.jpg',
     label:   'Bottom Trace',
     caption: 'Rear copper layer · trace routing and via connections',
     view:    'bottom',
