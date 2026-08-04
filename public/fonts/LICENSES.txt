@@ -1,0 +1,57 @@
+Fonts served from this directory
+===============================
+
+These files are redistributed with the site rather than loaded from Google's
+CDN. Both licences below permit that; both also require that the licence
+travels with the files, which is what this file is for.
+
+
+Exo 2
+-----
+Copyright (c) Natanael Gama (www.ndiscovered.com)
+SIL Open Font License, Version 1.1
+https://openfontlicense.org/
+https://fonts.google.com/specimen/Exo+2
+
+Files: exo2-300.woff2, exo2-400.woff2, exo2-400i.woff2, exo2-500.woff2,
+       exo2-600.woff2, exo2-700.woff2
+
+
+Playfair Display
+----------------
+Copyright (c) Claus Eggers Sorensen
+SIL Open Font License, Version 1.1
+https://openfontlicense.org/
+https://fonts.google.com/specimen/Playfair+Display
+
+Files: playfair-700.woff2, playfair-700i.woff2, playfair-900.woff2
+
+
+Material Symbols Rounded
+------------------------
+Copyright (c) Google
+Apache License, Version 2.0
+https://www.apache.org/licenses/LICENSE-2.0
+https://fonts.google.com/icons
+
+File: material-symbols-rounded.woff2
+
+This is a SUBSET, not the whole family. It contains only the icons this site
+renders, requested through the &icon_names= parameter. The full variable icon
+font is 5,220 KB; this is 67 KB.
+
+
+Regenerating
+============
+
+The files are exactly what Google returns for the URL below. Fetch it with a
+current desktop browser user-agent (an old or absent UA gets ttf instead of
+woff2), then save every url() in the response and keep the naming scheme above.
+
+Adding an icon means adding its name to icon_names here AND re-downloading,
+or the new icon renders as its literal ligature text -- the subset will not
+contain the glyph.
+
+https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=accessibility_new,add,album,arrow_back,bug_report,build_circle,center_focus_strong,chevron_left,chevron_right,close,code,computer,copyright,dark_mode,electric_bolt,emoji_events,fit_screen,flight,fullscreen,fullscreen_exit,gavel,handyman,hub,library_music,light_mode,mail,memory,military_tech,open_in_full,open_in_new,pause,person,photo_camera,photo_library,play_arrow,play_circle,progress_activity,radio_button_checked,refresh,remove,search,settings,speaker,stars,sync,thermostat,upload_file,videocam_off,visibility,visibility_off,zoom_in&display=swap
+
+The @font-face rules that point at these files live in src/styles/index.css.
