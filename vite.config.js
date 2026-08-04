@@ -150,6 +150,12 @@ export default defineConfig(({ mode }) => {
          naming it explicitly fails with "Cannot find package 'esbuild'".
          Dropping esbuild is also what cleared its dev-server advisory. */
       minify: true,
+      /* Emits dist/.vite/manifest.json. scripts/prerender-meta.mjs reads it to
+         work out which chunk belongs to which route, so it can write a
+         modulepreload for that route's lazy() chunk into that route's shell.
+         Resolving it from the manifest rather than by guessing at filenames is
+         what makes it safe across content-hash changes. */
+      manifest: true,
       rollupOptions: {
         output: {
           /* Function form, not the object map. Vite 8 bundles with rolldown
@@ -163,21 +169,29 @@ export default defineConfig(({ mode }) => {
               names.some((n) => id.includes(`node_modules/${n}/`) || id.includes(`node_modules\\${n}\\`))
             if (inPkg('react', 'react-dom', 'react-router-dom', 'react-router')) return 'vendor-react'
             if (inPkg('three', '@react-three/fiber', '@react-three/drei')) return 'vendor-three'
-            /* reactflow deliberately has NO rule here. Forcing it into a named
-               manual chunk pinned it into the entry's static import graph:
-               dist/index.html emitted a modulepreload for vendor-flow, so all
-               273 KB downloaded on / and /about, which have no diagram on them
-               at all. Measured on production: 91 KB gzip, about half the home
-               page's script. Without a rule, rolldown lets it follow the two
-               lazy() diagram imports and it is fetched only when a diagram
-               renders. vendor-three keeps its rule and stays async, so this is
-               not a general problem with manualChunks -- the difference seems
-               to be that reactflow has two dynamic importers and three has one,
-               though that mechanism is a guess. The behaviour is not: removing
-               the rule is what makes the preload go away. Re-check
-               dist/index.html for a vendor-flow modulepreload before adding any
-               rule back. */
-            if (inPkg('framer-motion', 'motion-dom', 'motion-utils')) return 'vendor-motion'
+            /* reactflow and framer-motion deliberately have NO rule here.
+               Forcing a package into a named manual chunk pins that chunk into
+               the entry's static import graph, so dist/index.html emits a
+               modulepreload for it and every route downloads it up front:
+
+                 vendor-flow    273 KB, on / and /about, which have no diagram
+                 vendor-motion  117 KB, after NavBar stopped importing it
+
+               Both were verified the same way -- delete the one line, rebuild,
+               and the modulepreload disappears -- and both were verified to
+               land in an async chunk afterwards rather than being folded into
+               the entry.
+
+               vendor-three keeps its rule and stays async, which is what makes
+               the pattern legible: three has ONE dynamic importer (PCBViewer),
+               while reactflow has two and framer-motion has a dozen. A manual
+               chunk shared by several dynamic importers gets hoisted; one with
+               a single importer does not. That was a guess when reactflow was
+               the only data point; framer-motion behaving identically is the
+               second, so it is now the working explanation rather than a hunch.
+
+               Before adding any rule back, rebuild and grep dist/index.html for
+               a modulepreload of it. */
             if (inPkg('zustand')) return 'vendor-store'
           },
         },
