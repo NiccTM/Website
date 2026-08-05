@@ -279,7 +279,7 @@ export default function EcoSortDemo({ sectionId }) {
       </div>
 
       <p className="font-mono-data text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
-        Roboflow object detection · CMPE246 · model&nbsp;
+        Roboflow object detection · CMPE 246 · model&nbsp;
         <span style={{ color: 'var(--accent)' }}>{MODEL_ID} v{MODEL_VERSION}</span>
         &nbsp;· conf&nbsp;<span style={{ color: 'var(--accent)' }}>{INFER_CONF}%</span>
         &nbsp;· overlap&nbsp;<span style={{ color: 'var(--accent)' }}>{INFER_OVERLAP}%</span>

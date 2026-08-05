@@ -244,7 +244,7 @@ export default function HardwarePage() {
             PCB Lab · Digital Twin
           </h2>
           <p className="font-sans text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
-            Heartrate PCB · Altium Designer 24 · Drag to orbit · Scroll to zoom
+            Heart-rate PCB · Altium Designer 24 · Drag to orbit · Scroll to zoom
           </p>
         </div>
 

@@ -440,7 +440,7 @@ export const projects = [
     ],
     expandedDetails: {
       extendedDescription:
-        'UnBox is a circularly shipped, compostable, and impact-resistant packaging solution designed to reduce single-use plastic waste in electronics e-commerce. The container utilizes an elongated rhombic dodecahedron geometry, manufactured from Polylactic Acid (PLA). This structure provides high rigidity, withstanding over 680 N (60 kg) of vertical force without permanent deformation, while allowing the boxes to tile efficiently during transit. The shell is secured using integrated 3D-printed edge clips.\n\nTo eliminate waste from traditional shipping labels and facilitate a circular return system, UnBox integrates a passive Near Field Communication (NFC) tag. Shipping details (return address, recipient address, tracking number, and routing information) are stored directly on the tag and can be read or rewritten using a smartphone.',
+        'Compostable packaging for shipping electronics, meant to go back and be used again rather than thrown away. The shell is PLA, printed as an elongated rhombic dodecahedron because that shape tiles without gaps, so boxes pack against each other in transit instead of shipping air. It took over 680 N (60 kg) of vertical load without permanent deformation. Printed edge clips hold it shut, so it needs no tape.\n\nThe shipping label is a passive NFC tag rather than paper. Return address, recipient, tracking number and routing are written to the tag and can be read or rewritten from a phone, which is what lets the same box be readdressed for its next trip instead of relabelled.',
       technicalSpecs: [
         { label: 'Material',           value: 'Polylactic Acid (PLA)' },
         { label: 'Geometry',           value: 'Elongated Rhombic Dodecahedron' },
@@ -468,7 +468,7 @@ export const projects = [
     ],
     expandedDetails: {
       extendedDescription:
-        'An autonomous early-warning architecture for remote wildfire monitoring. The system integrates the Bosch BME688 gas sensor (VOC/CO detection), IR thermal imaging, and anemometer data to distinguish true ignition events from false positives like sun glare or prescribed burns through a multi-sensor consensus voting logic.\n\nCommunication is optimized for extreme remote deployment using a satellite uplink as the primary backhaul, ensuring real-time telemetry transmission in regions lacking terrestrial infrastructure.\n\nDeliverables included a full systems architecture diagram and component selection rationale based on spectral sensitivity and BME688 gas-classification training.',
+        'An early-warning design for wildfires in places nobody is watching. A Bosch BME688 reads VOCs and CO, an IR imager reads heat, and an anemometer reads wind. None of them can raise an alarm alone: they have to agree first, because what fools one usually does not fool the other two. Sun glare looks like fire to the thermal channel and to nothing else; a prescribed burn is real heat and real gas, but somebody scheduled it.\n\nThere is no terrestrial network where this would be deployed, so the primary backhaul is a satellite uplink.\n\nIt was a design study rather than a built unit. The deliverables were a systems architecture diagram and the component selection rationale, argued from spectral sensitivity and from what a BME688 can actually be trained to classify.',
       technicalSpecs: [
         { label: 'Gas sensor',   value: 'Bosch BME688 · VOC / CO detection + gas classification' },
         { label: 'Deliverables', value: 'Systems architecture diagram + component selection rationale' },
@@ -496,7 +496,7 @@ export const projects = [
     ],
     expandedDetails: {
       extendedDescription:
-        'A full SolidWorks multi-body assembly of the iconic DMC DeLorean, modelled from archival engineering drawings and reference photography. The project spanned 200+ individually constrained parts: body panels, gullwing door mechanisms, suspension geometry, and a complete PRV V6 engine sub-assembly.\n\nRendered at production quality in SolidWorks Visualize with environment lighting, material assignments, and an interactive Exploded View animation sequence. Placed in the Top 14 of the APSC 171 design competition across all cohort entries.',
+        'A SolidWorks multi-body assembly of the DMC DeLorean, modelled from archival engineering drawings and reference photography. Over 200 individually constrained parts: body panels, the gullwing door mechanism, suspension geometry and a complete PRV V6 engine sub-assembly.\n\nRendered in SolidWorks Visualize with environment lighting and material assignments, plus an exploded-view animation. It placed in the top 14 of the APSC 171 design competition across all cohort entries.',
       technicalSpecs: [
         { label: 'Tool',        value: 'SolidWorks 2024 + Visualize' },
         { label: 'Part count',  value: '200+ unique constrained parts' },
@@ -601,16 +601,16 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'A real-time computer vision pipeline for automated waste stream segregation using a custom-trained YOLOv8 model hosted on a Roboflow inference endpoint. The frontend performs a center-square crop to 640×640, encodes the frame as base64, and sends it to the inference API, back-mapping returned bounding box coordinates through the crop transform to the original image space for pixel-accurate overlay rendering.\n\nFull-Stack Pipeline: Built with React and Framer Motion for a low-latency UI, backed by a Vercel serverless function that proxies the API key and enforces per-IP and global rate limits.\n\nHardware Actuation: Classification outputs drive a servo-driven diverter flap via PWM, physically routing items into compost, recycle, or landfill bins.',
+        'A YOLOv8 model trained on rubbish and served from Roboflow, deciding which bin an item belongs in. The browser takes a centre square out of the frame, scales it to 640×640 and sends it as base64. The boxes that come back are in that 640-space, so they have to be mapped back through the crop to land on the right pixels of the original image; getting that transform wrong is the difference between a box on the object and a box beside it.\n\nThe API key never reaches the browser. A Vercel serverless function holds it and applies per-IP and global rate limits, because a public inference endpoint with the key in the bundle is someone else’s compute bill waiting to happen.\n\nOn the hardware side, the classification drives a servo flap over PWM that pushes each item towards compost, recycling or landfill.',
       technicalSpecs: [
         { label: 'Model',         value: 'YOLOv8 · yolov8-trash-detections-kgnug v11' },
-        { label: 'Inference',     value: 'Roboflow hosted API · confidence 25%, overlap 30%' },
-        { label: 'Preprocessing', value: 'Center-square crop → 640×640 JPEG' },
+        { label: 'Inference',     value: 'Roboflow hosted API · confidence 65%, overlap 30%' },
+        { label: 'Preprocessing', value: 'Centre-square crop → 640×640 JPEG' },
         { label: 'Coord mapping', value: 'RF 640-space → crop offset → original → display px' },
         { label: 'Backend',       value: 'Vercel serverless · rate limit 5 req/IP/hr' },
-        { label: 'Frontend',      value: 'React + Framer Motion, CSS absolute bounding boxes' },
+        { label: 'Frontend',      value: 'React · CSS absolute bounding boxes' },
         { label: 'MCU',           value: 'Microcontroller · servo PWM actuation' },
-        { label: 'Actuator',      value: 'Servo-driven diverter flap · center pos calibrated' },
+        { label: 'Actuator',      value: 'Servo-driven diverter flap · centre position calibrated' },
         { label: 'Course',        value: 'CMPE 246 · final project, UBC Okanagan' },
       ],
       subSystems: [
@@ -659,11 +659,11 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'A ground-up 3-phase brushless DC inrunner motor engineered without any off-the-shelf motor components. The 9-pole stator and 16-pole rotor were designed in CAD and 3D-printed, initially in PLA, then upgraded to PETG HF after thermal analysis revealed PLA+ would approach its glass transition temperature (55°C) under the 30A draw required for target torque.\n\nThe winding geometry went through two major iterations. The initial ABCABCABC sequence produced torque cancellation and oscillation; redesigning to AaABbBCCC unified the magnetic torque vectors and eliminated the instability. Stator teeth were replaced mid-project with iron bolts to concentrate flux and increase torque density, a direct response to the poor relative permeability (≈1) of PLA. The full BOM was engineered to $94.92 CAD against a $100 target.',
+        'A three-phase brushless inrunner built without buying a single motor part. The 9-pole stator and 16-pole rotor were drawn in CAD and printed, first in PLA and later in PETG HF, once it was clear the 30 A needed for target torque would take the windings close to PLA+’s glass transition at 55°C. A stator that softens while it is running has stopped being a stator.\n\nThe winding took two attempts. ABCABCABC put opposing polarities on adjacent teeth, so the phases worked against each other and the motor oscillated instead of spinning up. Regrouping to AaABbBCCC put each phase on neighbouring teeth and it turned cleanly. The printed stator teeth were also swapped for iron bolts partway through: PLA has a relative permeability of about 1, which is to say it is magnetically indistinguishable from air, and no amount of current fixes that.\n\nThe finished bill of materials came to $94.92 CAD against a $100 budget.',
       technicalSpecs: [
         { label: 'Topology',         value: '3-phase inrunner · 9-pole stator / 16-pole rotor' },
         { label: 'Connection',       value: 'Wye (Star)' },
-        { label: 'Winding',          value: '24 AWG enameled copper · ~200 turns/pole' },
+        { label: 'Winding',          value: '24 AWG enamelled copper · ~200 turns/pole' },
         { label: 'Phase resistance', value: '~2.022 Ω' },
         { label: 'Stator teeth',     value: 'Iron bolts (replaced PLA, μᵣ ≈ 1 → high flux density)' },
         { label: 'Rotor / base',     value: 'PETG HF (Tg ≈ 70°C, upgraded from PLA+ Tg 55°C)' },
@@ -764,7 +764,7 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'SignalVault is a long-running headless pipeline for institutional-grade audio preservation. It ingests high-resolution transfers (24-bit/96 kHz vinyl rips, plus DSD/FLAC/MP3 via a universal decoder) and applies forensic restoration, segmentation, metadata enrichment, and analysis, then emits a tiered archival package following IASA-TC 04 and FADGI-aligned conventions. Before any DSP runs, a bit-exact raw copy of the source is sealed, and every transformation from that point on is logged as a PREMIS event, so the whole chain is defensible after the fact.\n\nThe preservation philosophy is that archival math must be static, never dynamic. Loudness normalization is always a single linear scalar, 10^((target − measured)/20) broadcast across the array, never a compressor, limiter, or envelope shaper, because any envelope alteration would disqualify the file as a preservation derivative. That rule shapes the output tiers: a forensic raw copy, an unsegmented full-side BWF preservation master with no DSP, per-track restoration BWF masters, and access-tier FLACs.\n\nEvery run produces an A–F conformance score (labeled an Audio Preservation Conformance Score, FADGI-aligned; audio FADGI is pass/fail aim points, not a star rating), SHA-256 fixity manifests, and METS + PBCore repository XML. A PySide6 operator console fronts the pipeline with a local SQLite job history that is explicitly not treated as preservation truth, alongside scheduled fixity audits, BagIt transfer export, and experimental C2PA provenance signing.',
+        'SignalVault is a long-running headless pipeline for institutional-grade audio preservation. It ingests high-resolution transfers (24-bit/96 kHz vinyl rips, plus DSD/FLAC/MP3 via a universal decoder) and applies forensic restoration, segmentation, metadata enrichment, and analysis, then emits a tiered archival package following IASA-TC 04 and FADGI-aligned conventions. Before any DSP runs, a bit-exact raw copy of the source is sealed, and every transformation from that point on is logged as a PREMIS event, so the whole chain is defensible after the fact.\n\nThe preservation philosophy is that archival math must be static, never dynamic. Loudness normalisation is always a single linear scalar, 10^((target − measured)/20) broadcast across the array, never a compressor, limiter, or envelope shaper, because any envelope alteration would disqualify the file as a preservation derivative. That rule shapes the output tiers: a forensic raw copy, an unsegmented full-side BWF preservation master with no DSP, per-track restoration BWF masters, and access-tier FLACs.\n\nEvery run produces an A–F conformance score (labelled an Audio Preservation Conformance Score, FADGI-aligned; audio FADGI is pass/fail aim points, not a star rating), SHA-256 fixity manifests, and METS + PBCore repository XML. A PySide6 operator console fronts the pipeline with a local SQLite job history that is explicitly not treated as preservation truth, alongside scheduled fixity audits, BagIt transfer export, and experimental C2PA provenance signing.',
       technicalSpecs: [
         { label: 'Language',    value: 'Python · headless pipeline + PySide6 console' },
         { label: 'Target',      value: '24-bit / 96 kHz analog preservation (PCM_24/32/Float)' },
@@ -865,7 +865,7 @@ export const projects = [
 export const waterSenseAerospace = {
   title:       '2nd Year UAS Aerospace Team: Water Contact Sensor',
   descriptor:  'Schematic capture and PCB layout for a drone-mounted water detection system.',
-  application: 'Detects when a tube extended from a UAV successfully contacts water inside a target barrel.',
+  application: 'Detects when a tube lowered from a UAV touches the water inside a target barrel.',
   team:        'UBCO UAS Aerospace Team · 2nd Year',
   images: {
     schematic: {
@@ -915,7 +915,7 @@ export const archiveData = [
     module:     6,
     title:      'Workshop Infrastructure',
     descriptor: 'Collaborative mechanical fabrication and workstation infrastructure.',
-    spec:       'Collaborative structural fabrication.',
+    spec:       'Built with a housemate over a weekend.',
     icon:       'handyman',
     images: [
       {
@@ -940,9 +940,9 @@ export const hardwareDiagnostics = {
       description: 'GPU and laptop teardowns, thermal treatment, SSD and software repair.',
       images: [
         { src: '/ASUS_gaming_laptop.jpg', label: 'ASUS ROG Gaming Laptop', caption: 'Full disassembly · Thermal Grizzly PhaseSheet PTM reapplication · software repair · SSD repair' },
-        { src: '/MSI_gaming_laptop.jpg',  label: 'MSI Gaming Laptop',      caption: 'Full clean · MX-6 Arctic thermal paste reapplication · software repair · SSD repair' },
-        { src: '/ASUS_laptop.jpg',        label: 'ASUS Laptop',            caption: 'Full clean · MX-6 Arctic thermal paste reapplication · software repair · SSD repair' },
-        { src: '/Acer_laptop.jpg',        label: 'Acer Laptop',            caption: 'Full clean · MX-6 Arctic thermal paste reapplication · software repair · SSD repair' },
+        { src: '/MSI_gaming_laptop.jpg',  label: 'MSI Gaming Laptop',      caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
+        { src: '/ASUS_laptop.jpg',        label: 'ASUS Laptop',            caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
+        { src: '/Acer_laptop.jpg',        label: 'Acer Laptop',            caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
         { src: '/Zotac_RTX3090_v2.jpg',      label: 'Zotac RTX 3090',         caption: 'Full card clean · Thermal Grizzly PhaseSheet PTM reapplication · software repair' },
       ],
     },
