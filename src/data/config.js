@@ -895,12 +895,12 @@ export const archiveData = [
     module:     2,
     title:      'High-Fidelity Audio',
     descriptor: 'Analog and digital lossless audio hardware chain.',
-    spec:       'Rega Planar 2 · Creek CD43 MK2 · Luxman K-202 Cassette Deck',
+    spec:       'Rega Planar 2 · Creek CD43 Mk2 · Luxman K-205 Cassette Deck',
     icon:       'speaker',
     images: [
       {
         src:     '/RegaP2_CreekCD43MK2_LuxmanK202_v2.jpg',
-        label:   'Rega P2 · Creek CD43 MK2 · Luxman K-202',
+        label:   'Rega P2 · Creek CD43 Mk2 · Luxman K-205',
         caption: 'Bedroom signal chain · turntable, CD player, cassette deck',
       },
       {
