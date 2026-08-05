@@ -1,4 +1,5 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
+import { lazyWithReload } from '../utils/lazyWithReload'
 import { usePageMeta } from '../hooks/usePageMeta'
 import PageHeader     from '../components/layout/PageHeader'
 import ProjectGallery from '../components/ui/ProjectGallery'
@@ -21,12 +22,12 @@ function Divider() {
   )
 }
 
-const ProjectVideo = lazy(() => import('../components/media/ProjectVideo'))
-const EcoSortDemo  = lazy(() => import('../components/ml/EcoSortDemo'))
+const ProjectVideo = lazyWithReload(() => import('../components/media/ProjectVideo'))
+const EcoSortDemo  = lazyWithReload(() => import('../components/ml/EcoSortDemo'))
 /* Moved off the home page. Feeble Presence already has a card in the gallery
    above, so its architecture diagram belongs with it rather than being the
    landing page's main content. */
-const SystemArchitecture = lazy(() => import('../components/diagrams/SystemArchitecture'))
+const SystemArchitecture = lazyWithReload(() => import('../components/diagrams/SystemArchitecture'))
 
 export default function ProjectsPage() {
   usePageMeta('Projects', 'Competitive design, professional practice, and software projects, from award-winning UBC Engineering teams to embedded systems and full-stack applications.')
