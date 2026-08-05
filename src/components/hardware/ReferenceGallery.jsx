@@ -97,20 +97,35 @@ export default function ReferenceGallery({ onSyncView }) {
       {/* Thumbnail strip */}
       <div className="flex flex-col gap-3 p-3 overflow-y-auto flex-1">
         {REFERENCE_IMAGES.map((img, i) => (
+          /* Two sibling buttons. The zoom overlay was inset-0 with its own
+             onClick, and opacity: 0 still takes pointer events -- so it covered
+             the tile and swallowed every click, leaving the sync action
+             unreachable by mouse. Same fix as HardwarePage's strip. */
           <div
             key={img.src}
-            className="tile-lift relative group cursor-pointer rounded-lg overflow-hidden border"
+            className="tile-lift relative group rounded-lg overflow-hidden border"
             style={{
               borderColor: i === activeIndex ? 'var(--accent)' : 'var(--border)',
               boxShadow: i === activeIndex ? '0 0 0 1px var(--accent)' : 'none',
               aspectRatio: '16/9',
               background: '#003a4a',
             }}
-            onClick={() => handleClick(img, i)}
           >
+            <button
+              type="button"
+              onClick={() => handleClick(img, i)}
+              aria-label={`Sync the 3D view to ${img.label}`}
+              aria-pressed={i === activeIndex}
+              className="block w-full h-full cursor-pointer focus:outline-none focus-visible:ring-2"
+              style={{ '--tw-ring-color': 'var(--accent)' }}
+            >
             <Picture
               src={thumbSrc(img.src)}
-              alt={img.label}
+              /* alt="" on purpose: the label is rendered as visible text in
+                 the gradient below, and the button wrapping this image already
+                 names the action. A non-empty alt here makes a screen reader
+                 announce the same words twice (axe: image-redundant-alt). */
+              alt=""
               loading="lazy"
               decoding="async"
               className="w-full h-full object-cover transition-all duration-200"
@@ -119,15 +134,6 @@ export default function ReferenceGallery({ onSyncView }) {
                 mixBlendMode: 'screen',
               }}
             />
-
-            {/* Hover overlay -- zoom icon */}
-            <div
-              className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-              style={{ background: 'rgba(3,7,18,0.45)' }}
-              onClick={(e) => { e.stopPropagation(); setLightbox(img) }}
-            >
-              <span aria-hidden="true" className="material-symbols-rounded text-2xl" style={{ color: 'var(--accent)' }}>zoom_in</span>
-            </div>
 
             {/* Label */}
             <div
@@ -154,6 +160,23 @@ export default function ReferenceGallery({ onSyncView }) {
                 </span>
               </div>
             )}
+            </button>
+
+            {/* Zoom, its own control in the corner rather than an invisible
+                sheet over the tile. Bottom-left clears the ACTIVE badge. */}
+            <button
+              type="button"
+              onClick={() => setLightbox(img)}
+              aria-label={`Open ${img.label} full size`}
+              className="absolute bottom-2 left-2 grid place-items-center w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-150 focus:outline-none focus-visible:ring-2"
+              style={{
+                background: 'rgba(3,7,18,0.72)',
+                border: '1px solid rgb(var(--accent-rgb) / 0.35)',
+                '--tw-ring-color': 'var(--accent)',
+              }}
+            >
+              <span aria-hidden="true" className="material-symbols-rounded text-base" style={{ color: 'var(--accent-on-dark)' }}>zoom_in</span>
+            </button>
           </div>
         ))}
       </div>
