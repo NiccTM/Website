@@ -13,8 +13,7 @@ SIL Open Font License, Version 1.1
 https://openfontlicense.org/
 https://fonts.google.com/specimen/Exo+2
 
-Files: exo2-300.woff2, exo2-400.woff2, exo2-400i.woff2, exo2-500.woff2,
-       exo2-600.woff2, exo2-700.woff2
+Files: exo2-400.woff2 (variable, weights 100-900), exo2-400i.woff2 (italic)
 
 
 Playfair Display
@@ -24,7 +23,7 @@ SIL Open Font License, Version 1.1
 https://openfontlicense.org/
 https://fonts.google.com/specimen/Playfair+Display
 
-Files: playfair-700.woff2, playfair-700i.woff2, playfair-900.woff2
+Files: playfair-700.woff2 (variable, weights 700-900), playfair-700i.woff2 (italic)
 
 
 Material Symbols Rounded
@@ -44,14 +43,65 @@ font is 5,220 KB; this is 67 KB.
 Regenerating
 ============
 
-The files are exactly what Google returns for the URL below. Fetch it with a
-current desktop browser user-agent (an old or absent UA gets ttf instead of
-woff2), then save every url() in the response and keep the naming scheme above.
+FETCH EACH FAMILY SEPARATELY. NEVER combine Exo 2 / Playfair Display /
+Material Symbols in one css2 URL.
+
+Google serves a combined multi-family request through a different endpoint
+(fonts.gstatic.com/l/font, one file per face, no unicode-range) than a
+single-family request (fonts.gstatic.com/s/..., split into 'latin',
+'latin-ext', 'cyrillic', 'vietnamese', etc. by script). The combined endpoint
+is the one the &icon_names= subsetting needs -- that part is intentional and
+correct. But requesting the TEXT families through the same combined URL
+silently reduced them to whatever narrow subset that endpoint happened to
+compute: this repo's Exo 2 and Playfair files once carried 27 glyphs each --
+space, underscore, and the lowercase alphabet minus 'q' -- with no uppercase,
+no digits, no punctuation. Nothing errors when a glyph is missing; the browser
+just falls through to the next font in the stack for that one character. Every
+capital letter on the site was silently rendering in Georgia (or the Exo 2
+fallback) sitting next to true Playfair or Exo 2 lowercase, which looked like
+inconsistent bolding.
+
+Correct procedure, per family:
+
+  1. Fetch with a current desktop browser user-agent (an old or absent UA
+     gets ttf instead of woff2):
+
+     https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap
+
+     https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap
+
+  2. The response is several @font-face blocks per weight/style, each preceded
+     by a `/* rangename */` comment. Keep ONLY the blocks commented `/* latin */`
+     -- unicode-range U+0000-00FF plus general punctuation (en/em dash, curly
+     quotes, ellipsis, trademark, arrows, minus sign). That covers everything
+     this site's English body copy and spec tables use. Discard 'latin-ext',
+     'cyrillic', 'cyrillic-ext', 'vietnamese', 'greek' -- nothing here is
+     written in those scripts. Genuinely exotic characters this site DOES use
+     (Ω, μ, subscript digits in specs like "μᵣ") are out of scope on purpose:
+     they fall through to the symbol families already in tailwind.config.
+
+  3. Both families are variable fonts -- multiple requested weights in the
+     same style often resolve to the IDENTICAL url(), because the file already
+     spans the whole weight axis. Download that file once and point every
+     matching @font-face rule at it, declaring font-weight as a RANGE (e.g.
+     `font-weight: 100 900;`) rather than a fixed number -- same pattern
+     Material Symbols already uses below for its opsz/wght/FILL/GRAD range.
+     Verify with a font tool that the axis actually covers what you're
+     declaring before trusting it (fontTools: TTFont(path)['fvar'].axes).
+
+  4. Verify glyph coverage before committing: open the file with fontTools and
+     confirm 'N', 'A'-'Z', '0'-'9', and common punctuation are present in
+     getBestCmap(). A 6-8 KB file for a Latin text face is a red flag, not a
+     win -- the 'latin' block for these families runs 17-40 KB depending on
+     weight and style.
+
+Material Symbols regenerates the same way it always did -- combined request,
+icon_names subset intentional:
+
+  https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=accessibility_new,add,album,arrow_back,bug_report,build_circle,center_focus_strong,chevron_left,chevron_right,close,code,computer,copyright,dark_mode,electric_bolt,emoji_events,fit_screen,flight,fullscreen,fullscreen_exit,gavel,handyman,hub,library_music,light_mode,mail,memory,military_tech,open_in_full,open_in_new,pause,person,photo_camera,photo_library,play_arrow,play_circle,progress_activity,radio_button_checked,refresh,remove,search,settings,speaker,stars,sync,thermostat,upload_file,videocam_off,visibility,visibility_off,zoom_in&display=swap
 
 Adding an icon means adding its name to icon_names here AND re-downloading,
 or the new icon renders as its literal ligature text -- the subset will not
 contain the glyph.
-
-https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=accessibility_new,add,album,arrow_back,bug_report,build_circle,center_focus_strong,chevron_left,chevron_right,close,code,computer,copyright,dark_mode,electric_bolt,emoji_events,fit_screen,flight,fullscreen,fullscreen_exit,gavel,handyman,hub,library_music,light_mode,mail,memory,military_tech,open_in_full,open_in_new,pause,person,photo_camera,photo_library,play_arrow,play_circle,progress_activity,radio_button_checked,refresh,remove,search,settings,speaker,stars,sync,thermostat,upload_file,videocam_off,visibility,visibility_off,zoom_in&display=swap
 
 The @font-face rules that point at these files live in src/styles/index.css.

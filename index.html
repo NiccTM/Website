@@ -37,12 +37,14 @@
       in the site's own stylesheet, so the files are same-origin and can be
       preloaded from the HTML instead of being discovered two round trips later.
 
-      Only the three text faces needed for first paint are preloaded, 18 KB in
-      total: body copy at 400, the .font-mono-data UI weight at 500, and
-      Playfair 700 for headings. Material Symbols is deliberately NOT preloaded
-      even though it is the largest file at 67 KB -- icons are boxed at 1em in
-      index.css, so a late icon font cannot shift the layout, and putting it
-      ahead of the text would trade a visible win for an invisible one.
+      Two text faces are preloaded, both needed for first paint: Exo 2 (body
+      copy at 400, and every other weight the site uses -- the file is a
+      variable font, one download covers 100 through 900, so there is no
+      separate UI-weight file to preload any more) and Playfair 700 for
+      headings. Material Symbols is deliberately NOT preloaded even though it
+      is the largest file at 67 KB -- icons are boxed at 1em in index.css, so a
+      late icon font cannot shift the layout, and putting it ahead of the text
+      would trade a visible win for an invisible one.
 
       crossorigin is required on font preloads even for same-origin files:
       fonts are always fetched in anonymous CORS mode, and without it the
@@ -53,7 +55,6 @@
       ligature text. See public/fonts/LICENSES.txt for how to regenerate.
     -->
     <link rel="preload" href="/fonts/exo2-400.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/exo2-500.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/playfair-700.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- schema.org Person. This is a name-based domain, so the highest-value
