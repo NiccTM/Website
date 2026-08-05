@@ -19,3 +19,8 @@ dist-ssr
 
 # Local editor/tool config (tool resolves this from the session cwd, not here)
 .claude/launch.json
+
+# Working notes: outreach copy, Search Console steps. Kept locally, not
+# published -- this repo is public and draft self-promotion copy sitting next
+# to the engineering work reads oddly to anyone browsing it.
+notes/

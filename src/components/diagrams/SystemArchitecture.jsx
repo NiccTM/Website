@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useFlowNodeActivate } from '../../hooks/useFlowNodeActivate'
 import ReactFlow, {
   Background,
   Controls,
@@ -11,8 +12,12 @@ import 'reactflow/dist/style.css'
 import { feeblePresenceArch } from '../../data/config'
 
 function ArchNode({ data }) {
+  /* React Flow's wrapper is already focusable and already claims
+     role="button"; this is what makes Enter actually do something. */
+  const ref = useFlowNodeActivate(() => data.onSelect(data))
   return (
     <div
+      ref={ref}
       className="px-3 py-2 rounded-xl cursor-pointer select-none min-w-[130px]"
       style={{
         background: 'var(--flow-node-bg)',
