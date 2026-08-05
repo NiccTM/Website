@@ -8,7 +8,7 @@
     "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender-meta.mjs",
     "preview": "vite preview",
     "audit:fix": "npm audit fix",
-    "test": "node --test tests/image-proxy.test.mjs tests/thumbs.test.mjs tests/rate-limit.test.mjs",
+    "test": "node --test tests/image-proxy.test.mjs tests/thumbs.test.mjs tests/rate-limit.test.mjs tests/prerender.test.mjs",
     "check:encoding": "node scripts/check-encoding.mjs",
     "fix:encoding": "node scripts/check-encoding.mjs --fix"
   },

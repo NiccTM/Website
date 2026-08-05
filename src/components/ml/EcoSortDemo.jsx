@@ -289,16 +289,25 @@ export default function EcoSortDemo({ sectionId }) {
 
         {/* ── Drop zone ── */}
         {status === 'idle' && (
-          <div key="drop"
-            onDrop={onDrop} onDragOver={onDragOver}
-            onClick={() => inputRef.current?.click()}
-            className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed cursor-pointer"
-            style={{ height: '220px', borderColor: 'var(--border)', background: 'var(--bg-surface-1)' }}
-          >
-            <span aria-hidden="true" className="material-symbols-rounded text-4xl" style={{ color: 'var(--text-muted)' }}>upload_file</span>
-            <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>Drop image or click to browse</span>
-            <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>JPG · PNG · WebP · max 4 MB</span>
+          /* A <button>, with the file input as a SIBLING rather than a child.
+             It was a clicking div, so the only way to upload was a mouse. The
+             input cannot live inside the button -- interactive content is not
+             allowed there -- and it does not need to: it is display:none and
+             opened programmatically, which is the standard pattern. */
+          <div key="drop">
+            <button
+              type="button"
+              onDrop={onDrop} onDragOver={onDragOver}
+              onClick={() => inputRef.current?.click()}
+              className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed cursor-pointer w-full focus:outline-none focus-visible:ring-2"
+              style={{ height: '220px', borderColor: 'var(--border)', background: 'var(--bg-surface-1)', '--tw-ring-color': 'var(--accent)' }}
+            >
+              <span aria-hidden="true" className="material-symbols-rounded text-4xl" style={{ color: 'var(--text-muted)' }}>upload_file</span>
+              <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>Drop image or click to browse</span>
+              <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>JPG · PNG · WebP · max 4 MB</span>
+            </button>
             <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp"
+              aria-label="Choose an image to classify"
               className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
           </div>
         )}

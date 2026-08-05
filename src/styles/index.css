@@ -43,7 +43,6 @@
      and stayed neon in light mode. */
   --accent:         #5FD2E0;
   --accent-rgb:     95 210 224;
-  --accent-dim:     #3FA9B8;
 
   /* "Challenge" labels and anything else that has to read as a fault. It was
      hardcoded #FF3B30 at the call site, which is right on a dark surface and
@@ -181,9 +180,6 @@
      the old colour. */
   --accent:         #1e588e;
   --accent-rgb:     30 88 142;
-  /* Kept a step darker than --accent so "dim" still means dim; it was #1d62a8,
-     which is lighter than the new accent and would have inverted the pair. */
-  --accent-dim:     #164368;
 
   /* Same hue as the dark-mode #FF3B30, darkened until it clears the light
      Challenge panel. That panel is rgba(255,59,48,0.06) over the page, so it
