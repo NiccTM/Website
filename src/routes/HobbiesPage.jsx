@@ -1,4 +1,5 @@
-import { lazy, Suspense, useRef, useEffect } from 'react'
+import { Suspense, useRef, useEffect } from 'react'
+import { lazyWithReload } from '../utils/lazyWithReload'
 import { useSearchParams } from 'react-router-dom'
 import { usePageMeta } from '../hooks/usePageMeta'
 import PageHeader from '../components/layout/PageHeader'
@@ -10,11 +11,11 @@ import ErrorBoundary from '../components/ui/ErrorBoundary'
    with two tabs. Both panels stay lazy: the photo grid is 82 images and the
    signal chains pull in React Flow, and nobody should pay for the tab they did
    not open. */
-const PhotoGallery        = lazy(() => import('../components/photography/PhotoGallery'))
-const HardwareDiagnostics = lazy(() => import('../components/hardware/HardwareDiagnostics'))
-const ArchiveModules      = lazy(() => import('../components/hardware/ArchiveModules'))
-const AudioSignalChain    = lazy(() => import('../components/diagrams/AudioSignalChain'))
-const VinylArchive        = lazy(() => import('../components/audio/VinylArchive'))
+const PhotoGallery        = lazyWithReload(() => import('../components/photography/PhotoGallery'))
+const HardwareDiagnostics = lazyWithReload(() => import('../components/hardware/HardwareDiagnostics'))
+const ArchiveModules      = lazyWithReload(() => import('../components/hardware/ArchiveModules'))
+const AudioSignalChain    = lazyWithReload(() => import('../components/diagrams/AudioSignalChain'))
+const VinylArchive        = lazyWithReload(() => import('../components/audio/VinylArchive'))
 
 const TABS = [
   { id: 'audio',       label: 'Audio & Workshop' },

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { useEffect, lazy, Suspense } from 'react'
+import { useEffect, Suspense } from 'react'
+import { lazyWithReload } from './utils/lazyWithReload'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 
@@ -28,14 +29,19 @@ import { UIProvider }    from './context/UIContext'
 import ErrorBoundary     from './components/ui/ErrorBoundary'
 import AppShell          from './components/layout/AppShell'
 
-const HomePage        = lazy(() => import('./routes/HomePage'))
-const ProjectsPage    = lazy(() => import('./routes/ProjectsPage'))
-const HardwarePage    = lazy(() => import('./routes/HardwarePage'))
-const HobbiesPage     = lazy(() => import('./routes/HobbiesPage'))
-const ReferencePage   = lazy(() => import('./routes/ReferencePage'))
-const AboutPage       = lazy(() => import('./routes/AboutPage'))
-const ColophonPage    = lazy(() => import('./routes/ColophonPage'))
-const NotFound        = lazy(() => import('./routes/NotFound'))
+/* lazyWithReload, not lazy: chunk filenames are content-hashed, so a deploy
+   while someone is browsing turns every not-yet-loaded route into a 404 and
+   drops the app into its ErrorBoundary -- whose Retry cannot recover it,
+   because React.lazy memoises the rejected promise and re-requests the same
+   dead URL. See the note in utils/lazyWithReload.js. */
+const HomePage        = lazyWithReload(() => import('./routes/HomePage'))
+const ProjectsPage    = lazyWithReload(() => import('./routes/ProjectsPage'))
+const HardwarePage    = lazyWithReload(() => import('./routes/HardwarePage'))
+const HobbiesPage     = lazyWithReload(() => import('./routes/HobbiesPage'))
+const ReferencePage   = lazyWithReload(() => import('./routes/ReferencePage'))
+const AboutPage       = lazyWithReload(() => import('./routes/AboutPage'))
+const ColophonPage    = lazyWithReload(() => import('./routes/ColophonPage'))
+const NotFound        = lazyWithReload(() => import('./routes/NotFound'))
 
 export default function App() {
   return (

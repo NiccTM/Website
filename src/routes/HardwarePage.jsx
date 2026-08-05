@@ -1,4 +1,5 @@
-import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
+import { lazyWithReload } from '../utils/lazyWithReload'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
@@ -19,7 +20,7 @@ import WaterSenseDive from '../components/hardware/WaterSenseDive'
    fetched when a visitor presses play rather than on every page load. This is
    the heaviest route on the site; the placeholder called itself "zero GPU
    cost", which was true of the GPU and untrue of the network. */
-const PCBViewer = lazy(() => import('../components/hardware/PCBViewer'))
+const PCBViewer = lazyWithReload(() => import('../components/hardware/PCBViewer'))
 
 // ─── BPM controls ─────────────────────────────────────────────────────────────
 function BpmDot({ bpm }) {

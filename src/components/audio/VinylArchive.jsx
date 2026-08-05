@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
+import { lazyWithReload } from '../../utils/lazyWithReload'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const InteractiveTurntable = lazy(() => import('../3d/InteractiveTurntable'))
+const InteractiveTurntable = lazyWithReload(() => import('../3d/InteractiveTurntable'))
 
 // ─── Mock fallback data ───────────────────────────────────────────────────────
 // Shown when the Discogs API is unavailable (e.g. missing PAT in dev).
