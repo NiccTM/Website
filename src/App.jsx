@@ -8,6 +8,22 @@ function ScrollToTop() {
   useEffect(() => { window.scrollTo(0, 0) }, [pathname])
   return null
 }
+
+/* Speed Insights, told which route it is measuring.
+   <SpeedInsights /> used to render OUTSIDE <BrowserRouter>, where it cannot
+   call useLocation() and therefore has no idea what page it is on. Every
+   measurement was filed under the route "Unknown" in the dashboard, so the data
+   was arriving but was useless for telling /projects from /colophon -- which is
+   the only thing it is there to do.
+   The prop wants the route PATTERN rather than the URL, so that /thing/1 and
+   /thing/2 aggregate instead of becoming separate rows. Every route on this
+   site is static, so the pathname IS the pattern.
+   <Analytics /> takes no route prop and reads the URL from the history API
+   itself, so it stays where it is. */
+function RoutedSpeedInsights() {
+  const { pathname } = useLocation()
+  return <SpeedInsights route={pathname} />
+}
 import { UIProvider }    from './context/UIContext'
 import ErrorBoundary     from './components/ui/ErrorBoundary'
 import AppShell          from './components/layout/AppShell'
@@ -27,6 +43,7 @@ export default function App() {
       <UIProvider>
         <BrowserRouter>
           <ScrollToTop />
+          <RoutedSpeedInsights />
           <Suspense fallback={null}>
             <Routes>
               <Route element={<AppShell />}>
@@ -57,7 +74,6 @@ export default function App() {
         </BrowserRouter>
       </UIProvider>
       <Analytics />
-      <SpeedInsights />
     </ErrorBoundary>
   )
 }
