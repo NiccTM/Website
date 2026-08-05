@@ -1,7 +1,6 @@
 import { Suspense, useCallback, useEffect, useState } from 'react'
 import { lazyWithReload } from '../utils/lazyWithReload'
 import { usePageMeta } from '../hooks/usePageMeta'
-import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { useAppStore } from '../store/useAppStore'
 import ErrorBoundary  from '../components/ui/ErrorBoundary'
@@ -13,7 +12,6 @@ import HardwareTabs   from '../components/layout/HardwareTabs'
 import PageHeader     from '../components/layout/PageHeader'
 import MotorLab       from '../components/hardware/MotorLab'
 import WaterSenseDive from '../components/hardware/WaterSenseDive'
-
 
 /* Everything three.js lives in components/hardware/PCBViewer.jsx and is
    imported lazily, so the three.js, react-three-fiber and drei chunks are
@@ -83,11 +81,9 @@ function ReferenceGalleryStrip({ onSyncView }) {
       {/* Horizontal thumbnail row */}
       <div className="flex gap-3 overflow-x-auto pb-1">
         {REFERENCE_IMAGES.map((img, i) => (
-          <motion.div
+          <div
             key={i}
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.15 }}
-            className="relative group cursor-pointer rounded-lg overflow-hidden border shrink-0"
+            className="tile-lift relative group cursor-pointer rounded-lg overflow-hidden border shrink-0"
             style={{
               width: '220px',
               borderColor: i === activeIndex ? 'var(--accent)' : 'var(--border)',
@@ -138,7 +134,7 @@ function ReferenceGalleryStrip({ onSyncView }) {
                   style={{ color: 'var(--accent)', opacity: 0.7 }}>sync</span>
               </div>
             )}
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -148,9 +144,8 @@ function ReferenceGalleryStrip({ onSyncView }) {
         &nbsp;·&nbsp;{REFERENCE_IMAGES[activeIndex].caption}
       </p>
 
-      <AnimatePresence>
         {lightbox && <ImageLightbox src={lightbox.src} label={lightbox.label} caption={lightbox.caption} onClose={() => setLightbox(null)} />}
-      </AnimatePresence>
+
     </div>
   )
 }
@@ -185,8 +180,7 @@ export default function HardwarePage() {
       <HardwareTabs />
 
       {/* ── Header ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
+      <div
         className="flex flex-wrap items-center justify-between gap-4 mb-5"
       >
         <div>
@@ -220,12 +214,10 @@ export default function HardwarePage() {
 
           <BpmControl />
         </div>
-      </motion.div>
+      </div>
 
       {/* ── PCB Digital Twin -- full width ── */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.45, delay: 0.1 }}
+      <div
         className="relative w-full aspect-video sm:aspect-auto sm:h-[60vh] sm:max-h-[820px] rounded-xl overflow-hidden"
         style={{ border: '1px solid rgb(var(--accent-rgb) / 0.15)', background: 'rgba(2,13,26,0.5)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
       >
@@ -382,7 +374,7 @@ export default function HardwarePage() {
             Pause
           </button>
         )}
-      </motion.div>
+      </div>
 
       {/* ── Legend ── */}
       <div className="flex flex-wrap gap-5 mt-3">

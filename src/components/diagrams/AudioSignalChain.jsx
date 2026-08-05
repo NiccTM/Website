@@ -8,7 +8,6 @@ import ReactFlow, {
   Position,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
-import { motion, AnimatePresence } from 'framer-motion'
 import { audioChain } from '../../data/config'
 
 function AudioNode({ data }) {
@@ -127,13 +126,9 @@ function FlowSection({ id, title, chain }) {
       </div>
 
       {/* Spec panel -- below the diagram, slides in when a node is selected */}
-      <AnimatePresence>
+
         {selected && (
-          <motion.div
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.18 }}
+          <div
             className="hidden sm:flex items-start gap-6 mt-2 px-4 py-3 rounded-xl"
             style={{
               background: 'var(--flow-panel-bg)',
@@ -156,9 +151,8 @@ function FlowSection({ id, title, chain }) {
             <button onClick={() => setSelected(null)} style={{ color: 'var(--text-muted)' }} aria-label="Close">
               <span aria-hidden="true" className="material-symbols-rounded text-sm">close</span>
             </button>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
 
       {/* Mobile fallback */}
       <div className="sm:hidden rounded-xl border-subtle p-4" style={{ background: 'var(--bg-surface-1)' }}>
@@ -178,16 +172,12 @@ function FlowSection({ id, title, chain }) {
 export default function AudioSignalChain({ sectionId }) {
   return (
     <section id={sectionId} className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
-      <motion.h2
-        initial={{ opacity: 0, x: -8 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.35 }}
+      <h2
         className="font-mono-data tracking-widest uppercase mb-1"
         style={{ color: 'var(--accent)' }}
       >
         Audio Signal Chains
-      </motion.h2>
+      </h2>
       <p className="font-mono-data mb-8" style={{ color: 'var(--text-muted)' }}>
         Click any node for specs
       </p>

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import { usePageMeta } from '../hooks/usePageMeta'
 import ImageLightbox from '../components/ui/ImageLightbox'
 import HardwareTabs  from '../components/layout/HardwareTabs'
@@ -26,16 +25,12 @@ const SPECS = [
    use, so this route reads as part of the same site rather than a one-off. */
 function Heading({ children }) {
   return (
-    <motion.h2
-      initial={{ opacity: 0, x: -8 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.35 }}
+    <h2
       className="font-mono-data text-base tracking-widest uppercase mb-3"
       style={{ color: 'var(--accent)' }}
     >
       {children}
-    </motion.h2>
+    </h2>
   )
 }
 
@@ -49,16 +44,12 @@ function Body({ children }) {
 
 function Section({ title, children }) {
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.4 }}
+    <section
       className="mb-10"
     >
       <Heading>{title}</Heading>
       {children}
-    </motion.section>
+    </section>
   )
 }
 
@@ -91,10 +82,7 @@ export default function ReferencePage() {
 
       {/* Ownership notice, stated up front rather than buried in a footer, so a
           reader knows whose work this is before reading any of it. */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+      <div
         className="flex items-start gap-2.5 mb-12 px-4 py-3 rounded-lg"
         style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)' }}
       >
@@ -106,13 +94,10 @@ export default function ReferencePage() {
           equipment shown remain the property of {EMPLOYER} See the notice at the
           foot of this page.
         </p>
-      </motion.div>
+      </div>
 
       {/* ── Bench photo ── */}
-      <motion.figure
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.25 }}
+      <figure
         className="mb-12"
       >
         <div
@@ -141,7 +126,7 @@ export default function ReferencePage() {
           7&nbsp;µV or 0.7&nbsp;ppm from nominal, in a pre-calibration development state. Not a
           calibrated result or a specification.
         </figcaption>
-      </motion.figure>
+      </figure>
 
       {/* ── Write-up ── */}
       <Section title="Why a buried-Zener reference">
@@ -230,11 +215,7 @@ export default function ReferencePage() {
       </Section>
 
       {/* ── Specs ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-40px' }}
-        transition={{ duration: 0.4 }}
+      <div
         className="mb-12"
       >
         <Heading>Specifications</Heading>
@@ -260,14 +241,10 @@ export default function ReferencePage() {
         <p className="font-mono-data text-sm mt-3 w-full" style={{ color: 'var(--text-muted)' }}>
           Indicative of a development configuration. Not a specification or a datasheet.
         </p>
-      </motion.div>
+      </div>
 
       {/* ── Legal notice ── */}
-      <motion.aside
-        initial={{ opacity: 0, y: 14 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-40px' }}
-        transition={{ duration: 0.4 }}
+      <aside
         aria-labelledby="legal-heading"
         className="rounded-xl px-5 py-5"
         style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)' }}
@@ -290,7 +267,7 @@ export default function ReferencePage() {
             {text}
           </p>
         ))}
-      </motion.aside>
+      </aside>
 
       {lightbox && (
         <ImageLightbox

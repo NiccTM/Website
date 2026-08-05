@@ -979,6 +979,32 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 .anim-rise { animation: rise-in var(--anim-dur, 0.7s) ease-out var(--anim-delay, 0s) backwards; }
 .anim-fade { animation: fade-in var(--anim-dur, 0.4s) ease-out var(--anim-delay, 0s) backwards; }
 
+/* Modal/lightbox panel entrance: the scale-and-rise that AnimatePresence used
+   to run. Only the ENTER half is kept -- an exit transition needs the element
+   to stay mounted after it is closed, which is the one thing AnimatePresence
+   did that CSS cannot, and a dialog that vanishes on click reads as responsive
+   rather than broken. */
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.94) translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}
+.anim-pop { animation: pop-in 0.22s ease-out backwards; }
+
+/* ── Press/lift feedback for tiles ────────────────────────────────────────────
+   Replaces framer-motion's whileHover/whileTap on the reference-gallery
+   thumbnails and the vinyl album cards. Transform-only, so it runs on the
+   compositor and never triggers layout.
+   :active rather than a tap handler, so a touch gives the same feedback a
+   click does with no JavaScript involved. The scale is deliberately small --
+   these sit in tight grids, and anything larger overlaps the neighbour. */
+.tile-lift {
+  transition: transform 0.15s ease-out;
+}
+@media (hover: hover) {
+  .tile-lift:hover { transform: scale(var(--tile-lift, 1.02)); }
+}
+.tile-lift:active { transform: scale(0.985); }
+
 /* Hero slides are stacked and cross-faded by toggling opacity, which replaces
    AnimatePresence. The first slide renders at opacity 1 with no animation on
    it at all -- deliberately, and it must stay that way: Chrome refuses an

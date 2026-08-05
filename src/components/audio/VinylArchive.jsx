@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { lazyWithReload } from '../../utils/lazyWithReload'
-import { motion, AnimatePresence } from 'framer-motion'
 
 const InteractiveTurntable = lazyWithReload(() => import('../3d/InteractiveTurntable'))
 
@@ -84,13 +83,10 @@ function AlbumCard({ release, onClick }) {
   const [imgError, setImgError] = useState(false)
 
   return (
-    <motion.button
-      variants={gridItem}
-      whileHover={{ scale: 1.04, transition: { duration: 0.15 } }}
-      whileTap={{ scale: 0.97 }}
+    <button
       onClick={() => onClick(release)}
-      className="group relative aspect-square rounded-lg overflow-hidden border-subtle text-left focus:outline-none focus-visible:ring-2"
-      style={{ background: 'var(--bg-surface-2)', '--tw-ring-color': 'var(--accent)' }}
+      className="tile-lift group relative aspect-square rounded-lg overflow-hidden border-subtle text-left focus:outline-none focus-visible:ring-2"
+      style={{ background: 'var(--bg-surface-2)', '--tw-ring-color': 'var(--accent)', '--tile-lift': 1.04 }}
       aria-label={`${release.artist} -- ${release.title}`}
     >
       {release.cover_image && !imgError ? (
@@ -125,7 +121,7 @@ function AlbumCard({ release, onClick }) {
           radio_button_checked
         </span>
       </div>
-    </motion.button>
+    </button>
   )
 }
 
@@ -203,12 +199,8 @@ export default function VinylArchive() {
   const [selected, setSelected] = useState(null)
 
   return (
-    <motion.section
+    <section
       id="section-vinyl"
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.45 }}
       className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
     >
       {/* Header */}
@@ -245,20 +237,17 @@ export default function VinylArchive() {
       {error && <ErrorState message={error} onRetry={retry} onMock={useMock} />}
 
       {!loading && !error && data.length > 0 && (
-        <motion.div
-          variants={gridContainer}
-          initial="hidden"
-          animate="show"
+        <div
           className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
         >
           {data.map((release) => (
             <AlbumCard key={release.id} release={release} onClick={setSelected} />
           ))}
-        </motion.div>
+        </div>
       )}
 
       {/* R3F Turntable modal */}
-      <AnimatePresence>
+
         {selected && (
           <Suspense fallback={null}>
             <InteractiveTurntable
@@ -267,7 +256,7 @@ export default function VinylArchive() {
             />
           </Suspense>
         )}
-      </AnimatePresence>
-    </motion.section>
+
+    </section>
   )
 }

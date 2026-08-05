@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { motion } from 'framer-motion'
 import { thumbSrc } from '../../utils/thumbs'
 import Picture from './Picture'
 import ImageLightbox from './ImageLightbox'
@@ -104,21 +103,13 @@ export default function ProjectModal({ project, onClose }) {
     : extendedDescription.split('\n\n').filter(Boolean)
 
   return createPortal(
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.18 }}
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-8"
+    <div
+      className="anim-fade fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-8"
       style={{ background: 'rgba(3,2,10,0.80)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', willChange: 'opacity' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <motion.div
-        initial={{ scale: 0.94, y: 20, opacity: 0 }}
-        animate={{ scale: 1,    y: 0,  opacity: 1 }}
-        exit={{    scale: 0.94, y: 20, opacity: 0 }}
-        transition={{ duration: 0.22, ease: 'easeOut' }}
-        className="relative w-full max-w-2xl flex flex-col"
+      <div
+        className="anim-pop relative w-full max-w-2xl flex flex-col"
         style={{
           background: 'var(--bg-surface-1)',
           border: '1px solid var(--border)',
@@ -272,7 +263,7 @@ export default function ProjectModal({ project, onClose }) {
                 )}
           </div>
         )}
-      </motion.div>
+      </div>
 
       {/* Screenshot lightbox -- opened from a sub-system image. Stops the click
           from bubbling to the backdrop (which would close the whole modal). */}
@@ -286,7 +277,7 @@ export default function ProjectModal({ project, onClose }) {
           />
         </div>
       )}
-    </motion.div>,
+    </div>,
     document.body
   )
 }

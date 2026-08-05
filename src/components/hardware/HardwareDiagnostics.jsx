@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { hardwareDiagnostics } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc } from '../../utils/thumbs'
@@ -39,7 +38,7 @@ function DiagnosticImage({ image, index }) {
 
   return (
     <>
-      <motion.div
+      <div
         onHoverStart={() => setHovered(true)}
         onHoverEnd={() => setHovered(false)}
         onClick={() => setLightbox(true)}
@@ -99,11 +98,10 @@ function DiagnosticImage({ image, index }) {
         >
           <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>zoom_in</span>
         </div>
-      </motion.div>
+      </div>
 
-      <AnimatePresence>
         {lightbox && <ImageLightbox src={image.src} label={image.label} caption={image.caption} onClose={() => setLightbox(false)} />}
-      </AnimatePresence>
+
     </>
   )
 }
@@ -120,11 +118,7 @@ function CategorySection({ category, sectionIndex }) {
   )
   return (
     <div className="mb-8">
-      <motion.div
-        initial={{ opacity: 0, x: -6 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.28, delay: sectionIndex * 0.06 }}
+      <div
         className="flex items-center gap-2 mb-4"
       >
         {category.icon === '_sacd'
@@ -136,7 +130,7 @@ function CategorySection({ category, sectionIndex }) {
         </span>
         <div className="flex-1 h-px ml-1" style={{ background: 'rgba(255,255,255,0.45)' }} />
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{category.description}</span>
-      </motion.div>
+      </div>
 
       <div className={`grid gap-3 ${gridCols}`}>
         {category.images.map((img, i) => (
@@ -153,11 +147,7 @@ export default function HardwareDiagnostics() {
   const scrambled = useScramble(hardwareDiagnostics.title, hovered)
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.45 }}
+    <section
       className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
     >
       {/* Header */}
@@ -188,6 +178,6 @@ export default function HardwareDiagnostics() {
       {hardwareDiagnostics.categories.map((cat, i) => (
         <CategorySection key={cat.key} category={cat} sectionIndex={i} />
       ))}
-    </motion.section>
+    </section>
   )
 }

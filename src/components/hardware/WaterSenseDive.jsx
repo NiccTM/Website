@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { waterSenseAerospace as data } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc } from '../../utils/thumbs'
@@ -50,9 +49,8 @@ function DigitalTwinPanel({ src, label, caption, icon }) {
         </div>
       </div>
 
-      <AnimatePresence>
         {open && <ImageLightbox src={src} label={label} caption={caption} onClose={() => setOpen(false)} />}
-      </AnimatePresence>
+
     </>
   )
 }
@@ -61,11 +59,7 @@ export default function WaterSenseDive() {
   return (
     <div className="mt-10">
       {/* Section header */}
-      <motion.div
-        initial={{ opacity: 0, x: -8 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.3 }}
+      <div
         className="flex items-center gap-2 mb-2"
       >
         <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>flight</span>
@@ -74,18 +68,14 @@ export default function WaterSenseDive() {
         </h3>
         <div className="flex-1 h-px ml-2" style={{ background: 'rgba(255,255,255,0.45)' }} />
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{data.team}</span>
-      </motion.div>
+      </div>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.3, delay: 0.05 }}
+      <p
         className="font-sans text-sm mb-5 max-w-2xl"
         style={{ color: 'var(--text-secondary)' }}
       >
         {data.application}
-      </motion.p>
+      </p>
 
       {/* Side-by-side: Schematic + PCB */}
       <div className="grid grid-cols-2 gap-4 mb-5">
@@ -104,11 +94,7 @@ export default function WaterSenseDive() {
       </div>
 
       {/* Specs table */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.3, delay: 0.1 }}
+      <div
         className="overflow-hidden"
         style={{ border: '1px solid rgba(255,255,255,0.45)', borderRadius: 'var(--radius)' }}
       >
@@ -129,7 +115,7 @@ export default function WaterSenseDive() {
             </span>
           </div>
         ))}
-      </motion.div>
+      </div>
     </div>
   )
 }

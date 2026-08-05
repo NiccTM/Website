@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { projects } from '../../data/config'
 import ProjectModal from './ProjectModal'
 import { thumbSrc } from '../../utils/thumbs'
@@ -78,7 +77,7 @@ function ProjectCard({ project, featured = false, priority = false, onExpand }) 
   const displayImage = heroImage || fallbackImage || null
 
   return (
-    <motion.div
+    <div
       /* Contents do not perform. Repeated grid items used to stagger in on
          scroll, index by index, which is the pattern every generated portfolio
          template ships with -- and with 13 cards it read as a slideshow. The
@@ -228,17 +227,13 @@ function ProjectCard({ project, featured = false, priority = false, onExpand }) 
           ))}
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
 function SectionHeading({ label, icon, index }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -8 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.3 }}
+    <div
       className="flex items-center gap-3 mb-6"
     >
       <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{icon}</span>
@@ -249,7 +244,7 @@ function SectionHeading({ label, icon, index }) {
         {label}
       </h2>
       <div className="flex-1 h-px ml-2" style={{ background: 'var(--border)' }} />
-    </motion.div>
+    </div>
   )
 }
 
@@ -309,7 +304,6 @@ export default function ProjectGallery() {
         })}
       </div>
 
-      <AnimatePresence>
         {activeProject && (
           <ProjectModal
             key={activeProject.id}
@@ -317,7 +311,7 @@ export default function ProjectGallery() {
             onClose={() => setActiveProject(null)}
           />
         )}
-      </AnimatePresence>
+
     </section>
   )
 }
