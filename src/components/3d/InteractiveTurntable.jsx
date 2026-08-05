@@ -48,8 +48,8 @@ const RECORD_TOP = RECORD_CY + RECORD_T / 2                     // 0.180
 // agreed with what the arm actually did -- "parked (R≈1.51, just outside record
 // edge)" was in fact R=1.435, i.e. the stylus parked ON the disc.
 const TONEARM_REST     = 1.342  // parked        -> R 1.560, clear of the 1.50 edge
-const TONEARM_PLAY     = 1.253  // lead-in       -> R 1.440, ~6 mm in from the rim
-const TONEARM_INNER    = 0.682  // run-out       -> R 0.660, just outside the 0.60 label
+const TONEARM_PLAY     = 1.254  // lead-in       -> R 1.440, ~6 mm in from the rim
+const TONEARM_INNER    = 0.687  // run-out       -> R 0.660, just outside the 0.60 label
 const RAISE_HEIGHT     = 0.14   // how far the STYLUS END lifts when cued up
 const TRACKING_SECS    = 120    // seconds to sweep outer → inner (slow, realistic)
 
@@ -71,8 +71,13 @@ const TUBE_END_X = TUBE_CX - (TUBE_LEN / 2) * Math.cos(TUBE_TILT)
 const TUBE_END_Y = TUBE_CY + (TUBE_LEN / 2) * Math.sin(TUBE_TILT)
 
 const HEADSHELL_YAW = -0.38     // ~22°, so the cartridge runs tangent to the groove
-const STYLUS_LX     = -0.168    // stylus within the headshell group
-const STYLUS_LY     = -0.068
+// Stylus within the headshell group. The cartridge body occupies local
+// x -0.1575..-0.0625 and y -0.041..-0.011, so this puts the tip 2.0 mm forward
+// of its front face and 1.6 mm below its underside -- roughly where a real MM
+// cartridge sits. It used to be 1.05 mm forward and 2.7 mm down, a 69 degree
+// cantilever, which is far steeper than any cartridge is built.
+const STYLUS_LX     = -0.1775
+const STYLUS_LY     = -0.057
 
 // Stylus in pivot-local space. R_y(θ) on (x, 0, 0) gives (x·cosθ, 0, -x·sinθ).
 const STYLUS_X = TUBE_END_X + STYLUS_LX * Math.cos(HEADSHELL_YAW)
@@ -211,12 +216,22 @@ function useVinylMaps() {
   }, [gl])
 }
 
-// Discogs art is frequently a photograph of the sleeve with dead space around
-// it, so a plain cover-fit crop still leaves the artwork as a small square
-// floating in the middle of the label. Find the real content instead: sample a
-// small copy, treat the corner pixel as the background, and take the bounding
-// box of everything that differs from it. Falls back to the full frame when the
-// artwork genuinely bleeds to its edges.
+// Discogs art is frequently a photograph or scan of the sleeve with dead space
+// around it, so a plain cover-fit crop still leaves the artwork as a square
+// floating in a border. Find the real content instead.
+//
+// This used to take the bounding box of every pixel differing from the corner
+// pixel, and that is defeated by anything PRINTED in the margin -- a barcode, a
+// catalogue number, a "COLLECTOR'S EDITION" banner. A handful of dark glyphs
+// out at the edge drag the box straight back to the full frame, and the border
+// survives onto the label with the artwork's straight edges showing across it.
+// That is exactly what a Toto IV scan did here.
+//
+// So score whole rows and columns by how much of each differs from the
+// background, and keep the ones carrying real content. A band of artwork covers
+// most of its row; a line of text covers a few percent of it. The cut is taken
+// relative to the strongest row rather than at a fixed number, so it adapts to
+// art that is mostly flat colour.
 function contentBounds(img, threshold = 26) {
   const N = 64
   const cv = document.createElement('canvas')
@@ -225,25 +240,49 @@ function contentBounds(img, threshold = 26) {
   ctx.drawImage(img, 0, 0, N, N)
   const d = ctx.getImageData(0, 0, N, N).data
   const at = (i, j) => { const o = (j * N + i) * 4; return [d[o], d[o + 1], d[o + 2]] }
-  const bg = at(0, 0)
 
-  let x0 = N, y0 = N, x1 = -1, y1 = -1
+  // Median of the four corners, so one dark speck in a corner cannot define the
+  // background for the whole image.
+  const corners = [at(0, 0), at(N - 1, 0), at(0, N - 1), at(N - 1, N - 1)]
+  const bg = [0, 1, 2].map((c) => corners.map((p) => p[c]).sort((a, b) => a - b)[1])
+  const differs = (i, j) => {
+    const p = at(i, j)
+    return Math.abs(p[0] - bg[0]) + Math.abs(p[1] - bg[1]) + Math.abs(p[2] - bg[2]) > threshold
+  }
+
+  const rows = new Array(N).fill(0)
+  const cols = new Array(N).fill(0)
   for (let j = 0; j < N; j++) {
     for (let i = 0; i < N; i++) {
-      const p = at(i, j)
-      if (Math.abs(p[0] - bg[0]) + Math.abs(p[1] - bg[1]) + Math.abs(p[2] - bg[2]) > threshold) {
-        if (i < x0) x0 = i
-        if (i > x1) x1 = i
-        if (j < y0) y0 = j
-        if (j > y1) y1 = j
-      }
+      if (differs(i, j)) { rows[j]++; cols[i]++ }
     }
   }
-  if (x1 < x0 || y1 < y0) return { sx: 0, sy: 0, sw: img.width, sh: img.height }
+
+  // Keep a line only if it carries at least 45% of the busiest line's content,
+  // and at least a fifth of its own length. Sparse marginal printing clears
+  // neither; a band of artwork clears both.
+  const span = (counts) => {
+    const peak = Math.max(...counts)
+    if (peak === 0) return null
+    const cut = Math.max(peak * 0.45, N * 0.2)
+    let a = counts.findIndex((v) => v >= cut)
+    let b = counts.length - 1 - [...counts].reverse().findIndex((v) => v >= cut)
+    return a < 0 || b < a ? null : [a, b]
+  }
+  const xs = span(cols)
+  const ys = span(rows)
+
+  // Fall back to the whole frame when the trim finds nothing, or when it wants
+  // to throw away so much that it has clearly locked onto a detail rather than
+  // the artwork.
+  const full = { sx: 0, sy: 0, sw: img.width, sh: img.height }
+  if (!xs || !ys) return full
+  const keep = ((xs[1] - xs[0] + 1) / N) * ((ys[1] - ys[0] + 1) / N)
+  if (keep < 0.25) return full
 
   const kx = img.width / N
   const ky = img.height / N
-  return { sx: x0 * kx, sy: y0 * ky, sw: (x1 - x0 + 1) * kx, sh: (y1 - y0 + 1) * ky }
+  return { sx: xs[0] * kx, sy: ys[0] * ky, sw: (xs[1] - xs[0] + 1) * kx, sh: (ys[1] - ys[0] + 1) * ky }
 }
 
 // ─── Album label ──────────────────────────────────────────────────────────────
@@ -272,9 +311,25 @@ function AlbumLabel({ coverUrl }) {
     ctx.fillStyle = '#15151b'
     ctx.fillRect(0, 0, S, S)
     if (img && img.width) {
-      // Trim the sleeve's dead space, then cover-fit the remaining artwork so it
-      // fills the circle and crops the overflow, never letterboxes.
-      const { sx, sy, sw, sh } = contentBounds(img)
+      // Trim the sleeve's dead space, then take the CENTRE of what is left and
+      // cover-fit that. Cover-fit alone always fills the circle, so nothing here
+      // ever letterboxes -- but it fills it with the whole sleeve, edges and all,
+      // and sleeve edges are where the junk lives. Mobile Fidelity prints
+      // "ORIGINAL MASTER RECORDING" in a band across the top and a pressing
+      // credit across the bottom; plenty of Discogs entries are a photograph of
+      // the sleeve lying at an angle on a white table, whose dead space sits in
+      // rotated corners that no axis-aligned trim can reach. Both land on the
+      // label as straight edges cutting across the artwork.
+      //
+      // Zooming past the border sidesteps the whole class, and it is also just
+      // what a label looks like: a real one is a 100 mm paper disc carrying a
+      // small central design, not a shrunk-down album sleeve.
+      const ZOOM = 0.72
+      const b = contentBounds(img)
+      const sw = b.sw * ZOOM
+      const sh = b.sh * ZOOM
+      const sx = b.sx + (b.sw - sw) / 2
+      const sy = b.sy + (b.sh - sh) / 2
       const scale = Math.max(S / sw, S / sh)
       const w = sw * scale
       const h = sh * scale
@@ -491,8 +546,10 @@ function Tonearm({ isPlaying }) {
       </mesh>
 
       {/* ── Rear stub (counterweight arm) ── */}
+      {/* 0.50, not 0.46. At 0.46 the stub ended 0.0075 inside the
+          counterweight -- joined, but by less than the render can resolve. */}
       <mesh position={[0.28, 0.003, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-        <cylinderGeometry args={[0.017, 0.019, 0.46, 20]} />
+        <cylinderGeometry args={[0.017, 0.019, 0.50, 20]} />
         <meshStandardMaterial color="#1c1c20" metalness={0.8} roughness={0.28} envMapIntensity={0.9} />
       </mesh>
 
@@ -509,8 +566,8 @@ function Tonearm({ isPlaying }) {
       </mesh>
       {/* End cap, a shade lighter so the cylinder reads as an end rather than a
           silhouette running off into the dark. */}
-      <mesh position={[0.598, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.062, 0.062, 0.006, 32]} />
+      <mesh position={[0.5955, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.0635, 0.0635, 0.008, 32]} />
         <meshStandardMaterial color="#34343a" metalness={0.6} roughness={0.24} envMapIntensity={1.1} />
       </mesh>
 
@@ -535,23 +592,34 @@ function Tonearm({ isPlaying }) {
           <meshStandardMaterial color="#1a1a1a" metalness={0.6} roughness={0.45} />
         </mesh>
 
-        {/* Cantilever, aimed at the stylus rather than guessed. It was rotated
-            [0.5, 0, 0.05] -- an X rotation swings a +Y cylinder through Z, i.e.
-            sideways across the record, not forward and down toward the tip. It
-            was also 0.055 long against a 0.029 gap, so it shot straight
-            through the stylus and out the far side. Both are only visible
-            zoomed in, which is exactly how the cartridge gets looked at.
-            Slightly over-long at each end so it seats into the body.
+        {/* Cantilever, running from INSIDE the cartridge body down to the stylus.
+            Three separate faults, each only visible zoomed in -- which is
+            exactly how a cartridge gets looked at:
 
-            Thicker and less mirror-like than it was, too. 0.0018 radius is
-            0.18 mm, which is under a pixel at the size this ever renders, and
-            #aaaaaa at metalness 0.9 is a mirror -- in a scene this dark a
-            mirror reflects nothing and comes out black. So the one part
-            joining the cartridge to the stylus was invisible, and the stylus
-            read as a dot floating in space beneath it. Aluminium at 0.35 mm:
-            still to scale, and it actually catches the key light. */}
-        <mesh position={[-0.1638, -0.0572, 0]} rotation={[0, 0, 0.3709]}>
-          <cylinderGeometry args={[0.0035, 0.0024, 0.0391, 10]} />
+            It was rotated [0.5, 0, 0.05]. An X rotation swings a +Y cylinder
+            through Z, so it pointed sideways across the record rather than
+            forward and down at the tip, and at 0.055 long against a 0.029 gap
+            it shot through the stylus and out the far side.
+
+            Aiming it then got the SIGN wrong. A cylinder's axis is +Y and
+            R_z(p)·(0,1,0) = (-sin p, cos p), so aligning it with a direction u
+            needs p = atan2(-ux, uy) -- not atan2(-ux, -uy), which mirrors it
+            in Y. The result leaned back up toward the arm instead of down at
+            the stylus, and a bounding-box check passes that happily because a
+            mirrored cylinder still overlaps the cartridge's box.
+
+            And it was invisible. 0.0018 radius is 0.18 mm, under a pixel at
+            the size this renders, and #aaaaaa at metalness 0.9 is a mirror --
+            in a scene this dark a mirror reflects nothing and comes out black.
+            The one part joining cartridge to stylus rendered as nothing, so
+            the stylus read as a dot floating underneath.
+
+            Anchored 0.0096 INSIDE the body now rather than 0.0008, so it seats
+            visibly instead of merely touching, and it overshoots the tip by
+            0.0027 where the stylus sphere hides it. radiusTop is the +Y end,
+            which is the stylus end, so that is the thinner of the two. */}
+        <mesh position={[-0.1638, -0.0452, 0]} rotation={[0, 0, 2.2779]}>
+          <cylinderGeometry args={[0.0024, 0.0035, 0.0416, 10]} />
           <meshStandardMaterial color="#c9ced4" metalness={0.55} roughness={0.28} envMapIntensity={1.4} />
         </mesh>
 
@@ -597,7 +665,7 @@ function Plinth({ isPlaying }) {
           lift the plinth off the contact shadow so it reads as an object sitting
           on a surface rather than a rectangle printed on the backdrop. */}
       {[[-1.85, -1.42], [1.85, -1.42], [-1.85, 1.42], [1.85, 1.42]].map(([x, z]) => (
-        <mesh key={`${x}:${z}`} position={[x + PLINTH_OFFSET_X, -PLINTH_T - 0.045, z]} castShadow>
+        <mesh key={`${x}:${z}`} position={[x + PLINTH_OFFSET_X, -PLINTH_T - 0.041, z]} castShadow>
           <cylinderGeometry args={[0.115, 0.13, 0.09, 24]} />
           <meshStandardMaterial color="#0b0b0d" roughness={0.75} metalness={0.1} />
         </mesh>
