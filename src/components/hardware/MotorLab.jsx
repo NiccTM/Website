@@ -153,9 +153,27 @@ function DigitalTwinPanel({ src, label, caption, icon, poster }) {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
+        {/* The media well is 4:3, which is exactly the photo's aspect (800x600)
+            and NOT the CAD clip's (480x300, so 1.6). object-cover therefore
+            cropped 17% of the video's width, 8% off each side -- and that is
+            precisely where the model goes: it is not a turntable, it tracks
+            left to right across the ten seconds and starts and ends near the
+            frame edges. The extremes were being cut off.
+
+            So the video gets object-contain instead, and the well behind it
+            takes the render's OWN backdrop rather than the dark navy. Sampled
+            off the four corners of the clip: #fbfbfc, #ebedf3, #f5f7f9,
+            #f4f5f9. At #f4f5f8 the letterbox bars are invisible against the
+            render's own background, so the whole frame shows with no crop and
+            no visible bars, and the panel keeps the same height as the photo
+            beside it. */}
         <div
           className="relative flex items-center justify-center overflow-hidden"
-          style={{ background: 'rgba(2,13,26,0.6)', aspectRatio: '4/3', minHeight: '160px' }}
+          style={{
+            background: video ? '#f4f5f8' : 'rgba(2,13,26,0.6)',
+            aspectRatio: '4/3',
+            minHeight: '160px',
+          }}
         >
           {video ? (
             <>
@@ -168,13 +186,23 @@ function DigitalTwinPanel({ src, label, caption, icon, poster }) {
                 muted
                 playsInline
                 aria-label={`${label}. ${caption}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               <button
                 onClick={togglePlay}
                 aria-label={playing ? `Pause ${label} animation` : `Play ${label} animation`}
-                className="absolute bottom-2 right-2 grid place-items-center w-8 h-8 rounded-full"
-                style={{ background: 'rgba(3,7,18,0.72)', color: 'var(--accent)', border: '1px solid rgb(var(--accent-rgb) / 0.35)' }}
+                className="absolute bottom-2 right-2 grid place-items-center w-8 h-8 rounded-full focus:outline-none focus-visible:ring-2"
+                /* --accent-on-dark, not --accent. This pill is a near-black
+                   plate in BOTH themes, and the light-mode accent is a dark
+                   blue that would sit on it at roughly 2:1. That is the exact
+                   case --accent-on-dark exists for, and it matters more now
+                   that the well behind is light. */
+                style={{
+                  background: 'rgba(3,7,18,0.72)',
+                  color: 'var(--accent-on-dark)',
+                  border: '1px solid rgb(var(--accent-on-dark-rgb) / 0.35)',
+                  '--tw-ring-color': 'var(--accent-on-dark)',
+                }}
               >
                 <span aria-hidden="true" className="material-symbols-rounded text-base">
                   {playing ? 'pause' : 'play_arrow'}
