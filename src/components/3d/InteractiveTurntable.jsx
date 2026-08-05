@@ -44,6 +44,28 @@ const LIFT_ANGLE = -Math.asin(RAISE_HEIGHT / ARM_REACH)   // ≈ -0.1025 rad; ne
 // Arm state machine
 const ARM = { PARKED: 0, SWINGING: 1, DROPPING: 2, PLAYING: 3 }
 
+// The platter is NOT centred on the plinth -- on a Rega the spindle sits left
+// of centre with the arm occupying the space to its right. Modelling it
+// dead-centre left a large empty black expanse on the left of the deck.
+//
+// The deck size is a COMPROMISE, and worth being honest about, because the
+// model is not internally consistent with a real Rega. Measured against the
+// platter it was already right: platter radius / deck width was 0.336, and a
+// Rega's is 150/447 = 0.336. Measured against the ARM it is not: a Rega's
+// pivot-to-spindle distance is 222/447 = 0.497 of the deck width, and this
+// arm's is 1.72/4.52 = 0.38. The modelled arm is proportionally shorter than a
+// real one.
+//
+// Both cannot be satisfied at once, and the arm is the piece that cannot move:
+// its play/inner angles and lift geometry are calibrated to the pivot position,
+// so shifting it would break the tracking sweep. So the deck is sized to sit
+// correctly around BOTH -- enough clearance past the platter on the left,
+// enough deck past the pivot on the right -- rather than to a spec it cannot
+// actually honour.
+const PLINTH_W        = 4.15
+const PLINTH_D        = 3.50
+const PLINTH_OFFSET_X = 0.20
+
 // ─── Procedural vinyl surface maps ────────────────────────────────────────────
 //
 // Two data textures, generated per-texel in polar space:
@@ -402,33 +424,39 @@ function Tonearm({ isPlaying }) {
   return (
     <group ref={groupRef} position={[1.72, PIVOT_BASE_Y, -0.55]} rotation={[0, TONEARM_PLAY, LIFT_ANGLE]}>
 
-      {/* ── Bearing housing (pivot cup) -- Rega matte black ── */}
-      <mesh position={[0, 0, 0]}>
-        <cylinderGeometry args={[0.045, 0.05, 0.06, 24]} />
-        <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
+      {/* ── Bearing housing (pivot cup) ──
+          Everything on this arm was #111111 at roughness 0.35, which on a black
+          plinth against a black backdrop gave the whole assembly no silhouette:
+          it read as a scratch on the image rather than a machined part. The
+          tube, housing and stub are a touch lighter and glossier now so they
+          pick up the rim light and describe their own shape. The geometry is
+          unchanged -- it was already right. */}
+      <mesh position={[0, 0, 0]} castShadow>
+        <cylinderGeometry args={[0.055, 0.062, 0.075, 28]} />
+        <meshStandardMaterial color="#1c1c20" metalness={0.8} roughness={0.28} envMapIntensity={0.9} />
       </mesh>
 
       {/* ── Main arm tube -- Rega straight matte black tube ── */}
-      <mesh position={[-0.62, 0.005, 0]} rotation={[0, 0, Math.PI / 2 - 0.04]}>
-        <cylinderGeometry args={[0.010, 0.014, 1.24, 20]} />
-        <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.32} />
+      <mesh position={[-0.62, 0.005, 0]} rotation={[0, 0, Math.PI / 2 - 0.04]} castShadow>
+        <cylinderGeometry args={[0.0165, 0.021, 1.24, 24]} />
+        <meshStandardMaterial color="#1c1c20" metalness={0.8} roughness={0.26} envMapIntensity={0.9} />
       </mesh>
 
       {/* ── Rear stub (counterweight arm) ── */}
-      <mesh position={[0.28, 0.003, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.011, 0.013, 0.46, 16]} />
-        <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
+      <mesh position={[0.28, 0.003, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <cylinderGeometry args={[0.017, 0.019, 0.46, 20]} />
+        <meshStandardMaterial color="#1c1c20" metalness={0.8} roughness={0.28} envMapIntensity={0.9} />
       </mesh>
 
       {/* ── Counterweight -- Rega grey/silver cylinder ── */}
-      <mesh position={[0.54, 0, 0]}>
-        <cylinderGeometry args={[0.046, 0.046, 0.072, 28]} />
-        <meshStandardMaterial color="#666666" metalness={0.85} roughness={0.18} />
+      <mesh position={[0.55, 0, 0]} castShadow>
+        <cylinderGeometry args={[0.062, 0.062, 0.095, 32]} />
+        <meshStandardMaterial color="#7e8288" metalness={0.9} roughness={0.16} envMapIntensity={1.0} />
       </mesh>
       {/* Counterweight threading ring */}
-      <mesh position={[0.54, 0, 0]}>
-        <cylinderGeometry args={[0.048, 0.048, 0.014, 28]} />
-        <meshStandardMaterial color="#888888" metalness={0.9} roughness={0.1} />
+      <mesh position={[0.55, 0, 0]}>
+        <cylinderGeometry args={[0.065, 0.065, 0.018, 32]} />
+        <meshStandardMaterial color="#9aa0a6" metalness={0.92} roughness={0.09} envMapIntensity={1.1} />
       </mesh>
 
       {/* ── Headshell offset group -- ~22° Y rotation so cartridge runs tangent to groove ── */}
@@ -468,28 +496,54 @@ function Tonearm({ isPlaying }) {
 function Plinth({ isPlaying }) {
   return (
     <group>
-      {/* Plinth body -- Rega P2 piano-black acrylic, more square/thick */}
-      <mesh position={[0, -0.08, 0]} receiveShadow castShadow>
-        <boxGeometry args={[3.8, 0.16, 3.7]} />
+      {/* Plinth body.
+          Was 3.8 x 3.7 -- nearly square, which is why it read as a slab with a
+          lot of dead deck around the platter. A Rega P2 is 447 x 360 mm around a
+          300 mm platter, so against this platter's 3.04 diameter the width
+          should be 1.49x it (4.53) and the depth 1.20x (3.65). The depth was
+          already right; the WIDTH was the wrong one, short by 0.7.
+
+          envMapIntensity up from 0.32. Piano black on a near-black backdrop had
+          no silhouette at all -- the edges simply dissolved into the background
+          and the deck read as a void rather than an object. It needs to catch
+          enough of the environment to describe its own edges. */}
+      <mesh position={[PLINTH_OFFSET_X, -0.095, 0]} receiveShadow castShadow>
+        <boxGeometry args={[PLINTH_W, 0.19, PLINTH_D]} />
         {/* Piano black, but NOT a mirror: at roughness 0.10 the plinth reflected
             the softbox as a hard white slab with a visible straight edge. The
             rougher clearcoat blurs that into a soft sheen. */}
-        <meshPhysicalMaterial color="#0e0e10" roughness={0.38} metalness={0.0} reflectivity={0.35} clearcoat={1.0} clearcoatRoughness={0.30} envMapIntensity={0.32} />
+        <meshPhysicalMaterial color="#121215" roughness={0.34} metalness={0.0} reflectivity={0.45} clearcoat={1.0} clearcoatRoughness={0.26} envMapIntensity={0.55} />
       </mesh>
+
+      {/* Feet. Four of them, inset from the corners like the real deck's. They
+          are barely visible from a normal orbit, and that is not the point: they
+          lift the plinth off the contact shadow so it reads as an object sitting
+          on a surface rather than a rectangle printed on the backdrop. */}
+      {[[-1.72, -1.36], [1.72, -1.36], [-1.72, 1.36], [1.72, 1.36]].map(([x, z]) => (
+        <mesh key={`${x}:${z}`} position={[x + PLINTH_OFFSET_X, -0.235, z]} castShadow>
+          <cylinderGeometry args={[0.115, 0.13, 0.09, 24]} />
+          <meshStandardMaterial color="#0b0b0d" roughness={0.75} metalness={0.1} />
+        </mesh>
+      ))}
 
       {/* Glass platter -- Rega's teal-tinted glass. transmission needs a separate
           render pass per frame and the platter is almost entirely hidden under
           the record, so this approximates it with a cheap tinted dielectric. */}
       <mesh position={[0, 0.012, 0]} receiveShadow>
         <cylinderGeometry args={[1.52, 1.52, 0.024, 128]} />
+        {/* Darker and less reflective than it was (#2f6f68 at envMapIntensity
+            0.9). A Rega glass platter does show a green edge, but at those
+            values the rim was the brightest object in the frame -- brighter than
+            the record, the label or the arm -- which inverts what the eye should
+            land on. It is an edge detail, not the subject. */}
         <meshPhysicalMaterial
-          color="#2f6f68"
-          roughness={0.12}
+          color="#224a46"
+          roughness={0.16}
           metalness={0.0}
           ior={1.52}
           clearcoat={1.0}
-          clearcoatRoughness={0.10}
-          envMapIntensity={0.9}
+          clearcoatRoughness={0.14}
+          envMapIntensity={0.5}
         />
       </mesh>
 
@@ -499,10 +553,18 @@ function Plinth({ isPlaying }) {
         <meshStandardMaterial color="#252525" roughness={0.97} metalness={0.0} />
       </mesh>
 
-      {/* Spindle -- small pin through felt */}
-      <mesh position={[0, 0.058, 0]}>
-        <cylinderGeometry args={[0.016, 0.016, 0.055, 16]} />
-        <meshStandardMaterial color="#aaaaaa" metalness={0.9} roughness={0.15} />
+      {/* Spindle. Was 0.016 radius in #aaaaaa, which against a bright label read
+          as a speck of dirt rather than a machined pin -- and the centre of the
+          record is exactly where the eye goes. Slightly wider, brighter and
+          smoother so it reads as chrome. */}
+      <mesh position={[0, 0.060, 0]} castShadow>
+        <cylinderGeometry args={[0.021, 0.022, 0.062, 24]} />
+        <meshStandardMaterial color="#d2d4d8" metalness={0.95} roughness={0.12} envMapIntensity={1.1} />
+      </mesh>
+      {/* Domed top, so it catches a highlight instead of showing a flat disc */}
+      <mesh position={[0, 0.091, 0]}>
+        <sphereGeometry args={[0.021, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial color="#dcdee2" metalness={0.95} roughness={0.10} envMapIntensity={1.2} />
       </mesh>
 
       {/* Tonearm bearing post. It was 0.34 tall (top at y=0.34) while the pivot
@@ -510,13 +572,97 @@ function Plinth({ isPlaying }) {
           as unrelated objects. It now terminates just inside the bearing
           housing, which straddles y=0.08..0.14. */}
       <mesh position={[1.72, (PIVOT_BASE_Y + 0.02) / 2, -0.55]} castShadow>
-        <cylinderGeometry args={[0.048, 0.055, PIVOT_BASE_Y + 0.02, 20]} />
-        <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.3} />
+        <cylinderGeometry args={[0.062, 0.075, PIVOT_BASE_Y + 0.02, 24]} />
+        <meshStandardMaterial color="#1c1c20" metalness={0.8} roughness={0.28} envMapIntensity={0.9} />
+      </mesh>
+      {/* Base collar where the post meets the deck. Without it the post grew
+          straight out of the plinth with no join, which is the detail that most
+          made the arm look dropped in rather than mounted. */}
+      <mesh position={[1.72, 0.008, -0.55]} castShadow>
+        <cylinderGeometry args={[0.115, 0.125, 0.016, 28]} />
+        <meshStandardMaterial color="#191919" metalness={0.7} roughness={0.35} envMapIntensity={0.8} />
       </mesh>
 
       <Tonearm isPlaying={isPlaying} />
     </group>
   )
+}
+
+// ─── Responsive framing ───────────────────────────────────────────────────────
+/**
+ * Pushes the camera back just far enough that the deck fits BOTH axes.
+ *
+ * three's `fov` is vertical, so a fixed camera position only frames correctly at
+ * one aspect ratio. Tuned on a wide desktop window it cut the deck off at the
+ * left and right edges on anything squarer -- which is every phone, where the
+ * horizontal field runs out first.
+ *
+ * Fitting a bounding SPHERE is the obvious approach and it is wrong here: this
+ * object is flat. Its projected vertical extent is about 1.31, while the sphere
+ * enclosing it has radius 2.85, so a sphere fit pulls back more than twice as
+ * far as needed and strands the deck in the middle of an empty frame.
+ *
+ * So fit the real projected extents: take the object's bounding box, resolve
+ * each corner onto the camera's right and up axes, and solve each field of view
+ * against the extent that actually faces it.
+ */
+const VIEW_DIR = new THREE.Vector3(0, 3.9, 4.95).normalize()
+const FIT_MARGIN = 1.07
+
+// Bounds relative to the look-at target, taken from the geometry above rather
+// than eyeballed: half the deck in X and Z, and in Y from the underside of the
+// feet to the top of the counterweight.
+const HALF_X = PLINTH_W / 2
+const HALF_Z = PLINTH_D / 2
+const MIN_Y = -0.28
+const MAX_Y = 0.20
+
+function FitCamera() {
+  const { camera, size, controls } = useThree()
+
+  useEffect(() => {
+    const target = new THREE.Vector3(PLINTH_OFFSET_X, 0, 0)
+    const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), VIEW_DIR).normalize()
+    const up = new THREE.Vector3().crossVectors(VIEW_DIR, right).normalize()
+
+    const vFov = THREE.MathUtils.degToRad(camera.fov)
+    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * (size.width / size.height))
+    const tanV = Math.tan(vFov / 2)
+    const tanH = Math.tan(hFov / 2)
+
+    /* Solved per corner WITH its depth, not as a flat extent. A corner nearer
+       the camera projects larger, and the deck's front corners sit over a
+       metre closer than the spindle -- ignoring that left them clipped off the
+       bottom of the frame even though the parallel-projection extents said
+       everything fitted.
+       For a corner at c, its distance along the view axis is (d - c.dir), so it
+       stays inside the frustum while |c.up| / (d - c.dir) <= tan(vFov/2).
+       Rearranged, each corner demands d >= |c.up|/tan + c.dir; take the
+       greediest. */
+    let dist = 0
+    for (const x of [-HALF_X, HALF_X]) {
+      for (const y of [MIN_Y, MAX_Y]) {
+        for (const z of [-HALF_Z, HALF_Z]) {
+          const c = new THREE.Vector3(x, y, z)
+          const along = c.dot(VIEW_DIR)
+          dist = Math.max(
+            dist,
+            Math.abs(c.dot(up)) / tanV + along,
+            Math.abs(c.dot(right)) / tanH + along,
+          )
+        }
+      }
+    }
+    dist *= FIT_MARGIN
+
+    camera.position.copy(VIEW_DIR).multiplyScalar(dist).add(target)
+    camera.updateProjectionMatrix()
+    /* Only on mount and resize. OrbitControls owns the camera after that, and
+       re-running this every frame would fight the user's drag. */
+    if (controls) { controls.target.copy(target); controls.update() }
+  }, [camera, size, controls])
+
+  return null
 }
 
 // ─── Scene ────────────────────────────────────────────────────────────────────
@@ -554,6 +700,16 @@ function TurntableScene({ release, isPlaying }) {
         {/* Cool rim from behind, separates the black rim from the black backdrop */}
         <Lightformer form="rect" intensity={2.2} color="#bcd4ff"
           position={[3, 3, -5]} rotation={[Math.PI / 5, Math.PI, 0]} scale={[6, 2, 1]} />
+        {/* A LOW, WIDE rim behind the deck, close to the height of the plinth
+            itself. The rim above was aimed at the platter and passed over the
+            top of the plinth entirely, so a piano-black box on a near-black
+            backdrop had no edge to catch and its silhouette simply vanished --
+            the deck read as a hole in the image rather than an object. This sits
+            at plinth height and skims the back and side edges. */}
+        <Lightformer form="rect" intensity={3.2} color="#9fc0ff"
+          position={[-1.5, 0.35, -4.2]} rotation={[0, Math.PI, 0]} scale={[7, 0.55, 1]} />
+        <Lightformer form="rect" intensity={2.4} color="#cfe0ff"
+          position={[4.6, 0.5, -1.2]} rotation={[0, -Math.PI / 2, 0]} scale={[5, 0.6, 1]} />
         {/* Low warm bounce, lifts the plinth face out of pure black */}
         <Lightformer form="rect" intensity={0.7} color="#ffd9b0"
           position={[0, -1.5, 5]} rotation={[Math.PI / 2, 0, 0]} scale={[7, 3, 1]} />
@@ -583,24 +739,37 @@ function TurntableScene({ release, isPlaying }) {
       <VinylRecord coverUrl={release?.cover_image} />
       <Plinth isPlaying={isPlaying} />
 
-      {/* Soft occlusion beneath the plinth -- grounds the deck in the scene */}
+      {/* Soft occlusion beneath the plinth -- grounds the deck in the scene.
+          Dropped from -0.161 to sit under the FEET rather than through them.
+          The plinth body now spans y -0.19..0 and the feet reach -0.28, so the
+          old plane cut through both and the deck appeared to sink into its own
+          shadow instead of standing on it. */}
       <ContactShadows
-        position={[0, -0.161, 0]}
-        scale={9}
+        position={[0, -0.287, 0]}
+        scale={10}
         resolution={1024}
-        blur={2.6}
-        opacity={0.62}
+        blur={2.4}
+        opacity={0.68}
         far={2.5}
         color="#000000"
       />
 
+      <FitCamera />
+
       <OrbitControls
+        makeDefault
         enablePan={false}
         minDistance={3}
-        maxDistance={8}
+        /* Was 8, which clamped the fitted distance on a narrow viewport and
+           re-cropped the deck the fitter had just framed. */
+        maxDistance={20}
         minPolarAngle={Math.PI / 10}
         maxPolarAngle={Math.PI / 2.1}
-        target={[0, 0, 0]}
+        /* Aimed between the spindle and the plinth centre, not at the
+           spindle. With the deck offset the object's visual centre is no longer
+           the record, and orbiting about the record alone swung the plinth in
+           and out of frame. */
+        target={[PLINTH_OFFSET_X, 0, 0]}
         touches={{ ONE: 0 /* ROTATE */, TWO: 2 /* DOLLY_PAN */ }}
         enableDamping
         dampingFactor={0.07}
@@ -679,7 +848,15 @@ export default function InteractiveTurntable({ release, onClose }) {
               toneMapping: THREE.ACESFilmicToneMapping,
               toneMappingExposure: 1.0,
             }}
-            camera={{ position: [0, 3.4, 4.2], fov: 35 }}
+            /* Pulled back from [0, 3.4, 4.2]. The plinth is wider now, and at
+               that distance its near corners fell outside the frame -- the deck
+               was being cropped by the viewport, which is what made it read as
+               a surface running off the edges rather than an object. Elevation
+               is held at ~38 degrees, which is where the platter reads as a
+               circle rather than a slot and the deck still shows its top face.
+               <Bounds> would fit this automatically, but it and OrbitControls
+               both drive the camera and the initial fit fights the first drag. */
+            camera={{ position: [PLINTH_OFFSET_X, 3.9, 4.95], fov: 34 }}
             style={{ width: '100%', height: '100%' }}
           >
             <Suspense fallback={null}>
