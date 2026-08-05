@@ -471,11 +471,13 @@ function PhotoTile({ photo, flatIdx, onOpen }) {
   const [loaded, setLoaded] = useState(false)
 
   return (
-    <div
-      className="img-hover-scale group relative overflow-hidden rounded-lg cursor-pointer"
+    <button
+      type="button"
+      aria-label={`Open ${photo.title || photo.alt || 'photograph'} full size`}
+      className="img-hover-scale group relative overflow-hidden rounded-lg cursor-pointer text-left w-full focus:outline-none focus-visible:ring-2"
       onClick={() => onOpen(flatIdx)}
       onContextMenu={(e) => e.preventDefault()}
-      style={{ aspectRatio: '4 / 3' }}
+      style={{ aspectRatio: '4 / 3', '--tw-ring-color': 'var(--accent)' }}
     >
       <Picture
         src={thumbSrc(photo.src)}
@@ -504,7 +506,7 @@ function PhotoTile({ photo, flatIdx, onOpen }) {
           {photo.caption}
         </p>
       </div>
-    </div>
+    </button>
   )
 }
 

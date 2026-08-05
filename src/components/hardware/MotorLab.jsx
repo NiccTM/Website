@@ -263,10 +263,15 @@ export default function MotorLab() {
         />
       </div>
 
-      {/* Full-width motor demo video */}
+      {/* Full-width motor demo video.
+          The panel takes the same theme-following surface as the two
+          DigitalTwinPanels above it. It used to be rgba(2,13,26,0.6) -- a dark
+          navy in BOTH themes -- which is right for a media well but wrong for
+          the caption strip underneath, where light-mode text tokens then sat
+          near-black on a dark panel and failed contrast. */}
       <div
         className="overflow-hidden mb-6"
-        style={{ background: 'rgba(2,13,26,0.6)', border: '1px solid rgb(var(--accent-rgb) / 0.12)', borderRadius: 'var(--radius)' }}
+        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgb(var(--accent-rgb) / 0.12)', borderRadius: 'var(--radius)' }}
       >
         <video
           src="/motor_cmp.mp4"

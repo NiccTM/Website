@@ -79,7 +79,20 @@ function ReferenceGalleryStrip({ onSyncView }) {
       </div>
 
       {/* Horizontal thumbnail row */}
-      <div className="flex gap-3 overflow-x-auto pb-1">
+      {/* tabIndex/role/label: a horizontally scrolling region with no focusable
+          child cannot be scrolled by keyboard at all -- WCAG 2.1.1, and axe's
+          scrollable-region-focusable. This makes the strip itself a tab stop so
+          the arrow keys pan it.
+          The thumbnails inside are still mouse-only; they carry two different
+          actions (sync the 3D view, and open the lightbox) so making them
+          keyboard-operable needs them split into two real controls rather than
+          nested click handlers. */}
+      <div
+        className="flex gap-3 overflow-x-auto pb-1"
+        tabIndex={0}
+        role="group"
+        aria-label="Altium reference gallery, scrollable"
+      >
         {REFERENCE_IMAGES.map((img, i) => (
           <div
             key={i}

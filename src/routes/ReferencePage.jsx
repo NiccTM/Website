@@ -100,10 +100,12 @@ export default function ReferencePage() {
       <figure
         className="mb-12"
       >
-        <div
-          className="relative overflow-hidden cursor-zoom-in rounded-xl"
+        <button
+          type="button"
+          aria-label="Open the reference board photograph full size"
+          className="relative overflow-hidden cursor-zoom-in rounded-xl w-full block focus:outline-none focus-visible:ring-2"
           onClick={() => setLightbox(true)}
-          style={{ border: '1px solid var(--border)', aspectRatio: '3 / 2' }}
+          style={{ border: '1px solid var(--border)', aspectRatio: '3 / 2', '--tw-ring-color': 'var(--accent)' }}
         >
           {/* The 4000px display tier, not the 800px thumbnail: this renders
               near-full-column width, so a thumb was being upscaled ~2x and
@@ -120,7 +122,7 @@ export default function ReferencePage() {
             decoding="async"
             className="w-full h-full object-cover"
           />
-        </div>
+        </button>
         <figcaption className="font-mono-data text-sm mt-3" style={{ color: 'var(--text-muted)' }}>
           Bench verification on an HP 3458A. The output reads 9.9999927&nbsp;V DC, about
           7&nbsp;µV or 0.7&nbsp;ppm from nominal, in a pre-calibration development state. Not a
