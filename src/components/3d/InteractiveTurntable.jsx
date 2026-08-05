@@ -12,14 +12,35 @@ function proxied(url) {
   return `/api/image-proxy?url=${encodeURIComponent(url)}`
 }
 
-// ─── Y-Stack ──────────────────────────────────────────────────────────────────
-// Plinth top surface : Y = 0.000
-// Record disc base   : Y = 0.002  (group center Y = 0.022)
-// Record top surface : Y = 0.042
-// Label / tonearm    : Y = 0.043
+// ─── Scale and Y-stack ────────────────────────────────────────────────────────
+// 1 unit = 100 mm, fixed by the record: a 12" LP is 300 mm and the disc is
+// modelled at radius 1.5.
+//
+// Dimensions are the real Planar 2's -- 447 x 360 mm deck, 10 mm Optiwhite
+// glass platter, 12" so the SAME diameter as the record rather than smaller.
+//
+// The old stack was wrong in a way that hides head-on and shows the moment the
+// camera drops: glass at 0.000..0.024 and record at 0.002..0.042, so the disc
+// was sunk THROUGH both the platter and the felt mat instead of resting on
+// them. The mint band under the record on a real deck is the 10 mm glass edge
+// showing beneath the disc, which a 0.024-thick platter cannot produce -- so
+// the model faked it by making the glass WIDER than the record and showing a
+// ring around it. The photograph shows neither.
+const GLASS_R    = 1.50   // 12" platter, same diameter as the LP
+const GLASS_T    = 0.10   // 10 mm Optiwhite float glass
+const MAT_R      = 1.42   // wool felt mat, inset so the glass rim stays visible
+const MAT_T      = 0.02
+const RECORD_R   = 1.50
+const RECORD_T   = 0.04
+
+const GLASS_Y0   = 0.02                                        // sub-platter gap
+const GLASS_CY   = GLASS_Y0 + GLASS_T / 2                       // 0.070
+const MAT_CY     = GLASS_Y0 + GLASS_T + MAT_T / 2               // 0.130
+const RECORD_CY  = GLASS_Y0 + GLASS_T + MAT_T + RECORD_T / 2    // 0.160
+const RECORD_TOP = RECORD_CY + RECORD_T / 2                     // 0.180
 
 // ─── Tonearm geometry constants ───────────────────────────────────────────────
-// Pivot at world (1.72, 0.043, -0.55).
+// Pivot at world (1.72, PIVOT_BASE_Y, -0.55).
 // Stylus tip in pivot-local space: approx [-1.368, ...] (new longer arm).
 //
 // rotation.y  →  stylus lands on record (recalculated for stylus at local [-1.368, _, 0.018])
@@ -30,7 +51,13 @@ const TONEARM_REST     = 1.25   // parked angle (rad) -- just off the record edg
 const TONEARM_PLAY     = 1.22   // outer groove -- drops here first
 const TONEARM_INNER    = 0.62   // inner groove -- R≈0.67, stops just outside label edge (R=0.60)
 const RAISE_HEIGHT     = 0.14   // how far the STYLUS END lifts when cued up
-const PIVOT_BASE_Y     = 0.110  // pivot Y: stylus tip (local -0.068) lands on vinyl surface Y=0.042
+// Derived, not pinned. The stylus sits STYLUS_DROP below the pivot in arm-local
+// space, so the pivot has to ride exactly that far above the playing surface.
+// This was hardcoded to 0.110 for a record top of 0.042; lifting the disc onto
+// a real 10 mm platter moves the surface, and a hardcoded value would have left
+// the stylus buried in the vinyl.
+const STYLUS_DROP      = 0.068
+const PIVOT_BASE_Y     = RECORD_TOP + STYLUS_DROP
 const TRACKING_SECS    = 120    // seconds to sweep outer → inner (slow, realistic)
 
 // Cueing rotates the arm about its bearing rather than translating the whole
@@ -48,23 +75,20 @@ const ARM = { PARKED: 0, SWINGING: 1, DROPPING: 2, PLAYING: 3 }
 // of centre with the arm occupying the space to its right. Modelling it
 // dead-centre left a large empty black expanse on the left of the deck.
 //
-// The deck size is a COMPROMISE, and worth being honest about, because the
-// model is not internally consistent with a real Rega. Measured against the
-// platter it was already right: platter radius / deck width was 0.336, and a
-// Rega's is 150/447 = 0.336. Measured against the ARM it is not: a Rega's
-// pivot-to-spindle distance is 222/447 = 0.497 of the deck width, and this
-// arm's is 1.72/4.52 = 0.38. The modelled arm is proportionally shorter than a
-// real one.
+// The deck is now the real 447 x 360 mm. One deviation remains and is worth
+// recording rather than hiding: the ARM is proportionally short. An RB220 is a
+// 9" arm with 222 mm pivot-to-spindle; this model's pivot sits 172 mm out. Its
+// play and inner angles and its lift geometry are all calibrated to that pivot,
+// so lengthening it would mean recomputing the tracking sweep, and the sweep
+// currently works.
 //
-// Both cannot be satisfied at once, and the arm is the piece that cannot move:
-// its play/inner angles and lift geometry are calibrated to the pivot position,
-// so shifting it would break the tracking sweep. So the deck is sized to sit
-// correctly around BOTH -- enough clearance past the platter on the left,
-// enough deck past the pivot on the right -- rather than to a spec it cannot
-// actually honour.
-const PLINTH_W        = 4.15
-const PLINTH_D        = 3.50
-const PLINTH_OFFSET_X = 0.20
+// The visible consequence is that the offset which would put the spindle 160 mm
+// from the left edge, as it is on a real deck, would leave the arm crowded
+// against the right edge here. The offset below splits that difference.
+const PLINTH_W        = 4.47   // 447 mm
+const PLINTH_T        = 0.22   // deck slab, feet excluded
+const PLINTH_D        = 3.60   // 360 mm
+const PLINTH_OFFSET_X = 0.12
 
 // ─── Procedural vinyl surface maps ────────────────────────────────────────────
 //
@@ -330,10 +354,10 @@ function VinylRecord({ coverUrl }) {
   })
 
   return (
-    <group ref={groupRef} position={[0, 0.022, 0]}>
+    <group ref={groupRef} position={[0, RECORD_CY, 0]}>
       {/* material order matches cylinderGeometry's groups: side, top, bottom */}
       <mesh name="Vinyl_Disc" castShadow receiveShadow material={[rimMat, faceMat, faceMat]}>
-        <cylinderGeometry args={[1.5, 1.5, 0.04, 256]} />
+        <cylinderGeometry args={[RECORD_R, RECORD_R, RECORD_T, 256]} />
       </mesh>
 
       {proxyUrl ? (
@@ -449,14 +473,21 @@ function Tonearm({ isPlaying }) {
       </mesh>
 
       {/* ── Counterweight -- Rega grey/silver cylinder ── */}
+      {/* BLACK. An RB220's counterweight is a black cylinder, not the silver
+          slug this had -- checked against the owner's own photographs of the
+          deck. It was lightened earlier purely to give the arm a silhouette
+          against the dark plinth, which fixed the legibility and broke the
+          likeness. The separation now comes from a satin finish catching the
+          rim light instead of from the wrong colour. */}
       <mesh position={[0.55, 0, 0]} castShadow>
         <cylinderGeometry args={[0.062, 0.062, 0.095, 32]} />
-        <meshStandardMaterial color="#7e8288" metalness={0.9} roughness={0.16} envMapIntensity={1.0} />
+        <meshStandardMaterial color="#232326" metalness={0.55} roughness={0.30} envMapIntensity={1.0} />
       </mesh>
-      {/* Counterweight threading ring */}
-      <mesh position={[0.55, 0, 0]}>
-        <cylinderGeometry args={[0.065, 0.065, 0.018, 32]} />
-        <meshStandardMaterial color="#9aa0a6" metalness={0.92} roughness={0.09} envMapIntensity={1.1} />
+      {/* End cap, a shade lighter so the cylinder reads as an end rather than a
+          silhouette running off into the dark. */}
+      <mesh position={[0.598, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.062, 0.062, 0.006, 32]} />
+        <meshStandardMaterial color="#34343a" metalness={0.6} roughness={0.24} envMapIntensity={1.1} />
       </mesh>
 
       {/* ── Headshell offset group -- ~22° Y rotation so cartridge runs tangent to groove ── */}
@@ -507,8 +538,8 @@ function Plinth({ isPlaying }) {
           no silhouette at all -- the edges simply dissolved into the background
           and the deck read as a void rather than an object. It needs to catch
           enough of the environment to describe its own edges. */}
-      <mesh position={[PLINTH_OFFSET_X, -0.095, 0]} receiveShadow castShadow>
-        <boxGeometry args={[PLINTH_W, 0.19, PLINTH_D]} />
+      <mesh position={[PLINTH_OFFSET_X, -PLINTH_T / 2, 0]} receiveShadow castShadow>
+        <boxGeometry args={[PLINTH_W, PLINTH_T, PLINTH_D]} />
         {/* Piano black, but NOT a mirror: at roughness 0.10 the plinth reflected
             the softbox as a hard white slab with a visible straight edge. The
             rougher clearcoat blurs that into a soft sheen. */}
@@ -519,8 +550,8 @@ function Plinth({ isPlaying }) {
           are barely visible from a normal orbit, and that is not the point: they
           lift the plinth off the contact shadow so it reads as an object sitting
           on a surface rather than a rectangle printed on the backdrop. */}
-      {[[-1.72, -1.36], [1.72, -1.36], [-1.72, 1.36], [1.72, 1.36]].map(([x, z]) => (
-        <mesh key={`${x}:${z}`} position={[x + PLINTH_OFFSET_X, -0.235, z]} castShadow>
+      {[[-1.85, -1.42], [1.85, -1.42], [-1.85, 1.42], [1.85, 1.42]].map(([x, z]) => (
+        <mesh key={`${x}:${z}`} position={[x + PLINTH_OFFSET_X, -PLINTH_T - 0.045, z]} castShadow>
           <cylinderGeometry args={[0.115, 0.13, 0.09, 24]} />
           <meshStandardMaterial color="#0b0b0d" roughness={0.75} metalness={0.1} />
         </mesh>
@@ -529,27 +560,31 @@ function Plinth({ isPlaying }) {
       {/* Glass platter -- Rega's teal-tinted glass. transmission needs a separate
           render pass per frame and the platter is almost entirely hidden under
           the record, so this approximates it with a cheap tinted dielectric. */}
-      <mesh position={[0, 0.012, 0]} receiveShadow>
-        <cylinderGeometry args={[1.52, 1.52, 0.024, 128]} />
-        {/* Darker and less reflective than it was (#2f6f68 at envMapIntensity
-            0.9). A Rega glass platter does show a green edge, but at those
-            values the rim was the brightest object in the frame -- brighter than
-            the record, the label or the arm -- which inverts what the eye should
-            land on. It is an edge detail, not the subject. */}
+      <mesh position={[0, GLASS_CY, 0]} receiveShadow castShadow>
+        <cylinderGeometry args={[GLASS_R, GLASS_R, GLASS_T, 128]} />
+        {/* Sampled off the owner's own photograph rather than guessed. The
+            bare platter in RegaP2_CreekCD43MK2_LuxmanK202_v2.jpg reads
+            #a6ae98 and #abb597 along the exposed edge -- a pale sage, because
+            Optiwhite is low-iron glass and light pipes along the rim.
+
+            Both previous values were wrong in opposite directions: #2f6f68 was
+            a saturated teal that made the rim the brightest thing in frame, and
+            correcting it to #224a46 went dark enough to read as painted metal.
+            Neither was ever checked against the real deck. */}
         <meshPhysicalMaterial
-          color="#224a46"
-          roughness={0.16}
+          color="#93a285"
+          roughness={0.12}
           metalness={0.0}
           ior={1.52}
           clearcoat={1.0}
-          clearcoatRoughness={0.14}
-          envMapIntensity={0.5}
+          clearcoatRoughness={0.10}
+          envMapIntensity={0.55}
         />
       </mesh>
 
       {/* Felt mat -- Rega dark charcoal felt, sits on glass platter */}
-      <mesh position={[0, 0.027, 0]}>
-        <cylinderGeometry args={[1.49, 1.49, 0.008, 128]} />
+      <mesh position={[0, MAT_CY, 0]} receiveShadow>
+        <cylinderGeometry args={[MAT_R, MAT_R, MAT_T, 128]} />
         <meshStandardMaterial color="#252525" roughness={0.97} metalness={0.0} />
       </mesh>
 
@@ -557,12 +592,12 @@ function Plinth({ isPlaying }) {
           as a speck of dirt rather than a machined pin -- and the centre of the
           record is exactly where the eye goes. Slightly wider, brighter and
           smoother so it reads as chrome. */}
-      <mesh position={[0, 0.060, 0]} castShadow>
-        <cylinderGeometry args={[0.021, 0.022, 0.062, 24]} />
+      <mesh position={[0, RECORD_TOP - 0.06, 0]} castShadow>
+        <cylinderGeometry args={[0.021, 0.022, 0.16, 24]} />
         <meshStandardMaterial color="#d2d4d8" metalness={0.95} roughness={0.12} envMapIntensity={1.1} />
       </mesh>
       {/* Domed top, so it catches a highlight instead of showing a flat disc */}
-      <mesh position={[0, 0.091, 0]}>
+      <mesh position={[0, RECORD_TOP + 0.02, 0]}>
         <sphereGeometry args={[0.021, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial color="#dcdee2" metalness={0.95} roughness={0.10} envMapIntensity={1.2} />
       </mesh>
@@ -637,8 +672,8 @@ function viewDirForAspect(aspect) {
 // feet to the top of the counterweight.
 const HALF_X = PLINTH_W / 2
 const HALF_Z = PLINTH_D / 2
-const MIN_Y = -0.28
-const MAX_Y = 0.20
+const MIN_Y = -(PLINTH_T + 0.09)
+const MAX_Y = PIVOT_BASE_Y + 0.08
 
 function FitCamera() {
   const { camera, size, controls } = useThree()
@@ -795,7 +830,7 @@ function TurntableScene({ release, isPlaying }) {
           old plane cut through both and the deck appeared to sink into its own
           shadow instead of standing on it. */}
       <ContactShadows
-        position={[0, -0.287, 0]}
+        position={[0, -(PLINTH_T + 0.092), 0]}
         scale={10}
         resolution={1024}
         blur={2.4}
