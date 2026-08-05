@@ -346,30 +346,44 @@ canvas, img, video, .no-theme-transition {
    close a tracking vector. Nobody has ever arrived here with Exo 2 already
    cached.
 
-   Files are the exact woff2 payloads Google served for this site's own request
-   URL, including the &icon_names= subset of Material Symbols -- so the icon
-   font is still the 67 KB subset rather than the 5,220 KB full variable font.
-   Ten faces, 121 KB total, and only the faces actually rendered download.
+   EVERY CAPITAL LETTER ON THE SITE WAS FALLING BACK TO GEORGIA.
+   The first self-hosting pass requested Exo 2 and Playfair Display TOGETHER
+   with Material Symbols in one combined css2 URL. Google serves combined
+   multi-family requests through a different endpoint (fonts.gstatic.com/l/font,
+   no unicode-range at all) than a single-family request (fonts.gstatic.com/s/...,
+   split by script into 'latin', 'latin-ext', 'cyrillic', etc.) -- and the
+   combined endpoint had silently reduced the Latin text faces to a 27-glyph
+   subset: space, underscore, and the lowercase alphabet minus 'q'. No
+   uppercase, no digits, no punctuation, not even in the icon-adjacent Material
+   Symbols request, which is the one place a narrow subset was actually wanted.
 
-   Regenerate by refetching the css2 URL with a modern user-agent and saving
-   each url() it returns; the request is recorded in public/fonts/LICENSES.txt.
+   Nothing errors when a glyph is missing from a font. The browser just moves
+   to the next family in the stack for that one character, so "Nic" rendered
+   with a fallback-serif N beside a true-Playfair-900 "ic" -- looked like
+   inconsistent bolding, was actually two different fonts sitting next to each
+   other. Every heading on the site did this on its first capital letter, and
+   every sentence of body copy did it on its capitals, digits, and punctuation.
 
-   No unicode-range here, because Google's response for this URL has none: the
-   icon_names parameter switches it to pre-subsetted files rather than the usual
-   per-script slices. Characters outside those subsets fall through to the
-   symbol families in tailwind.config, exactly as they did before.
+   Fetching each family SEPARATELY restores Google's normal per-script
+   breakdown. Only the 'latin' block is kept -- Unicode 0000-00FF plus general
+   punctuation, so digits, all English punctuation, en/em dash, curly quotes,
+   and the trademark and arrow glyphs this site's spec tables use are all
+   covered. 'latin-ext', 'cyrillic' and 'vietnamese' are dropped: nothing here
+   is written in those scripts. Genuinely exotic characters -- Ω, μ, subscript
+   digits in "μᵣ" -- stay out of scope on purpose and fall through to the
+   symbol families already in tailwind.config, which is what that fallback
+   chain exists for.
+
+   Both families turned out to be variable fonts (a 'wght' axis spanning the
+   whole family in one file), so a single download now covers every static
+   weight the site requests -- font-weight declares the RANGE, same pattern
+   Material Symbols already used below. Regenerate per family, never combined;
+   the request URLs are recorded in public/fonts/LICENSES.txt.
    ──────────────────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: 'Exo 2';
   font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: url('/fonts/exo2-300.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Exo 2';
-  font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
   src: url('/fonts/exo2-400.woff2') format('woff2');
 }
@@ -381,30 +395,9 @@ canvas, img, video, .no-theme-transition {
   src: url('/fonts/exo2-400i.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'Exo 2';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('/fonts/exo2-500.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Exo 2';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('/fonts/exo2-600.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Exo 2';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/exo2-700.woff2') format('woff2');
-}
-@font-face {
   font-family: 'Playfair Display';
   font-style: normal;
-  font-weight: 700;
+  font-weight: 700 900;
   font-display: swap;
   src: url('/fonts/playfair-700.woff2') format('woff2');
 }
@@ -414,13 +407,6 @@ canvas, img, video, .no-theme-transition {
   font-weight: 700;
   font-display: swap;
   src: url('/fonts/playfair-700i.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Playfair Display';
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src: url('/fonts/playfair-900.woff2') format('woff2');
 }
 /* Variable across weight 100-700, which is why the icon class can set
    'wght' 300 through font-variation-settings.
