@@ -11,13 +11,13 @@ const STACK = [
   { label: 'Framework',  value: 'React 18, react-router 7' },
   { label: 'Build',      value: 'Vite 8 (rolldown)' },
   { label: 'Styling',    value: 'Tailwind 3 + hand-written CSS variables' },
-  { label: 'Motion',     value: 'Framer Motion, sparingly' },
+  { label: 'Motion',     value: 'CSS animations, no motion library' },
   { label: '3D',         value: 'three.js via react-three-fiber' },
   { label: 'Diagrams',   value: 'React Flow' },
-  { label: 'Type',       value: 'Exo 2, Playfair Display, Material Symbols' },
+  { label: 'Type',       value: 'Exo 2, Playfair Display, Material Symbols — self-hosted' },
   { label: 'Hosting',    value: 'Vercel, with serverless functions in /api' },
   { label: 'Images',     value: 'PowerShell + System.Drawing, no npm dependency' },
-  { label: 'Tests',      value: 'node:test, on the serverless code' },
+  { label: 'Tests',      value: 'node:test, on the serverless code and the build output' },
 ]
 
 function Heading({ children }) {
@@ -118,9 +118,11 @@ export default function ColophonPage() {
             <Body>
               Social previews were wrong for a year without anyone noticing, because the
               tags are set after React mounts and the crawlers that read them do not run
-              JavaScript. Each route now gets a real static HTML shell written at build
-              time, with its own title and description parsed out of the route itself so
-              the two cannot drift apart.
+              JavaScript. The same blind spot was hiding something larger: every route
+              served an empty root element, so anything that did not execute JavaScript
+              saw zero characters of text. Each route is now rendered to real HTML at
+              build time — the page itself, not only its title — from the same component
+              tree the browser uses, so the two cannot drift apart.
             </Body>
           </Section>
 
@@ -128,8 +130,9 @@ export default function ColophonPage() {
             <Body>
               The icon font was the single largest asset on the site at 5.2 MB, because the
               full variable font ships unless you ask for a subset. Requesting only the
-              icons actually used took it to 119 KB. The deploy went from 639 MB to under
-              130 MB by serving derivatives rather than originals.
+              icons actually used took it to 67 KB, and it is served from this domain
+              rather than Google's. The deploy went from 639 MB to under 130 MB by
+              serving derivatives rather than originals.
             </Body>
             <Body>
               The 3D board and the signal-chain diagrams are the two heaviest things here,
