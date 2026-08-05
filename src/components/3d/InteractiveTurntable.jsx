@@ -39,34 +39,58 @@ const MAT_CY     = GLASS_Y0 + GLASS_T + MAT_T / 2               // 0.130
 const RECORD_CY  = GLASS_Y0 + GLASS_T + MAT_T + RECORD_T / 2    // 0.160
 const RECORD_TOP = RECORD_CY + RECORD_T / 2                     // 0.180
 
-// ─── Tonearm geometry constants ───────────────────────────────────────────────
-// Pivot at world (1.72, PIVOT_BASE_Y, -0.55).
-// Stylus tip in pivot-local space: approx [-1.368, ...] (new longer arm).
-//
-// rotation.y  →  stylus lands on record (recalculated for stylus at local [-1.368, _, 0.018])
-//   1.25 rad  →  parked (R≈1.51, just outside record edge)
-//   1.18 rad  →  outer groove (R≈1.41, near vinyl edge)
-//   0.50 rad  →  inner groove (R≈0.54, near label)
-const TONEARM_REST     = 1.25   // parked angle (rad) -- just off the record edge
-const TONEARM_PLAY     = 1.22   // outer groove -- drops here first
-const TONEARM_INNER    = 0.62   // inner groove -- R≈0.67, stops just outside label edge (R=0.60)
+// ─── Tonearm sweep ────────────────────────────────────────────────────────────
+// Pivot at world (1.72, PIVOT_BASE_Y, -0.55); stylus at pivot-local
+// (STYLUS_X, _, STYLUS_Z), so the groove radius the stylus rides is
+//   R(a) = |(1.72, -0.55) + R_y(a)·(STYLUS_X, STYLUS_Z)|
+// Solved for R, not eyeballed. The block that used to sit here quoted three
+// different sets of angles against two different arm lengths and none of them
+// agreed with what the arm actually did -- "parked (R≈1.51, just outside record
+// edge)" was in fact R=1.435, i.e. the stylus parked ON the disc.
+const TONEARM_REST     = 1.342  // parked        -> R 1.560, clear of the 1.50 edge
+const TONEARM_PLAY     = 1.253  // lead-in       -> R 1.440, ~6 mm in from the rim
+const TONEARM_INNER    = 0.682  // run-out       -> R 0.660, just outside the 0.60 label
 const RAISE_HEIGHT     = 0.14   // how far the STYLUS END lifts when cued up
-// Derived, not pinned. The stylus sits STYLUS_DROP below the pivot in arm-local
-// space, so the pivot has to ride exactly that far above the playing surface.
-// This was hardcoded to 0.110 for a record top of 0.042; lifting the disc onto
-// a real 10 mm platter moves the surface, and a hardcoded value would have left
-// the stylus buried in the vinyl.
-const STYLUS_DROP      = 0.068
-const PIVOT_BASE_Y     = RECORD_TOP + STYLUS_DROP
 const TRACKING_SECS    = 120    // seconds to sweep outer → inner (slow, realistic)
+
+// ── Arm tube, and everything hung off its end ────────────────────────────────
+// The headshell used to be positioned by hand at (-1.20, 0) and never
+// re-derived when the tube's tilt was set. The tube is 1.24 long, centred at
+// x=-0.62 and tilted 0.04 rad, so its far end actually lands at
+// (-1.2395, +0.0298): the headshell was sitting 0.04 short of it and 0.03 below
+// it, and the cartridge visibly floated free of the arm.
+//
+// So the tube is described once and the headshell hangs off its computed end.
+// Nothing downstream is a literal any more -- move the tube and the cartridge,
+// the stylus, the pivot height and the cue angle all follow.
+const TUBE_LEN   = 1.24
+const TUBE_TILT  = 0.04         // rad; the tube rises slightly toward the headshell
+const TUBE_CX    = -0.62
+const TUBE_CY    = 0.005
+const TUBE_END_X = TUBE_CX - (TUBE_LEN / 2) * Math.cos(TUBE_TILT)
+const TUBE_END_Y = TUBE_CY + (TUBE_LEN / 2) * Math.sin(TUBE_TILT)
+
+const HEADSHELL_YAW = -0.38     // ~22°, so the cartridge runs tangent to the groove
+const STYLUS_LX     = -0.168    // stylus within the headshell group
+const STYLUS_LY     = -0.068
+
+// Stylus in pivot-local space. R_y(θ) on (x, 0, 0) gives (x·cosθ, 0, -x·sinθ).
+const STYLUS_X = TUBE_END_X + STYLUS_LX * Math.cos(HEADSHELL_YAW)
+const STYLUS_Z = -STYLUS_LX * Math.sin(HEADSHELL_YAW)
+
+// How far the stylus hangs below the pivot, and how far out it reaches. Both
+// were hardcoded (0.068 and 1.368) against a headshell position that no longer
+// exists.
+const STYLUS_DROP  = -(TUBE_END_Y + STYLUS_LY)
+const ARM_REACH    = Math.hypot(STYLUS_X, STYLUS_Z)
+const PIVOT_BASE_Y = RECORD_TOP + STYLUS_DROP
 
 // Cueing rotates the arm about its bearing rather than translating the whole
 // pivot upward. Raising the pivot lifted the arm clear of the bearing post it
 // is supposed to be mounted on, which is what made it look like it was floating
 // free of the deck. Rotating keeps the bearing fixed, and the counterweight
 // dips as the stylus rises -- the see-saw a real arm actually does.
-const ARM_REACH  = 1.368                                  // pivot → stylus, in pivot-local X
-const LIFT_ANGLE = -Math.asin(RAISE_HEIGHT / ARM_REACH)   // ≈ -0.1025 rad; negative lifts the -X end
+const LIFT_ANGLE = -Math.asin(RAISE_HEIGHT / ARM_REACH)   // negative lifts the -X end
 
 // Arm state machine
 const ARM = { PARKED: 0, SWINGING: 1, DROPPING: 2, PLAYING: 3 }
@@ -461,8 +485,8 @@ function Tonearm({ isPlaying }) {
       </mesh>
 
       {/* ── Main arm tube -- Rega straight matte black tube ── */}
-      <mesh position={[-0.62, 0.005, 0]} rotation={[0, 0, Math.PI / 2 - 0.04]} castShadow>
-        <cylinderGeometry args={[0.0165, 0.021, 1.24, 24]} />
+      <mesh position={[TUBE_CX, TUBE_CY, 0]} rotation={[0, 0, Math.PI / 2 - TUBE_TILT]} castShadow>
+        <cylinderGeometry args={[0.0165, 0.021, TUBE_LEN, 24]} />
         <meshStandardMaterial color="#1c1c20" metalness={0.8} roughness={0.26} envMapIntensity={0.9} />
       </mesh>
 
@@ -490,29 +514,51 @@ function Tonearm({ isPlaying }) {
         <meshStandardMaterial color="#34343a" metalness={0.6} roughness={0.24} envMapIntensity={1.1} />
       </mesh>
 
-      {/* ── Headshell offset group -- ~22° Y rotation so cartridge runs tangent to groove ── */}
-      <group position={[-1.20, 0, 0]} rotation={[0, -0.38, 0]}>
+      {/* ── Headshell, mounted ON the end of the tube ── */}
+      <group position={[TUBE_END_X, TUBE_END_Y, 0]} rotation={[0, HEADSHELL_YAW, 0]}>
 
-        {/* Headshell connector -- matte black */}
-        <mesh position={[-0.04, -0.012, 0]} rotation={[0.10, 0, -0.10]}>
-          <boxGeometry args={[0.115, 0.018, 0.038]} />
-          <meshStandardMaterial color="#111111" metalness={0.75} roughness={0.35} />
+        {/* The connector runs BACK past the group origin, so it overlaps the
+            tube's end cap instead of butting against it. An RB220's headshell
+            is integral with the tube, and a joint that merely touches shows a
+            seam from every angle -- which is what made the cartridge look like
+            a separate object floating under the arm. */}
+        <mesh position={[-0.028, -0.009, 0]} rotation={[0, 0, TUBE_TILT]}>
+          <boxGeometry args={[0.15, 0.020, 0.038]} />
+          <meshStandardMaterial color="#1c1c20" metalness={0.78} roughness={0.30} envMapIntensity={0.9} />
         </mesh>
 
-        {/* Cartridge body -- dark, slight gloss */}
-        <mesh position={[-0.11, -0.026, 0]} rotation={[0.10, 0, 0]}>
+        {/* Cartridge body. The 0.10 roll it used to carry was a 5.7 degree
+            azimuth error -- a cartridge sits square to the record, and azimuth
+            is the one alignment you set to zero. */}
+        <mesh position={[-0.11, -0.026, 0]}>
           <boxGeometry args={[0.095, 0.030, 0.052]} />
           <meshStandardMaterial color="#1a1a1a" metalness={0.6} roughness={0.45} />
         </mesh>
 
-        {/* Cantilever */}
-        <mesh position={[-0.16, -0.048, 0]} rotation={[0.5, 0, 0.05]}>
-          <cylinderGeometry args={[0.0018, 0.0012, 0.055, 6]} />
-          <meshStandardMaterial color="#aaaaaa" metalness={0.9} roughness={0.1} />
+        {/* Cantilever, aimed at the stylus rather than guessed. It was rotated
+            [0.5, 0, 0.05] -- an X rotation swings a +Y cylinder through Z, i.e.
+            sideways across the record, not forward and down toward the tip. It
+            was also 0.055 long against a 0.029 gap, so it shot straight
+            through the stylus and out the far side. Both are only visible
+            zoomed in, which is exactly how the cartridge gets looked at.
+            Slightly over-long at each end so it seats into the body.
+
+            Thicker and less mirror-like than it was, too. 0.0018 radius is
+            0.18 mm, which is under a pixel at the size this ever renders, and
+            #aaaaaa at metalness 0.9 is a mirror -- in a scene this dark a
+            mirror reflects nothing and comes out black. So the one part
+            joining the cartridge to the stylus was invisible, and the stylus
+            read as a dot floating in space beneath it. Aluminium at 0.35 mm:
+            still to scale, and it actually catches the key light. */}
+        <mesh position={[-0.1638, -0.0572, 0]} rotation={[0, 0, 0.3709]}>
+          <cylinderGeometry args={[0.0035, 0.0024, 0.0391, 10]} />
+          <meshStandardMaterial color="#c9ced4" metalness={0.55} roughness={0.28} envMapIntensity={1.4} />
         </mesh>
 
-        {/* Stylus tip */}
-        <mesh position={[-0.168, -0.068, 0]}>
+        {/* Stylus tip. Driven by the same constants the arm's reach and pivot
+            height are solved from, so the geometry and the maths cannot drift
+            apart again. */}
+        <mesh position={[STYLUS_LX, STYLUS_LY, 0]}>
           <sphereGeometry args={[0.004, 8, 8]} />
           <meshStandardMaterial color="#111" metalness={0.95} roughness={0.05} />
         </mesh>
