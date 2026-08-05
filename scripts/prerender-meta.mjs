@@ -22,7 +22,7 @@
  * is worse than failing the build.
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, join } from 'node:path'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -121,6 +121,45 @@ function readRouteMeta(file) {
   return { title: unescape(m[1]), description: unescape(m[2]) }
 }
 
+/*
+ * RENDERING THE ROUTE INTO THE SHELL
+ *
+ * Until this existed, every shell shipped an empty <div id="root"></div>. That
+ * is fine for Google, which executes JavaScript, and useless for everything
+ * that does not: LinkedIn, Slack, Discord and Bing read the first response and
+ * stop. Measured against production, a crawler that does not run scripts saw
+ * exactly 0 characters of body text on the home page.
+ *
+ * It is also the reason FCP and LCP landed on the same millisecond on every
+ * route -- nothing could paint until React's first commit, roughly 130 KB of
+ * gzipped JavaScript deep. Real markup in the shell paints immediately.
+ *
+ * The markup comes from the SSR bundle built by `vite build --ssr`, which
+ * renders the same component tree the browser uses (App.jsx exports AppRoutes
+ * for exactly this) wrapped in a StaticRouter. Nothing about the route table
+ * is duplicated here, so the prerendered page cannot drift from the live one.
+ */
+const { render } = await import(pathToFileURL(join(ROOT, 'dist-ssr/entry-server.js')).href)
+
+const ROOT_DIV = '<div id="root"></div>'
+
+async function injectMarkup(html, routePath) {
+  const { html: rendered, errors } = await render(routePath)
+
+  /* A route that renders nothing is almost certainly a Suspense fallback that
+     escaped, or a component that threw. Shipping that silently would leave the
+     shell looking prerendered while containing nothing, which is worse than not
+     prerendering at all -- so it fails the build instead. */
+  if (rendered.replace(/<[^>]+>/g, '').trim().length < 200)
+    throw new Error(`prerender-meta: ${routePath} rendered almost no text (${rendered.length} bytes of HTML)`)
+  if (errors.length)
+    throw new Error(`prerender-meta: ${routePath} produced render errors:\n${errors.join('\n')}`)
+  if (!html.includes(ROOT_DIV))
+    throw new Error(`prerender-meta: could not find ${ROOT_DIV} in the shell`)
+
+  return html.replace(ROOT_DIV, `<div id="root">${rendered}</div>`)
+}
+
 /** Swaps one tag's content/href, erroring if the tag is missing from the shell. */
 function replaceTag(html, pattern, replacement, label) {
   if (!pattern.test(html)) throw new Error(`prerender-meta: ${label} not found in dist/index.html`)
@@ -148,6 +187,7 @@ for (const [route, file] of Object.entries(ROUTES)) {
   html = replaceTag(html, /(<link\s+rel="canonical"\s+href=")[^"]*(")/, `$1${url}$2`, 'canonical')
 
   html = injectPreloads(html, route)
+  html = await injectMarkup(html, `/${route}`)
 
   const outFile = join(ROOT, `dist/${route}.html`)
   mkdirSync(dirname(outFile), { recursive: true })
@@ -161,7 +201,7 @@ for (const [route, file] of Object.entries(ROUTES)) {
    above, which builds every other shell from `shell`, the copy read before any
    of this ran. Doing it first would stamp the home page's chunks onto all six
    other routes. */
-writeFileSync(join(ROOT, 'dist/index.html'), injectPreloads(shell, ''))
-console.log('  preloaded home route chunks into dist/index.html')
+writeFileSync(join(ROOT, 'dist/index.html'), await injectMarkup(injectPreloads(shell, ''), '/'))
+console.log('  preloaded home route chunks and rendered / into dist/index.html')
 
 console.log(`prerender-meta: wrote ${written} route shells`)

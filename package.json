@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/prerender-meta.mjs",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender-meta.mjs",
     "preview": "vite preview",
     "audit:fix": "npm audit fix",
     "test": "node --test tests/image-proxy.test.mjs tests/thumbs.test.mjs tests/rate-limit.test.mjs",
