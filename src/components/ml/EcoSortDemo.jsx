@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 
 const ACCEPTED_TYPES  = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_BYTES       = 4 * 1024 * 1024  // 4 MB
@@ -227,12 +226,8 @@ export default function EcoSortDemo({ sectionId }) {
   const subThreshCount = predictions.filter((p) => p.confidence < confThreshold).length
 
   return (
-    <motion.section
+    <section
       id={sectionId}
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.45 }}
       className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
     >
       {/* ── Header ── */}
@@ -292,12 +287,9 @@ export default function EcoSortDemo({ sectionId }) {
         &nbsp;· center-crop&nbsp;<span style={{ color: 'var(--accent)' }}>640×640</span>
       </p>
 
-      <AnimatePresence mode="wait">
-
         {/* ── Drop zone ── */}
         {status === 'idle' && (
-          <motion.div key="drop"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          <div key="drop"
             onDrop={onDrop} onDragOver={onDragOver}
             onClick={() => inputRef.current?.click()}
             className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed cursor-pointer"
@@ -308,21 +300,20 @@ export default function EcoSortDemo({ sectionId }) {
             <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>JPG · PNG · WebP · max 4 MB</span>
             <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp"
               className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
-          </motion.div>
+          </div>
         )}
 
         {/* ── Loading ── */}
         {status === 'loading' && (
-          <motion.div key="loading"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <div key="loading"
+           >
             <TerminalSpinner />
-          </motion.div>
+          </div>
         )}
 
         {/* ── Error ── */}
         {status === 'error' && (
-          <motion.div key="error"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          <div key="error"
             className="rounded-xl border-subtle p-4 flex items-center justify-between gap-3"
             style={{ background: 'var(--bg-surface-1)', borderColor: '#7f1d1d' }}
           >
@@ -330,14 +321,12 @@ export default function EcoSortDemo({ sectionId }) {
             <button onClick={reset} className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
               Retry
             </button>
-          </motion.div>
+          </div>
         )}
 
         {/* ── Result ── */}
         {status === 'done' && (
-          <motion.div key="result"
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
+          <div key="result"
             className="flex flex-col gap-4"
           >
             {/* ── Image + CSS bounding boxes ── */}
@@ -430,10 +419,9 @@ export default function EcoSortDemo({ sectionId }) {
               <span aria-hidden="true" className="material-symbols-rounded text-sm">refresh</span>
               Classify another
             </button>
-          </motion.div>
+          </div>
         )}
 
-      </AnimatePresence>
-    </motion.section>
+    </section>
   )
 }

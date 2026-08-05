@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { useAppStore } from '../../store/useAppStore'
 import { thumbSrc, displaySrc } from '../../utils/thumbs'
@@ -31,21 +30,13 @@ function Lightbox({ image, onClose }) {
   }, [onClose])
 
   return createPortal(
-    <motion.div
+    <div
       key="lightbox"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.18 }}
       className="fixed inset-0 z-[9998] flex items-center justify-center p-6"
       style={{ background: 'rgba(3,7,18,0.92)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <motion.div
-        initial={{ scale: 0.92, y: 16 }}
-        animate={{ scale: 1,    y: 0  }}
-        exit={{ scale: 0.92,    y: 16 }}
-        transition={{ duration: 0.22, ease: 'easeOut' }}
+      <div
         className="relative max-w-5xl w-full"
       >
         <img
@@ -68,8 +59,8 @@ function Lightbox({ image, onClose }) {
             <span aria-hidden="true" className="material-symbols-rounded text-sm">close</span>ESC
           </button>
         </div>
-      </motion.div>
-    </motion.div>,
+      </div>
+    </div>,
     document.body
   )
 }
@@ -106,11 +97,9 @@ export default function ReferenceGallery({ onSyncView }) {
       {/* Thumbnail strip */}
       <div className="flex flex-col gap-3 p-3 overflow-y-auto flex-1">
         {REFERENCE_IMAGES.map((img, i) => (
-          <motion.div
+          <div
             key={img.src}
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.15 }}
-            className="relative group cursor-pointer rounded-lg overflow-hidden border"
+            className="tile-lift relative group cursor-pointer rounded-lg overflow-hidden border"
             style={{
               borderColor: i === activeIndex ? 'var(--accent)' : 'var(--border)',
               boxShadow: i === activeIndex ? '0 0 0 1px var(--accent)' : 'none',
@@ -165,7 +154,7 @@ export default function ReferenceGallery({ onSyncView }) {
                 </span>
               </div>
             )}
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -180,9 +169,9 @@ export default function ReferenceGallery({ onSyncView }) {
       </div>
 
       {/* Lightbox */}
-      <AnimatePresence>
+
         {lightbox && <Lightbox image={lightbox} onClose={() => setLightbox(null)} />}
-      </AnimatePresence>
+
     </div>
   )
 }

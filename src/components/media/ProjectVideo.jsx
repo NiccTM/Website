@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-import { motion } from 'framer-motion'
 
 /**
  * ProjectVideo -- local .mp4 player with poster, custom overlay controls,
@@ -47,11 +46,7 @@ export default function ProjectVideo({
   }
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.45 }}
+    <section
       className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
     >
       <h2
@@ -149,6 +144,6 @@ export default function ProjectVideo({
           </div>
         ))}
       </div>
-    </motion.section>
+    </section>
   )
 }

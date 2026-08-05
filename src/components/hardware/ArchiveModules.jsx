@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { archiveData } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc } from '../../utils/thumbs'
@@ -39,7 +38,7 @@ function ArchiveImage({ image, index }) {
 
   return (
     <>
-      <motion.div
+      <div
         onHoverStart={() => setHovered(true)}
         onHoverEnd={() => setHovered(false)}
         onClick={() => setLightbox(true)}
@@ -83,11 +82,10 @@ function ArchiveImage({ image, index }) {
         <div className="absolute top-2 right-2 transition-opacity duration-200" style={{ opacity: hovered ? 1 : 0 }}>
           <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>zoom_in</span>
         </div>
-      </motion.div>
+      </div>
 
-      <AnimatePresence>
         {lightbox && <ImageLightbox src={image.src} label={image.label} caption={image.caption} onClose={() => setLightbox(false)} />}
-      </AnimatePresence>
+
     </>
   )
 }
@@ -98,11 +96,7 @@ function ArchiveModule({ mod, moduleIndex }) {
   const scrambled = useScramble(mod.title, hovered)
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.38, delay: moduleIndex * 0.08 }}
+    <div
       className="mb-10"
     >
       {/* Module header */}
@@ -138,7 +132,7 @@ function ArchiveModule({ mod, moduleIndex }) {
           <ArchiveImage key={img.src} image={img} index={i} />
         ))}
       </div>
-    </motion.div>
+    </div>
   )
 }
 

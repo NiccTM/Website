@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { motion } from 'framer-motion'
 import { createPortal } from 'react-dom'
 // Aliased: this component already has a local `displaySrc` for "what to render
 // right now". fullResSrc is the 2560px deliverable that replaced shipping the
@@ -127,12 +126,8 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
   }
 
   return createPortal(
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.18 }}
-      className="fixed inset-0 z-[9999] flex flex-col"
+    <div
+      className="anim-fade fixed inset-0 z-[9999] flex flex-col"
       style={{ background: 'rgba(3,7,18,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', willChange: 'opacity' }}
     >
       {/* ── Top bar ── */}
@@ -246,7 +241,7 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
           </div>
         )}
       </div>
-    </motion.div>,
+    </div>,
     document.body
   )
 }

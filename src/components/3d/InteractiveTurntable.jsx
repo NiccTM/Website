@@ -4,7 +4,6 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, useTexture, Environment, Lightformer, ContactShadows } from '@react-three/drei'
 import { damp } from 'maath/easing'
 import * as THREE from 'three'
-import { motion } from 'framer-motion'
 import { useUI } from '../../context/UIContext'
 import ErrorBoundary from '../ui/ErrorBoundary'
 
@@ -626,11 +625,7 @@ export default function InteractiveTurntable({ release, onClose }) {
   }, [])
 
   return createPortal(
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.22 }}
+    <div
       className="fixed inset-0 z-[9999] flex flex-col"
       style={{ background: 'rgba(3,7,18,0.94)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
       role="dialog"
@@ -700,7 +695,7 @@ export default function InteractiveTurntable({ release, onClose }) {
           Drag to orbit · Scroll to zoom
         </p>
       </div>
-    </motion.div>,
+    </div>,
     document.body
   )
 }

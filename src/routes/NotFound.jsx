@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 export default function NotFound() {
@@ -13,20 +12,14 @@ export default function NotFound() {
       className="flex flex-col items-start justify-center min-h-[80vh] px-5 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
       style={{ background: 'transparent' }}
     >
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
+      <p
         className="font-mono-data tracking-[0.18em] uppercase mb-4"
         style={{ color: 'var(--accent)', fontSize: '0.875rem' }}
       >
         Error 404
-      </motion.p>
+      </p>
 
-      <motion.h1
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+      <h1
         className="font-display"
         style={{
           fontSize: 'clamp(6rem, 4rem + 12vw, 18rem)',
@@ -37,23 +30,16 @@ export default function NotFound() {
         }}
       >
         404.
-      </motion.h1>
+      </h1>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.18 }}
+      <p
         className="font-sans mt-6 mb-10"
         style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1.6 }}
       >
         The requested system path does not exist.
-      </motion.p>
+      </p>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4, delay: 0.3 }}
-      >
+      <div>
         <Link
           to="/"
           className="inline-flex items-center gap-2 font-mono-data text-sm px-5 py-2.5 rounded-lg transition-colors duration-150"
@@ -68,7 +54,7 @@ export default function NotFound() {
           <span aria-hidden="true" className="material-symbols-rounded text-base">arrow_back</span>
           Return to root directory
         </Link>
-      </motion.div>
+      </div>
     </section>
   )
 }

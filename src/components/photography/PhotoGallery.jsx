@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 // fullResSrc aliased: this file already uses `displaySrc` for "what to render
 // right now". The 2560px tier is what the lightbox loads -- originals live in
@@ -275,12 +274,8 @@ function Lightbox({ idx, onClose, onGo }) {
   }
 
   return createPortal(
-    <motion.div
+    <div
       ref={wrapperRef}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.18 }}
       className="fixed inset-0 z-[9999] flex flex-col"
       style={{ background: 'rgba(5,4,10,0.97)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
     >
@@ -454,7 +449,7 @@ function Lightbox({ idx, onClose, onGo }) {
           </p>
         </div>
       </div>
-    </motion.div>,
+    </div>,
     document.body
   )
 }
@@ -524,24 +519,18 @@ export default function PhotoGallery() {
     <section className="px-5 pt-2 pb-20 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
       {/* Header */}
       <h2 className="sr-only">Photography</h2>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
+      <p
         className="font-mono-data tracking-[0.18em] uppercase mb-4"
         style={{ color: 'var(--accent)', fontSize: '0.875rem' }}
       >
         Kelowna · Ottawa · Brockville
-      </motion.p>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.15 }}
+      </p>
+      <p
         className="font-sans mb-8 max-w-lg"
         style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1.75 }}
       >
         Landscapes, wildlife, and urban scenes from across British Columbia and Eastern Ontario.
-      </motion.p>
+      </p>
 
       {/* Copyright notice */}
       <div
@@ -562,7 +551,6 @@ export default function PhotoGallery() {
         ))}
       </div>
 
-      <AnimatePresence>
         {lightboxIdx >= 0 && (
           <Lightbox
             idx={lightboxIdx}
@@ -570,7 +558,7 @@ export default function PhotoGallery() {
             onGo={setLightboxIdx}
           />
         )}
-      </AnimatePresence>
+
     </section>
   )
 }

@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc, avifThumbSrc } from '../../utils/thumbs'
@@ -42,7 +41,7 @@ const CHALLENGES = [
 // ─── Card ─────────────────────────────────────────────────────────────────────
 function ChallengeCard({ item, index }) {
   return (
-    <motion.div
+    <div
       className="flex flex-col gap-4 p-5"
       style={{
         background: 'rgba(255,255,255,0.04)',
@@ -105,7 +104,7 @@ function ChallengeCard({ item, index }) {
           {item.solution}
         </p>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -217,9 +216,8 @@ function DigitalTwinPanel({ src, label, caption, icon, poster }) {
         </div>
       </div>
 
-      <AnimatePresence>
         {open && <ImageLightbox src={src} label={label} caption={caption} onClose={() => setOpen(false)} />}
-      </AnimatePresence>
+
     </>
   )
 }
@@ -229,11 +227,7 @@ export default function MotorLab() {
   return (
     <div className="mt-10">
       {/* Section header */}
-      <motion.div
-        initial={{ opacity: 0, x: -8 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.3 }}
+      <div
         className="flex items-center gap-2 mb-6"
       >
         <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>settings</span>
@@ -247,7 +241,7 @@ export default function MotorLab() {
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
           $94.92 / $100 CAD
         </span>
-      </motion.div>
+      </div>
 
       {/* Digital Twin: CAD cross-section + physical prototype */}
       <div className="grid grid-cols-2 gap-4 mb-4">
@@ -316,11 +310,7 @@ export default function MotorLab() {
       </div>
 
       {/* Spec footer */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.3, delay: 0.3 }}
+      <div
         className="flex flex-wrap gap-x-6 gap-y-2 mt-5"
       >
         {[
@@ -336,7 +326,7 @@ export default function MotorLab() {
             <span className="font-mono-data text-sm" style={{ color: 'var(--accent)' }}>{value}</span>
           </div>
         ))}
-      </motion.div>
+      </div>
     </div>
   )
 }
