@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { usePageMeta } from '../hooks/usePageMeta'
 import PageHeader from '../components/layout/PageHeader'
@@ -195,18 +194,16 @@ export default function ColophonPage() {
         </div>
       </div>
 
-      {/* The one animated element on the page, and only because it is the last
-          line: a colophon that performed would undercut what it says. */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
+      {/* This was the one animated element on the page, on the grounds that a
+          colophon which performed would undercut what it says. It is now the
+          zero animated elements on the page, which makes the same point
+          better. */}
+      <p
         className="font-mono-data text-sm mt-4"
         style={{ color: 'var(--text-muted)' }}
       >
         Built in Kelowna, British Columbia.
-      </motion.p>
+      </p>
     </section>
   )
 }

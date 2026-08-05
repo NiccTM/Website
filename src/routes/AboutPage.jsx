@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { usePageMeta } from '../hooks/usePageMeta'
 import PageHeader from '../components/layout/PageHeader'
@@ -29,17 +28,13 @@ const AWARDS = [
 
 function Heading({ children, id }) {
   return (
-    <motion.h2
+    <h2
       id={id}
-      initial={{ opacity: 0, x: -8 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.35 }}
       className="font-mono-data text-base tracking-widest uppercase mb-3"
       style={{ color: 'var(--accent)' }}
     >
       {children}
-    </motion.h2>
+    </h2>
   )
 }
 
@@ -52,17 +47,16 @@ function Body({ children }) {
 }
 
 function Section({ title, children }) {
+  /* Static, not a scroll reveal. These sections used to fade and rise as they
+     entered the viewport, which meant their content started at opacity 0 --
+     invisible to a prerendered page and to anything that reads the HTML
+     without running it. Reading down a page of prose should not require
+     JavaScript to have finished. */
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.4 }}
-      className="mb-11"
-    >
+    <section className="mb-11">
       <Heading>{title}</Heading>
       {children}
-    </motion.section>
+    </section>
   )
 }
 

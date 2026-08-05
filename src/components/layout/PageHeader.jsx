@@ -1,6 +1,22 @@
-import { motion } from 'framer-motion'
-
 /* The eyebrow / display title / intro block that opens a route.
+
+   NO ENTER ANIMATION, and that is the point of this component's rewrite.
+
+   This block is the top of every route, so its <h1> or its intro paragraph is
+   the Largest Contentful Paint element on most of them. It used to be three
+   framer-motion elements with initial={{ opacity: 0 }}, which meant the very
+   first thing painted on every page was invisible until JavaScript had
+   downloaded, parsed, hydrated and started animating.
+
+   That is bad twice over. Chrome refuses an element as an LCP candidate while
+   its first paint is at opacity 0, so the metric could not even start until
+   hydration; and it makes build-time prerendering pointless, because the
+   prerendered HTML would carry style="opacity:0" and show a blank page until
+   the bundle arrived.
+
+   The same reasoning is why the hero's first slide has no animation either --
+   see the note in styles/index.css. Elements further down the page can still
+   use .anim-rise; the first screenful cannot.
    Extracted from HobbiesPage, which had the only full version of it -- the
    other routes each had a partial copy or, in the case of /projects, no page
    heading at all (and therefore no h1, which is an accessibility and search
@@ -30,21 +46,15 @@ export default function PageHeader({
   return (
     <>
       {eyebrow && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
+        <p
           className="font-mono-data tracking-[0.18em] uppercase mb-4"
           style={{ color: 'var(--accent)', fontSize: '0.875rem' }}
         >
           {eyebrow}
-        </motion.p>
+        </p>
       )}
 
-      <motion.h1
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+      <h1
         className="font-display mb-6"
         style={{
           fontSize: SIZES[size] ?? SIZES.display,
@@ -54,18 +64,15 @@ export default function PageHeader({
         }}
       >
         {title}
-      </motion.h1>
+      </h1>
 
       {intro && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
+        <p
           className={`font-sans mb-8 ${introClassName}`}
           style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.75 }}
         >
           {intro}
-        </motion.p>
+        </p>
       )}
 
       {children}
