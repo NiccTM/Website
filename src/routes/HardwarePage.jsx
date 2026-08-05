@@ -79,34 +79,54 @@ function ReferenceGalleryStrip({ onSyncView }) {
       </div>
 
       {/* Horizontal thumbnail row */}
-      {/* tabIndex/role/label: a horizontally scrolling region with no focusable
-          child cannot be scrolled by keyboard at all -- WCAG 2.1.1, and axe's
-          scrollable-region-focusable. This makes the strip itself a tab stop so
-          the arrow keys pan it.
-          The thumbnails inside are still mouse-only; they carry two different
-          actions (sync the 3D view, and open the lightbox) so making them
-          keyboard-operable needs them split into two real controls rather than
-          nested click handlers. */}
+      {/* role/label so the strip announces itself as a group. No tabIndex on
+          the container: its children are real buttons now, so it already has
+          keyboard access and adding a tab stop here would only put an extra,
+          useless stop in front of them. */}
       <div
         className="flex gap-3 overflow-x-auto pb-1"
-        tabIndex={0}
         role="group"
-        aria-label="Altium reference gallery, scrollable"
+        aria-label="Altium reference gallery"
       >
         {REFERENCE_IMAGES.map((img, i) => (
+          /* Two SIBLING buttons, not a clicking tile with a clicking overlay
+             inside it.
+
+             The zoom overlay used to be inset-0 with its own onClick and a
+             stopPropagation. It is invisible at rest but opacity: 0 still
+             receives pointer events, so it covered the whole tile and ate every
+             click -- measured: pointer-events computed `auto` at opacity 0.
+             The tile's own handler could therefore never run by mouse, which
+             means "Click to sync 3D view" in the caption above was simply not
+             true for anyone using a mouse.
+
+             Making them siblings fixes that and the keyboard gap at once: two
+             separate actions need two separate controls, and a <button> cannot
+             be nested inside another <button>. */
           <div
             key={i}
-            className="tile-lift relative group cursor-pointer rounded-lg overflow-hidden border shrink-0"
+            className="tile-lift relative group rounded-lg overflow-hidden border shrink-0"
             style={{
               width: '220px',
               borderColor: i === activeIndex ? 'var(--accent)' : 'var(--border)',
               boxShadow:   i === activeIndex ? '0 0 0 1px var(--accent)' : 'none',
             }}
-            onClick={() => handleClick(img, i)}
           >
+            <button
+              type="button"
+              onClick={() => handleClick(img, i)}
+              aria-label={`Sync the 3D view to ${img.label}`}
+              aria-pressed={i === activeIndex}
+              className="block w-full cursor-pointer focus:outline-none focus-visible:ring-2"
+              style={{ '--tw-ring-color': 'var(--accent)' }}
+            >
             <Picture
               src={thumbSrc(img.src)}
-              alt={img.label}
+              /* alt="" on purpose: the label is rendered as visible text in
+                 the gradient below, and the button wrapping this image already
+                 names the action. A non-empty alt here makes a screen reader
+                 announce the same words twice (axe: image-redundant-alt). */
+              alt=""
               loading="lazy"
               decoding="async"
               className="w-full object-cover transition-all duration-200"
@@ -115,16 +135,6 @@ function ReferenceGalleryStrip({ onSyncView }) {
                 filter: i === activeIndex ? 'none' : 'grayscale(0.5) brightness(0.8)',
               }}
             />
-
-            {/* Zoom overlay */}
-            <div
-              className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-              style={{ background: 'rgba(3,7,18,0.45)' }}
-              onClick={(e) => { e.stopPropagation(); setLightbox(img) }}
-
-            >
-              <span aria-hidden="true" className="material-symbols-rounded text-2xl" style={{ color: 'var(--accent)' }}>zoom_in</span>
-            </div>
 
             {/* Label gradient */}
             <div className="absolute bottom-0 left-0 right-0 px-2 py-1.5"
@@ -147,6 +157,24 @@ function ReferenceGalleryStrip({ onSyncView }) {
                   style={{ color: 'var(--accent)', opacity: 0.7 }}>sync</span>
               </div>
             )}
+            </button>
+
+            {/* Zoom, as its own control in the corner rather than an invisible
+                sheet over the whole tile. Bottom-left so it clears the ACTIVE
+                badge and the sync icon. */}
+            <button
+              type="button"
+              onClick={() => setLightbox(img)}
+              aria-label={`Open ${img.label} full size`}
+              className="absolute bottom-2 left-2 grid place-items-center w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-150 focus:outline-none focus-visible:ring-2"
+              style={{
+                background: 'rgba(3,7,18,0.72)',
+                border: '1px solid rgb(var(--accent-rgb) / 0.35)',
+                '--tw-ring-color': 'var(--accent)',
+              }}
+            >
+              <span aria-hidden="true" className="material-symbols-rounded text-base" style={{ color: 'var(--accent-on-dark)' }}>zoom_in</span>
+            </button>
           </div>
         ))}
       </div>
