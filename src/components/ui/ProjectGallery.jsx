@@ -128,7 +128,12 @@ function ProjectCard({ project, featured = false, priority = false, onExpand }) 
             style={{ background: CATEGORY_PLACEHOLDER[project.category] ?? CATEGORY_PLACEHOLDER.practice }}
           >
             <div className="absolute inset-0 flex items-center justify-center opacity-10">
-              <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '5rem', color: '#fff' }}>
+              {/* currentColor via --text-primary, not white: this is a faint
+                  watermark on a THEME surface, and white at 10% opacity over a
+                  pale panel is nothing at all -- measured 1.06:1 in light mode.
+                  The token inverts with the theme, so the mark stays equally
+                  faint in both instead of vanishing in one. */}
+              <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '5rem', color: 'var(--text-primary)' }}>
                 {project.icon ?? (project.category === 'competitive' ? 'emoji_events' : project.category === 'software' ? 'code' : 'gavel')}
               </span>
             </div>
@@ -169,7 +174,12 @@ function ProjectCard({ project, featured = false, priority = false, onExpand }) 
         {/* Expand icon -- always visible on touch, hover-shown on desktop */}
         {hasDetails && (
           <div className="absolute top-3 right-3">
+            {/* aria-hidden, like every other icon on the site. Without it a
+                screen reader announces the ligature source text -- the card
+                would read "... open_in_full". The card itself is the control
+                and carries the accessible name. */}
             <span
+              aria-hidden="true"
               className="material-symbols-rounded text-sm flex items-center justify-center rounded-full"
               style={{
                 color: 'var(--accent-on-dark)',

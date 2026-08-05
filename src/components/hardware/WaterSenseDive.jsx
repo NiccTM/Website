@@ -36,9 +36,17 @@ function DigitalTwinPanel({ src, label, caption, icon }) {
             </div>
           )}
         </div>
+        {/* Theme tokens, not white -- this block sits on the panel, not on the
+            photograph above it, so in light mode white measured 1.34:1 and
+            1.25:1 against a 4.5 requirement. */}
         <div className="px-3 py-2.5" style={{ borderTop: '1px solid rgba(255,255,255,0.45)' }}>
-          <p className="font-mono-data text-sm font-medium" style={{ color: '#ffffff' }}>{label}</p>
-          <p className="font-mono-data text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.75)' }}>{caption}</p>
+          <p className="font-mono-data text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{label}</p>
+          {/* --text-secondary, not --text-muted. This panel is a 22% WHITE
+              overlay, so in dark mode it composites to a mid grey that is
+              lighter than the page, and the muted purple only reached 2.96:1 on
+              it. MotorLab's equivalent panel is 4% white and muted is fine
+              there -- the token has to suit the surface, not the component. */}
+          <p className="font-mono-data text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>{caption}</p>
         </div>
       </div>
 
