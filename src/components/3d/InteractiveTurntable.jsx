@@ -40,34 +40,53 @@ const RECORD_CY  = GLASS_Y0 + GLASS_T + MAT_T + RECORD_T / 2    // 0.160
 const RECORD_TOP = RECORD_CY + RECORD_T / 2                     // 0.180
 
 // ─── Tonearm sweep ────────────────────────────────────────────────────────────
-// Pivot at world (1.72, PIVOT_BASE_Y, -0.55); stylus at pivot-local
+// Pivot at world (PIVOT_X, PIVOT_BASE_Y, PIVOT_Z); stylus at pivot-local
 // (STYLUS_X, _, STYLUS_Z), so the groove radius the stylus rides is
-//   R(a) = |(1.72, -0.55) + R_y(a)·(STYLUS_X, STYLUS_Z)|
-// Solved for R, not eyeballed. The block that used to sit here quoted three
-// different sets of angles against two different arm lengths and none of them
-// agreed with what the arm actually did -- "parked (R≈1.51, just outside record
-// edge)" was in fact R=1.435, i.e. the stylus parked ON the disc.
-const TONEARM_REST     = 1.342  // parked        -> R 1.560, clear of the 1.50 edge
-const TONEARM_PLAY     = 1.254  // lead-in       -> R 1.440, ~6 mm in from the rim
-const TONEARM_INNER    = 0.687  // run-out       -> R 0.660, just outside the 0.60 label
+//   R(a) = |(PIVOT_X, PIVOT_Z) + R_y(a)·(STYLUS_X, STYLUS_Z)|
+// Solved for R, not eyeballed.
+//
+// REST used to be the angle putting the stylus just past the rim. That parks
+// the TIP off the disc but swings the tube across it -- the tube's closest
+// approach was R=1.41, well inside the 1.50 record, so the arm rested over the
+// vinyl with nothing under it. REST is now chosen so the whole arm clears,
+// which is also what makes an arm rest possible to place at all.
+const TONEARM_REST     = 1.180  // parked   -> stylus R 1.892, nearest tube point R 1.657
+const TONEARM_PLAY     = 0.968  // lead-in  -> R 1.440, ~6 mm in from the rim
+const TONEARM_INNER    = 0.615  // run-out  -> R 0.660, just outside the 0.60 label
 const RAISE_HEIGHT     = 0.14   // how far the STYLUS END lifts when cued up
 const TRACKING_SECS    = 120    // seconds to sweep outer → inner (slow, realistic)
 
 // ── Arm tube, and everything hung off its end ────────────────────────────────
-// The headshell used to be positioned by hand at (-1.20, 0) and never
-// re-derived when the tube's tilt was set. The tube is 1.24 long, centred at
-// x=-0.62 and tilted 0.04 rad, so its far end actually lands at
-// (-1.2395, +0.0298): the headshell was sitting 0.04 short of it and 0.03 below
-// it, and the cartridge visibly floated free of the arm.
+// The tube is described once and the headshell hangs off its COMPUTED end.
+// Nothing downstream is a literal -- move the tube and the cartridge, the
+// stylus, the pivot height and the cue angle all follow. That matters because
+// the headshell was once pinned by hand and then left behind when the tube's
+// tilt changed, which put it 0.04 short of the tube's end and 0.03 below it and
+// left the cartridge visibly floating free of the arm.
 //
-// So the tube is described once and the headshell hangs off its computed end.
-// Nothing downstream is a literal any more -- move the tube and the cartridge,
-// the stylus, the pivot height and the cue angle all follow.
-const TUBE_LEN   = 1.24
-const TUBE_TILT  = 0.04         // rad; the tube rises slightly toward the headshell
-const TUBE_CX    = -0.62
+// The tilt is 0.018 rather than the 0.04 it carried when the tube was 1.24
+// long. Over a tube this length 0.04 would lift the headshell end 89 mm, which
+// is a visible ramp rather than a tonearm.
+//
+// The arm was proportionally short: 181 mm pivot-to-spindle against an RB220's
+// 222 mm. It is full size now. Rega publish 239 mm effective length and 222 mm
+// pivot-to-spindle, which implies 17 mm of overhang -- and the tube length below
+// is solved from the 239 mm, so the overhang falling out at exactly 17 mm is an
+// independent check that the whole chain is consistent rather than a number
+// anyone typed in.
+const ARM_EFFECTIVE = 2.39      // 239 mm, pivot -> stylus
+const ARM_P2S       = 2.22      // 222 mm, pivot -> spindle
+
+// Pivot keeps the heading it always had from the spindle, pushed out to 222 mm.
+const PIVOT_HEADING = Math.atan2(-0.55, 1.72)
+const PIVOT_X = Math.cos(PIVOT_HEADING) * ARM_P2S
+const PIVOT_Z = Math.sin(PIVOT_HEADING) * ARM_P2S
+
+const TUBE_LEN   = 2.2244       // solved so the stylus lands at ARM_EFFECTIVE
+const TUBE_TILT  = 0.018        // rad; the tube rises slightly toward the headshell
+const TUBE_CX    = -TUBE_LEN / 2
 const TUBE_CY    = 0.005
-const TUBE_END_X = TUBE_CX - (TUBE_LEN / 2) * Math.cos(TUBE_TILT)
+const TUBE_END_X = TUBE_CX - (TUBE_LEN / 2) * Math.cos(TUBE_TILT)   // -2.2243
 const TUBE_END_Y = TUBE_CY + (TUBE_LEN / 2) * Math.sin(TUBE_TILT)
 
 const HEADSHELL_YAW = -0.38     // ~22°, so the cartridge runs tangent to the groove
@@ -103,21 +122,14 @@ const ARM = { PARKED: 0, SWINGING: 1, DROPPING: 2, PLAYING: 3 }
 // The platter is NOT centred on the plinth -- on a Rega the spindle sits left
 // of centre with the arm occupying the space to its right. Modelling it
 // dead-centre left a large empty black expanse on the left of the deck.
-//
-// The deck is now the real 447 x 360 mm. One deviation remains and is worth
-// recording rather than hiding: the ARM is proportionally short. An RB220 is a
-// 9" arm with 222 mm pivot-to-spindle; this model's pivot sits 172 mm out. Its
-// play and inner angles and its lift geometry are all calibrated to that pivot,
-// so lengthening it would mean recomputing the tracking sweep, and the sweep
-// currently works.
-//
-// The visible consequence is that the offset which would put the spindle 160 mm
-// from the left edge, as it is on a real deck, would leave the arm crowded
-// against the right edge here. The offset below splits that difference.
 const PLINTH_W        = 4.47   // 447 mm
 const PLINTH_T        = 0.22   // deck slab, feet excluded
 const PLINTH_D        = 3.60   // 360 mm
-const PLINTH_OFFSET_X = 0.12
+// Spindle 160 mm from the left edge of a 447 mm deck, as on a real Planar 2.
+// This used to split the difference at 0.12, because a short arm plus the real
+// offset crowded the bearing against the right edge. With a full-length arm the
+// bearing clears the right edge by 76 mm, so the deck can sit where it belongs.
+const PLINTH_OFFSET_X = -1.60 + PLINTH_W / 2   // 0.635
 
 // ─── Procedural vinyl surface maps ────────────────────────────────────────────
 //
@@ -525,7 +537,7 @@ function Tonearm({ isPlaying }) {
   // own frame first and the y swing then carries it around -- exactly the order a
   // real bearing constrains. Pivot Y is now fixed.
   return (
-    <group ref={groupRef} position={[1.72, PIVOT_BASE_Y, -0.55]} rotation={[0, TONEARM_PLAY, LIFT_ANGLE]}>
+    <group ref={groupRef} position={[PIVOT_X, PIVOT_BASE_Y, PIVOT_Z]} rotation={[0, TONEARM_PLAY, LIFT_ANGLE]}>
 
       {/* ── Bearing housing (pivot cup) ──
           Everything on this arm was #111111 at roughness 0.35, which on a black
@@ -546,10 +558,12 @@ function Tonearm({ isPlaying }) {
       </mesh>
 
       {/* ── Rear stub (counterweight arm) ── */}
-      {/* 0.50, not 0.46. At 0.46 the stub ended 0.0075 inside the
-          counterweight -- joined, but by less than the render can resolve. */}
-      <mesh position={[0.28, 0.003, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-        <cylinderGeometry args={[0.017, 0.019, 0.50, 20]} />
+      {/* Reaches 0.74 now rather than 0.50. The counterweight has to sit
+          further back to look like it could balance a 239 mm arm, and the stub
+          has to reach it -- at 0.46 it ended 0.0075 inside the counterweight,
+          joined but by less than the render can resolve. */}
+      <mesh position={[0.37, 0.003, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <cylinderGeometry args={[0.017, 0.019, 0.74, 20]} />
         <meshStandardMaterial color="#1c1c20" metalness={0.8} roughness={0.28} envMapIntensity={0.9} />
       </mesh>
 
@@ -560,13 +574,13 @@ function Tonearm({ isPlaying }) {
           against the dark plinth, which fixed the legibility and broke the
           likeness. The separation now comes from a satin finish catching the
           rim light instead of from the wrong colour. */}
-      <mesh position={[0.55, 0, 0]} castShadow>
+      <mesh position={[0.68, 0, 0]} castShadow>
         <cylinderGeometry args={[0.062, 0.062, 0.095, 32]} />
         <meshStandardMaterial color="#232326" metalness={0.55} roughness={0.30} envMapIntensity={1.0} />
       </mesh>
       {/* End cap, a shade lighter so the cylinder reads as an end rather than a
           silhouette running off into the dark. */}
-      <mesh position={[0.5955, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+      <mesh position={[0.7255, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.0635, 0.0635, 0.008, 32]} />
         <meshStandardMaterial color="#34343a" metalness={0.6} roughness={0.24} envMapIntensity={1.1} />
       </mesh>
@@ -720,19 +734,117 @@ function Plinth({ isPlaying }) {
           sits at y=0.110, so the pillar speared up past the arm and the two read
           as unrelated objects. It now terminates just inside the bearing
           housing, which straddles y=0.08..0.14. */}
-      <mesh position={[1.72, (PIVOT_BASE_Y + 0.02) / 2, -0.55]} castShadow>
+      <mesh position={[PIVOT_X, (PIVOT_BASE_Y + 0.02) / 2, PIVOT_Z]} castShadow>
         <cylinderGeometry args={[0.062, 0.075, PIVOT_BASE_Y + 0.02, 24]} />
         <meshStandardMaterial color="#1c1c20" metalness={0.8} roughness={0.28} envMapIntensity={0.9} />
       </mesh>
       {/* Base collar where the post meets the deck. Without it the post grew
           straight out of the plinth with no join, which is the detail that most
           made the arm look dropped in rather than mounted. */}
-      <mesh position={[1.72, 0.008, -0.55]} castShadow>
+      <mesh position={[PIVOT_X, 0.008, PIVOT_Z]} castShadow>
         <cylinderGeometry args={[0.115, 0.125, 0.016, 28]} />
         <meshStandardMaterial color="#191919" metalness={0.7} roughness={0.35} envMapIntensity={0.8} />
       </mesh>
 
+      <ArmRest />
+      <CueLever />
+      <AntiSkate />
+
       <Tonearm isPlaying={isPlaying} />
+    </group>
+  )
+}
+
+// ─── Arm rest ─────────────────────────────────────────────────────────────────
+// The arm had nothing to park on: at rest it hung in mid-air over the deck.
+//
+// Placement is solved, not eyeballed. The cradle sits under the point 82% of
+// the way along the tube, with the arm in the state it is actually parked in --
+// swung to TONEARM_REST and raised by LIFT_ANGLE -- so the yoke meets the tube's
+// underside rather than intersecting it or leaving a gap. It also has to clear
+// the record, which is what forced TONEARM_REST outward in the first place.
+const REST_T   = 0.82
+const REST_LX  = STYLUS_X * REST_T
+const REST_LY  = TUBE_CY + (Math.abs(REST_LX) / TUBE_LEN) * (TUBE_END_Y - TUBE_CY)
+// the parked arm is cued UP, so rotate the contact point by the lift before use
+const REST_RX  = REST_LX * Math.cos(LIFT_ANGLE) - REST_LY * Math.sin(LIFT_ANGLE)
+const REST_RY  = REST_LX * Math.sin(LIFT_ANGLE) + REST_LY * Math.cos(LIFT_ANGLE)
+const REST_X   = PIVOT_X + REST_RX * Math.cos(TONEARM_REST)
+const REST_Z   = PIVOT_Z - REST_RX * Math.sin(TONEARM_REST)
+const REST_TOP = PIVOT_BASE_Y + REST_RY - 0.0165    // underside of the tube
+
+function ArmRest() {
+  const post = REST_TOP - 0.022
+  return (
+    // Yawed with the parked arm so the yoke opens across the tube, not along it
+    <group position={[REST_X, 0, REST_Z]} rotation={[0, TONEARM_REST, 0]}>
+      <mesh position={[0, post / 2, 0]} castShadow>
+        <cylinderGeometry args={[0.026, 0.034, post, 20]} />
+        <meshStandardMaterial color="#1c1c20" metalness={0.75} roughness={0.32} envMapIntensity={0.85} />
+      </mesh>
+      {/* Yoke floor */}
+      <mesh position={[0, post + 0.011, 0]} castShadow>
+        <boxGeometry args={[0.075, 0.022, 0.10]} />
+        <meshStandardMaterial color="#1c1c20" metalness={0.7} roughness={0.36} envMapIntensity={0.85} />
+      </mesh>
+      {/* Two uprights, one either side of the tube, forming the U it drops into */}
+      {[-0.042, 0.042].map((z) => (
+        <mesh key={z} position={[0, post + 0.034, z]} castShadow>
+          <boxGeometry args={[0.070, 0.032, 0.016]} />
+          <meshStandardMaterial color="#232326" metalness={0.6} roughness={0.34} envMapIntensity={0.9} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+// ─── Cue lever ────────────────────────────────────────────────────────────────
+// The deck raises and lowers the arm on click, so the control that does it in
+// real life should be visible. On a Planar 2 it is a black paddle on the arm
+// base, forward of the bearing -- toward the camera here.
+function CueLever() {
+  const fx = PIVOT_X - 0.055
+  const fz = PIVOT_Z + 0.185
+  return (
+    <group position={[fx, 0, fz]}>
+      {/* Pillar the lever pivots on */}
+      <mesh position={[0, 0.055, 0]} castShadow>
+        <cylinderGeometry args={[0.030, 0.036, 0.11, 18]} />
+        <meshStandardMaterial color="#1c1c20" metalness={0.72} roughness={0.34} envMapIntensity={0.85} />
+      </mesh>
+      {/* Paddle, angled down as it is when the arm is lowered */}
+      <mesh position={[-0.052, 0.118, 0.028]} rotation={[0, 0.42, -0.20]} castShadow>
+        <boxGeometry args={[0.135, 0.016, 0.030]} />
+        <meshStandardMaterial color="#232326" metalness={0.5} roughness={0.42} envMapIntensity={0.9} />
+      </mesh>
+      {/* Fingertip knob on the end */}
+      <mesh position={[-0.112, 0.104, 0.052]} castShadow>
+        <sphereGeometry args={[0.021, 16, 12]} />
+        <meshStandardMaterial color="#2a2a30" metalness={0.45} roughness={0.40} envMapIntensity={0.95} />
+      </mesh>
+    </group>
+  )
+}
+
+// ─── Anti-skate ───────────────────────────────────────────────────────────────
+// On an RB220 this is a small numbered dial on the arm base, behind the
+// bearing. Static: it sets a bias force, it does not move with the arm.
+function AntiSkate() {
+  return (
+    <group position={[PIVOT_X + 0.128, 0, PIVOT_Z - 0.108]}>
+      <mesh position={[0, 0.048, 0]} castShadow>
+        <cylinderGeometry args={[0.022, 0.026, 0.096, 16]} />
+        <meshStandardMaterial color="#1c1c20" metalness={0.72} roughness={0.34} envMapIntensity={0.85} />
+      </mesh>
+      <mesh position={[0, 0.104, 0]} castShadow>
+        <cylinderGeometry args={[0.040, 0.040, 0.020, 24]} />
+        <meshStandardMaterial color="#26262b" metalness={0.55} roughness={0.38} envMapIntensity={0.95} />
+      </mesh>
+      {/* Index mark, so the dial reads as a dial rather than a plain puck */}
+      <mesh position={[0.026, 0.115, 0]}>
+        <boxGeometry args={[0.022, 0.002, 0.005]} />
+        <meshStandardMaterial color="#8d9096" metalness={0.4} roughness={0.5} envMapIntensity={1.1} />
+      </mesh>
     </group>
   )
 }
@@ -787,7 +899,9 @@ function viewDirForAspect(aspect) {
 const HALF_X = PLINTH_W / 2
 const HALF_Z = PLINTH_D / 2
 const MIN_Y = -(PLINTH_T + 0.09)
-const MAX_Y = PIVOT_BASE_Y + 0.08
+// Tall enough for the arm at full cue lift, plus the rest post it parks on --
+// PIVOT_BASE_Y + 0.08 only covered the arm lying down.
+const MAX_Y = PIVOT_BASE_Y + RAISE_HEIGHT + 0.07
 
 function FitCamera() {
   const { camera, size, controls } = useThree()
@@ -1010,17 +1124,37 @@ export default function InteractiveTurntable({ release, onClose }) {
             {release.artist}{release.year ? ` · ${release.year}` : ''}
           </p>
         </div>
-        <button
-          onClick={onClose}
-          aria-label="Close"
-          className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-2 rounded-lg border-subtle transition-colors duration-150"
-          style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-        >
-          <span aria-hidden="true" className="material-symbols-rounded text-sm">close</span>
-          ESC
-        </button>
+        <div className="flex items-center gap-2">
+          {/* isPlaying was useState(true) with setIsPlaying never called, so the
+              deck could not be stopped: the arm never reached ARM.PARKED and
+              TONEARM_REST was unreachable. That made the arm rest decorative --
+              a cradle the arm could never be put down in. Cueing it is also the
+              thing the cue lever on the deck represents. */}
+          <button
+            onClick={() => setIsPlaying((p) => !p)}
+            aria-label={isPlaying ? 'Cue the arm up and stop the platter' : 'Lower the arm and start the platter'}
+            className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-2 rounded-lg border-subtle transition-colors duration-150"
+            style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+          >
+            <span aria-hidden="true" className="material-symbols-rounded text-sm">
+              {isPlaying ? 'pause' : 'play_arrow'}
+            </span>
+            {isPlaying ? 'CUE UP' : 'CUE DOWN'}
+          </button>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-2 rounded-lg border-subtle transition-colors duration-150"
+            style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+          >
+            <span aria-hidden="true" className="material-symbols-rounded text-sm">close</span>
+            ESC
+          </button>
+        </div>
       </div>
 
       {/* ── Canvas -- fills all remaining space ── */}
