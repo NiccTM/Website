@@ -43,11 +43,16 @@ const AboutPage       = lazyWithReload(() => import('./routes/AboutPage'))
 const ColophonPage    = lazyWithReload(() => import('./routes/ColophonPage'))
 const NotFound        = lazyWithReload(() => import('./routes/NotFound'))
 
-export default function App() {
+/* The whole app MINUS the router.
+   Split out so the build-time prerender can wrap the identical tree in a
+   StaticRouter -- BrowserRouter reads window.history and cannot run in Node.
+   Everything else, including the route table, stays in one place so the
+   prerendered markup cannot drift from what the browser renders. */
+export function AppRoutes() {
   return (
     <ErrorBoundary label="Application">
       <UIProvider>
-        <BrowserRouter>
+        <>
           <ScrollToTop />
           <RoutedSpeedInsights />
           <Suspense fallback={null}>
@@ -77,9 +82,17 @@ export default function App() {
               </Route>
             </Routes>
           </Suspense>
-        </BrowserRouter>
+        </>
       </UIProvider>
       <Analytics />
     </ErrorBoundary>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   )
 }

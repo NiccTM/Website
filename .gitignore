@@ -1,5 +1,8 @@
 node_modules
 dist
+# SSR bundle for the build-time prerender; consumed by scripts/prerender-meta.mjs
+# and never deployed.
+dist-ssr
 .env
 .env.local
 .DS_Store
