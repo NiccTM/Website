@@ -606,8 +606,31 @@ function Plinth({ isPlaying }) {
  * each corner onto the camera's right and up axes, and solve each field of view
  * against the extent that actually faces it.
  */
-const VIEW_DIR = new THREE.Vector3(0, 3.9, 4.95).normalize()
 const FIT_MARGIN = 1.07
+
+/**
+ * View elevation, chosen from the viewport shape.
+ *
+ * Elevation does NOT change the horizontal extent of a deck this shape -- that
+ * stays at its width whatever angle you look from, so on a narrow viewport the
+ * distance is pinned by the width regardless. What elevation changes is how
+ * much of the frame the deck OCCUPIES: seen from low down it foreshortens into
+ * a thin band and a tall phone frame is mostly empty above and below it, while
+ * from higher up it projects close to its full depth and fills that space.
+ *
+ * So: 38 degrees on a wide window, where the deck reads as an object on a
+ * surface and the platter still shows as a circle; up to 62 on a tall one,
+ * where the alternative is a sliver adrift in a column of black.
+ */
+const ELEV_WIDE = THREE.MathUtils.degToRad(38)
+const ELEV_TALL = THREE.MathUtils.degToRad(62)
+
+function viewDirForAspect(aspect) {
+  // 1.6 and wider gets the low angle; 0.7 and narrower gets the high one.
+  const k = THREE.MathUtils.clamp((1.6 - aspect) / (1.6 - 0.7), 0, 1)
+  const elev = THREE.MathUtils.lerp(ELEV_WIDE, ELEV_TALL, k)
+  return new THREE.Vector3(0, Math.sin(elev), Math.cos(elev))
+}
 
 // Bounds relative to the look-at target, taken from the geometry above rather
 // than eyeballed: half the deck in X and Z, and in Y from the underside of the
@@ -621,12 +644,14 @@ function FitCamera() {
   const { camera, size, controls } = useThree()
 
   useEffect(() => {
+    const aspect = size.width / size.height
+    const dir = viewDirForAspect(aspect)
     const target = new THREE.Vector3(PLINTH_OFFSET_X, 0, 0)
-    const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), VIEW_DIR).normalize()
-    const up = new THREE.Vector3().crossVectors(VIEW_DIR, right).normalize()
+    const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), dir).normalize()
+    const up = new THREE.Vector3().crossVectors(dir, right).normalize()
 
     const vFov = THREE.MathUtils.degToRad(camera.fov)
-    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * (size.width / size.height))
+    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect)
     const tanV = Math.tan(vFov / 2)
     const tanH = Math.tan(hFov / 2)
 
@@ -644,7 +669,7 @@ function FitCamera() {
       for (const y of [MIN_Y, MAX_Y]) {
         for (const z of [-HALF_Z, HALF_Z]) {
           const c = new THREE.Vector3(x, y, z)
-          const along = c.dot(VIEW_DIR)
+          const along = c.dot(dir)
           dist = Math.max(
             dist,
             Math.abs(c.dot(up)) / tanV + along,
@@ -655,7 +680,7 @@ function FitCamera() {
     }
     dist *= FIT_MARGIN
 
-    camera.position.copy(VIEW_DIR).multiplyScalar(dist).add(target)
+    camera.position.copy(dir).multiplyScalar(dist).add(target)
     camera.updateProjectionMatrix()
     /* Only on mount and resize. OrbitControls owns the camera after that, and
        re-running this every frame would fight the user's drag. */
@@ -710,6 +735,20 @@ function TurntableScene({ release, isPlaying }) {
           position={[-1.5, 0.35, -4.2]} rotation={[0, Math.PI, 0]} scale={[7, 0.55, 1]} />
         <Lightformer form="rect" intensity={2.4} color="#cfe0ff"
           position={[4.6, 0.5, -1.2]} rotation={[0, -Math.PI / 2, 0]} scale={[5, 0.6, 1]} />
+        {/* A long, NARROW overhead strip running front-to-back. The deck had
+            only the small ceiling panel to mirror, which spread into a single
+            featureless gradient across its whole top face. A strip gives that
+            face a defined highlight to run along, which is what makes a
+            piano-black surface read as lacquer rather than paint. Narrow on
+            purpose -- widening it recreates the hard white slab the ceiling
+            panel note above warns about, and at 2.6 directly over the spindle
+            it washed the record: the vinyl's blacks lifted to grey and the
+            radial specular sweep -- the thing that makes it read as a record at
+            all -- went soft. Pushed out over the deck's right side and dimmed,
+            so it lights the lacquer and leaves the disc alone. */}
+        <Lightformer form="rect" intensity={1.55} color="#eaf2ff"
+          position={[2.75, 5, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} scale={[0.5, 5.5, 1]} />
+
         {/* Low warm bounce, lifts the plinth face out of pure black */}
         <Lightformer form="rect" intensity={0.7} color="#ffd9b0"
           position={[0, -1.5, 5]} rotation={[Math.PI / 2, 0, 0]} scale={[7, 3, 1]} />
@@ -718,10 +757,15 @@ function TurntableScene({ release, isPlaying }) {
       {/* Single shadow-casting key. The scene previously had shadows enabled on
           the Canvas but castShadow={false} on every light, so nothing grounded
           the deck and it appeared to float. */}
+      {/* Key. Warmed and lifted from 2.2/#fff6ec: the deck was reading as one
+          flat grey gradient with no discernible light direction, which is what
+          made a glossy black box look like a matte cut-out. A warm key played
+          against the cool rims below gives the top surface somewhere to travel
+          from and to. */}
       <directionalLight
         position={[4.5, 7, 3.5]}
-        intensity={2.2}
-        color="#fff6ec"
+        intensity={3.1}
+        color="#fff1dd"
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-bias={-0.0004}
@@ -733,8 +777,14 @@ function TurntableScene({ release, isPlaying }) {
         shadow-camera-near={0.5}
         shadow-camera-far={20}
       />
+      {/* Cool counter-fill from the shadow side, non-shadowing. Without it the
+          left of the deck fell to the same value as the backdrop and the object
+          lost its near edge entirely. Kept low: this is separation, not
+          illumination, and anything brighter flattens the key back out. */}
+      <directionalLight position={[-5.5, 2.6, -1.5]} intensity={1.05} color="#9db9ff" />
+
       {/* Gentle ambient floor so shadow interiors are not crushed to pure black */}
-      <ambientLight intensity={0.12} color="#aab8d0" />
+      <ambientLight intensity={0.16} color="#aab8d0" />
 
       <VinylRecord coverUrl={release?.cover_image} />
       <Plinth isPlaying={isPlaying} />
@@ -846,7 +896,11 @@ export default function InteractiveTurntable({ release, onClose }) {
               // white. ACES rolls the highlights off instead, which is what lets
               // the specular streak read as a streak rather than a white blob.
               toneMapping: THREE.ACESFilmicToneMapping,
-              toneMappingExposure: 1.0,
+              // 1.0 left the whole frame in the bottom third of the range.
+              // 1.18 was too far the other way -- the label is a saturated red
+              // and started to posterise. 1.09 lifts the deck without touching
+              // the label.
+              toneMappingExposure: 1.09,
             }}
             /* Pulled back from [0, 3.4, 4.2]. The plinth is wider now, and at
                that distance its near corners fell outside the frame -- the deck
