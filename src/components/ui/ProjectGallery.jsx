@@ -178,22 +178,37 @@ function ProjectCard({ project, featured = false, priority = false, onExpand }) 
 
         {/* Expand icon -- always visible on touch, hover-shown on desktop */}
         {hasDetails && (
-          <div className="absolute top-3 right-3">
+          /* The circle belongs to the WRAPPER, not to the icon span.
+             One span used to be both, carrying the ligature and a 32px round
+             background with `flex items-center justify-center`. Neither
+             centring class did anything: .material-symbols-rounded declares
+             display: inline-block, which wins over the flex utility, so the
+             span was never a flex container. With line-height: 1 the glyph then
+             sat on a 15.2px line box at the top of a 32px box -- measured 8.48px
+             above centre, which is what made the arrow look jammed into the top
+             of the disc.
+             Those declarations are not incidental: they box the icon at 1em so
+             the ligature TEXT cannot reflow the page before the font arrives.
+             Fighting them is the bug. Every other icon button here already puts
+             the chrome on a `grid place-items-center` wrapper and leaves the
+             span as a plain icon, which centres an inline-block correctly. */
+          <div
+            className="absolute top-3 right-3 grid place-items-center w-8 h-8 rounded-full"
+            style={{
+              background: 'rgba(10,10,10,0.65)',
+              border: '1px solid rgb(var(--accent-rgb) / 0.35)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+            }}
+          >
             {/* aria-hidden, like every other icon on the site. Without it a
                 screen reader announces the ligature source text -- the card
                 would read "... open_in_full". The card itself is the control
                 and carries the accessible name. */}
             <span
               aria-hidden="true"
-              className="material-symbols-rounded text-sm flex items-center justify-center rounded-full"
-              style={{
-                color: 'var(--accent-on-dark)',
-                background: 'rgba(10,10,10,0.65)',
-                width: '32px',
-                height: '32px',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-              }}
+              className="material-symbols-rounded text-base"
+              style={{ color: 'var(--accent-on-dark)' }}
             >
               open_in_full
             </span>
