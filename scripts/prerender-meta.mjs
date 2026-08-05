@@ -160,6 +160,53 @@ async function injectMarkup(html, routePath) {
   return html.replace(ROOT_DIV, `<div id="root">${rendered}</div>`)
 }
 
+/*
+ * PER-ROUTE STRUCTURED DATA
+ *
+ * index.html carries a JSON-LD Person, and because every shell is built from
+ * it, all seven routes serve that same block and nothing else. Person is the
+ * right primary type for a name-based domain -- it is what lets a search for
+ * "Nic Piraino" resolve here -- but it says nothing about what any individual
+ * page IS.
+ *
+ * TechArticle on the voltage reference, because that page is a technical
+ * write-up with measured results rather than a portfolio tile, and it is the
+ * page the colophon says to look at first. Both Google and Bing use structured
+ * data to decide what they can confidently extract and attribute, which is the
+ * whole game for a site nobody links to yet.
+ *
+ * Built from the SAME title and description the meta tags use, so it cannot
+ * drift from the page. Deliberately no datePublished: I do not know when the
+ * work was done, and inventing a date to satisfy a schema validator would be
+ * putting a false claim in machine-readable form on a site whose argument is
+ * that claims should be checkable.
+ */
+const ROUTE_SCHEMA = {
+  'hardware/reference': ({ title, description, url }) => ({
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: title,
+    description,
+    url,
+    inLanguage: 'en',
+    author: { '@type': 'Person', name: 'Nic Piraino', url: `${SITE}/` },
+    publisher: { '@type': 'Person', name: 'Nic Piraino', url: `${SITE}/` },
+    isPartOf: { '@type': 'WebSite', name: 'Nic Piraino', url: `${SITE}/` },
+    about: ['Voltage reference', 'Precision analog', 'Electrical metrology'],
+  }),
+}
+
+function injectSchema(html, routeKey, meta) {
+  const build = ROUTE_SCHEMA[routeKey]
+  if (!build) return html
+  const json = JSON.stringify(build(meta), null, 2)
+  /* Escaping </script> inside JSON-LD: a description containing that sequence
+     would close the block early and dump the rest as markup. */
+  const safe = json.replace(/<\//g, '<\\/')
+  const tag = `    <script type="application/ld+json">\n${safe}\n    </script>\n`
+  return html.replace('</head>', tag + '</head>')
+}
+
 /** Swaps one tag's content/href, erroring if the tag is missing from the shell. */
 function replaceTag(html, pattern, replacement, label) {
   if (!pattern.test(html)) throw new Error(`prerender-meta: ${label} not found in dist/index.html`)
@@ -187,6 +234,7 @@ for (const [route, file] of Object.entries(ROUTES)) {
   html = replaceTag(html, /(<link\s+rel="canonical"\s+href=")[^"]*(")/, `$1${url}$2`, 'canonical')
 
   html = injectPreloads(html, route)
+  html = injectSchema(html, route, { title: fullTitle, description, url })
   html = await injectMarkup(html, `/${route}`)
 
   const outFile = join(ROOT, `dist/${route}.html`)
