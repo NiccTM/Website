@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useDialog } from '../../hooks/useDialog'
 import { createPortal } from 'react-dom'
 import { thumbSrc } from '../../utils/thumbs'
 import Picture from './Picture'
@@ -7,8 +8,10 @@ import ImageLightbox from './ImageLightbox'
 function SubSystemImage({ src, label, caption, onOpen }) {
   const [hovered, setHovered] = useState(false)
   return (
-    <div
-      className="flex flex-col overflow-hidden cursor-zoom-in"
+    <button
+      type="button"
+      aria-label={`Open ${label} full size`}
+      className="flex flex-col overflow-hidden cursor-zoom-in text-left w-full focus:outline-none focus-visible:ring-2"
       onClick={() => onOpen?.({ src, label, caption })}
       style={{
         background: 'var(--bg-surface-2)',
@@ -40,7 +43,7 @@ function SubSystemImage({ src, label, caption, onOpen }) {
         <p className="font-mono-data text-xs font-medium" style={{ color: 'var(--text-primary)' }}>{label}</p>
         <p className="font-mono-data mt-0.5" style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>{caption}</p>
       </div>
-    </div>
+    </button>
   )
 }
 
@@ -77,6 +80,7 @@ const AWARD_STYLES = {
 }
 
 export default function ProjectModal({ project, onClose }) {
+  const dialogRef = useDialog()
   useEffect(() => {
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -108,7 +112,13 @@ export default function ProjectModal({ project, onClose }) {
       style={{ background: 'rgba(3,2,10,0.80)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', willChange: 'opacity' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
+      {/* The trap goes on the PANEL, not the backdrop: the backdrop is
+          click-to-close and must stay outside the dialog's focus scope. */}
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={project?.title || 'Project details'}
         className="anim-pop relative w-full max-w-2xl flex flex-col"
         style={{
           background: 'var(--bg-surface-1)',

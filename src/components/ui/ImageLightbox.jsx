@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useDialog } from '../../hooks/useDialog'
 import { createPortal } from 'react-dom'
 // Aliased: this component already has a local `displaySrc` for "what to render
 // right now". fullResSrc is the 2560px deliverable that replaced shipping the
@@ -9,6 +10,7 @@ const MIN_SCALE = 1
 const MAX_SCALE = 5
 
 export default function ImageLightbox({ src, label, caption, onClose }) {
+  const dialogRef = useDialog()
   const [scale,    setScale]    = useState(1)
   const [dragging, setDragging] = useState(false)
   const [hiResSrc, setHiResSrc] = useState(null)
@@ -126,7 +128,15 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
   }
 
   return createPortal(
+    /* role/aria-modal and the focus trap: without them Tab walked straight out
+       of the lightbox into the page behind it, and a screen reader was never
+       told a dialog had opened -- it carried on reading the gallery
+       underneath. useDialog also returns focus to the thumbnail on close. */
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={label ? `${label}. Image viewer.` : 'Image viewer'}
       className="anim-fade fixed inset-0 z-[9999] flex flex-col"
       style={{ background: 'rgba(3,7,18,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', willChange: 'opacity' }}
     >

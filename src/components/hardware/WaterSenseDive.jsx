@@ -9,9 +9,11 @@ function DigitalTwinPanel({ src, label, caption, icon }) {
 
   return (
     <>
-      <div
-        className="flex flex-col overflow-hidden group cursor-zoom-in"
-        style={{ background: 'rgba(255,255,255,0.22)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: 'var(--radius)' }}
+      <button
+        type="button"
+        aria-label={`Open ${label} full size`}
+        className="flex flex-col overflow-hidden group cursor-zoom-in text-left w-full focus:outline-none focus-visible:ring-2"
+        style={{ background: 'rgba(255,255,255,0.22)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: 'var(--radius)', '--tw-ring-color': 'var(--accent)' }}
         onClick={() => src && setOpen(true)}
       >
         <div
@@ -47,7 +49,7 @@ function DigitalTwinPanel({ src, label, caption, icon }) {
               there -- the token has to suit the surface, not the component. */}
           <p className="font-mono-data text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>{caption}</p>
         </div>
-      </div>
+      </button>
 
         {open && <ImageLightbox src={src} label={label} caption={caption} onClose={() => setOpen(false)} />}
 

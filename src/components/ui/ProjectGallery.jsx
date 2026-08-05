@@ -76,14 +76,20 @@ function ProjectCard({ project, featured = false, priority = false, onExpand }) 
     ?.flatMap((s) => s.images)?.[0]?.src
   const displayImage = heroImage || fallbackImage || null
 
+  /* <button>, not a clicking <div>: the card is the control that opens the
+     project modal and was unreachable by keyboard -- no tab stop, no
+     Enter/Space, nothing announced. Nothing inside it is interactive, so a
+     button is safe here (no nested controls). */
   return (
-    <div
+    <button
       /* Contents do not perform. Repeated grid items used to stagger in on
          scroll, index by index, which is the pattern every generated portfolio
          template ships with -- and with 13 cards it read as a slideshow. The
          section around them still announces itself; the items inside are just
          there. */
+      type="button"
       onClick={hasDetails ? onExpand : undefined}
+      aria-label={hasDetails ? `${project.title} -- open details` : undefined}
       /* lg, not sm. The three-column grid only exists from lg up, so below that
          a spanning feature swallowed the entire two-column row and left the
          next card on its own -- one card per row, which is the thing the wide
@@ -227,7 +233,7 @@ function ProjectCard({ project, featured = false, priority = false, onExpand }) 
           ))}
         </div>
       </div>
-    </div>
+    </button>
   )
 }
 
