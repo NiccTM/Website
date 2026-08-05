@@ -122,8 +122,8 @@ function ReferenceGalleryStrip({ onSyncView }) {
             >
             <Picture
               src={thumbSrc(img.src)}
-              /* alt="" on purpose: the label is rendered as visible text in
-                 the gradient below, and the button wrapping this image already
+              /* alt="" on purpose: the label is rendered as visible text on
+                 the plate below, and the button wrapping this image already
                  names the action. A non-empty alt here makes a screen reader
                  announce the same words twice (axe: image-redundant-alt). */
               alt=""
@@ -136,17 +136,32 @@ function ReferenceGalleryStrip({ onSyncView }) {
               }}
             />
 
-            {/* Label gradient */}
+            {/* A solid plate, not a gradient, and white text rather than
+                --text-primary.
+
+                Two faults here. The label took --text-primary, which is
+                near-black in light mode, while the scrim under it is a hardcoded
+                DARK gradient in both themes -- so light mode put near-black text
+                on a near-black strip over a photograph. And a gradient scrim
+                only reaches full strength at its bottom edge, so the text sat on
+                whatever partial tint happened to fall behind it.
+
+                A plate makes the backdrop knowable instead of leaving it to the
+                photograph, which is the same reasoning already applied to the
+                3D viewer's caption. */}
             <div className="absolute bottom-0 left-0 right-0 px-2 py-1.5"
-              style={{ background: 'linear-gradient(transparent, rgba(3,7,18,0.85))' }}>
-              <p className="font-mono-data text-xs" style={{ color: 'var(--text-primary)' }}>{img.label}</p>
+              style={{ background: 'rgba(3,7,18,0.82)' }}>
+              <p className="font-mono-data text-xs" style={{ color: 'rgba(255,255,255,0.95)' }}>{img.label}</p>
             </div>
 
             {/* Active badge */}
             {i === activeIndex && (
               <div className="absolute top-2 right-2">
+                {/* --accent-on-dark: this badge is a dark green plate in BOTH
+                    themes, and the light-mode accent is a dark blue that sat on
+                    it at roughly 2:1. */}
                 <span className="font-mono-data text-xs px-1.5 py-0.5 rounded"
-                  style={{ background: 'rgba(6,95,70,0.7)', color: 'var(--accent)' }}>ACTIVE</span>
+                  style={{ background: 'rgba(6,95,70,0.85)', color: 'var(--accent-on-dark)' }}>ACTIVE</span>
               </div>
             )}
 

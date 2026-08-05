@@ -138,15 +138,19 @@ export default function ReferenceGallery({ onSyncView }) {
             {/* Label */}
             <div
               className="absolute bottom-0 left-0 right-0 px-2 py-1.5"
-              style={{ background: 'linear-gradient(transparent, rgba(3,7,18,0.70))' }}
+              /* Plate rather than gradient: a gradient only reaches full
+                 strength at its bottom edge, so the text sat on whatever partial
+                 tint the photograph put behind it. See HardwarePage. */
+              style={{ background: 'rgba(3,7,18,0.82)' }}
             >
-              <p className="font-mono-data text-sm" style={{ color: '#ffffff' }}>{img.label}</p>
+              <p className="font-mono-data text-sm" style={{ color: 'rgba(255,255,255,0.95)' }}>{img.label}</p>
             </div>
 
             {/* Active indicator */}
             {i === activeIndex && (
               <div className="absolute top-2 right-2 flex items-center gap-1">
-                <span className="font-mono-data text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(6,95,70,0.7)', color: 'var(--accent)' }}>
+                {/* --accent-on-dark: dark green plate in both themes. */}
+                <span className="font-mono-data text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(6,95,70,0.85)', color: 'var(--accent-on-dark)' }}>
                   ACTIVE
                 </span>
               </div>
