@@ -81,7 +81,7 @@ function ChallengeCard({ item, index }) {
       >
         <p
           className="font-mono-data text-sm mb-1 tracking-wider uppercase"
-          style={{ color: '#FF3B30' }}
+          style={{ color: 'var(--danger)' }}
         >
           Challenge
         </p>
@@ -205,9 +205,15 @@ function DigitalTwinPanel({ src, label, caption, icon, poster }) {
             </div>
           )}
         </div>
+        {/* Theme tokens, not white. This caption block sits on the PANEL, whose
+            background is rgba(255,255,255,0.04) -- effectively the page colour.
+            White works in dark mode and is invisible in light: measured 1.44:1
+            and 1.32:1 against the light palette, where AA wants 4.5. The
+            captions over photographs elsewhere on the site keep their white,
+            because those have a dark scrim under them. */}
         <div className="px-3 py-2">
-          <p className="font-mono-data text-sm font-medium" style={{ color: '#ffffff' }}>{label}</p>
-          <p className="font-mono-data text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.75)' }}>{caption}</p>
+          <p className="font-mono-data text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{label}</p>
+          <p className="font-mono-data text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>{caption}</p>
         </div>
       </div>
 
@@ -297,7 +303,7 @@ export default function MotorLab() {
           style={{ maxHeight: '420px', objectFit: 'cover' }}
         />
         <div className="px-3 py-2">
-          <p className="font-mono-data text-sm font-medium" style={{ color: '#ffffff' }}>Motor Demo</p>
+          <p className="font-mono-data text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Motor Demo</p>
           <p className="font-mono-data text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>First spin-up · AaABbBCCC winding sequence · Hobbywing Skywalker 30A V2 ESC</p>
         </div>
       </div>
@@ -324,7 +330,9 @@ export default function MotorLab() {
           { label: 'Control',   value: 'Arduino + Hobbywing 30A' },
         ].map(({ label, value }) => (
           <div key={label} className="flex items-center gap-1.5">
-            <span className="font-mono-data text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>{label}</span>
+            {/* on the page background, so it has to be a theme token -- white
+                measured 1.33:1 in light mode */}
+            <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{label}</span>
             <span className="font-mono-data text-sm" style={{ color: 'var(--accent)' }}>{value}</span>
           </div>
         ))}
