@@ -9,31 +9,31 @@ const CHALLENGES = [
   {
     id: 'reluctance',
     icon: 'hub',
-    title: 'Magnetic Reluctance Optimization',
+    title: 'Magnetic reluctance',
     challenge:
       'PLA stator teeth have a relative permeability of ≈ 1, effectively air. High reluctance limited flux density and produced insufficient torque at target RPM.',
     solution:
-      'Replaced PLA teeth with iron bolts (μᵣ ≈ 200). The ferromagnetic path concentrates magnetic flux through the air gap, significantly increasing torque density without a winding change.',
+      'Replaced the PLA teeth with iron bolts (μᵣ ≈ 200), which give the flux somewhere to go. More torque for the same windings and the same current.',
     metric: 'μᵣ: 1 → ~200',
   },
   {
     id: 'thermal',
     icon: 'thermostat',
-    title: 'Thermal & Material Pivot',
+    title: 'Thermal limit',
     challenge:
       'Resistive heating under the 30A ESC draw brought winding temperatures near the PLA+ glass transition (Tg ≈ 55°C), risking dimensional deformation of the stator and rotor housing.',
     solution:
-      'Upgraded both the base and rotor to PETG HF (Tg ≈ 70°C). PETG HF maintains geometry under sustained thermal load and offers superior layer adhesion for press-fit magnet pockets.',
+      'Reprinted the base and rotor in PETG HF (Tg ≈ 70°C). It holds its shape at the temperature the windings actually reach, and its layers hold together better where the magnets are pressed in.',
     metric: 'Tg: 55°C → 70°C',
   },
   {
     id: 'commutation',
     icon: 'electric_bolt',
-    title: 'Commutation Alignment',
+    title: 'Winding sequence',
     challenge:
       'Initial ABCABCABC winding distributed opposing magnetic polarities across adjacent teeth, causing torque cancellation and low-speed oscillation that prevented clean spin-up.',
     solution:
-      'Implemented AaABbBCCC winding sequence, grouping same-phase poles to unify magnetic torque vectoring across the air gap, eliminating cancellation and producing smooth commutation.',
+      'Rewound as AaABbBCCC, which puts each phase on neighbouring teeth instead of spreading it around the stator. The poles then pull the same way at the same time and it spins up cleanly.',
     metric: 'ABCABCABC → AaABbBCCC',
   },
 ]

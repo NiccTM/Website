@@ -191,16 +191,16 @@ function About() {
             embedded systems and electrical metrology.
           </p>
           <p className="font-sans mb-4" style={{ color: 'var(--text-secondary)', fontSize: '1.02rem', lineHeight: 1.8 }}>
-            A schematic predicts what a circuit should do and a simulation models it, but the part
-            I care about starts once the board exists and has to demonstrate what it actually
-            does. A three-phase motor wound from scratch. A waste classifier that had to work on
-            real rubbish rather than a curated demo. A 10&nbsp;V reference where the whole point is
-            how little it moves.
+            A schematic predicts what a circuit should do and a simulation models it. The part I
+            care about starts once the board exists and has to prove it. A three-phase motor wound
+            by hand, which needed rewinding before it would turn at all. A waste classifier pointed
+            at real rubbish instead of a tidy sample set. A 10&nbsp;V reference whose entire job is
+            to sit still.
           </p>
           <p className="font-sans" style={{ color: 'var(--text-secondary)', fontSize: '1.02rem', lineHeight: 1.8 }}>
-            The write-ups here separate what was <em>calculated</em> from what was{' '}
-            <em>simulated</em> and what was actually <em>measured</em>. They are three different
-            claims, and running them together is how a project ends up sounding better than it is.
+            Every write-up here says whether a number was <em>calculated</em>, <em>simulated</em>{' '}
+            or <em>measured</em>. Those are not the same thing, and blurring them is the easiest way
+            to make work look better than it was.
           </p>
 
           <div className="flex flex-wrap gap-3 mt-7">
