@@ -244,7 +244,14 @@ export default function HardwarePage() {
           </button>
 
           <button
-            onClick={() => setXray((x) => !x)}
+            /* setXray(!xray), NOT setXray(x => !x). setPcbXray is a zustand
+               action -- (v) => set({ pcbXray: v }) -- so it takes a VALUE. It
+               has no updater-function form the way React's useState setter
+               does, so passing a callback stored the function itself as the
+               state. A function is truthy, so the first click switched X-Ray on
+               and every click after that re-stored the same truthy function:
+               the mode could be turned on and then never off. */
+            onClick={() => setXray(!xray)}
             className="flex items-center gap-2 font-mono-data text-xs px-3 py-2 rounded-lg border-subtle transition-colors duration-150"
             style={{ color: xray ? 'var(--accent)' : 'var(--text-muted)', background: xray ? 'rgba(58,144,184,0.18)' : 'var(--bg-surface-2)' }}
             aria-pressed={xray}
