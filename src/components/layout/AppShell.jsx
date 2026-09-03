@@ -66,6 +66,18 @@ export default function AppShell() {
         >
           Colophon
         </Link>
+
+        <a
+          href="/resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="py-1 font-mono-data text-xs transition-colors duration-200"
+          style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+        >
+          Résumé
+        </a>
         {/* The site had no contact method at all: contact.email existed in
             config.js and was imported by HomePage but never rendered. A
             portfolio needs one reachable address, so it lives in the footer
