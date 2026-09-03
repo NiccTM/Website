@@ -347,7 +347,7 @@ export default function MotorLab() {
         className="flex flex-wrap gap-x-6 gap-y-2 mt-5"
       >
         {[
-          { label: 'Topology',  value: '9S / 16P Inrunner' },
+          { label: 'Topology',  value: '9S / 8P Inrunner' },
           { label: 'Winding',   value: '~200 T/pole · 24 AWG' },
           { label: 'Rₚₕ',       value: '~2.022 Ω' },
           { label: 'Control',   value: 'Arduino + Hobbywing 30A' },
