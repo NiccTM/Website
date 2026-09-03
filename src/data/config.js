@@ -453,6 +453,7 @@ export const projects = [
         { label: 'Load capacity',      value: '> 680 N (> 60 kg) vertical crush resistance' },
         { label: 'Circularity',        value: '100% compostable · designed for 100–115 use cycles' },
         { label: 'Closure mechanism',  value: 'Integrated 3D-printed edge clips' },
+        { label: 'Date',               value: 'Sep 2023 – Dec 2023' },
         { label: 'Course',             value: 'APSC 169' },
       ],
       links: [],
