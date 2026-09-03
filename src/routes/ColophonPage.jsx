@@ -146,8 +146,7 @@ export default function ColophonPage() {
             <Body>
               The repository is far larger than it should be, because full-resolution
               originals are tracked in git history. Rate limiting is written and deployed
-              for the classifier endpoint but inert until I set the credentials. And there
-              is no CV on here yet, which is probably the most useful missing thing.
+              for the classifier endpoint but inert until I set the credentials.
             </Body>
           </Section>
         </div>
