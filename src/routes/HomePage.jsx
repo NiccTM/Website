@@ -156,7 +156,8 @@ function Divider() {
    titles or dates I cannot support. */
 const ABOUT_FACTS = [
   { label: 'Studying', value: `${bio.program}, ${bio.school}` },
-  { label: 'Currently', value: `${bio.role}, ${bio.employer}`, to: '/hardware/reference' },
+  { label: 'Currently', value: bio.seeking },
+  { label: 'Previously', value: `${bio.role}, ${bio.employer} (${bio.employerYears})`, to: '/hardware/reference' },
   { label: 'Team',     value: profile.academics.teams.join(' · ') },
   { label: 'Based in', value: profile.location },
 ]
@@ -255,7 +256,7 @@ function About() {
 }
 
 export default function HomePage() {
-  usePageMeta(null, 'Nic Piraino: Hardware Engineering & System Design. Embedded systems, PCB design, audio electronics, and full-stack engineering.')
+  usePageMeta(null, 'Precision analog, PCB design, and embedded systems. Electrical Engineering at UBC Okanagan.')
   return (
     <>
       {/* ── Split-screen Hero ──────────────────────────────────────────────── */}
@@ -312,7 +313,7 @@ export default function HomePage() {
             className="font-sans text-lg sm:text-xl font-light mb-6"
             style={{ color: 'var(--text-secondary)' }}
           >
-            {bio.role}, {bio.employer}
+            {bio.heroLine}
           </p>
 
           {/* CTAs */}

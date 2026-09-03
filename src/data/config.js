@@ -20,12 +20,17 @@ export const profile = {
 // Shared by the home About teaser and the full /about page, so the two cannot
 // drift apart. Anything here has to be supportable -- no invented dates or titles.
 export const bio = {
-  role:        'Hardware Engineering Intern',
-  employer:    'Measurements International Ltd.',
-  program:     'BASc Electrical Engineering + Master of Management',
-  school:      'UBC Okanagan',
-  expected:    'April 2029',
-  affiliation: 'Engineers & Geoscientists BC, since 2023',
+  // Internship ran summer terms 2024-2026 and ended Aug 29 2026 -- role/employer
+  // now describe PAST work (used in the "Previously" fact), not current status.
+  role:          'Hardware Engineering Intern',
+  employer:      'Measurements International Ltd.',
+  employerYears: '2024, 2025, 2026',
+  seeking:       'Seeking a hardware / PCB design co-op, winter or summer 2027',
+  heroLine:      'Electrical Engineering, UBC Okanagan · Precision analog and PCB design',
+  program:       'BASc Electrical Engineering + Master of Management',
+  school:        'UBC Okanagan',
+  expected:      'April 2029',
+  affiliation:   'Engineers & Geoscientists BC, since 2023',
 }
 
 // ─── Hardware Specs ───────────────────────────────────────────────────────────
@@ -444,7 +449,7 @@ export const projects = [
       technicalSpecs: [
         { label: 'Material',           value: 'Polylactic Acid (PLA)' },
         { label: 'Geometry',           value: 'Elongated Rhombic Dodecahedron' },
-        { label: 'Data integration',   value: 'Passive NFC Tag · NXP NTAG® 215 / 500-character capacity' },
+        { label: 'Data integration',   value: 'Passive NFC Tag · NXP NTAG® 215 · 504 bytes user memory' },
         { label: 'Load capacity',      value: '> 680 N (> 60 kg) vertical crush resistance' },
         { label: 'Circularity',        value: '100% compostable · designed for 100–115 use cycles' },
         { label: 'Closure mechanism',  value: 'Integrated 3D-printed edge clips' },
@@ -595,7 +600,7 @@ export const projects = [
     title: 'EcoSort',
     course: 'CMPE 246',
     description: 'CMPE 246 final project. A YOLOv8 model sorts waste in real time and drives a servo flap that diverts each item to the right bin.',
-    tags: ['React', 'YOLOv8', 'Roboflow', 'Computer Vision', 'Vercel', 'PWM', 'Servo', 'Hardware'],
+    tags: ['Raspberry Pi', 'Python', 'YOLOv8', 'Roboflow', 'Computer Vision', 'React', 'Vercel', 'PWM', 'Servo'],
     github: 'https://github.com/NiccTM/CMPE246_G16_Trash_Organizer',
     demo: 'ml',
     awards: [],
@@ -608,9 +613,12 @@ export const projects = [
         { label: 'Preprocessing', value: 'Centre-square crop → 640×640 JPEG' },
         { label: 'Coord mapping', value: 'RF 640-space → crop offset → original → display px' },
         { label: 'Backend',       value: 'Vercel serverless · rate limit 5 req/IP/hr' },
-        { label: 'Frontend',      value: 'React · CSS absolute bounding boxes' },
+        { label: 'Frontend',      value: 'React · CSS absolute bounding boxes (this page’s live demo)' },
+        { label: 'Platform',      value: 'Raspberry Pi 5 · Freenove IMX219 camera (physical build)' },
         { label: 'MCU',           value: 'Microcontroller · servo PWM actuation' },
         { label: 'Actuator',      value: 'Servo-driven diverter flap · centre position calibrated' },
+        { label: 'Cycle',         value: '~1.5 s hold-still auto-scan trigger' },
+        { label: 'Validation',    value: 'Not formally measured; demonstrated live over a single sorting run' },
         { label: 'Course',        value: 'CMPE 246 · final project, UBC Okanagan' },
       ],
       subSystems: [
@@ -652,19 +660,19 @@ export const projects = [
     category: 'software',
     title: 'Custom 3-Phase High-Speed BLDC Inrunner',
     course: 'ENGR 320',
-    description: 'ENGR 320 motor design. A 9-pole stator and 16-pole rotor, hand-wound in 24 AWG enamelled copper, built to a $100 CAD budget.',
+    description: 'ENGR 320 motor design. A 9-slot stator and 8-pole rotor (16 magnets, N-N-S-S pairs), hand-wound in 24 AWG enamelled copper, built to a $100 CAD budget.',
     tags: ['Hardware', 'Electronics', '3D Printing', 'Motor Control', 'BLDC', 'ESC'],
     github: null,
     demo: '3d',
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'A three-phase brushless inrunner built without buying a single motor part. The 9-pole stator and 16-pole rotor were drawn in CAD and printed, first in PLA and later in PETG HF, once it was clear the 30 A needed for target torque would take the windings close to PLA+’s glass transition at 55°C. A stator that softens while it is running has stopped being a stator.\n\nThe winding took two attempts. ABCABCABC put opposing polarities on adjacent teeth, so the phases worked against each other and the motor oscillated instead of spinning up. Regrouping to AaABbBCCC put each phase on neighbouring teeth and it turned cleanly. The printed stator teeth were also swapped for iron bolts partway through: PLA has a relative permeability of about 1, which is to say it is magnetically indistinguishable from air, and no amount of current fixes that.\n\nThe finished bill of materials came to $94.92 CAD against a $100 budget.',
+        'A three-phase brushless inrunner built without buying a single motor part. The 9-slot stator and 8-pole rotor were drawn in CAD and printed, first in PLA and later in PETG HF, once it was clear the 30 A needed for target torque would take the windings close to PLA+’s glass transition at 55°C. A stator that softens while it is running has stopped being a stator.\n\nThe winding took two attempts. ABCABCABC put opposing polarities on adjacent teeth, so the phases worked against each other and the motor oscillated instead of spinning up. Regrouping to AaABbBCCC put each phase on neighbouring teeth and it turned cleanly. The printed stator teeth were also swapped for iron bolts partway through: PLA has a relative permeability of about 1, which is to say it is magnetically indistinguishable from air, and no amount of current fixes that.\n\nThe finished bill of materials came to $94.92 CAD against a $100 budget.',
       technicalSpecs: [
-        { label: 'Topology',         value: '3-phase inrunner · 9-pole stator / 16-pole rotor' },
+        { label: 'Topology',         value: '3-phase inrunner · 9-slot stator / 8-pole rotor (16 magnets, N-N-S-S pairs)' },
         { label: 'Connection',       value: 'Wye (Star)' },
         { label: 'Winding',          value: '24 AWG enamelled copper · ~200 turns/pole' },
-        { label: 'Phase resistance', value: '~2.022 Ω' },
+        { label: 'Phase resistance', value: '2.02 Ω, calculated (3 × 0.672 Ω in series)' },
         { label: 'Stator teeth',     value: 'Iron bolts (replaced PLA, μᵣ ≈ 1 → high flux density)' },
         { label: 'Rotor / base',     value: 'PETG HF (Tg ≈ 70°C, upgraded from PLA+ Tg 55°C)' },
         { label: 'Control MCU',      value: 'Arduino Uno · PWM via Servo.h' },

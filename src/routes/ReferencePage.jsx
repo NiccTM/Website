@@ -160,6 +160,12 @@ export default function ReferencePage() {
           somewhere slightly different. The absolute value can be calibrated later. What
           matters is that it stays put.
         </Body>
+        <Body>
+          Two boards were built and characterised this way, assembled about a week apart, with a
+          separate diagnosis session afterward. Building a second unit and comparing it against
+          the first is exactly the stability argument this page is making: a design that only
+          exists once cannot show whether its behaviour is repeatable or coincidental.
+        </Body>
       </Section>
 
       <Section title="No trim potentiometer">
@@ -195,7 +201,10 @@ export default function ReferencePage() {
           amplifier contributes offset. Real resistors sit somewhere inside their tolerance
           bands rather than exactly on nominal. Thermal EMFs at dissimilar-metal junctions
           generate microvolts on their own, and the meter carries its own calibration
-          uncertainty.
+          uncertainty: the 3458A's 24-hour 10&nbsp;V DC specification is 0.5&nbsp;ppm of reading
+          plus 0.05&nbsp;ppm of range, and factory traceability to NIST adds roughly 2&nbsp;ppm of
+          reading on top of that &mdash; call it 2.5&nbsp;ppm from the meter alone, larger than
+          the 0.7&nbsp;ppm deviation being reported above.
         </Body>
         <Body>
           Any claim of sub-ppm accuracy would require a full traceable uncertainty budget. What
