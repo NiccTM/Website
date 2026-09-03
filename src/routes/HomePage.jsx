@@ -330,6 +330,14 @@ export default function HomePage() {
             >
               Photography
             </Link>
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-outline font-sans text-sm px-6 py-2.5"
+            >
+              Résumé
+            </a>
           </div>
 
           <SocialLinks />
