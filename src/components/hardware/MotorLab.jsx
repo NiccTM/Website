@@ -349,7 +349,7 @@ export default function MotorLab() {
         {[
           { label: 'Topology',  value: '9S / 8P Inrunner' },
           { label: 'Winding',   value: '~200 T/pole · 24 AWG' },
-          { label: 'Rₚₕ',       value: '~2.022 Ω' },
+          { label: 'Rₚₕ',       value: '2.02 Ω, calculated' },
           { label: 'Control',   value: 'Arduino + Hobbywing 30A' },
         ].map(({ label, value }) => (
           <div key={label} className="flex items-center gap-1.5">
