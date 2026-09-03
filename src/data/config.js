@@ -513,6 +513,58 @@ export const projects = [
       links: [],
     },
   },
+  {
+    id: 'rover-craft',
+    category: 'competitive',
+    title: 'Okanagan Rover Craft: Power Distribution',
+    course: 'CIRC',
+    role: 'Electrical Engineer',
+    description:
+      'Electrical Engineer on UBCO’s entry to the Canadian International Rover Challenge. A 24 V LiFePO4 power-distribution architecture -- battery management system, main fuse, contactor and fused branch circuits -- plus the vehicle’s inter-subsystem telemetry interfaces.',
+    tags: ['LiFePO4', 'Power Distribution', 'Battery Management', 'Telemetry', 'CIRC'],
+    github: null,
+    demo: null,
+    awards: [],
+    expandedDetails: {
+      extendedDescription:
+        'A 24 V lithium iron phosphate power architecture for a rover competing in the Canadian International Rover Challenge, running battery through a main fuse, a contactor and out to individually fused branch circuits, so a single faulted branch can be isolated without taking the rest of the vehicle down with it. The same architecture carries the telemetry interfaces between subsystems.\n\nOngoing role; specific pack capacity and branch current ratings are not published here yet.',
+      technicalSpecs: [
+        { label: 'Date',       value: 'Sep 2025 – Present' },
+        { label: 'Role',       value: 'Electrical Engineer' },
+        { label: 'Chemistry',  value: 'LiFePO4 (Lithium Iron Phosphate) · 24 V' },
+        { label: 'Protection', value: 'Main fuse · contactor · individually fused branch circuits' },
+        { label: 'Telemetry',  value: 'Inter-subsystem telemetry interfaces' },
+        { label: 'Team',       value: 'Okanagan Rover Craft, UBC Okanagan · CIRC' },
+      ],
+      links: [],
+    },
+  },
+  {
+    id: 'ar2c-fpv',
+    category: 'competitive',
+    title: 'Aerial Robotics and Rocketry Club: FPV Systems',
+    course: 'AR2C',
+    role: 'Electrical Engineer · FPV Head Researcher',
+    description:
+      'Electrical Engineer and FPV Head Researcher for UBCO’s Aerial Robotics and Rocketry Club. Evaluated analog and digital first-person-view video architectures, and pitched the resulting proposal to secure CAD 5,000 in avionics sponsorship.',
+    tags: ['FPV', 'Analog Video', 'RF', 'Avionics', 'Technical Proposals'],
+    github: null,
+    demo: null,
+    awards: [],
+    expandedDetails: {
+      extendedDescription:
+        'Head researcher for the club’s first-person-view video system: comparing analog and digital FPV architectures for a helicopter platform, then assembling and diagnosing the analog video chain -- transmitters, antennas, cameras -- down to component-level soldering and troubleshooting.\n\nThe technical side only mattered if it was funded. I authored the FPV technical proposal and presented its budget directly to the CEO of Sanmina Corporation, securing CAD 5,000 in sponsorship for avionics hardware.',
+      technicalSpecs: [
+        { label: 'Date',        value: 'Sep 2023 – Sep 2025' },
+        { label: 'Role',        value: 'Electrical Engineer · FPV Head Researcher' },
+        { label: 'Scope',       value: 'Analog & digital FPV video architecture evaluation' },
+        { label: 'Hardware',    value: 'Transmitters · antennas · cameras · analog video chain' },
+        { label: 'Sponsorship', value: 'CAD 5,000, presented to the CEO of Sanmina Corporation' },
+        { label: 'Team',        value: 'Aerial Robotics and Rocketry Club, UBC Okanagan' },
+      ],
+      links: [],
+    },
+  },
 
   // ── Professional Practice ─────────────────────────────────────────────────
   {
@@ -619,6 +671,7 @@ export const projects = [
         { label: 'Actuator',      value: 'Servo-driven diverter flap · centre position calibrated' },
         { label: 'Cycle',         value: '~1.5 s hold-still auto-scan trigger' },
         { label: 'Validation',    value: 'Not formally measured; demonstrated live over a single sorting run' },
+        { label: 'Date',          value: 'Jan 2026 – Apr 2026' },
         { label: 'Course',        value: 'CMPE 246 · final project, UBC Okanagan' },
       ],
       subSystems: [
@@ -678,6 +731,7 @@ export const projects = [
         { label: 'Control MCU',      value: 'Arduino Uno · PWM via Servo.h' },
         { label: 'ESC',              value: 'Hobbywing Skywalker 30A V2' },
         { label: 'BOM total',        value: '$94.92 CAD (budget: $100)' },
+        { label: 'Date',             value: 'Jan 2026 – Apr 2026' },
         { label: 'Course',           value: 'ENGR 320 · motor design project, UBC Okanagan' },
       ],
       links: [],
