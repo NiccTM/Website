@@ -280,7 +280,7 @@ export default function MotorLab() {
           src="/motor-cad_cmp.mp4"
           poster="/motor-cad-poster.jpg"
           label="CAD Cross-Section"
-          caption="9-pole stator · 16-pole rotor · Wye winding geometry"
+          caption="9-slot stator · 8-pole rotor · Wye winding geometry"
           icon="view_in_ar"
         />
         <DigitalTwinPanel

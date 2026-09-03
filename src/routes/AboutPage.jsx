@@ -4,12 +4,13 @@ import PageHeader from '../components/layout/PageHeader'
 import { profile, contact, bio } from '../data/config'
 
 const FACTS = [
-  { label: 'Program',   value: bio.program },
-  { label: 'School',    value: `${bio.school}, expected ${bio.expected}` },
-  { label: 'Role',      value: `${bio.role}, ${bio.employer}` },
-  { label: 'Team',      value: 'Okanagan Rover Craft · CIRC' },
-  { label: 'Affiliate', value: bio.affiliation },
-  { label: 'Based in',  value: profile.location },
+  { label: 'Program',    value: bio.program },
+  { label: 'School',     value: `${bio.school}, expected ${bio.expected}` },
+  { label: 'Currently',  value: bio.seeking },
+  { label: 'Previously', value: `${bio.role}, ${bio.employer} (${bio.employerYears})` },
+  { label: 'Team',       value: 'Okanagan Rover Craft · CIRC' },
+  { label: 'Affiliate',  value: bio.affiliation },
+  { label: 'Based in',   value: profile.location },
 ]
 
 const TOOLSET = [
@@ -21,6 +22,7 @@ const TOOLSET = [
 
 const AWARDS = [
   { year: '2024', text: 'Third place, Project Design · APSC 171 Design Competition' },
+  { year: '2024', text: 'Top 14 finalist · APSC 171 SolidWorks Design Competition' },
   { year: '2023', text: 'First place, Project Impact · APSC 169 Sustainable Design Competition' },
   { year: '2023', text: 'Third place, Project Design · APSC 169 Sustainable Design Competition' },
   { year: '2022', text: 'Second place, Top Academics · St. Mary Catholic High School' },
@@ -103,16 +105,16 @@ export default function AboutPage() {
 
           <Section title="Experience">
             <Body>
-              I work as a Hardware Engineering Intern at Measurements International Ltd., a
-              precision electrical metrology company. My first term there in 2024 was largely
-              documentation and configuration control: modernising older schematics, producing
-              revised board versions to match existing hardware, and generating BOMs, change
-              logs and assembly instructions. That work taught me how quickly an electrical
-              design becomes unmaintainable when nobody can tell which drawing matches the
-              physical board.
+              I worked as a Hardware Engineering Intern at Measurements International Ltd., a
+              precision electrical metrology company, across summer terms in 2024, 2025 and
+              2026. My first term there was largely documentation and configuration control:
+              modernising older schematics, producing revised board versions to match existing
+              hardware, and generating BOMs, change logs and assembly instructions. That work
+              taught me how quickly an electrical design becomes unmaintainable when nobody can
+              tell which drawing matches the physical board.
             </Body>
             <Body>
-              More recent work has been precision hardware itself: analog circuitry, current
+              My later terms moved into precision hardware itself: analog circuitry, current
               sources, impedance-related systems, PCB layout, component selection and
               characterisation. Working where measurement uncertainty is the product rather than
               an afterthought changes the scale at which imperfections matter. A resistor

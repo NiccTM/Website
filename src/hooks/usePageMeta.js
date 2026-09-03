@@ -16,7 +16,7 @@ import { useLocation } from 'react-router-dom'
  */
 const SITE = 'https://nicpiraino.com'
 const DEFAULT_TITLE = 'Nic Piraino | Hardware Engineering & System Design'
-const DEFAULT_DESC  = 'Nic Piraino: Hardware Engineering & System Design. Embedded systems, PCB design, audio electronics, and full-stack engineering.'
+const DEFAULT_DESC  = 'Nic Piraino: Precision analog, PCB design, and embedded systems. Electrical Engineering at UBC Okanagan.'
 
 /** Sets an existing meta tag's content, creating the tag if it is absent. */
 function setMeta(selector, attr, name, content) {
