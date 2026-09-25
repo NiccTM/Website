@@ -39,6 +39,7 @@ const ProjectsPage    = lazyWithReload(() => import('./routes/ProjectsPage'))
 const HardwarePage    = lazyWithReload(() => import('./routes/HardwarePage'))
 const HobbiesPage     = lazyWithReload(() => import('./routes/HobbiesPage'))
 const ReferencePage   = lazyWithReload(() => import('./routes/ReferencePage'))
+const CDPlayerPage    = lazyWithReload(() => import('./routes/CDPlayerPage'))
 const AboutPage       = lazyWithReload(() => import('./routes/AboutPage'))
 const ColophonPage    = lazyWithReload(() => import('./routes/ColophonPage'))
 const NotFound        = lazyWithReload(() => import('./routes/NotFound'))
@@ -63,6 +64,7 @@ export function AppRoutes() {
                 <Route path="hardware"           element={<HardwarePage />}  />
                 <Route path="hardware/reference" element={<ReferencePage />} />
                 <Route path="hobbies"            element={<HobbiesPage />}   />
+                <Route path="hobbies/cd-player"  element={<CDPlayerPage />}  />
                 <Route path="about"              element={<AboutPage />}     />
                 <Route path="colophon"           element={<ColophonPage />}  />
 

@@ -39,6 +39,10 @@
       "destination": "/hardware.html"
     },
     {
+      "source": "/hobbies/cd-player",
+      "destination": "/hobbies/cd-player.html"
+    },
+    {
       "source": "/hobbies",
       "destination": "/hobbies.html"
     },

@@ -37,6 +37,7 @@ const ROUTES = {
   hardware:              'HardwarePage.jsx',
   'hardware/reference':  'ReferencePage.jsx',
   hobbies:               'HobbiesPage.jsx',
+  'hobbies/cd-player':   'CDPlayerPage.jsx',
   about:                 'AboutPage.jsx',
   colophon:              'ColophonPage.jsx',
 }
@@ -49,6 +50,7 @@ const PRELOAD_SRC = {
   hardware:              'src/routes/HardwarePage.jsx',
   'hardware/reference':  'src/routes/ReferencePage.jsx',
   hobbies:               'src/routes/HobbiesPage.jsx',
+  'hobbies/cd-player':   'src/routes/CDPlayerPage.jsx',
   about:                 'src/routes/AboutPage.jsx',
   colophon:              'src/routes/ColophonPage.jsx',
 }
@@ -193,6 +195,21 @@ const ROUTE_SCHEMA = {
     publisher: { '@type': 'Person', name: 'Nic Piraino', url: `${SITE}/` },
     isPartOf: { '@type': 'WebSite', name: 'Nic Piraino', url: `${SITE}/` },
     about: ['Voltage reference', 'Precision analog', 'Electrical metrology'],
+  }),
+  /* Same treatment for the CD player repair: a technical write-up rather than
+     a tile, and the page most likely to be found by someone searching a part
+     number rather than my name. */
+  'hobbies/cd-player': ({ title, description, url }) => ({
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: title,
+    description,
+    url,
+    inLanguage: 'en',
+    author: { '@type': 'Person', name: 'Nic Piraino', url: `${SITE}/` },
+    publisher: { '@type': 'Person', name: 'Nic Piraino', url: `${SITE}/` },
+    isPartOf: { '@type': 'WebSite', name: 'Nic Piraino', url: `${SITE}/` },
+    about: ['CD player repair', 'Sony KSS-213B', 'Optical pickup', 'Musical Fidelity A3.2'],
   }),
 }
 
