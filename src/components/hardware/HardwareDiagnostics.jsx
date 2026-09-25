@@ -32,77 +32,108 @@ function useScramble(text, active) {
   return display
 }
 
-// ─── Image card ───────────────────────────────────────────────────────────────
+// ─── Image card ──────────────────────────────────────────
+/* Most tiles open their own photo in the lightbox, because the photo IS the
+   content. A tile carrying `to` is a doorway to a full write-up instead, so it
+   navigates on click and says so on its face -- a tile that behaves differently
+   from its neighbours has to announce that before the click, not after it. */
 function DiagnosticImage({ image, index }) {
   const [hovered,  setHovered]  = useState(false)
   const [lightbox, setLightbox] = useState(false)
+  const linked = Boolean(image.to)
 
-  return (
+  /* onHoverStart/onHoverEnd are framer-motion props, and this has been a plain
+     <div> since the motion wrapper came out -- so they bound nothing, `hovered`
+     was stuck at false, and neither the zoom cue nor the scale has run since. */
+  const shellProps = {
+    className: `relative overflow-hidden group block ${linked ? 'cursor-pointer' : 'cursor-zoom-in'}`,
+    style: {
+      background: 'rgba(255,255,255,0.22)',
+      border: '1px solid rgba(255,255,255,0.45)',
+      borderRadius: 'var(--radius)',
+      aspectRatio: '4/3',
+    },
+    onMouseEnter: () => setHovered(true),
+    onMouseLeave: () => setHovered(false),
+  }
+
+  const inner = (
     <>
+      <Picture
+        src={thumbSrc(image.src)}
+        alt={image.label}
+        loading="lazy"
+        decoding="async"
+        className="w-full h-full object-cover transition-all duration-500"
+        /* Three of these are portrait (the hi-fi rack, the RTX 3090, the
+           Beats headphone) rendered into a 4:3 landscape box. Centred
+           cover-cropping cut the subject out of the middle; top-anchoring
+           keeps it. See ArchiveModules for the same fix. */
+        style={{ objectPosition: 'top', transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s' }}
+      />
+
+      {/* Always-visible caption scrim.
+          This was `inset-0` with `justify-end` and a gradient that is fully
+          transparent above 75% -- so the scrim covered a fixed quarter of the
+          card while the text block grew upward with its content. Captions
+          like the DVD player's ("Internal inspection · full disc drive
+          disassembly · laser sled cleaning · mechanism lubrication") run to
+          four lines and ended up sitting on bare photo, white-on-white in
+          places and unreadable.
+
+          Anchoring to the bottom edge instead lets the box hug its own text,
+          so the gradient always spans exactly the height the caption needs,
+          whatever the caption length. The extra top padding gives the fade
+          somewhere to happen above the first line. */}
       <div
-        onHoverStart={() => setHovered(true)}
-        onHoverEnd={() => setHovered(false)}
-        onClick={() => setLightbox(true)}
-        className="relative overflow-hidden cursor-zoom-in group"
+        className="absolute inset-x-0 bottom-0 px-3 pb-2.5 pt-4"
         style={{
-          background: 'rgba(255,255,255,0.22)',
-          border: '1px solid rgba(255,255,255,0.45)',
-          borderRadius: 'var(--radius)',
-          aspectRatio: '4/3',
+          background:
+            'linear-gradient(to top, rgba(0,20,60,0.92) 0%, rgba(0,20,60,0.86) 55%, rgba(0,20,60,0.55) 85%, rgba(0,20,60,0) 100%)',
         }}
       >
-        <Picture
-          src={thumbSrc(image.src)}
-          alt={image.label}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover transition-all duration-500"
-          /* Three of these are portrait (the hi-fi rack, the RTX 3090, the
-             Beats headphone) rendered into a 4:3 landscape box. Centred
-             cover-cropping cut the subject out of the middle; top-anchoring
-             keeps it. See ArchiveModules for the same fix. */
-          style={{ objectPosition: 'top', transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s' }}
-        />
+        {/* No line-clamp. These captions run 80-95 characters and were being
+            cut mid-item -- "software repair - SSD..." -- which loses the last
+            thing in a list that is nothing but items. They are terse work
+            notes, not padding, so the scrim grows by a line instead. */}
+        <p className="font-mono-data text-sm font-medium" style={{ color: '#ffffff' }}>{image.label}</p>
+        <p className="font-mono-data mt-0.5" style={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.875rem' }}>{image.caption}</p>
+      </div>
 
-        {/* Always-visible caption scrim.
-            This was `inset-0` with `justify-end` and a gradient that is fully
-            transparent above 75% -- so the scrim covered a fixed quarter of the
-            card while the text block grew upward with its content. Captions
-            like the DVD player's ("Internal inspection · full disc drive
-            disassembly · laser sled cleaning · mechanism lubrication") run to
-            four lines and ended up sitting on bare photo, white-on-white in
-            places and unreadable.
-
-            Anchoring to the bottom edge instead lets the box hug its own text,
-            so the gradient always spans exactly the height the caption needs,
-            whatever the caption length. The extra top padding gives the fade
-            somewhere to happen above the first line. */}
+      {/* The link badge does NOT fade in on hover the way the zoom cue does:
+          it is the only thing saying this tile leaves the page, and a touch
+          screen has no hover to reveal it with. */}
+      {linked ? (
         <div
-          className="absolute inset-x-0 bottom-0 px-3 pb-2.5 pt-4"
-          style={{
-            background:
-              'linear-gradient(to top, rgba(0,20,60,0.92) 0%, rgba(0,20,60,0.86) 55%, rgba(0,20,60,0.55) 85%, rgba(0,20,60,0) 100%)',
-          }}
+          className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded"
+          style={{ background: 'rgba(3,7,18,0.72)', border: '1px solid rgb(var(--accent-on-dark-rgb) / 0.35)' }}
         >
-          {/* No line-clamp. These captions run 80-95 characters and were being
-              cut mid-item -- "software repair - SSD..." -- which loses the last
-              thing in a list that is nothing but items. They are terse work
-              notes, not padding, so the scrim grows by a line instead. */}
-          <p className="font-mono-data text-sm font-medium" style={{ color: '#ffffff' }}>{image.label}</p>
-          <p className="font-mono-data mt-0.5" style={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.875rem' }}>{image.caption}</p>
+          <span aria-hidden="true" className="material-symbols-rounded" style={{ color: 'var(--accent-on-dark)', fontSize: '0.9rem' }}>open_in_new</span>
+          <span className="font-mono-data text-sm" style={{ color: 'var(--accent-on-dark)' }}>Repair log</span>
         </div>
-
-        {/* Zoom icon */}
+      ) : (
         <div
           className="absolute top-2 right-2 transition-opacity duration-200"
           style={{ opacity: hovered ? 1 : 0 }}
         >
           <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>zoom_in</span>
         </div>
-      </div>
+      )}
+    </>
+  )
 
-        {lightbox && <ImageLightbox src={image.src} label={image.label} caption={image.caption} onClose={() => setLightbox(false)} />}
+  if (linked) {
+    return (
+      <Link to={image.to} aria-label={`${image.label}: read the full repair write-up`} {...shellProps}>
+        {inner}
+      </Link>
+    )
+  }
 
+  return (
+    <>
+      <div onClick={() => setLightbox(true)} {...shellProps}>{inner}</div>
+      {lightbox && <ImageLightbox src={image.src} label={image.label} caption={image.caption} onClose={() => setLightbox(false)} />}
     </>
   )
 }
@@ -120,7 +151,7 @@ function CategorySection({ category, sectionIndex }) {
   return (
     <div className="mb-8">
       <div
-        className="flex items-center flex-wrap gap-x-2 gap-y-1 mb-4"
+        className="flex items-center gap-2 mb-4"
       >
         {category.icon === '_sacd'
           ? <span className="font-mono-data text-sm font-bold leading-none" style={{ color: 'var(--accent)', letterSpacing: '0.05em' }}>SACD</span>
@@ -131,11 +162,6 @@ function CategorySection({ category, sectionIndex }) {
         </span>
         <div className="flex-1 h-px ml-1" style={{ background: 'rgba(255,255,255,0.45)' }} />
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{category.description}</span>
-        {category.link && (
-          <Link to={category.link.to} className="font-mono-data text-sm whitespace-nowrap" style={{ color: 'var(--accent)' }}>
-            {category.link.label} &rarr;
-          </Link>
-        )}
       </div>
 
       <div className={`grid gap-3 ${gridCols}`}>

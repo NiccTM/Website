@@ -1023,11 +1023,8 @@ export const hardwareDiagnostics = {
       label:       'Digital',
       icon:        '_sacd',
       description: 'Optical drive inspection, disc mechanism cleaning and servicing.',
-      /* The A3.2 got far enough into diagnosis to be worth its own write-up
-         rather than a caption, so the tile links out to it. */
-      link:        { to: '/hobbies/cd-player', label: 'Read the A3.2 repair log' },
       images: [
-        { src: '/20260907_151337.jpg', label: 'Musical Fidelity A3.2 CD', caption: 'Transport service · sled rail and gear train · KSS-213B pickup traced as the marginal part' },
+        { src: '/20260907_151337.jpg', to: '/hobbies/cd-player', label: 'Musical Fidelity A3.2 CD', caption: 'Transport service · sled rail and gear train · KSS-213B pickup traced as the marginal part' },
         { src: '/DVD_player.jpg', label: 'DVD Player', caption: 'Internal inspection · full disc drive disassembly · laser sled cleaning · mechanism lubrication' },
       ],
     },
