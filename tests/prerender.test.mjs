@@ -29,6 +29,7 @@ const ROUTES = [
   { file: 'hardware.html',          path: '/hardware',           title: 'Nic Piraino | Hardware Lab' },
   { file: 'hardware/reference.html', path: '/hardware/reference', title: 'Nic Piraino | Voltage Reference' },
   { file: 'hobbies.html',           path: '/hobbies',            title: 'Nic Piraino | Hobbies' },
+  { file: 'hobbies/cd-player.html', path: '/hobbies/cd-player',  title: 'Nic Piraino | CD Player Repair' },
   { file: 'about.html',             path: '/about',              title: 'Nic Piraino | About' },
   { file: 'colophon.html',          path: '/colophon',           title: 'Nic Piraino | Colophon' },
 ]

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { hardwareDiagnostics } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc } from '../../utils/thumbs'
@@ -119,7 +120,7 @@ function CategorySection({ category, sectionIndex }) {
   return (
     <div className="mb-8">
       <div
-        className="flex items-center gap-2 mb-4"
+        className="flex items-center flex-wrap gap-x-2 gap-y-1 mb-4"
       >
         {category.icon === '_sacd'
           ? <span className="font-mono-data text-sm font-bold leading-none" style={{ color: 'var(--accent)', letterSpacing: '0.05em' }}>SACD</span>
@@ -130,6 +131,11 @@ function CategorySection({ category, sectionIndex }) {
         </span>
         <div className="flex-1 h-px ml-1" style={{ background: 'rgba(255,255,255,0.45)' }} />
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{category.description}</span>
+        {category.link && (
+          <Link to={category.link.to} className="font-mono-data text-sm whitespace-nowrap" style={{ color: 'var(--accent)' }}>
+            {category.link.label} &rarr;
+          </Link>
+        )}
       </div>
 
       <div className={`grid gap-3 ${gridCols}`}>
