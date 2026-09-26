@@ -133,7 +133,7 @@ function DiagnosticImage({ image, index }) {
   return (
     <>
       <div onClick={() => setLightbox(true)} {...shellProps}>{inner}</div>
-      {lightbox && <ImageLightbox src={image.src} label={image.label} caption={image.caption} onClose={() => setLightbox(false)} />}
+      {lightbox && <ImageLightbox src={image.src} label={image.label} caption={image.caption} note={image.note} onClose={() => setLightbox(false)} />}
     </>
   )
 }
