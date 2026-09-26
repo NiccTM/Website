@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, Suspense, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, useTexture, Environment, Lightformer, ContactShadows } from '@react-three/drei'
+import { OrbitControls, useTexture, Environment, Lightformer, ContactShadows, RoundedBox } from '@react-three/drei'
 import { damp } from 'maath/easing'
 import * as THREE from 'three'
 import { useUI } from '../../context/UIContext'
@@ -666,12 +666,36 @@ function Plinth({ isPlaying }) {
           no silhouette at all -- the edges simply dissolved into the background
           and the deck read as a void rather than an object. It needs to catch
           enough of the environment to describe its own edges. */}
-      <mesh position={[PLINTH_OFFSET_X, -PLINTH_T / 2, 0]} receiveShadow castShadow>
-        <boxGeometry args={[PLINTH_W, PLINTH_T, PLINTH_D]} />
+      {/* RoundedBox, not a box: the real cabinet's corners are radiused, and
+          at this size a hard 90-degree corner is the single clearest tell that
+          it is a primitive. The radius is small -- 6 mm -- because the corner
+          only has to catch a highlight, not look chamfered. */}
+      <RoundedBox
+        position={[PLINTH_OFFSET_X, -PLINTH_T / 2, 0]}
+        args={[PLINTH_W, PLINTH_T, PLINTH_D]}
+        radius={0.06}
+        smoothness={4}
+        receiveShadow
+        castShadow
+      >
         {/* Piano black, but NOT a mirror: at roughness 0.10 the plinth reflected
             the softbox as a hard white slab with a visible straight edge. The
             rougher clearcoat blurs that into a soft sheen. */}
         <meshPhysicalMaterial color="#121215" roughness={0.34} metalness={0.0} reflectivity={0.45} clearcoat={1.0} clearcoatRoughness={0.26} envMapIntensity={0.55} />
+      </RoundedBox>
+
+      {/* Power button, front-left, where the real one is. The left third of the
+          deck is under the platter overhang, so the only place this reads from
+          is the strip of cabinet in front of it -- which is also where Rega put
+          it. Small and unlit: on the real deck it is a plain push button, not
+          an indicator. */}
+      <mesh position={[-1.18, 0.014, 1.46]} castShadow>
+        <cylinderGeometry args={[0.082, 0.086, 0.028, 28]} />
+        <meshStandardMaterial color="#17171a" roughness={0.42} metalness={0.35} envMapIntensity={0.7} />
+      </mesh>
+      <mesh position={[-1.18, 0.029, 1.46]}>
+        <cylinderGeometry args={[0.062, 0.062, 0.004, 24]} />
+        <meshStandardMaterial color="#202024" roughness={0.3} metalness={0.4} envMapIntensity={0.9} />
       </mesh>
 
       {/* Feet. Four of them, inset from the corners like the real deck's. They
@@ -698,9 +722,16 @@ function Plinth({ isPlaying }) {
             Both previous values were wrong in opposite directions: #2f6f68 was
             a saturated teal that made the rim the brightest thing in frame, and
             correcting it to #224a46 went dark enough to read as painted metal.
-            Neither was ever checked against the real deck. */}
+
+            #93a285 came from the daylight photo and was then checked against
+            the RENDER, which is the step that had never been done: the rim was
+            coming out rgb(109,113,98) -- red and green equal, blue below both,
+            which is khaki. The rim in RegaP2_VINYL.jpg measures rgb(73,100,99):
+            green and blue equal, red well below. Right family, wrong hue. This
+            value is picked so the SHADED result lands on that measurement
+            rather than so the swatch matches it. */}
         <meshPhysicalMaterial
-          color="#93a285"
+          color="#5f8c88"
           roughness={0.12}
           metalness={0.0}
           ior={1.52}
