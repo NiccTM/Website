@@ -92,3 +92,16 @@ test('the prerendered markup is hydratable, not a static snapshot', opts, () => 
     assert.match(html, /<script type="module"[^>]+src="\/assets\/[^"]+\.js"/, `${file} has no entry script`)
   }
 })
+
+test('the 404 shell is a real 404, not a copy of the home page', opts, () => {
+  /* Unknown paths used to be rewritten to index.html, so a typo'd URL answered
+     200 carrying the home page's title, canonical and Person schema. The
+     catch-all rewrite is gone and Vercel serves this file with a 404 status,
+     so it has to be the 404 page and has to claim nothing. */
+  const html = read('404.html')
+  assert.equal(html.match(/<title>([^<]*)<\/title>/)?.[1], 'Nic Piraino | Page not found')
+  assert.match(html, /<meta name="robots" content="noindex"/, '404 must be noindex')
+  assert.ok(!/<link\s+rel="canonical"/.test(html), '404 must not claim a canonical URL')
+  assert.ok(!/<meta\s+property="og:url"/.test(html), '404 must not claim an og:url')
+  assert.ok(bodyText(html).includes('404'), '404 shell is missing its own content')
+})

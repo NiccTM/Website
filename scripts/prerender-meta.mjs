@@ -53,6 +53,7 @@ const PRELOAD_SRC = {
   'hobbies/cd-player':   'src/routes/CDPlayerPage.jsx',
   about:                 'src/routes/AboutPage.jsx',
   colophon:              'src/routes/ColophonPage.jsx',
+  '404':                 'src/routes/NotFound.jsx',
 }
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -145,14 +146,14 @@ const { render } = await import(pathToFileURL(join(ROOT, 'dist-ssr/entry-server.
 
 const ROOT_DIV = '<div id="root"></div>'
 
-async function injectMarkup(html, routePath) {
+async function injectMarkup(html, routePath, minText = 200) {
   const { html: rendered, errors } = await render(routePath)
 
   /* A route that renders nothing is almost certainly a Suspense fallback that
      escaped, or a component that threw. Shipping that silently would leave the
      shell looking prerendered while containing nothing, which is worse than not
      prerendering at all -- so it fails the build instead. */
-  if (rendered.replace(/<[^>]+>/g, '').trim().length < 200)
+  if (rendered.replace(/<[^>]+>/g, '').trim().length < minText)
     throw new Error(`prerender-meta: ${routePath} rendered almost no text (${rendered.length} bytes of HTML)`)
   if (errors.length)
     throw new Error(`prerender-meta: ${routePath} produced render errors:\n${errors.join('\n')}`)
@@ -259,6 +260,50 @@ for (const [route, file] of Object.entries(ROUTES)) {
   writeFileSync(outFile, html)
   console.log(`  prerendered /${route}  ->  ${fullTitle}`)
   written++
+}
+
+/*
+ * THE 404 SHELL
+ *
+ * Every unknown path used to be caught by a rewrite to index.html, so a typo'd
+ * URL answered 200 carrying the HOME page's title, description, canonical and
+ * Person schema. The React app rendered a 404 once it booted, but a crawler
+ * reading the first response saw a duplicate of the home page at a junk URL and
+ * had every reason to index it as one.
+ *
+ * This writes a real 404 shell, and vercel.json drops the catch-all rewrite so
+ * Vercel serves this file -- with an actual 404 status -- for anything it does
+ * not recognise. Every real route already has its own explicit rewrite, which
+ * is what makes dropping the catch-all safe; a new route needs one adding
+ * there, the same as it already needs adding to ROUTES above.
+ *
+ * No canonical and no og:url: this page has no canonical form, and pointing one
+ * at the home page is the exact confusion being fixed. noindex says the rest.
+ * The text guard is lowered because a 404 is legitimately short -- it is a
+ * sentence and two links, not an article.
+ */
+{
+  const { title, description } = readRouteMeta('NotFound.jsx')
+  const fullTitle = `Nic Piraino | ${title}`
+  const t = esc(fullTitle)
+  const d = esc(description)
+
+  let html = shell
+  html = replaceTag(html, /<title>[\s\S]*?<\/title>/, `<title>${t}</title>`, '<title>')
+  html = replaceTag(html, /(<meta\s+name="description"\s+content=")[^"]*(")/, `$1${d}$2`, 'description')
+  html = replaceTag(html, /(<meta\s+property="og:title"\s+content=")[^"]*(")/, `$1${t}$2`, 'og:title')
+  html = replaceTag(html, /(<meta\s+property="og:description"\s+content=")[^"]*(")/, `$1${d}$2`, 'og:description')
+  html = replaceTag(html, /(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, `$1${t}$2`, 'twitter:title')
+  html = replaceTag(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${d}$2`, 'twitter:description')
+  html = replaceTag(html, /\s*<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/, '', 'canonical')
+  html = replaceTag(html, /\s*<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/, '', 'og:url')
+  html = replaceTag(html, /<\/title>/, '</title>\n    <meta name="robots" content="noindex" />', 'robots insertion point')
+
+  html = injectPreloads(html, '404')
+  html = await injectMarkup(html, '/this-path-does-not-exist', 60)
+
+  writeFileSync(join(ROOT, 'dist/404.html'), html)
+  console.log(`  prerendered 404       ->  ${fullTitle}`)
 }
 
 /* The home page has no separate shell -- it IS dist/index.html -- so its
