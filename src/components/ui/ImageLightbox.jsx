@@ -9,7 +9,7 @@ import { thumbSrc, hasThumb, displaySrc as fullResSrc } from '../../utils/thumbs
 const MIN_SCALE = 1
 const MAX_SCALE = 5
 
-export default function ImageLightbox({ src, label, caption, onClose }) {
+export default function ImageLightbox({ src, label, caption, note, onClose }) {
   const dialogRef = useDialog()
   const [scale,    setScale]    = useState(1)
   const [dragging, setDragging] = useState(false)
@@ -251,6 +251,21 @@ export default function ImageLightbox({ src, label, caption, onClose }) {
           </div>
         )}
       </div>
+
+      {/* ── Write-up ──
+          Some tiles carry a paragraph rather than just a caption. It goes in a
+          footer bar rather than the top bar, because that one truncates to a
+          single line on purpose and a paragraph does not belong in a header. */}
+      {note && (
+        <div
+          className="shrink-0 px-6 py-4 overflow-y-auto"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.1)', background: 'rgba(10,8,18,0.98)', maxHeight: '32vh' }}
+        >
+          <p className="font-sans text-sm max-w-[78ch]" style={{ color: 'rgba(255,255,255,0.78)', lineHeight: 1.75 }}>
+            {note}
+          </p>
+        </div>
+      )}
     </div>,
     document.body
   )

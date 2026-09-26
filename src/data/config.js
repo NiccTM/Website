@@ -1002,11 +1002,16 @@ export const hardwareDiagnostics = {
       icon:        'computer',
       description: 'GPU and laptop teardowns, thermal treatment, SSD and software repair.',
       images: [
-        { src: '/ASUS_gaming_laptop.jpg', label: 'ASUS ROG Gaming Laptop', caption: 'Full disassembly · Thermal Grizzly PhaseSheet PTM reapplication · software repair · SSD repair' },
-        { src: '/MSI_gaming_laptop.jpg',  label: 'MSI Gaming Laptop',      caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
-        { src: '/ASUS_laptop.jpg',        label: 'ASUS Laptop',            caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
-        { src: '/Acer_laptop.jpg',        label: 'Acer Laptop',            caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
-        { src: '/Zotac_RTX3090_v2.jpg',      label: 'Zotac RTX 3090',         caption: 'Full card clean · Thermal Grizzly PhaseSheet PTM reapplication · software repair' },
+        { src: '/ASUS_gaming_laptop.jpg', note:
+          'In for thermal throttling under load. Stripped to the board, cleared the fan and fin stack, and replaced the factory compound with Thermal Grizzly PhaseSheet PTM. A phase-change sheet rather than a paste is the right answer on a die that runs this hot in a chassis this thin: ordinary paste pumps out from under the cold plate over a couple of years of heat cycling, which is the failure that puts a machine like this back on the bench. SSD and OS-level repair while it was open.', label: 'ASUS ROG Gaming Laptop', caption: 'Full disassembly · Thermal Grizzly PhaseSheet PTM reapplication · software repair · SSD repair' },
+        { src: '/MSI_gaming_laptop.jpg', note:
+          'One of three mid-range laptops in for the same complaint and given the same job: thermal throttling caused by dried-out factory paste. Full clean, fan and fin stack cleared, fresh Arctic MX-6 on the die, plus SSD and software repair. Worth doing before assuming anything is wrong with the silicon -- on a machine of this age it usually is just the interface material, and the notes on these three are near-identical because the work was.',  label: 'MSI Gaming Laptop',      caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
+        { src: '/ASUS_laptop.jpg', note:
+          'One of three mid-range laptops in for the same complaint and given the same job: thermal throttling caused by dried-out factory paste. Full clean, fan and fin stack cleared, fresh Arctic MX-6 on the die, plus SSD and software repair. Worth doing before assuming anything is wrong with the silicon -- on a machine of this age it usually is just the interface material, and the notes on these three are near-identical because the work was.',        label: 'ASUS Laptop',            caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
+        { src: '/Acer_laptop.jpg', note:
+          'One of three mid-range laptops in for the same complaint and given the same job: thermal throttling caused by dried-out factory paste. Full clean, fan and fin stack cleared, fresh Arctic MX-6 on the die, plus SSD and software repair. Worth doing before assuming anything is wrong with the silicon -- on a machine of this age it usually is just the interface material, and the notes on these three are near-identical because the work was.',        label: 'Acer Laptop',            caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
+        { src: '/Zotac_RTX3090_v2.jpg', note:
+          'Thermal throttling, same underlying cause as the laptops. Full teardown, fin stack and fans cleaned out, and Thermal Grizzly PhaseSheet PTM in place of the factory compound, for the same reason as the ROG: a phase-change sheet stays where it is put on a die this hot instead of pumping out. Software repair alongside it.',      label: 'Zotac RTX 3090',         caption: 'Full card clean · Thermal Grizzly PhaseSheet PTM reapplication · software repair' },
       ],
     },
     {
@@ -1015,7 +1020,8 @@ export const hardwareDiagnostics = {
       icon:        'speaker',
       description: 'Headphone driver inspection and cable servicing.',
       images: [
-        { src: '/beats_headphone_v2.jpg', label: 'Beats Headphone', caption: 'Driver inspection · cable re-termination' },
+        { src: '/beats_headphone_v2.jpg', note:
+          'Only one channel was working. The driver checked out, which put the fault in the cable, and re-terminating it brought the dead side back. That order is worth keeping: the driver is the expensive thing to be wrong and the least likely one, and a cable flexed at the same point for years is the most likely.', label: 'Beats Headphone', caption: 'Driver inspection · cable re-termination' },
       ],
     },
     {
@@ -1025,7 +1031,8 @@ export const hardwareDiagnostics = {
       description: 'Optical drive inspection, disc mechanism cleaning and servicing.',
       images: [
         { src: '/20260907_151337.jpg', to: '/hobbies/cd-player', label: 'Musical Fidelity A3.2 CD', caption: 'Transport service · sled rail and gear train · KSS-213B pickup traced as the marginal part' },
-        { src: '/DVD_player.jpg', label: 'DVD Player', caption: 'Internal inspection · full disc drive disassembly · laser sled cleaning · mechanism lubrication' },
+        { src: '/DVD_player.jpg', note:
+          'The tray and transport mechanism were the whole problem here. A full teardown, a clean and fresh lubrication fixed it outright -- which is exactly what the same service on the Musical Fidelity A3.2 did not do. Two optical drives, the same first move, two different answers, and that is the argument for doing the mechanical work before touching anything optical: when it works you are finished, and when it does not you have ruled something out.', label: 'DVD Player', caption: 'Internal inspection · full disc drive disassembly · laser sled cleaning · mechanism lubrication' },
       ],
     },
   ],
