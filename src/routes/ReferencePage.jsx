@@ -113,7 +113,7 @@ export default function ReferencePage() {
               a ~1 MB image they cannot resolve anyway. */}
           <img
             src={displaySrc(BENCH_PHOTO)}
-            srcSet={`${thumbSrc(BENCH_PHOTO)} 800w, ${displaySrc(BENCH_PHOTO)} 4000w`}
+            srcSet={`${thumbSrc(BENCH_PHOTO)} 800w, ${displaySrc(BENCH_PHOTO)} 2560w`}
             sizes="(max-width: 72rem) 100vw, 72rem"
             width={7866}
             height={5900}
