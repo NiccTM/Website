@@ -22,10 +22,12 @@
   The display/ tier is therefore the highest resolution a browser can obtain,
   and it is what the lightbox loads when a photo is opened.
 
-  DisplayWidth is 4000 because that is the native width of the photography
-  originals -- going wider would only upscale them. The hardware teardowns
-  report 8160x6120 and 16320x12240, but those are upscaled exports rather than
-  optical detail, so 4000 is the point past which bytes stop buying sharpness.
+  DisplayWidth is 2560. It was 4000 for a while, which is roughly the native
+  width of the photography originals, and it took the deploy from ~130 MB to
+  284 MB -- the photography display tier alone was 176 MB. 2560 covers a
+  full-screen lightbox on anything up to a 4K panel and halves that back off.
+  The originals go to 16320x12240, but past 2560 the extra pixels are bytes
+  nobody sees until they zoom, and the lightbox still has the zoom control.
 
   Re-run after adding images:  powershell -File scripts/generate-thumbnails.ps1
   Up-to-date thumbnails are skipped; -Force rebuilds everything.
@@ -39,7 +41,7 @@
 #>
 param(
     [int]$MaxWidth = 800,      # thumbs/  -- grid tiles
-    [int]$DisplayWidth = 4000, # display/ -- lightbox, hero backdrops, full-bleed panels
+    [int]$DisplayWidth = 2560, # display/ -- lightbox, hero backdrops, full-bleed panels
     [int]$Quality  = 82,
     [switch]$Force
 )

@@ -84,10 +84,10 @@ export default function ColophonPage() {
 
           <Section title="Images">
             <Body>
-              The photographs come off the camera at up to 12000 by 8000 pixels. None of
+              The photographs come off the camera at up to 16320 by 12240 pixels. None of
               that reaches your browser. A script walks the originals folder, which is
               outside the deployed directory entirely, and writes two derivatives of each
-              image: an 800 pixel tile for grids and a 4000 pixel version for the lightbox.
+              image: an 800 pixel tile for grids and a 2560 pixel version for the lightbox.
               A manifest of intrinsic dimensions is written alongside them so tiles can
               reserve the right box and the page does not jump while images load.
             </Body>
@@ -131,8 +131,13 @@ export default function ColophonPage() {
               The icon font was the single largest asset on the site at 5.2 MB, because the
               full variable font ships unless you ask for a subset. Requesting only the
               icons actually used took it to 67 KB, and it is served from this domain
-              rather than Google's. The deploy went from 639 MB to under 130 MB by
-              serving derivatives rather than originals.
+              rather than Google's. Serving derivatives rather than originals took the
+              deploy from 639 MB to 172 MB: 872 MB of originals become 113 MB of tiles and
+              lightbox copies. That number was 284 MB until recently, because the lightbox
+              tier had been raised to 4000 pixels and the photography alone came to 176 MB;
+              2560 covers a full-screen lightbox on a 4K panel and gave half of it back.
+              Two video files are 51 MB of what is left, which makes them the next thing to
+              deal with rather than a footnote.
             </Body>
             <Body>
               The 3D board and the signal-chain diagrams are the two heaviest things here,

@@ -26,7 +26,7 @@ export const thumbSrc = (src) =>
   hasThumb(src) ? src.replace(/\/([^/]+)$/, '/thumbs/$1') : src
 
 /**
- * 1920px tier, for images rendered full-bleed where an 800px thumbnail would
+ * 2560px tier, for images rendered full-bleed where an 800px thumbnail would
  * visibly soften: hero backdrops, large panels. The home page hero was loading
  * 4-19 MB originals as a background, which was the bulk of its page weight.
  */
