@@ -132,12 +132,13 @@ export default function ColophonPage() {
               full variable font ships unless you ask for a subset. Requesting only the
               icons actually used took it to 67 KB, and it is served from this domain
               rather than Google's. Serving derivatives rather than originals took the
-              deploy from 639 MB to 172 MB: 872 MB of originals become 113 MB of tiles and
+              deploy from 639 MB to 147 MB: 872 MB of originals become 113 MB of tiles and
               lightbox copies. That number was 284 MB until recently, because the lightbox
               tier had been raised to 4000 pixels and the photography alone came to 176 MB;
               2560 covers a full-screen lightbox on a 4K panel and gave half of it back.
-              Two video files are 51 MB of what is left, which makes them the next thing to
-              deal with rather than a footnote.
+              The two videos were another 50 MB of it, one of them encoded at 1440p50 for a
+              player that is about 1280 pixels wide on a laptop. Re-encoded to 720p they are
+              25 MB, and the frames they are made of are the same ones as before.
             </Body>
             <Body>
               The 3D board and the signal-chain diagrams are the two heaviest things here,
