@@ -438,7 +438,6 @@ export const projects = [
       'Compostable, impact-resistant packaging for electronics, shaped as an elongated rhombic dodecahedron with an NFC tag in place of a shipping label.',
     tags: ['3D Printing', 'PLA', 'NFC', 'Circular Design', 'Structural Analysis'],
     github: null,
-    demo: null,
     awards: [
       { id: 'unbox-impact-gold',   label: '1st Place · Project Impact', tier: 'gold'   },
       { id: 'unbox-design-bronze', label: '3rd Place · Project Design', tier: 'bronze' },
@@ -468,7 +467,6 @@ export const projects = [
       'Early warning for remote wildfires. Gas, thermal and wind sensors have to agree before it raises an alarm, which is what keeps false positives down.',
     tags: ['Systems Design', 'Sensor Fusion', 'Embedded Systems', 'Satellite Comms', 'Technical Writing'],
     github: null,
-    demo: null,
     awards: [
       { id: 'firesense-design-bronze', label: '3rd Place · Project Design', tier: 'bronze' },
     ],
@@ -493,7 +491,6 @@ export const projects = [
       'A SolidWorks recreation of the Back to the Future DeLorean: over 200 unique parts, a full V6 engine assembly, and an interactive exploded view.',
     tags: ['SolidWorks', 'SolidWorks Visualize', 'CAD', 'V6 Engine', 'Research'],
     github: null,
-    demo: 'video',
     awards: [
       { id: 'delorean-finalist-cyan', label: 'Top 14 Finalist · Design Competition', tier: 'cyan' },
     ],
@@ -521,7 +518,6 @@ export const projects = [
       'Electrical Engineer on UBCO’s entry to the Canadian International Rover Challenge. A 24 V LiFePO4 power-distribution architecture -- battery management system, main fuse, contactor and fused branch circuits -- plus the vehicle’s inter-subsystem telemetry interfaces.',
     tags: ['LiFePO4', 'Power Distribution', 'Battery Management', 'Telemetry', 'CIRC'],
     github: null,
-    demo: null,
     awards: [],
     expandedDetails: {
       extendedDescription:
@@ -547,7 +543,6 @@ export const projects = [
       'Electrical Engineer and FPV Head Researcher for UBCO’s Aerial Robotics and Rocketry Club. Evaluated analog and digital first-person-view video architectures, and pitched the resulting proposal to secure CAD 5,000 in avionics sponsorship.',
     tags: ['FPV', 'Analog Video', 'RF', 'Avionics', 'Technical Proposals'],
     github: null,
-    demo: null,
     awards: [],
     expandedDetails: {
       extendedDescription:
@@ -575,7 +570,6 @@ export const projects = [
       'A consultation policy framework written for Gull Bay First Nation in Ontario, covering sustainable development and environmental stewardship.',
     tags: ['Policy Analysis', 'Stakeholder Engagement', 'Ethical Engineering', 'ICCP'],
     github: null,
-    demo: null,
     awards: [
       { id: 'consultation-practice', label: 'Professional Practice', tier: 'practice' },
     ],
@@ -602,7 +596,6 @@ export const projects = [
       'APSC 176 final project. An accessibility audit and Universal Design proposal for a multi-purpose theatre in Whistler, BC.',
     tags: ['Universal Design', 'Accessibility Standards', 'CAD (Spatial)', 'Technical Writing'],
     github: null,
-    demo: null,
     awards: [],
     expandedDetails: {
       extendedDescription:
@@ -626,7 +619,6 @@ export const projects = [
     description: 'Discord Rich Presence integration for MediaMonkey 5.',
     tags: ['Python', 'Discord API', 'MediaMonkey'],
     github: 'https://github.com/NiccTM/Feeble_Presence',
-    demo: 'architecture',
     awards: [],
     expandedDetails: {
       extendedDescription:
@@ -652,7 +644,6 @@ export const projects = [
     description: 'CMPE 246 final project. A YOLOv8 model sorts waste in real time and drives a servo flap that diverts each item to the right bin.',
     tags: ['Raspberry Pi', 'Python', 'YOLOv8', 'Roboflow', 'Computer Vision', 'React', 'Vercel', 'PWM', 'Servo'],
     github: 'https://github.com/NiccTM/CMPE246_G16_Trash_Organizer',
-    demo: 'ml',
     awards: [],
     expandedDetails: {
       extendedDescription:
@@ -714,7 +705,6 @@ export const projects = [
     description: 'ENGR 320 motor design. A 9-slot stator and 8-pole rotor (16 magnets, N-N-S-S pairs), hand-wound in 24 AWG enamelled copper, built to a $100 CAD budget.',
     tags: ['Hardware', 'Electronics', '3D Printing', 'Motor Control', 'BLDC', 'ESC'],
     github: null,
-    demo: '3d',
     awards: [],
     expandedDetails: {
       extendedDescription:
