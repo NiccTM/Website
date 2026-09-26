@@ -652,7 +652,124 @@ function Tonearm({ isPlaying }) {
 }
 
 // ─── Plinth ────────────────────────────────────────────────────────────────────
-function Plinth({ isPlaying }) {
+/* The P2 mark on the front-right of the deck, drawn to a canvas because it is
+   two glyphs and a rule -- an image file would be another asset to ship and
+   another thing to keep in step with the deck's colours.
+
+   Read off RegaP2_VINYL.jpg rather than from Rega's press material: light grey,
+   geometric, and sitting on the strip of cabinet in front of the arm. There is
+   a micro-wordmark under the rule on the real deck which is illegible at the
+   resolution of that photo, so it is rendered as the rule alone rather than as
+   letters I would be inventing. */
+function P2Badge() {
+  const tex = useMemo(() => {
+    const c = document.createElement('canvas')
+    c.width = 512; c.height = 256
+    const g = c.getContext('2d')
+    g.clearRect(0, 0, c.width, c.height)
+    g.fillStyle = '#c8ccd2'
+    g.textAlign = 'center'
+    g.textBaseline = 'alphabetic'
+    /* Geometric first, Exo 2 last: Exo 2 is self-hosted so it is the one face
+       guaranteed to be there, and it is close enough in character. */
+    g.font = '500 150px "Century Gothic", "Futura", "Avenir Next", "Exo 2", sans-serif'
+    g.fillText('P2', 256, 170)
+    g.fillStyle = 'rgba(200,204,210,0.55)'
+    g.fillRect(150, 192, 212, 5)
+    const t = new THREE.CanvasTexture(c)
+    t.anisotropy = 8
+    t.colorSpace = THREE.SRGBColorSpace
+    return t
+  }, [])
+
+  useEffect(() => () => tex.dispose(), [tex])
+
+  return (
+    <mesh position={[2.02, 0.0018, 1.30]} rotation={[-Math.PI / 2, 0, 0]}>
+      <planeGeometry args={[0.52, 0.26]} />
+      <meshStandardMaterial
+        map={tex}
+        transparent
+        roughness={0.38}
+        metalness={0.0}
+        envMapIntensity={0.5}
+        polygonOffset
+        polygonOffsetFactor={-2}
+      />
+    </mesh>
+  )
+}
+
+/* Dust cover. Hinged at the back edge like the real one, so it rotates up and
+   back rather than sliding or fading -- the hinge is the whole reason the lid
+   reads as a lid.
+
+   Acrylic is faked with a cheap transparent dielectric rather than
+   `transmission`, for the same reason the glass platter is: transmission costs
+   a separate render pass every frame, and this is a flat panel with nothing
+   behind it worth refracting. depthWrite is off so the deck underneath sorts
+   correctly through it instead of being punched out. */
+function DustCover({ open }) {
+  const g = useRef()
+  const W = PLINTH_W + 0.05
+  const D = PLINTH_D + 0.03
+  const H = 0.52
+  const T = 0.022
+
+  useFrame((_, delta) => {
+    if (g.current) damp(g.current.rotation, 'x', open ? -1.02 : 0, 0.32, delta)
+  })
+
+  const acrylic = (
+    <meshPhysicalMaterial
+      color="#cfe2ee"
+      transparent
+      opacity={0.17}
+      roughness={0.05}
+      metalness={0.0}
+      ior={1.49}
+      clearcoat={1.0}
+      clearcoatRoughness={0.04}
+      envMapIntensity={1.15}
+      side={THREE.DoubleSide}
+      depthWrite={false}
+    />
+  )
+
+  return (
+    <group ref={g} position={[PLINTH_OFFSET_X, 0.02, -PLINTH_D / 2 - 0.015]}>
+      {/* top */}
+      <mesh position={[0, H, D / 2]}>
+        <boxGeometry args={[W, T, D]} />
+        {acrylic}
+      </mesh>
+      {/* front skirt */}
+      <mesh position={[0, H / 2, D - T / 2]}>
+        <boxGeometry args={[W, H, T]} />
+        {acrylic}
+      </mesh>
+      {/* side skirts */}
+      <mesh position={[-W / 2 + T / 2, H / 2, D / 2]}>
+        <boxGeometry args={[T, H, D]} />
+        {acrylic}
+      </mesh>
+      <mesh position={[W / 2 - T / 2, H / 2, D / 2]}>
+        <boxGeometry args={[T, H, D]} />
+        {acrylic}
+      </mesh>
+      {/* Hinge blocks. Small, opaque, and the only part of the lid that is not
+          transparent -- without them the panel appears to pivot in mid-air. */}
+      {[-1.25, 1.25].map((x) => (
+        <mesh key={x} position={[x, H * 0.06, 0.055]} castShadow>
+          <boxGeometry args={[0.30, 0.10, 0.12]} />
+          <meshStandardMaterial color="#1a1a1e" roughness={0.5} metalness={0.4} envMapIntensity={0.6} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+function Plinth({ isPlaying, lidOpen }) {
   return (
     <group>
       {/* Plinth body.
@@ -684,18 +801,20 @@ function Plinth({ isPlaying }) {
         <meshPhysicalMaterial color="#121215" roughness={0.34} metalness={0.0} reflectivity={0.45} clearcoat={1.0} clearcoatRoughness={0.26} envMapIntensity={0.55} />
       </RoundedBox>
 
-      {/* Power button, front-left, where the real one is. The left third of the
-          deck is under the platter overhang, so the only place this reads from
-          is the strip of cabinet in front of it -- which is also where Rega put
-          it. Small and unlit: on the real deck it is a plain push button, not
-          an indicator. */}
-      <mesh position={[-1.18, 0.014, 1.46]} castShadow>
-        <cylinderGeometry args={[0.082, 0.086, 0.028, 28]} />
-        <meshStandardMaterial color="#17171a" roughness={0.42} metalness={0.35} envMapIntensity={0.7} />
+      {/* Power switch. Right place, wrong thing: this was a push button on the
+          TOP of the deck. On the real Planar 2 it is a rocker on the UNDERSIDE
+          at this position -- you reach under the front-left corner for it, and
+          from above there is nothing to see. So it hangs below the plinth now,
+          and is mostly a silhouette detail from a low orbit. */}
+      <mesh position={[-1.18, -PLINTH_T - 0.012, 1.46]} castShadow>
+        <boxGeometry args={[0.26, 0.026, 0.17]} />
+        <meshStandardMaterial color="#141416" roughness={0.55} metalness={0.25} envMapIntensity={0.5} />
       </mesh>
-      <mesh position={[-1.18, 0.029, 1.46]}>
-        <cylinderGeometry args={[0.062, 0.062, 0.004, 24]} />
-        <meshStandardMaterial color="#202024" roughness={0.3} metalness={0.4} envMapIntensity={0.9} />
+      {/* The rocker paddle, tilted to one side so it reads as a switch that is
+          in a position rather than a blank plate. */}
+      <mesh position={[-1.18, -PLINTH_T - 0.03, 1.46]} rotation={[0.20, 0, 0]} castShadow>
+        <boxGeometry args={[0.15, 0.018, 0.10]} />
+        <meshStandardMaterial color="#232327" roughness={0.42} metalness={0.3} envMapIntensity={0.7} />
       </mesh>
 
       {/* Feet. Four of them, inset from the corners like the real deck's. They
@@ -777,11 +896,15 @@ function Plinth({ isPlaying }) {
         <meshStandardMaterial color="#191919" metalness={0.7} roughness={0.35} envMapIntensity={0.8} />
       </mesh>
 
+      <P2Badge />
+
       <ArmRest />
       <CueLever />
       <AntiSkate />
 
       <Tonearm isPlaying={isPlaying} />
+
+      <DustCover open={lidOpen} />
     </group>
   )
 }
@@ -985,7 +1108,7 @@ function FitCamera() {
 }
 
 // ─── Scene ────────────────────────────────────────────────────────────────────
-function TurntableScene({ release, isPlaying }) {
+function TurntableScene({ release, isPlaying, lidOpen }) {
   return (
     <>
       {/* Dark studio backdrop. A glossy black object reads through its specular
@@ -1081,7 +1204,7 @@ function TurntableScene({ release, isPlaying }) {
       <ambientLight intensity={0.16} color="#aab8d0" />
 
       <VinylRecord coverUrl={release?.cover_image} />
-      <Plinth isPlaying={isPlaying} />
+      <Plinth isPlaying={isPlaying} lidOpen={lidOpen} />
 
       {/* Soft occlusion beneath the plinth -- grounds the deck in the scene.
           Dropped from -0.161 to sit under the FEET rather than through them.
@@ -1125,6 +1248,7 @@ function TurntableScene({ release, isPlaying }) {
 // ─── Modal ────────────────────────────────────────────────────────────────────
 export default function InteractiveTurntable({ release, onClose }) {
   const [isPlaying, setIsPlaying] = useState(true)
+  const [lidOpen, setLidOpen] = useState(true)
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
@@ -1173,6 +1297,24 @@ export default function InteractiveTurntable({ release, onClose }) {
               {isPlaying ? 'pause' : 'play_arrow'}
             </span>
             {isPlaying ? 'CUE UP' : 'CUE DOWN'}
+          </button>
+          {/* The lid is the one part of the deck you operate rather than look
+              at, so it gets the same treatment as the cue lever: a control in
+              the footer rather than a hotspot on the model nobody would find.
+              Open by default -- a closed lid is the first thing between you and
+              the deck, and the point of the view is the deck. */}
+          <button
+            onClick={() => setLidOpen((o) => !o)}
+            aria-label={lidOpen ? 'Lower the dust cover' : 'Lift the dust cover'}
+            className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-2 rounded-lg border-subtle transition-colors duration-150"
+            style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+          >
+            <span aria-hidden="true" className="material-symbols-rounded text-sm">
+              {lidOpen ? 'fullscreen_exit' : 'fullscreen'}
+            </span>
+            {lidOpen ? 'LID DOWN' : 'LID UP'}
           </button>
           <button
             onClick={onClose}
@@ -1228,7 +1370,7 @@ export default function InteractiveTurntable({ release, onClose }) {
             style={{ width: '100%', height: '100%' }}
           >
             <Suspense fallback={null}>
-              <TurntableScene release={release} isPlaying={isPlaying} />
+              <TurntableScene release={release} isPlaying={isPlaying} lidOpen={lidOpen} />
             </Suspense>
           </Canvas>
         </ErrorBoundary>
