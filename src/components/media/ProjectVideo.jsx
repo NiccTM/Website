@@ -50,8 +50,7 @@ export default function ProjectVideo({
       className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
     >
       <h2
-        className="font-mono-data tracking-widest uppercase mb-2"
-        style={{ color: 'var(--accent)' }}
+        className="legend legend-rule mb-2 legend-module"
       >
         {title}
       </h2>
@@ -60,10 +59,7 @@ export default function ProjectVideo({
       </p>
 
       {error ? (
-        <div
-          className="rounded-xl border-subtle p-6 text-center"
-          style={{ background: 'var(--bg-surface-1)' }}
-        >
+        <div className="panel-recessed p-6 text-center">
           <span aria-hidden="true" className="material-symbols-rounded text-3xl block mb-2" style={{ color: 'var(--text-muted)' }}>
             videocam_off
           </span>
@@ -72,10 +68,12 @@ export default function ProjectVideo({
           </p>
         </div>
       ) : (
-        /* Aspect-ratio wrapper */
+        /* A raised frame around a recessed window. The window is the display
+           colour, so letterbox bars read as the screen's own black. */
+        <div className="panel p-2 sm:p-3">
         <div
-          className={`relative w-full ${RATIOS[ratio]} rounded-xl border-subtle overflow-hidden`}
-          style={{ background: 'var(--bg-surface-1)' }}
+          className={`relative w-full ${RATIOS[ratio]} overflow-hidden`}
+          style={{ background: 'var(--display-bg)', border: '1px solid #000', borderRadius: 'var(--radius-control)' }}
         >
           {/* Single video element -- native controls always available */}
           <video
@@ -103,47 +101,47 @@ export default function ProjectVideo({
             className="absolute inset-0 w-full h-full object-contain"
           />
 
-          {/* Custom play overlay -- only before first play */}
+          {/* Custom play key -- only before first play. It sits on the poster
+              with no tint over it: the key is the only thing added to the
+              picture, and it stays out of the way until asked for. */}
           {!playing && (
             <button
               onClick={toggle}
               aria-label="Play"
-              className="absolute inset-0 flex flex-col items-center justify-center gap-2 w-full h-full transition-opacity duration-200 hover:bg-black/10"
-              style={{ background: 'rgba(3,7,18,0.45)' }}
+              className="absolute inset-0 flex items-center justify-center w-full h-full"
             >
-              <span
-                className="material-symbols-rounded text-6xl transition-transform duration-150 hover:scale-110"
-                style={{ color: 'var(--accent)' }}
-              >
-                play_circle
+              <span className="key key-primary" aria-hidden="true">
+                <span className="material-symbols-rounded text-lg">play_arrow</span>
+                {requested && !ready ? 'Loading…' : 'Play'}
               </span>
-              {requested && !ready && (
-                <span className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
-                  Loading…
-                </span>
-              )}
             </button>
           )}
+        </div>
         </div>
       )}
 
       {/* Metadata strip */}
-      <div className="flex flex-wrap gap-4 mt-3">
+      <ul className="flex flex-wrap gap-2 mt-3 list-none">
         {[
           { icon: 'settings',      label: 'V6 Engine Assembly' },
           { icon: 'search',        label: 'Component Research' },
           { icon: 'photo_camera',  label: 'SolidWorks Visualize' },
         ].map(({ icon, label }) => (
-          <div
+          <li
             key={label}
-            className="flex items-center gap-1.5 font-mono-data"
-            style={{ color: 'var(--text-muted)' }}
+            className="flex items-center gap-1.5 font-mono-data text-xs px-2 py-1"
+            style={{
+              color: 'var(--text-secondary)',
+              background: 'var(--panel-plate)',
+              border: '1px solid var(--seam)',
+              borderRadius: '2px',
+            }}
           >
             <span aria-hidden="true" className="material-symbols-rounded text-sm">{icon}</span>
             {label}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   )
 }

@@ -4,6 +4,8 @@ import ImageLightbox from '../components/ui/ImageLightbox'
 import HardwareTabs  from '../components/layout/HardwareTabs'
 import PageHeader    from '../components/layout/PageHeader'
 import { thumbSrc, displaySrc } from '../utils/thumbs'
+import DocSection from '../components/layout/DocSection'
+import Evidence from '../components/ui/Evidence'
 
 const BENCH_PHOTO = '/ltz1000-bench-3458a.jpg'
 
@@ -21,34 +23,89 @@ const SPECS = [
   { label: 'Verification', value: 'HP 3458A, 8½-digit' },
 ]
 
-/* Section heading in the same accent/mono style the hardware and archive pages
-   use, so this route reads as part of the same site rather than a one-off. */
-function Heading({ children }) {
-  return (
-    <h2
-      className="font-mono-data text-base tracking-widest uppercase mb-3"
-      style={{ color: 'var(--accent)' }}
-    >
-      {children}
-    </h2>
-  )
+/* ── The measurement, as the page itself states it ────────────────────────────
+   One source for the readout and everything derived from it, so the display
+   and the prose cannot disagree. The meter read 9.9999927 V; the deviation
+   from 10 V is -7.3 µV, -0.73 ppm, shown to the same one significant figure
+   the write-up uses. No digit here is more precise than the photograph. */
+const READING_V   = '9.9999927'
+const READING_FMT = '9.999 992 7'   // metrology grouping: threes after the point
+const DELTA       = '≈ −7 µV'
+const DELTA_PPM   = '≈ −0.7 ppm'
+
+/* Swiss document section: a narrow left column carries the section number
+   and title, the prose runs in the wide right column at a reading measure.
+   On a phone the two simply stack. */
+function Section({ n, title, children }) {
+  return <DocSection id={`ref-${n}`} n={n} title={title} split>{children}</DocSection>
 }
 
 function Body({ children }) {
   return (
-    <p className="font-sans mb-4" style={{ color: 'var(--text-secondary)', lineHeight: 1.75 }}>
+    <p className="mb-4 last:mb-0" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
       {children}
     </p>
   )
 }
 
-function Section({ title, children }) {
+/* The instrument hero. A readout window for the one measured value, and
+   beside it the status panel that says exactly what kind of number it is.
+   The status panel is as prominent as the readout on purpose: the interface
+   must not look more certain than the evidence. */
+function ReferenceReadout() {
   return (
-    <section
-      className="mb-10"
-    >
-      <Heading>{title}</Heading>
-      {children}
+    <section aria-labelledby="readout-heading" className="panel p-3 sm:p-4 mb-10">
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <h2 id="readout-heading" className="legend" style={{ color: 'var(--text-muted)' }}>Reference output</h2>
+        <span className="flex items-center gap-3">
+          <Evidence kind="meas" />
+          <span className="legend flex items-center gap-2" style={{ color: 'var(--status-caution)' }}>
+            <span aria-hidden="true" className="lamp lamp-caution" />
+            Development
+          </span>
+        </span>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        {/* Display window */}
+        <div className="display display-crt px-4 py-5 sm:px-6 sm:py-6">
+          <div className="flex items-center justify-between legend mb-4" style={{ color: 'var(--display-dim)' }}>
+            <span>DC volts</span>
+            <span>HP 3458A</span>
+          </div>
+          <p className="readout whitespace-nowrap" style={{ fontSize: 'clamp(1.9rem, 1.2rem + 3.6vw, 3.9rem)' }}>
+            <span aria-hidden="true">{READING_FMT}<span className="unit">V DC</span></span>
+            <span className="sr-only">{READING_V} volts DC, as read by an HP 3458A</span>
+          </p>
+          <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3 mt-6 pt-4" style={{ borderTop: '1px solid rgba(121,201,139,0.18)' }}>
+            <div>
+              <dt className="legend" style={{ color: 'var(--display-dim)' }}>Δ Nominal</dt>
+              <dd className="readout text-lg mt-1">{DELTA}</dd>
+            </div>
+            <div>
+              <dt className="legend" style={{ color: 'var(--display-dim)' }}>Indicative</dt>
+              <dd className="readout text-lg mt-1">{DELTA_PPM}</dd>
+            </div>
+            <div>
+              <dt className="legend" style={{ color: 'var(--display-dim)' }}>State</dt>
+              <dd className="readout text-lg mt-1" style={{ color: 'var(--display-amber)' }}>DEVELOPMENT</dd>
+            </div>
+          </dl>
+        </div>
+
+        {/* Measurement status: what this number is and is not */}
+        <div className="panel-recessed p-4 sm:p-5">
+          <h3 className="legend mb-3" style={{ color: 'var(--text-muted)' }}>Measurement status</h3>
+          <ul className="flex flex-col gap-2.5 text-sm" style={{ color: 'var(--text-primary)' }}>
+            <li className="flex gap-2.5"><span aria-hidden="true" className="lamp lamp-caution mt-1.5" />Development measurement, pre-calibration</li>
+            <li className="flex gap-2.5"><span aria-hidden="true" className="lamp mt-1.5" />Not a calibration result</li>
+            <li className="flex gap-2.5"><span aria-hidden="true" className="lamp mt-1.5" />Not a guaranteed specification</li>
+            <li className="flex gap-2.5"><span aria-hidden="true" className="lamp mt-1.5" />
+              <span>Meter uncertainty alone is about 2.5&nbsp;ppm, larger than the 0.7&nbsp;ppm deviation shown</span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </section>
   )
 }
@@ -56,7 +113,7 @@ function Section({ title, children }) {
 export default function ReferencePage() {
   usePageMeta(
     'Voltage Reference',
-    'An ultra-stable 10 V DC voltage reference built around an ADR1000 ovenized buried-Zener reference, developed at Measurements International Ltd.'
+    'A 10 V DC voltage reference built around an ADR1000 ovenized buried-Zener reference, developed at Measurements International Ltd.'
   )
   const [lightbox, setLightbox] = useState(false)
 
@@ -72,7 +129,7 @@ export default function ReferencePage() {
         title={<>ADR1000 10&nbsp;V Reference</>}
         size="article"
         intro={<>
-          An ultra-stable 10&nbsp;V DC reference built around an ADR1000 ovenized buried-Zener
+          A 10&nbsp;V DC reference built around an ADR1000 ovenized buried-Zener
           reference, scaled to 10&nbsp;V by a zero-drift amplifier and trimmed with fixed
           precision foil resistors instead of a potentiometer.
         </>}
@@ -82,30 +139,26 @@ export default function ReferencePage() {
 
       {/* Ownership notice, stated up front rather than buried in a footer, so a
           reader knows whose work this is before reading any of it. */}
-      <div
-        className="flex items-start gap-2.5 mb-12 px-4 py-3 rounded-lg"
-        style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)' }}
-      >
-        <span aria-hidden="true" className="material-symbols-rounded shrink-0" style={{ color: 'var(--accent)', fontSize: '1.05rem', marginTop: '0.1rem' }}>
-          gavel
-        </span>
-        <p className="font-mono-data text-sm" style={{ color: 'var(--text-muted)', lineHeight: 1.7 }}>
+      <div className="panel-recessed flex flex-col sm:flex-row items-start gap-1 sm:gap-3 mb-8 px-4 py-3">
+        <span className="legend shrink-0 pt-0.5" style={{ color: 'var(--text-muted)' }}>Notice</span>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
           Work carried out at {EMPLOYER} All hardware, designs, test data and
           equipment shown remain the property of {EMPLOYER} See the notice at the
           foot of this page.
         </p>
       </div>
 
+      <ReferenceReadout />
+
       {/* ── Bench photo ── */}
-      <figure
-        className="mb-12"
-      >
+      <figure className="panel p-3 sm:p-4 mb-12">
+        <p className="legend mb-3" style={{ color: 'var(--text-muted)' }}>Bench verification · Photograph</p>
         <button
           type="button"
           aria-label="Open the reference board photograph full size"
-          className="relative overflow-hidden cursor-zoom-in rounded-xl w-full block focus:outline-none focus-visible:ring-2"
+          className="relative overflow-hidden cursor-zoom-in w-full block"
           onClick={() => setLightbox(true)}
-          style={{ border: '1px solid var(--border)', aspectRatio: '3 / 2', '--tw-ring-color': 'var(--accent)' }}
+          style={{ border: '1px solid #000', borderRadius: 'var(--radius-control)', aspectRatio: '3 / 2' }}
         >
           {/* The 4000px display tier, not the 800px thumbnail: this renders
               near-full-column width, so a thumb was being upscaled ~2x and
@@ -123,7 +176,7 @@ export default function ReferencePage() {
             className="w-full h-full object-cover"
           />
         </button>
-        <figcaption className="font-mono-data text-sm mt-3" style={{ color: 'var(--text-muted)' }}>
+        <figcaption className="text-sm mt-3" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
           Bench verification on an HP 3458A. The output reads 9.9999927&nbsp;V DC, about
           7&nbsp;µV or 0.7&nbsp;ppm from nominal, in a pre-calibration development state. Not a
           calibrated result or a specification.
@@ -131,7 +184,7 @@ export default function ReferencePage() {
       </figure>
 
       {/* ── Write-up ── */}
-      <Section title="Why a buried-Zener reference">
+      <Section n="01" title="Why a buried-Zener reference">
         <Body>
           The ADR1000 is not a normal reference chip. It puts a buried Zener, a
           temperature-sensing transistor and a heater on one die. External circuitry holds
@@ -146,7 +199,7 @@ export default function ReferencePage() {
         </Body>
       </Section>
 
-      <Section title="Measured, not assumed">
+      <Section n="02" title="Measured, not assumed">
         <Body>
           The board originally ran an LTZ1000 and was later changed to an ADR1000. The two are
           pin-compatible, but they do not sit at the same voltage, so the swap was not a
@@ -163,12 +216,12 @@ export default function ReferencePage() {
         <Body>
           Two boards were built and characterised this way, assembled about a week apart, with a
           separate diagnosis session afterward. Building a second unit and comparing it against
-          the first is exactly the stability argument this page is making: a design that only
-          exists once cannot show whether its behaviour is repeatable or coincidental.
+          the first matters because a design that only exists once cannot show whether its
+          behaviour is repeatable or coincidental.
         </Body>
       </Section>
 
-      <Section title="No trim potentiometer">
+      <Section n="03" title="No trim potentiometer">
         <Body>
           The usual way to land on exactly 10&nbsp;V is a trimpot. This design avoids one. A
           mechanical wiper is another component that drifts with temperature, vibration and
@@ -183,14 +236,14 @@ export default function ReferencePage() {
           can actually be populated on the board.
         </Body>
         <Body>
-          The trade-off is real and worth stating: changing the reference device means
+          The cost is that changing the reference device means
           recomputing and repopulating resistors rather than turning a screw. That is exactly
           what the LTZ1000-to-ADR1000 change required. For a board whose whole purpose is
           holding still, that is the right side of the trade.
         </Body>
       </Section>
 
-      <Section title="What the numbers mean">
+      <Section n="04" title="What the numbers mean">
         <Body>
           The solver reports a resistor-fit residual far below a ppm. That figure describes how
           closely the resistor arithmetic lands on the target. It is not the accuracy of the
@@ -212,7 +265,7 @@ export default function ReferencePage() {
         </Body>
       </Section>
 
-      <Section title="Grounding">
+      <Section n="05" title="Grounding">
         <Body>
           At this level a ground plane is not automatically a single node. The heater draws a
           relatively large and varying current; if that current shares copper with the
@@ -226,45 +279,24 @@ export default function ReferencePage() {
       </Section>
 
       {/* ── Specs ── */}
-      <div
-        className="mb-12"
-      >
-        <Heading>Specifications</Heading>
-        <div
-          className="rounded-xl overflow-hidden w-full"
-          style={{ border: '1px solid var(--border)', background: 'var(--bg-surface-1)' }}
-        >
-          {SPECS.map(({ label, value }, i) => (
-            <div
-              key={label}
-              className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-4 px-4 py-2.5"
-              style={{ borderBottom: i < SPECS.length - 1 ? '1px solid var(--border)' : 'none' }}
-            >
-              <span className="font-mono-data text-sm shrink-0 sm:w-40" style={{ color: 'var(--text-muted)' }}>
-                {label}
-              </span>
-              <span className="font-mono-data text-sm" style={{ color: 'var(--text-primary)' }}>
-                {value}
-              </span>
+      <Section n="06" title="Specifications">
+        <dl className="spec-grid">
+          {SPECS.map(({ label, value }) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
             </div>
           ))}
-        </div>
-        <p className="font-mono-data text-sm mt-3 w-full" style={{ color: 'var(--text-muted)' }}>
+        </dl>
+        <p className="text-sm mt-3 flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+          <span aria-hidden="true" className="lamp lamp-caution" />
           Indicative of a development configuration. Not a specification or a datasheet.
         </p>
-      </div>
+      </Section>
 
       {/* ── Legal notice ── */}
-      <aside
-        aria-labelledby="legal-heading"
-        className="rounded-xl px-5 py-5"
-        style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)' }}
-      >
-        <h2
-          id="legal-heading"
-          className="font-mono-data text-sm tracking-widest uppercase mb-3"
-          style={{ color: 'var(--text-secondary)' }}
-        >
+      <aside aria-labelledby="legal-heading" className="panel-recessed px-5 py-5 mt-8">
+        <h2 id="legal-heading" className="legend mb-3" style={{ color: 'var(--text-secondary)' }}>
           Attribution &amp; ownership
         </h2>
 
@@ -274,7 +306,7 @@ export default function ReferencePage() {
           'No confidential, proprietary or customer information is disclosed. The component selections and circuit topologies referenced here are drawn from publicly available manufacturer datasheets and application notes.',
           'Measured values shown are from a development configuration. They are not calibrated results, certified specifications, or claims of instrument accuracy, and no traceable uncertainty budget is presented or implied.',
         ].map((text) => (
-          <p key={text.slice(0, 40)} className="font-sans text-sm mb-3 last:mb-0" style={{ color: 'var(--text-muted)', lineHeight: 1.7 }}>
+          <p key={text.slice(0, 40)} className="text-sm mb-3 last:mb-0 max-w-[80ch]" style={{ color: 'var(--text-secondary)', lineHeight: 1.65 }}>
             {text}
           </p>
         ))}

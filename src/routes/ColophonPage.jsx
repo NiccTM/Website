@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { usePageMeta } from '../hooks/usePageMeta'
 import PageHeader from '../components/layout/PageHeader'
+import DocSection from '../components/layout/DocSection'
 
 /* A colophon is the note at the back of a book saying how it was made. It is
    also about the least automatable page a portfolio can have: it only works if
@@ -14,17 +15,30 @@ const STACK = [
   { label: 'Motion',     value: 'CSS animations, no motion library' },
   { label: '3D',         value: 'three.js via react-three-fiber' },
   { label: 'Diagrams',   value: 'React Flow' },
-  { label: 'Type',       value: 'Exo 2, Playfair Display, Material Symbols — self-hosted' },
+  { label: 'Type',       value: 'System sans for body and headings, Exo 2 for uppercase legends, a system monospace for readouts, Material Symbols for icons. Exo 2 and Material Symbols are self-hosted' },
   { label: 'Hosting',    value: 'Vercel, with serverless functions in /api' },
   { label: 'Images',     value: 'PowerShell + System.Drawing, no npm dependency' },
   { label: 'Tests',      value: 'node:test, on the serverless code and the build output' },
 ]
 
+/* The inventory, read from package.json. Versions are the major.minor the
+   dependency ranges pin; update this when the ranges move. */
+const SYSTEM = [
+  { label: 'Runtime',  value: 'React 18.3' },
+  { label: 'Router',   value: 'react-router-dom 7' },
+  { label: 'Build',    value: 'Vite 8' },
+  { label: 'Style',    value: 'Tailwind CSS 3.4' },
+  { label: 'State',    value: 'Zustand 5' },
+  { label: '3D',       value: 'three.js 0.166 / React Three Fiber 8' },
+  { label: 'Diagrams', value: 'React Flow 11' },
+  { label: 'Host',     value: 'Vercel' },
+]
+
+/* Side-column module legend: small, tracked, ruled. */
 function Heading({ children }) {
   return (
     <h2
-      className="font-mono-data text-base tracking-widest uppercase mb-3"
-      style={{ color: 'var(--accent)' }}
+      className="legend legend-rule mb-3 legend-module"
     >
       {children}
     </h2>
@@ -39,13 +53,10 @@ function Body({ children }) {
   )
 }
 
-function Section({ title, children }) {
-  return (
-    <section className="mb-10">
-      <Heading>{title}</Heading>
-      {children}
-    </section>
-  )
+/* Swiss document section: a hairline rule, the section number in the legend
+   face, then a bold grotesk title and the prose beneath it. */
+function Section({ n, title, children }) {
+  return <DocSection id={`colophon-${n}`} n={n} title={title} className="mb-10">{children}</DocSection>
 }
 
 export default function ColophonPage() {
@@ -63,26 +74,40 @@ export default function ColophonPage() {
         intro="Every page here argues that a design should be judged by what it measures, so it would be strange not to say what this one is made of. This is the stack, the decisions behind it, and the parts I got wrong."
       />
 
+      {/* ── System inventory ── */}
+      <section aria-labelledby="system-heading" className="grid gap-x-10 gap-y-3 md:grid-cols-[13rem_minmax(0,1fr)] pb-10">
+        <h2 id="system-heading" className="font-display text-xl font-bold leading-snug" style={{ color: 'var(--text-primary)' }}>
+          System
+        </h2>
+        <dl className="spec-grid max-w-[68ch]">
+          {SYSTEM.map(({ label, value }) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
       <div className="grid gap-10 lg:gap-14 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] items-start">
         <div>
-          <Section title="Written by hand">
+          <Section n="01" title="Written by hand">
             <Body>
               There is no site builder or template under this. Every component is a file in
               a repository, and the layout is Tailwind utilities with a set of CSS custom
-              properties on top for colour, glass and depth. The two themes are the same
-              variables with different values, which is why the light mode is a genuinely
+              properties on top for colour, surface and depth. The two themes are the same
+              variables with different values, which is why the light mode is a
               different palette rather than an inverted dark one.
             </Body>
             <Body>
-              I use language models heavily while building, and I would rather say that
-              than pretend otherwise. What I have found is that the value is not in
-              generating code quickly. It is in having a specification, a test, and enough
-              understanding to tell whether what came back is right. Several of the fixes
+              I use language models heavily while building. What I have found is that the
+              useful part is having a specification, a test, and enough understanding to tell
+              whether what came back is right. Several of the fixes
               listed below were things that looked finished and were not.
             </Body>
           </Section>
 
-          <Section title="Images">
+          <Section n="02" title="Images">
             <Body>
               The photographs come off the camera at up to 16320 by 12240 pixels. None of
               that reaches your browser. A script walks the originals folder, which is
@@ -100,7 +125,7 @@ export default function ColophonPage() {
             </Body>
           </Section>
 
-          <Section title="Things that were wrong">
+          <Section n="03" title="Things that were wrong">
             <Body>
               A global rule capped every paragraph on the site at 72 characters. It was
               meant for prose and it applied to captions, spec values and button labels
@@ -126,7 +151,7 @@ export default function ColophonPage() {
             </Body>
           </Section>
 
-          <Section title="Weight">
+          <Section n="04" title="Weight">
             <Body>
               The icon font was the single largest asset on the site at 5.2 MB, because the
               full variable font ships unless you ask for a subset. Requesting only the
@@ -148,7 +173,7 @@ export default function ColophonPage() {
             </Body>
           </Section>
 
-          <Section title="Still on the list">
+          <Section n="05" title="Still on the list">
             <Body>
               The repository is far larger than it should be, because full-resolution
               originals are tracked in git history. Rate limiting is written and deployed
@@ -159,21 +184,14 @@ export default function ColophonPage() {
 
         {/* ── Side column ── */}
         <div className="flex flex-col gap-8">
-          <div
-            className="aero-gloss rounded-xl overflow-hidden w-full"
-            style={{ border: '1px solid var(--border)', background: 'var(--bg-surface-1)' }}
-          >
-            {STACK.map(({ label, value }, i) => (
-              <div
-                key={label}
-                className="flex flex-col gap-0.5 px-4 py-3"
-                style={{ borderBottom: i < STACK.length - 1 ? '1px solid var(--border)' : 'none' }}
-              >
-                <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{label}</span>
-                <span className="font-mono-data text-sm" style={{ color: 'var(--text-primary)' }}>{value}</span>
+          <dl className="spec-grid text-sm">
+            {STACK.map(({ label, value }) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
               </div>
             ))}
-          </div>
+          </dl>
 
           <div>
             <Heading>Source</Heading>
@@ -184,8 +202,8 @@ export default function ColophonPage() {
               href="https://github.com/NiccTM/Website"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono-data text-sm"
-              style={{ color: 'var(--accent)' }}
+              className="inline-block py-1 font-mono-data text-sm underline underline-offset-4"
+              style={{ color: 'var(--text-primary)' }}
             >
               github.com/NiccTM/Website
             </a>

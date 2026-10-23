@@ -45,6 +45,11 @@
     },
     {
       "source": "/hobbies",
+      "has": [{ "type": "query", "key": "tab", "value": "photography" }],
+      "destination": "/hobbies-photography.html"
+    },
+    {
+      "source": "/hobbies",
       "destination": "/hobbies.html"
     },
     {

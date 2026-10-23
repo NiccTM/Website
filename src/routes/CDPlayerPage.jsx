@@ -4,7 +4,9 @@ import { usePageMeta } from '../hooks/usePageMeta'
 import ImageLightbox from '../components/ui/ImageLightbox'
 import PageHeader    from '../components/layout/PageHeader'
 import Picture       from '../components/ui/Picture'
-import { thumbSrc } from '../utils/thumbs'
+import { thumbSrc, photoDims } from '../utils/thumbs'
+import DocSection from '../components/layout/DocSection'
+import Evidence from '../components/ui/Evidence'
 
 /* Photo set, in the order the work happened. Alt text describes what is in the
    frame rather than naming the step, because a screen reader gets the step from
@@ -37,7 +39,7 @@ const PHOTOS = {
   clamp: {
     src: '/20260907_195718.jpg',
     label: 'Disc clamp removed',
-    caption: 'The felt-faced disc-clamping surface. Nothing was lubricated here -- grease on a clamp face ends up on the disc',
+    caption: 'The felt-faced disc-clamping surface. Nothing was lubricated here: grease on a clamp face ends up on the disc',
     alt: 'Removed plastic disc clamp assembly from a Sony CD mechanism showing its felt disc-contact surface',
   },
   bench: {
@@ -58,7 +60,7 @@ const PHOTOS = {
    because the useful part is the reasoning next to each suspect, not the list. */
 const SUSPECTS = [
   ['Dirty objective lens',      'Plausible on a twenty-year-old mechanism, and cheap to rule out'],
-  ['Dried sled lubricant',      'Would raise tracking resistance, and worst when cold -- which matched the symptom'],
+  ['Dried sled lubricant',      'Would raise tracking resistance, and worst when cold, which matched the symptom'],
   ['Sled gear or rail debris',  'Could produce intermittent radial tracking errors at no particular place on a disc'],
   ['Spindle motor instability', 'Would cost CLV lock anywhere on a disc rather than at one radius'],
   ['Ageing servo or supply',    'Temperature-dependent behaviour also fits marginal electrolytics'],
@@ -71,61 +73,90 @@ const SPECS = [
   { label: 'Pickup (manual)',  value: 'KSS213BA/F-NP' },
   { label: 'Pickup (fitted)',  value: 'Marked KSS-213B on the flex PCB' },
   { label: 'Sony service P/N', value: '8-848-379-31' },
-  { label: 'Fault',            value: 'Intermittent mistracking on known-good discs' },
-  { label: 'Key symptom',      value: 'Elapsed time jumping forward and backward' },
-  { label: 'Temperature',      value: 'Worse cold, better once warm' },
+  { label: 'Fault',            value: 'Intermittent mistracking on known-good discs', evidence: 'obs' },
+  { label: 'Key symptom',      value: 'Elapsed time jumping forward and backward', evidence: 'obs' },
+  { label: 'Temperature',      value: 'Worse cold, better once warm', evidence: 'obs' },
   { label: 'Service',          value: 'Lens, sled rail, gear train, loading mechanism' },
   { label: 'Lubricant',        value: 'Permatex 31832 synthetic PTFE grease' },
-  { label: 'Key diagnostic',   value: 'Small pickup-trimmer adjustment, observed not measured' },
+  { label: 'Key diagnostic',   value: 'Small pickup-trimmer adjustment, observed not measured', evidence: 'obs' },
   { label: 'Status',           value: 'Usable; occasional skip on marginal tracks' },
   { label: 'Planned repair',   value: 'Genuine or verified original KSS-213B' },
 ]
 
-function Heading({ children }) {
-  return (
-    <h2
-      className="font-mono-data text-base tracking-widest uppercase mb-3"
-      style={{ color: 'var(--accent)' }}
-    >
-      {children}
-    </h2>
-  )
-}
-
 function Body({ children }) {
   return (
-    <p className="font-sans mb-4" style={{ color: 'var(--text-secondary)', lineHeight: 1.75 }}>
+    <p className="font-sans mb-4 last:mb-0" style={{ color: 'var(--text-secondary)', lineHeight: 1.75 }}>
       {children}
     </p>
   )
 }
 
-function Section({ title, children }) {
+/* Swiss document section: a narrow left column carries the section number
+   and title, the prose runs in the wide right column at a reading measure.
+   On a phone the two simply stack. */
+function Section({ n, title, children }) {
+  return <DocSection id={`cd-${n}`} n={n} title={title} split>{children}</DocSection>
+}
+
+/* The service plate. Its rows are READ from SPECS rather than copied, so the
+   hero and the Specifications table cannot disagree: change the Status row
+   once and both update. The model comes from the page title. */
+const spec = (label) => SPECS.find((s) => s.label === label).value
+
+function ServicePlate() {
+  const rows = [
+    { label: 'Fault',  lamp: 'lamp-fault',   value: spec('Fault') },
+    { label: 'Pickup', lamp: '',             value: spec('Pickup (fitted)') },
+    { label: 'State',  lamp: 'lamp-caution', value: spec('Status') },
+  ]
   return (
-    <section className="mb-10">
-      <Heading>{title}</Heading>
-      {children}
+    <section aria-labelledby="service-heading" className="panel p-3 sm:p-4 mb-10">
+      <h2 id="service-heading" className="legend mb-3" style={{ color: 'var(--text-muted)' }}>Transport service</h2>
+      <div className="display display-crt px-4 py-5 sm:px-6 sm:py-6">
+        <p className="font-display text-xl sm:text-2xl font-bold" style={{ color: 'var(--display-phosphor)' }}>
+          Musical Fidelity A3.2 CD
+        </p>
+        <dl className="grid gap-x-6 gap-y-4 mt-5 pt-4 sm:grid-cols-3" style={{ borderTop: '1px solid rgb(var(--display-phosphor-rgb) / 0.18)' }}>
+          {rows.map(({ label, lamp, value }) => (
+            <div key={label}>
+              <dt className="legend flex items-center gap-2" style={{ color: 'var(--display-dim)' }}>
+                <span aria-hidden="true" className={`lamp ${lamp}`} />
+                {label}
+              </dt>
+              <dd className="font-mono-data text-sm mt-1" style={{ color: 'var(--display-text)' }}>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
     </section>
   )
 }
 
 /* One photo with its caption, opening the shared lightbox on click. Portrait and
    landscape frames are mixed here, so the well takes the image's own aspect
-   rather than forcing a ratio and cropping the part the caption talks about. */
+   rather than forcing a ratio and cropping the part the caption talks about.
+
+   width/height are the photograph's intrinsic size. Without them a lazy image
+   has no height until it loads, so the button around it was a 10px strip (under
+   the WCAG 2.5.8 target size) and the page shifted as each photo arrived. CSS
+   still sets the rendered size (w-full h-auto); the attributes only fix the
+   aspect ratio the browser reserves. */
 function Figure({ photo, eager = false }) {
   const [open, setOpen] = useState(false)
+  const dims = photoDims(photo.src)
   return (
     <figure className="mb-8">
       <button
         type="button"
         aria-label={`Open the photograph full size: ${photo.label}`}
-        className="relative overflow-hidden cursor-zoom-in rounded-xl w-full block focus:outline-none focus-visible:ring-2"
+        className="panel-recessed relative overflow-hidden cursor-zoom-in w-full block p-1"
         onClick={() => setOpen(true)}
-        style={{ border: '1px solid var(--border)', '--tw-ring-color': 'var(--accent)' }}
       >
         <Picture
           src={thumbSrc(photo.src)}
           alt={photo.alt}
+          width={dims?.w}
+          height={dims?.h}
           loading={eager ? 'eager' : 'lazy'}
           decoding="async"
           className="w-full h-auto block"
@@ -166,10 +197,9 @@ export default function CDPlayerPage() {
 
       {/* Stated before any of the detail, because the rest of this page is an
           inference chain and the reader should know up front where it lands. */}
-      <div
-        className="mb-12 px-4 py-4 rounded-lg"
-        style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)' }}
-      >
+      <ServicePlate />
+
+      <div className="panel-recessed mb-12 px-4 py-4">
         <p className="font-sans text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.75 }}>
           My A3.2 developed intermittent tracking errors that made CDs skip and the elapsed time
           jump around. I opened it, found the original Sony KSS-213B pickup, serviced the sled rail
@@ -183,7 +213,7 @@ export default function CDPlayerPage() {
 
       <Figure photo={PHOTOS.chassis} eager />
 
-      <Section title="The fault">
+      <Section n="01" title="The fault">
         <Body>
           The player skipped. Not one damaged disc and not one spot on one disc: several
           known-good pressed CDs would lose tracking at various points, and the elapsed-time
@@ -198,44 +228,41 @@ export default function CDPlayerPage() {
         <Body>
           It was worse from cold and usually improved once the player had been running a while.
           It also happened on headphones, with the speakers and subwoofer out of the picture
-          entirely, which rules out acoustic feedback into the mechanism -- the first thing worth
+          entirely, which rules out acoustic feedback into the mechanism. That is the first thing worth
           eliminating on a turntable-adjacent complaint, and the easiest to assume wrongly.
         </Body>
       </Section>
 
-      <Section title="What it could have been">
+      <Section n="02" title="What it could have been">
         <Body>
           Everything else about the player worked: it recognised discs, the digital section and
           analogue output behaved, and nothing was intermittent except tracking. That left a
           short list.
         </Body>
-        <div
-          className="rounded-xl overflow-hidden w-full mb-4"
-          style={{ border: '1px solid var(--border)', background: 'var(--bg-surface-1)' }}
-        >
+        <dl className="panel w-full mb-4">
           {SUSPECTS.map(([suspect, note], i) => (
             <div
               key={suspect}
               className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-4 px-4 py-2.5"
-              style={{ borderBottom: i < SUSPECTS.length - 1 ? '1px solid var(--border)' : 'none' }}
+              style={{ borderBottom: i < SUSPECTS.length - 1 ? '1px solid var(--seam)' : 'none' }}
             >
-              <span className="font-mono-data text-sm shrink-0 sm:w-56" style={{ color: 'var(--text-primary)' }}>
+              <dt className="font-mono-data text-sm shrink-0 sm:w-56" style={{ color: 'var(--text-primary)' }}>
                 {suspect}
-              </span>
-              <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
+              </dt>
+              <dd className="font-mono-data text-sm" style={{ color: 'var(--text-secondary)' }}>
                 {note}
-              </span>
+              </dd>
             </div>
           ))}
-        </div>
+        </dl>
         <Body>
-          The cold-start behaviour pointed at the mechanical suspects, so those got dealt with
+          The cold-start behaviour pointed at the mechanical suspects, so I dealt with those
           first. They were also the ones I could address without touching anything that affects
           the life of the laser.
         </Body>
       </Section>
 
-      <Section title="Inside the A3.2">
+      <Section n="03" title="Inside the A3.2">
         <Body>
           The chassis screws are tamper-resistant Torx. Underneath, the layout is simple enough to
           read at a glance: the Sony loading mechanism takes the left half, a toroidal transformer
@@ -247,29 +274,28 @@ export default function CDPlayerPage() {
         <Body>
           Musical Fidelity&rsquo;s documentation lists the transport as a Sony CDM14BL-5BD25 with a
           KSS213BA/F-NP pickup. The pickup actually fitted to my unit is marked KSS-213B on its flex
-          PCB, which puts it in the same Sony family but is not the string the manual uses. Worth
-          keeping the distinction rather than flattening it, because it is the difference between
-          what the manual says and what is physically in the machine, and the part I eventually buy
-          has to match the latter.
+          PCB, which puts it in the same Sony family but is not the string the manual uses. The
+          distinction matters because the part I eventually buy has to match what is physically in
+          the machine, not what the manual says.
         </Body>
         <Figure photo={PHOTOS.pickup} />
       </Section>
 
-      <Section title="Cleaning and mechanical service">
+      <Section n="04" title="Cleaning and mechanical service">
         <Body>
           The mechanism came apart progressively: tray and loading components first, then far
           enough to reach the optical assembly and the sled.
         </Body>
         <Figure photo={PHOTOS.access} />
         <Body>
-          The objective lens was cleaned with isopropyl alcohol on a clean swab and almost no
+          I cleaned the objective lens with isopropyl alcohol on a clean swab and almost no
           pressure. The lens is suspended on the focus actuator, so it moves under any force worth
-          calling force -- the cleaning has to be gentler than feels productive.
+          calling force. The cleaning has to be gentler than feels productive.
         </Body>
         <Body>
           The sled rides a polished steel guide shaft driven through a plastic gear train and a
-          toothed rack. Old lubricant and contamination came off the accessible surfaces, and the
-          gears and rack were checked for hardened grease and damaged teeth before anything went
+          toothed rack. I cleaned old lubricant and contamination off the accessible surfaces and
+          checked the gears and rack for hardened grease and damaged teeth before anything went
           back on.
         </Body>
         <Figure photo={PHOTOS.clamp} />
@@ -282,7 +308,7 @@ export default function CDPlayerPage() {
         <Figure photo={PHOTOS.bench} />
       </Section>
 
-      <Section title="Why the mechanical service was not the answer">
+      <Section n="05" title="Why the mechanical service was not the answer">
         <Body>
           Reassembled and tested, the transport was better and still skipped. That is a useful
           result even though it is a negative one: cleaning and relubrication address tracking
@@ -290,12 +316,12 @@ export default function CDPlayerPage() {
           probably not losing the fight against friction.
         </Body>
         <Body>
-          What was left was the optical side -- how much signal the pickup returns for the servo to
+          What was left was the optical side: how much signal the pickup returns for the servo to
           work with.
         </Body>
       </Section>
 
-      <Section title="The trimmer test, and what it actually proved">
+      <Section n="06" title="The trimmer test, and what it actually proved">
         <Figure photo={PHOTOS.exposed} />
         <Body>
           A very small adjustment of the pickup&rsquo;s trimmer potentiometer produced a
@@ -305,8 +331,7 @@ export default function CDPlayerPage() {
         <Body>
           That response is consistent with an optical system running short of read margin: nudging
           the operating point gave the focus and tracking servos enough signal to hold lock. It
-          does not prove that on its own, and this is the point where the page has to be honest
-          about its own evidence. The correct way to evaluate a KSS-213 pickup is to measure the RF
+          does not prove that on its own. The correct way to evaluate a KSS-213 pickup is to measure the RF
           eye pattern and the laser operating current against the service specification. I did not
           do that. What I have is a behavioural response to a control, which is an observation, not
           a measurement, and it can only make the pickup the leading suspect rather than the
@@ -315,12 +340,12 @@ export default function CDPlayerPage() {
         <Body>
           I also stopped once it worked instead of continuing until it worked perfectly. Turning
           that trimmer further increases laser diode current, which buys present-day reliability
-          against remaining pickup life. That is a trade worth making deliberately and in small
-          amounts, and it is not routine maintenance -- it is a diagnostic with a cost.
+          against remaining pickup life. That trade should be made deliberately and in small
+          amounts, and it is a diagnostic with a cost rather than routine maintenance.
         </Body>
       </Section>
 
-      <Section title="Where it stands">
+      <Section n="07" title="Where it stands">
         <Body>
           Before the service, several discs would repeatedly lose tracking and the counter would
           jump around while the player hunted for its place. After cleaning, relubrication and the
@@ -334,7 +359,7 @@ export default function CDPlayerPage() {
         </Body>
       </Section>
 
-      <Section title="Finding a real replacement">
+      <Section n="08" title="Finding a real replacement">
         <Body>
           I am looking for a genuine Sony KSS-213B or KSS213BA-family pickup, ideally new old stock
           or a verified low-use original Sony mechanism. Sony documentation lists the KSS-213B as
@@ -349,7 +374,7 @@ export default function CDPlayerPage() {
         </Body>
         <Body>
           The order of preference is genuine NOS Sony first, then a verified low-use original Sony
-          pickup or mechanism, then a reputable aftermarket KSS-213B -- rather than starting with
+          pickup or mechanism, then a reputable aftermarket KSS-213B, rather than starting with
           an unknown generic clone, which is how a working player becomes a project. I am also not
           treating a KSS-213C or D as an automatic upgrade. The player was engineered around the
           B-family pickup and Sony treats the variants as distinct service parts.
@@ -357,34 +382,22 @@ export default function CDPlayerPage() {
       </Section>
 
       {/* ── Specs ── */}
-      <div className="mb-12">
-        <Heading>Specifications</Heading>
-        <div
-          className="rounded-xl overflow-hidden w-full"
-          style={{ border: '1px solid var(--border)', background: 'var(--bg-surface-1)' }}
-        >
-          {SPECS.map(({ label, value }, i) => (
-            <div
-              key={label}
-              className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-4 px-4 py-2.5"
-              style={{ borderBottom: i < SPECS.length - 1 ? '1px solid var(--border)' : 'none' }}
-            >
-              <span className="font-mono-data text-sm shrink-0 sm:w-40" style={{ color: 'var(--text-muted)' }}>
-                {label}
-              </span>
-              <span className="font-mono-data text-sm" style={{ color: 'var(--text-primary)' }}>
-                {value}
-              </span>
+      <Section n="09" title="Specifications">
+        <dl className="spec-grid">
+          {SPECS.map(({ label, value, evidence }) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}{evidence && <Evidence kind={evidence} className="ml-2" />}</dd>
             </div>
           ))}
-        </div>
+        </dl>
         <p className="font-mono-data text-sm mt-3 w-full" style={{ color: 'var(--text-muted)' }}>
           Part numbers are from the Musical Fidelity and Sony service documentation. Everything
           about the fault is observed behaviour: nothing here was measured on an oscilloscope.
         </p>
-      </div>
+      </Section>
 
-      <p className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
+      <p className="font-mono-data text-sm pt-8" style={{ color: 'var(--text-muted)', borderTop: '1px solid var(--seam)' }}>
         The rest of the hi-fi, and the other things that get taken apart, are on{' '}
         <Link to="/hobbies" style={{ color: 'var(--accent)' }}>Hobbies</Link>.
       </p>

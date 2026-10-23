@@ -18,19 +18,12 @@ function AudioNode({ data }) {
   return (
     <div
       ref={ref}
-      className="px-3 py-2 rounded-xl cursor-pointer select-none min-w-[130px]"
-      style={{
-        background: 'var(--flow-node-bg)',
-        backdropFilter: 'blur(16px) saturate(120%)',
-        WebkitBackdropFilter: 'blur(16px) saturate(120%)',
-        border: '1px solid var(--flow-node-border)',
-        boxShadow: 'inset 0 0 10px var(--flow-node-inset), 0 4px 12px rgba(0,0,0,0.07)',
-        color: 'var(--text-primary)',
-      }}
+      className="panel px-3 py-2 cursor-pointer select-none min-w-[130px]"
+      style={{ color: 'var(--text-primary)' }}
       onClick={() => data.onSelect(data)}
     >
       <Handle type="target" position={Position.Left} />
-      <div className="font-sans font-semibold leading-snug text-sm" style={{ color: 'var(--accent)' }}>
+      <div className="font-sans font-semibold leading-snug text-sm" style={{ color: 'var(--text-primary)' }}>
         {data.label}
       </div>
       <div className="font-sans mt-0.5" style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
@@ -55,7 +48,6 @@ function buildNodes(chain, onSelect) {
 const edgeStyle = {
   stroke: 'var(--flow-edge)',
   strokeWidth: 2,
-  filter: 'drop-shadow(0 0 4px var(--flow-edge-glow)) drop-shadow(0 0 2px var(--flow-edge))',
 }
 
 function buildEdges(chain) {
@@ -73,24 +65,14 @@ function FlowSection({ id, title, chain }) {
 
   return (
     <div className="mb-10">
-      <h3
-        className="font-mono-data text-sm tracking-widest uppercase mb-3"
-        style={{ color: 'var(--text-secondary)' }}
-      >
+      <h3 className="legend legend-rule mb-3" style={{ color: 'var(--text-muted)' }}>
         {title}
       </h3>
 
       {/* Desktop */}
       <div
-        className="relative hidden sm:block rounded-xl overflow-hidden"
-        style={{
-          height: 'clamp(180px, 20vh, 320px)',
-          background: 'var(--flow-bg)',
-          backdropFilter: 'blur(16px) saturate(120%)',
-          WebkitBackdropFilter: 'blur(16px) saturate(120%)',
-          border: '1px solid var(--flow-bg-border)',
-          boxShadow: 'inset 0 0 12px var(--flow-node-inset), 0 4px 16px rgba(0,0,0,0.06)',
-        }}
+        className="panel-recessed relative hidden sm:block overflow-hidden"
+        style={{ height: 'clamp(180px, 20vh, 320px)' }}
       >
         {/* id must be unique per instance, and there are several: one
             FlowSection per room here, plus SystemArchitecture on the same page.
@@ -122,27 +104,17 @@ function FlowSection({ id, title, chain }) {
         >
           {/* Background builds its SVG <pattern> id as `pattern-${rfId}${id}`,
               which is literally "pattern-1undefined" when neither is set. */}
-          <Background id="dots" color="#1f2937" gap={24} />
-          <Controls
-            showInteractive={false}
-            style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
-          />
+          {/* Graphite dots: readable on both the beige and the night chassis. */}
+          <Background id="dots" color="#8F8778" gap={24} />
+          <Controls showInteractive={false} />
         </ReactFlow>
       </div>
 
       {/* Spec panel -- below the diagram, slides in when a node is selected */}
 
         {selected && (
-          <div
-            className="hidden sm:flex items-start gap-6 mt-2 px-4 py-3 rounded-xl"
-            style={{
-              background: 'var(--flow-panel-bg)',
-              backdropFilter: 'blur(20px) saturate(120%)',
-              WebkitBackdropFilter: 'blur(20px) saturate(120%)',
-              border: '1px solid var(--flow-panel-border)',
-            }}
-          >
-            <span className="font-sans text-sm font-medium shrink-0 pt-0.5" style={{ color: 'var(--accent)', minWidth: '160px' }}>
+          <div className="panel hidden sm:flex items-start gap-6 mt-2 px-4 py-3">
+            <span className="font-sans text-sm font-semibold shrink-0 pt-0.5" style={{ color: 'var(--text-primary)', minWidth: '160px' }}>
               {selected.label}
             </span>
             <div className="flex flex-wrap gap-x-8 gap-y-1 flex-1">
@@ -153,18 +125,18 @@ function FlowSection({ id, title, chain }) {
                 </div>
               ))}
             </div>
-            <button onClick={() => setSelected(null)} style={{ color: 'var(--text-muted)' }} aria-label="Close">
+            <button onClick={() => setSelected(null)} className="key key-sm" aria-label="Close">
               <span aria-hidden="true" className="material-symbols-rounded text-sm">close</span>
             </button>
           </div>
         )}
 
       {/* Mobile fallback */}
-      <div className="sm:hidden rounded-xl border-subtle p-4" style={{ background: 'var(--bg-surface-1)' }}>
+      <div className="sm:hidden panel-recessed p-4">
         <div className="flex flex-col gap-1">
           {chain.nodes.map((n) => (
             <div key={n.id} className="font-mono-data flex gap-2 text-sm">
-              <span style={{ color: 'var(--accent)' }}>{n.label}</span>
+              <span style={{ color: 'var(--text-primary)' }}>{n.label}</span>
               <span style={{ color: 'var(--text-muted)' }}>· {n.type}</span>
             </div>
           ))}
@@ -178,8 +150,7 @@ export default function AudioSignalChain({ sectionId }) {
   return (
     <section id={sectionId} className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
       <h2
-        className="font-mono-data tracking-widest uppercase mb-1"
-        style={{ color: 'var(--accent)' }}
+        className="legend mb-1 legend-module"
       >
         Audio Signal Chains
       </h2>

@@ -3,13 +3,13 @@ import { useEffect } from 'react'
 import NavBar from './NavBar'
 import MeshBackground from './MeshBackground'
 import { useAppStore } from '../../store/useAppStore'
-import { contact } from '../../data/config'
+import { contact, profile } from '../../data/config'
 
 export default function AppShell() {
   const darkMode  = useAppStore((s) => s.darkMode)
 
   // Keep data-theme attribute in sync with store
-  // CSS defaults are dark (:root), light overrides via [data-theme="light"]
+  // CSS defaults to LAB (:root); NIGHT is [data-theme="dark"]
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light')
   }, [darkMode])
@@ -45,54 +45,30 @@ export default function AppShell() {
         <Outlet />
       </main>
 
-      {/* ── Global footer ── */}
+      {/* ── Global footer: the instrument's base plate ──
+          The colophon lives here rather than in the top nav: it is the
+          traditional place for one, and it keeps the main nav at four items.
+          The email is the site's one contact method, so it is on every route.
+          py-1 keeps every target >= 24px tall (WCAG 2.2 AA 2.5.8). */}
       <footer
-        className="relative z-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-5 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
-        style={{ borderTop: '1px solid var(--border)' }}
+        className="relative z-10 w-full mt-8"
+        style={{ borderTop: '1px solid var(--chassis-border)', background: 'var(--panel-bg)', boxShadow: 'inset 0 1px 0 var(--bevel-hi)' }}
       >
-        <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
-          © {new Date().getFullYear()} Nic Piraino
-        </p>
-
-        {/* The colophon lives here rather than in the top nav: it is the
-            traditional place for one, and it keeps the main nav at four items.
-            py-1 holds the 24px target height the rest of the footer uses. */}
-        <Link
-          to="/colophon"
-          className="py-1 font-mono-data text-xs transition-colors duration-200"
-          style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-        >
-          Colophon
-        </Link>
-
-        <a
-          href="/resume.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="py-1 font-mono-data text-xs transition-colors duration-200"
-          style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-        >
-          Résumé
-        </a>
-        {/* The site had no contact method at all: contact.email existed in
-            config.js and was imported by HomePage but never rendered. A
-            portfolio needs one reachable address, so it lives in the footer
-            where it is present on every route. py-1 keeps the target >= 24px
-            tall (WCAG 2.2 AA 2.5.8), matching the social row. */}
-        <a
-          href={`mailto:${contact.email}`}
-          className="flex items-center gap-1.5 py-1 font-mono-data text-xs transition-colors duration-200"
-          style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-        >
-          <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1rem' }}>mail</span>
-          {contact.email}
-        </a>
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-5 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
+          <p className="legend" style={{ color: 'var(--text-muted)' }}>
+            © {new Date().getFullYear()} Nic Piraino · {profile.location}
+          </p>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
+            <Link to="/colophon" className="plate-link py-1 font-mono-data text-sm">Colophon</Link>
+            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="plate-link py-1 font-mono-data text-sm">
+              Résumé
+            </a>
+            <a href={`mailto:${contact.email}`} className="plate-link flex items-center gap-1.5 py-1 font-mono-data text-sm">
+              <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1rem' }}>mail</span>
+              {contact.email}
+            </a>
+          </div>
+        </div>
       </footer>
     </div>
   )

@@ -264,31 +264,25 @@ function Lightbox({ idx, onClose, onGo }) {
     setScale(1)
   }
 
-  const btnBase = {
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    background: 'rgba(12,8,20,0.80)',
-    border: '1px solid rgba(180,140,255,0.18)',
-    color: 'var(--text-primary)',
-    borderRadius: 'var(--radius)',
-    cursor: 'pointer',
-  }
-
   return createPortal(
     <div
       ref={wrapperRef}
       className="fixed inset-0 z-[9999] flex flex-col"
-      style={{ background: 'rgba(5,4,10,0.97)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+      style={{ background: 'var(--display-bg)' }}
     >
+      {/* The viewer is dark in both themes, like a monitor bezel, so its text
+          uses the display tokens and its controls are ordinary keys. The
+          photograph itself is shown untouched. */}
       {/* ── Top bar ── */}
       <div
         className="flex items-center justify-between px-5 py-2.5 shrink-0"
-        style={{ borderBottom: '1px solid rgba(180,140,255,0.1)', background: 'rgba(12,8,20,0.96)' }}
+        style={{ borderBottom: '1px solid rgb(var(--display-phosphor-rgb) / 0.18)', background: 'var(--display-raised)' }}
       >
         <div className="min-w-0">
-          <p className="font-mono-data text-xs truncate" style={{ color: 'var(--text-primary)' }}>
+          <p className="font-mono-data text-xs truncate" style={{ color: 'var(--display-text)' }}>
             {photo.caption}
           </p>
-          <p className="font-mono-data mt-0.5" style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+          <p className="font-mono-data mt-0.5" style={{ color: 'var(--display-dim)', fontSize: '0.875rem' }}>
             {idx + 1} / {PHOTOS.length}
           </p>
         </div>
@@ -298,7 +292,7 @@ function Lightbox({ idx, onClose, onGo }) {
           <button
             onClick={toggleFullscreen}
             aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-            style={{ ...btnBase, width: 32, height: 32 }}
+            className="key key-sm"
           >
             <span aria-hidden="true" className="material-symbols-rounded text-base">
               {isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
@@ -308,7 +302,7 @@ function Lightbox({ idx, onClose, onGo }) {
           <button
             onClick={onClose}
             aria-label="Close"
-            style={{ ...btnBase, width: 32, height: 32 }}
+            className="key key-sm"
           >
             <span aria-hidden="true" className="material-symbols-rounded text-base">close</span>
           </button>
@@ -350,12 +344,12 @@ function Lightbox({ idx, onClose, onGo }) {
         {hiResPending && (
           <div
             className="absolute top-4 left-4 flex items-center gap-2 font-mono-data text-xs px-2.5 py-1.5 pointer-events-none"
-            style={{ background: 'rgba(12,8,20,0.88)', border: '1px solid rgba(180,140,255,0.18)', borderRadius: 'var(--radius)', color: 'var(--text-muted)' }}
+            style={{ background: 'var(--display-raised)', border: '1px solid #000', borderRadius: 'var(--radius-control)', color: 'var(--display-dim)' }}
           >
             <span
               aria-hidden="true"
               className="material-symbols-rounded animate-spin"
-              style={{ fontSize: '0.95rem', color: 'var(--accent)' }}
+              style={{ fontSize: '0.95rem', color: 'var(--display-phosphor)' }}
             >
               progress_activity
             </span>
@@ -368,8 +362,8 @@ function Lightbox({ idx, onClose, onGo }) {
           <button
             onClick={() => onGo(idx - 1)}
             aria-label="Previous photo"
-            className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full transition-opacity duration-150 hover:opacity-100 opacity-60"
-            style={{ ...btnBase, width: 40, height: 40, borderRadius: '50%' }}
+            className="key absolute left-4 top-1/2 -translate-y-1/2"
+            style={{ width: 40, height: 40, padding: 0 }}
           >
             <span aria-hidden="true" className="material-symbols-rounded">chevron_left</span>
           </button>
@@ -380,74 +374,68 @@ function Lightbox({ idx, onClose, onGo }) {
           <button
             onClick={() => onGo(idx + 1)}
             aria-label="Next photo"
-            className="absolute right-16 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full transition-opacity duration-150 hover:opacity-100 opacity-60"
-            style={{ ...btnBase, width: 40, height: 40, borderRadius: '50%' }}
+            className="key absolute right-16 top-1/2 -translate-y-1/2"
+            style={{ width: 40, height: 40, padding: 0 }}
           >
             <span aria-hidden="true" className="material-symbols-rounded">chevron_right</span>
           </button>
         )}
 
-        {/* ── Zoom controls (vertical pill, bottom-right) ── */}
+        {/* ── Zoom controls (vertical key group, bottom-right) ── */}
         <div
-          className="absolute right-4 bottom-14 flex flex-col overflow-hidden"
-          style={{ background: 'rgba(12,8,20,0.88)', border: '1px solid rgba(180,140,255,0.18)', borderRadius: 'var(--radius)' }}
+          className="absolute right-4 bottom-4 flex flex-col gap-1 p-1"
+          style={{ background: 'var(--display-raised)', border: '1px solid #000', borderRadius: 'var(--radius-control)' }}
         >
           <button
             onClick={() => zoomBy(0.5)}
             disabled={scale >= MAX_SCALE}
-            className="flex items-center justify-center w-9 h-9"
-            style={{ color: scale >= MAX_SCALE ? '#443355' : 'var(--text-primary)', cursor: scale >= MAX_SCALE ? 'default' : 'pointer' }}
+            className="key"
+            style={{ width: 36, height: 36, padding: 0, opacity: scale >= MAX_SCALE ? 0.45 : 1 }}
             aria-label="Zoom in"
           >
             <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>add</span>
           </button>
 
-          <div style={{ height: '1px', background: 'rgba(180,140,255,0.15)' }} />
-
           <button
             onClick={() => zoomBy(-0.5)}
             disabled={scale <= MIN_SCALE}
-            className="flex items-center justify-center w-9 h-9"
-            style={{ color: scale <= MIN_SCALE ? '#443355' : 'var(--text-primary)', cursor: scale <= MIN_SCALE ? 'default' : 'pointer' }}
+            className="key"
+            style={{ width: 36, height: 36, padding: 0, opacity: scale <= MIN_SCALE ? 0.45 : 1 }}
             aria-label="Zoom out"
           >
             <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>remove</span>
           </button>
 
-          <div style={{ height: '1px', background: 'rgba(180,140,255,0.15)' }} />
-
           <button
             onClick={reset}
-            className="flex items-center justify-center w-9 h-9"
-            style={{ color: scale > 1 ? 'var(--accent)' : '#443355', cursor: scale > 1 ? 'pointer' : 'default' }}
+            className="key"
+            style={{ width: 36, height: 36, padding: 0 }}
             aria-label="Fit to screen"
           >
             <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>fit_screen</span>
           </button>
         </div>
 
-        {/* Scale badge */}
+        {/* Scale readout */}
         {scale > 1 && (
-          <div
-            className="absolute left-4 bottom-14 font-mono-data text-xs px-2 py-1"
-            style={{ background: 'rgba(12,8,20,0.88)', border: '1px solid rgba(180,140,255,0.18)', borderRadius: 'var(--radius)', color: 'var(--accent)' }}
-          >
+          <div className="display readout absolute left-4 bottom-4 text-xs px-2 py-1">
             {Math.round(scale * 100)}%
           </div>
         )}
+      </div>
 
-        {/* Caption bar */}
-        <div
-          className="absolute bottom-0 inset-x-0 flex items-end justify-between px-5 py-4 pointer-events-none"
-          style={{ background: 'linear-gradient(to top, rgba(5,4,10,0.88) 0%, transparent 100%)' }}
-        >
-          <p className="font-sans text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
-            {photo.caption}
-          </p>
-          <p className="font-mono-data text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
-            © Nic Piraino
-          </p>
-        </div>
+      {/* Caption bar: a solid strip below the picture. It used to sit over the
+          bottom of the photograph on a gradient. */}
+      <div
+        className="flex items-end justify-between px-5 py-3 shrink-0"
+        style={{ borderTop: '1px solid rgb(var(--display-phosphor-rgb) / 0.18)', background: 'var(--display-raised)' }}
+      >
+        <p className="font-sans text-sm" style={{ color: 'var(--display-text)' }}>
+          {photo.caption}
+        </p>
+        <p className="font-mono-data text-xs" style={{ color: 'var(--display-dim)' }}>
+          © Nic Piraino
+        </p>
       </div>
     </div>,
     document.body
@@ -474,16 +462,19 @@ function PhotoTile({ photo, flatIdx, onOpen }) {
     <button
       type="button"
       aria-label={`Open ${photo.title || photo.alt || 'photograph'} full size`}
-      className="img-hover-scale group relative overflow-hidden rounded-lg cursor-pointer text-left w-full focus:outline-none focus-visible:ring-2"
+      className="img-hover-scale group relative overflow-hidden rounded cursor-pointer text-left w-full"
       onClick={() => onOpen(flatIdx)}
       onContextMenu={(e) => e.preventDefault()}
-      style={{ aspectRatio: '4 / 3', '--tw-ring-color': 'var(--accent)' }}
+      style={{ aspectRatio: '4 / 3', border: '1px solid var(--seam)' }}
     >
       <Picture
         src={thumbSrc(photo.src)}
         alt={photo.caption}
-        className="w-full h-full object-cover block rounded-lg"
-        style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.4s ease', pointerEvents: 'none', filter: 'contrast(90%) brightness(110%) saturate(110%)' }}
+        className="w-full h-full object-cover block"
+        /* No colour filter. These are photographs of real objects and places,
+           shown as captured; the instrument styling lives in the frame around
+           them, never in a grade applied on top. */
+        style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.4s ease', pointerEvents: 'none' }}
         onLoad={() => setLoaded(true)}
         loading="lazy"
         decoding="async"
@@ -491,18 +482,18 @@ function PhotoTile({ photo, flatIdx, onOpen }) {
       />
       {!loaded && (
         <div
-          className="absolute inset-0 rounded-lg animate-pulse"
-          style={{ background: 'var(--bg-surface-2)' }}
+          className="absolute inset-0 animate-pulse"
+          style={{ background: 'var(--panel-recessed)' }}
         />
       )}
       <div
-        className="hover-caption absolute inset-x-0 bottom-0 px-3 py-2.5 rounded-b-lg"
-        style={{ background: 'linear-gradient(to top, rgba(8,8,8,0.85) 0%, rgba(8,8,8,0.45) 60%, transparent 100%)' }}
+        className="hover-caption absolute inset-x-0 bottom-0 px-3 py-2"
+        style={{ background: 'var(--display-bg)', borderTop: '1px solid #000' }}
       >
         {/* 0.75rem (12px) floor: the old 0.68rem bottomed out at 10.9px on
             phones, where these captions are permanently visible (the
             hover-reveal is overridden under `@media (hover: none)`). */}
-        <p className="font-sans text-xs" style={{ color: 'rgba(255,255,255,0.82)', fontSize: 'clamp(0.75rem, 0.68rem + 0.2vw, 0.8rem)' }}>
+        <p className="font-sans text-xs" style={{ color: 'var(--display-text)', fontSize: 'clamp(0.75rem, 0.68rem + 0.2vw, 0.8rem)' }}>
           {photo.caption}
         </p>
       </div>
@@ -522,8 +513,7 @@ export default function PhotoGallery() {
       {/* Header */}
       <h2 className="sr-only">Photography</h2>
       <p
-        className="font-mono-data tracking-[0.18em] uppercase mb-4"
-        style={{ color: 'var(--accent)', fontSize: '0.875rem' }}
+        className="legend mb-4 legend-module"
       >
         Kelowna · Ottawa · Brockville
       </p>
@@ -536,10 +526,10 @@ export default function PhotoGallery() {
 
       {/* Copyright notice */}
       <div
-        className="inline-flex items-center gap-2 font-mono-data text-xs px-4 py-2 rounded-lg mb-14"
-        style={{ background: 'var(--bg-surface-1)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+        className="panel-recessed inline-flex items-center gap-2 font-mono-data text-xs px-4 py-2 mb-14"
+        style={{ color: 'var(--text-secondary)' }}
       >
-        <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>copyright</span>
+        <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--text-muted)' }}>copyright</span>
         All photographs by Nic Piraino. No use, reproduction, or distribution without explicit written permission.
       </div>
 

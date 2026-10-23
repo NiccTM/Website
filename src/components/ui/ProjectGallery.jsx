@@ -3,6 +3,7 @@ import { projects } from '../../data/config'
 import ProjectModal from './ProjectModal'
 import { thumbSrc } from '../../utils/thumbs'
 import Picture from './Picture'
+import ProjectAward from './ProjectAward'
 
 // ─── Card-level hero images keyed by project id ───────────────────────────────
 const PROJECT_IMAGES = {
@@ -22,55 +23,95 @@ const PROJECT_IMAGES = {
   rigpilot:           '/project-heroes/rigpilot.png',
 }
 
-/* Placeholder for a project with no photograph. This used to be
-   linear-gradient(135deg, #1a1a2e, #16213e, #0f3460) -- a blue-to-purple
-   diagonal, which is the single most documented visual signature of a
-   generated site, and it was rendering on the LiquidAudio card. A flat
-   surface tint from the site's own palette says "no photo yet" without
-   pretending to be artwork. */
-const CATEGORY_PLACEHOLDER = {
-  competitive: 'var(--bg-surface-2)',
-  practice:    'var(--bg-surface-1)',
-  software:    'var(--bg-surface-3)',
-}
-
-const AWARD_STYLES = {
-  gold:     { bg: 'rgba(10,8,0,0.72)',  border: 'rgba(255,215,0,0.6)',   text: '#FFD700', icon: 'emoji_events' },
-  bronze:   { bg: 'rgba(10,6,0,0.72)', border: 'rgba(205,127,50,0.6)',  text: '#CD7F32', icon: 'military_tech' },
-  /* These badges sit on a near-black plate in both themes, so they use
-     --accent-on-dark rather than --accent: the light-mode accent is a mid
-     blue and would land at roughly 3:1 here. */
-  cyan:     { bg: 'rgba(0,8,14,0.72)', border: 'rgb(var(--accent-on-dark-rgb) / 0.55)', text: 'var(--accent-on-dark)', icon: 'stars' },
-  practice: { bg: 'rgba(0,8,14,0.72)', border: 'rgb(var(--accent-on-dark-rgb) / 0.45)', text: 'var(--accent-on-dark)', icon: 'gavel' },
-}
-
 const SECTIONS = [
-  { key: 'competitive', label: 'Competitive Design',    icon: 'emoji_events' },
-  { key: 'practice',    label: 'Professional Practice', icon: 'gavel' },
-  { key: 'software',    label: 'Software & Personal',   icon: 'code' },
+  { key: 'competitive', label: 'Competitive Design' },
+  { key: 'practice',    label: 'Professional Practice' },
+  { key: 'software',    label: 'Software & Personal' },
 ]
 
-function ProjectAward({ award }) {
-  const style = AWARD_STYLES[award.tier] ?? AWARD_STYLES.cyan
+/* Entry numbers run across the whole register in section order, so No. 07 in
+   the index is No. 07 on its card. They are ordinals, not part numbers. */
+const pad2 = (n) => String(n).padStart(2, '0')
+const ORDERED = SECTIONS.flatMap((s) => projects.filter((p) => p.category === s.key))
+const entryNo = (id) => pad2(ORDERED.findIndex((p) => p.id === id) + 1)
+/* A 'practice' award is the course tag on a coursework entry, not a placing,
+   so it does not belong in a Result column. */
+const results = (p) => (p.awards ?? []).filter((a) => a.tier !== 'practice')
+
+/* The register: every entry on one table before any of the cards -- an index
+   of the work, read like a parts list, rather than a wall of equal tiles.
+   Each row jumps to its card. Values are the cards' own (course code, award
+   text); an entry without one shows a dash, not a filler.
+
+   Below md the table is folded behind a key. At 390px it ran about 1,040px,
+   so the first photograph started two screens down. The fold is CSS over one
+   piece of state that starts closed on both server and client: no hydration
+   mismatch, and nothing collapses after load. From md up the key is gone and
+   the table always shows, so the desktop register is exactly as it was. It
+   stays open after a jump, because closing it would shrink the page above the
+   card you just jumped to and move it out from under you. */
+function ProjectIndex() {
+  const [open, setOpen] = useState(false)
   return (
-    <span
-      className="inline-flex items-center gap-1 font-mono-data px-2 py-0.5 rounded text-xs border"
-      style={{
-        background: style.bg,
-        borderColor: style.border,
-        color: style.text,
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-      }}
-    >
-      <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '0.875rem' }}>{style.icon}</span>
-      {award.label}
-    </span>
+    <div className="grid gap-4 lg:gap-14 lg:grid-cols-[minmax(0,3fr)_minmax(0,9fr)] mb-14">
+      <div className="lg:pt-3">
+        <h2 className="legend legend-rule lg:block" style={{ color: 'var(--text-muted)' }}>
+          Index · {ORDERED.length} entries
+        </h2>
+        <p className="hidden lg:block text-sm mt-3 max-w-[28ch]" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          Every entry in catalogue order. Each title jumps to its card below.
+        </p>
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls="project-index"
+          onClick={() => setOpen((v) => !v)}
+          className="key md:hidden mt-3"
+        >
+          <span aria-hidden="true" className={`lamp${open ? ' lamp-ok' : ''}`} />
+          Jump to a project
+          {/* add/remove, not expand_more/less: those are not in the icon
+              subset and would render as their ligature text. */}
+          <span aria-hidden="true" className="material-symbols-rounded text-base">{open ? 'remove' : 'add'}</span>
+        </button>
+      </div>
+      <div id="project-index" className={`panel-recessed overflow-x-auto ${open ? 'block' : 'hidden'} md:block`}>
+        <table className="register w-full text-sm">
+          <caption className="sr-only">Index of projects, by section</caption>
+          <thead>
+            <tr>
+              <th scope="col" className="w-12">No.</th>
+              <th scope="col">Entry</th>
+              <th scope="col" className="hidden sm:table-cell">Ref.</th>
+              <th scope="col" className="hidden md:table-cell">Result</th>
+            </tr>
+          </thead>
+          {SECTIONS.map((section) => (
+            <tbody key={section.key}>
+              <tr>
+                <th scope="rowgroup" colSpan={4} className="register-group">{section.label}</th>
+              </tr>
+              {ORDERED.filter((p) => p.category === section.key).map((p) => (
+                <tr key={p.id}>
+                  <td className="font-readout" style={{ color: 'var(--text-muted)' }}>{entryNo(p.id)}</td>
+                  <td><a href={`#project-${p.id}`} className="register-link">{p.title}</a></td>
+                  <td className="hidden sm:table-cell whitespace-nowrap">{p.course ?? '—'}</td>
+                  <td className="hidden md:table-cell">
+                    {results(p).length ? results(p).map((a) => <span key={a.id} className="block">{a.label}</span>) : '—'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          ))}
+        </table>
+      </div>
+    </div>
   )
 }
 
-function ProjectCard({ project, featured = false, priority = false, onExpand }) {
+function ProjectCard({ project, categoryLabel, featured = false, onExpand }) {
   const hasDetails   = !!project.expandedDetails
+  const facts        = project.expandedDetails?.technicalSpecs?.slice(0, 3) ?? []
   const heroImage    = PROJECT_IMAGES[project.id]
   const fallbackImage = !heroImage && project.expandedDetails?.subSystems
     ?.flatMap((s) => s.images)?.[0]?.src
@@ -95,140 +136,76 @@ function ProjectCard({ project, featured = false, priority = false, onExpand }) 
          next card on its own -- one card per row, which is the thing the wide
          feature is supposed to avoid. At sm every card is a single cell and the
          section tiles two across. */
-      className={`glass-card card-hover-scale group relative flex flex-col overflow-hidden rounded-xl${
+      id={`project-${project.id}`}
+      className={`panel card-hover-scale group relative flex flex-col overflow-hidden text-left scroll-mt-20${
         featured ? ' lg:col-span-2' : ''
       }`}
-      style={{
-        cursor: hasDetails ? 'pointer' : 'default',
-      }}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--border-accent)' }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+      style={{ cursor: hasDetails ? 'pointer' : 'default' }}
     >
-      {/* ── Image area ── */}
-      {/* Aspect follows the span, so it has to switch at the same breakpoint.
-          A 34% banner crop on a card that is only one column wide is a letterbox
-          sliver; it earns that shape only once the card is actually two columns. */}
-      <div className={`relative overflow-hidden pt-[62%]${featured ? ' lg:pt-[34%]' : ''}`}>
-        {displayImage ? (
-          // card-img class receives CSS transform via .card-hover-scale:hover .card-img
-          /* The first card on the page is above the fold and is the route's
-             LCP element, so it must not be lazy. It was: Lighthouse measured
-             Load Delay 6,245ms against a Load Time of 117ms -- the file itself
-             took a tenth of a second, and the browser spent six seconds not
-             asking for it. loading="lazy" defers the request until layout has
-             proved the element is in view, which for the topmost image on the
-             page is pure delay, and fetchpriority then puts it ahead of the
-             dozen cards below that genuinely are lazy. */
-          <Picture
-            src={thumbSrc(displayImage)}
-            alt={project.title}
-            loading={priority ? 'eager' : 'lazy'}
-            fetchpriority={priority ? 'high' : undefined}
-            decoding="async"
-            className="card-img absolute inset-0 w-full h-full object-cover"
-          />
-        ) : (
-          <div
-            className="absolute inset-0"
-            style={{ background: CATEGORY_PLACEHOLDER[project.category] ?? CATEGORY_PLACEHOLDER.practice }}
-          >
-            <div className="absolute inset-0 flex items-center justify-center opacity-10">
-              {/* currentColor via --text-primary, not white: this is a faint
-                  watermark on a THEME surface, and white at 10% opacity over a
-                  pale panel is nothing at all -- measured 1.06:1 in light mode.
-                  The token inverts with the theme, so the mark stays equally
-                  faint in both instead of vanishing in one. */}
-              <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '5rem', color: 'var(--text-primary)' }}>
-                {project.icon ?? (project.category === 'competitive' ? 'emoji_events' : project.category === 'software' ? 'code' : 'gavel')}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Specs overlay -- CSS-driven slide-up on hover, always visible on touch */}
-        <div
-          className="hover-overlay absolute inset-x-0 bottom-0"
-          style={{
-            background: 'rgba(10,10,10,0.75)',
-            backdropFilter: 'blur(14px)',
-            WebkitBackdropFilter: 'blur(14px)',
-            padding: '0.875rem',
-          }}
-        >
-          {project.expandedDetails?.technicalSpecs?.slice(0, 3).map((s) => (
-            <div key={s.label} className="flex gap-2 mb-1">
-              <span className="font-mono-data shrink-0" style={{ color: 'var(--accent-on-dark)', minWidth: '72px', fontSize: '0.875rem' }}>
-                {s.label}
-              </span>
-              <span className="font-mono-data" style={{ color: 'rgba(255,255,255,0.88)', fontSize: '0.875rem' }}>
-                {s.value}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Award badge */}
+      {/* ── Header strip: the catalogue code, and the award if there is one ── */}
+      <div
+        className="flex items-center justify-between gap-3 px-3 py-2 min-h-[2.5rem]"
+        style={{ borderBottom: '1px solid var(--seam)' }}
+      >
+        <span className="legend whitespace-nowrap flex items-baseline gap-2" style={{ color: 'var(--text-muted)' }}>
+          <span className="font-readout">{entryNo(project.id)}</span>
+          {project.course ?? categoryLabel}
+        </span>
         {project.awards?.length > 0 && (
-          <div className="absolute top-3 left-3 flex flex-wrap gap-1">
+          <span className="flex flex-wrap justify-end gap-1">
             {project.awards.slice(0, 1).map((award) => (
               <ProjectAward key={award.id} award={award} />
             ))}
-          </div>
-        )}
-
-        {/* Expand icon -- always visible on touch, hover-shown on desktop */}
-        {hasDetails && (
-          /* The circle belongs to the WRAPPER, not to the icon span.
-             One span used to be both, carrying the ligature and a 32px round
-             background with `flex items-center justify-center`. Neither
-             centring class did anything: .material-symbols-rounded declares
-             display: inline-block, which wins over the flex utility, so the
-             span was never a flex container. With line-height: 1 the glyph then
-             sat on a 15.2px line box at the top of a 32px box -- measured 8.48px
-             above centre, which is what made the arrow look jammed into the top
-             of the disc.
-             Those declarations are not incidental: they box the icon at 1em so
-             the ligature TEXT cannot reflow the page before the font arrives.
-             Fighting them is the bug. Every other icon button here already puts
-             the chrome on a `grid place-items-center` wrapper and leaves the
-             span as a plain icon, which centres an inline-block correctly. */
-          <div
-            className="absolute top-3 right-3 grid place-items-center w-8 h-8 rounded-full"
-            style={{
-              background: 'rgba(10,10,10,0.65)',
-              border: '1px solid rgb(var(--accent-rgb) / 0.35)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-            }}
-          >
-            {/* aria-hidden, like every other icon on the site. Without it a
-                screen reader announces the ligature source text -- the card
-                would read "... open_in_full". The card itself is the control
-                and carries the accessible name. */}
-            <span
-              aria-hidden="true"
-              className="material-symbols-rounded text-base"
-              style={{ color: 'var(--accent-on-dark)' }}
-            >
-              open_in_full
-            </span>
-          </div>
+          </span>
         )}
       </div>
 
+      {/* ── Image window ── */}
+      {/* A recessed well with a rim around the photograph. Nothing sits on
+          the photograph itself: no tint, no overlay, no badge. Aspect follows
+          the span, so it has to switch at the same breakpoint. A 34% banner
+          crop on a card that is only one column wide is a letterbox sliver; it
+          earns that shape only once the card is actually two columns.
+
+          An entry with no photograph has no well at all. It used to get an
+          empty plate with a faded trophy or code glyph: a media slot waiting
+          for content, which is the template showing through. Without it the
+          entry is a text record, so the catalogue carries unequal weights. */}
+      {displayImage && (
+        <div className="panel-recessed p-1 m-3 mb-0">
+          <div className={`relative overflow-hidden pt-[62%]${featured ? ' lg:pt-[34%]' : ''}`}>
+            {/* card-img receives the CSS transform from .card-hover-scale:hover.
+               Every card image is lazy. The first card used to be eager with
+               fetchpriority=high because it was the route's LCP element; the
+               register now sits above the cards, so no card is above the fold
+               and an eager image would only compete with the page's own text. */}
+            <Picture
+              src={thumbSrc(displayImage)}
+              alt={project.title}
+              loading="lazy"
+              decoding="async"
+              className="card-img absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      )}
+
       {/* ── Info area ── */}
-      <div className="flex flex-col gap-2 p-4">
-        {project.course && (
-          <p className="font-mono-data" style={{ color: 'var(--text-muted)' }}>
-            {project.course}
-          </p>
-        )}
-        <h3 className="font-display font-bold leading-snug fluid-xl" style={{ color: 'var(--text-primary)', fontSize: 'clamp(0.95rem, 0.85rem + 0.4vw, 1.2rem)' }}>
+      <div className="flex flex-col gap-2 p-4 flex-1">
+        <h3
+          className="font-display font-bold leading-snug"
+          style={{
+            color: 'var(--text-primary)',
+            fontSize: featured
+              ? 'clamp(1.1rem, 0.95rem + 0.8vw, 1.6rem)'
+              : 'clamp(0.95rem, 0.85rem + 0.4vw, 1.2rem)',
+          }}
+        >
           {project.title}
         </h3>
         {/* No line-clamp. Every description used to be cut off mid-word with an
             ellipsis -- "automated waste...", "software repair - SSD..." -- and a
-            truncated blurb sitting above a row of keyword pills is the single
+            truncated blurb sitting above a row of keyword tags is the single
             most recognisable generated-portfolio pattern there is. The blurbs
             are now written short enough to finish on their own, and the full
             write-up lives in expandedDetails, which the modal shows. Cards in a
@@ -236,36 +213,61 @@ function ProjectCard({ project, featured = false, priority = false, onExpand }) 
         <p className="font-sans leading-relaxed" style={{ color: 'var(--text-secondary)', fontSize: 'clamp(0.78rem, 0.72rem + 0.25vw, 0.9rem)' }}>
           {project.description}
         </p>
-        <div className="flex flex-wrap gap-1.5 mt-1">
+        {/* The first three technical facts from the project's own spec table,
+            printed on the card -- not hidden in a hover overlay, and not only in
+            the modal (which is not prerendered, so a crawler would never see
+            them). Spans throughout: the whole card is a <button>. */}
+        {facts.length > 0 && (
+          <span className="spec-grid text-xs mt-1">
+            {facts.map(({ label, value }) => (
+              <span key={label}>
+                <span className="spec-label">{label}</span>
+                <span className="spec-value">{value}</span>
+              </span>
+            ))}
+          </span>
+        )}
+        <span className="flex flex-wrap gap-1.5 mt-1">
           {project.tags.slice(0, 4).map((tag) => (
             <span
               key={tag}
-              className="font-mono-data px-2 rounded"
-              style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)', paddingTop: '3px', paddingBottom: '3px' }}
+              className="font-mono-data text-xs px-2 py-0.5"
+              style={{
+                color: 'var(--text-secondary)',
+                background: 'var(--panel-plate)',
+                border: '1px solid var(--seam)',
+                borderRadius: '2px',
+              }}
             >
               {tag}
             </span>
           ))}
-        </div>
+        </span>
       </div>
+
+      {/* ── Action ── The whole card is the button; this key is its visible
+          label, so it is hidden from the accessibility tree (the card already
+          carries the accessible name). */}
+      {hasDetails && (
+        <div className="px-4 pb-4">
+          <span className="key key-sm" aria-hidden="true">
+            Open details
+            <span className="material-symbols-rounded text-base">open_in_full</span>
+          </span>
+        </div>
+      )}
     </button>
   )
 }
 
-function SectionHeading({ label, icon, index }) {
+function SectionHeading({ label, index }) {
   return (
-    <div
-      className="flex items-center gap-3 mb-6"
+    <h2
+      className="legend legend-rule mb-5 legend-module"
     >
-      <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{icon}</span>
-      <h2
-        className="font-display font-bold"
-        style={{ color: 'var(--text-primary)', fontSize: 'clamp(1.35rem, 1.1rem + 0.8vw, 2rem)' }}
-      >
-        {label}
-      </h2>
-      <div className="flex-1 h-px ml-2" style={{ background: 'var(--border)' }} />
-    </div>
+      <span aria-hidden="true" className="font-readout">{String(index + 1).padStart(2, '0')}</span>
+      {label}
+    </h2>
   )
 }
 
@@ -278,13 +280,15 @@ export default function ProjectGallery() {
        a second <h1>Projects</h1>, which duplicated the page title and put two
        h1s on the route. The page owns the heading; this owns the grid. */
     <section className="relative z-10 px-5 pt-0 pb-12 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
+      <ProjectIndex />
+
       <div className="flex flex-col gap-14">
         {SECTIONS.map((section, si) => {
           const sectionProjects = projects.filter((p) => p.category === section.key)
           if (!sectionProjects.length) return null
           return (
             <div key={section.key}>
-              <SectionHeading label={section.label} icon={section.icon} index={si} />
+              <SectionHeading label={section.label} index={si} />
               {/* Every section is three columns from lg up, so cards always sit
                   several to a row. Dropping a section to two columns to make it
                   tile -- which is what this did before -- meant its feature ran
@@ -310,12 +314,8 @@ export default function ProjectGallery() {
                   <ProjectCard
                     key={project.id}
                     project={project}
+                    categoryLabel={section.label}
                     featured={i === 0 && (sectionProjects.length + 1) % 3 === 0}
-                    /* Only the very first card of the first section: that is
-                       the one image guaranteed to be above the fold on every
-                       viewport, and marking more than one as high priority
-                       just re-creates the contention it is meant to avoid. */
-                    priority={si === 0 && i === 0}
                     onExpand={() => setActiveProject(project)}
                   />
                 ))}

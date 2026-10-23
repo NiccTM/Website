@@ -3,6 +3,7 @@ import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc, avifThumbSrc } from '../../utils/thumbs'
 import Picture from '../ui/Picture'
+import Evidence from '../ui/Evidence'
 
 // ─── Challenge / Solution card data ───────────────────────────────────────────
 const CHALLENGES = [
@@ -38,73 +39,54 @@ const CHALLENGES = [
   },
 ]
 
+// ─── Machine data plate ───────────────────────────────────────────────────────
+// Values unchanged from the old footer; Rₚₕ keeps its "calculated" mark.
+const MOTOR_SPECS = [
+  { label: 'Topology', value: '9S / 8P Inrunner' },
+  { label: 'Winding',  value: '~200 T/pole · 24 AWG' },
+  { label: 'Rₚₕ',      value: '2.02 Ω', evidence: 'calc' },
+  { label: 'Control',  value: 'Arduino + Hobbywing 30A' },
+]
+
 // ─── Card ─────────────────────────────────────────────────────────────────────
 function ChallengeCard({ item, index }) {
   return (
-    <div
-      className="flex flex-col gap-4 p-5"
-      style={{
-        background: 'rgba(255,255,255,0.04)',
-        border: '1px solid rgb(var(--accent-rgb) / 0.12)',
-        borderRadius: 'var(--radius)',
-      }}
-    >
-      {/* Header */}
-      <div className="flex items-start gap-3">
-        <span
-          className="material-symbols-rounded text-xl shrink-0 mt-0.5"
-          style={{ color: 'var(--accent)' }}
-        >
-          {item.icon}
-        </span>
-        <div className="min-w-0">
-          <h4
-            className="font-sans text-sm font-semibold leading-snug"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            {item.title}
-          </h4>
-          <span
-            className="font-mono-data text-sm mt-0.5 inline-block"
-            style={{ color: 'var(--accent)' }}
-          >
-            {item.metric}
-          </span>
+    /* A service card: the problem as found, the change made, and the one
+       number that moved. Red is used here because each of these was a real
+       failure of the first build -- it is not decoration. */
+    <article className="panel flex flex-col">
+      <header className="flex items-baseline justify-between gap-3 px-4 pt-3 pb-2" style={{ borderBottom: '1px solid var(--seam)' }}>
+        <h3 className="font-display text-base font-bold leading-snug" style={{ color: 'var(--text-primary)' }}>
+          {item.title}
+        </h3>
+        <span aria-hidden="true" className="legend font-readout" style={{ color: 'var(--text-muted)' }}>{String(index + 1).padStart(2, '0')}</span>
+      </header>
+
+      <div className="display px-3 py-2 mx-4 mt-3">
+        <p className="readout text-sm" style={{ letterSpacing: 0 }}>{item.metric}</p>
+      </div>
+
+      <div className="flex flex-col gap-3 p-4 flex-1">
+        <div>
+          <p className="legend flex items-center gap-2 mb-1" style={{ color: 'var(--status-fault)' }}>
+            <span aria-hidden="true" className="lamp lamp-fault" />
+            Challenge
+          </p>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            {item.challenge}
+          </p>
+        </div>
+        <div>
+          <p className="legend flex items-center gap-2 mb-1" style={{ color: 'var(--status-ok)' }}>
+            <span aria-hidden="true" className="lamp lamp-ok" />
+            Solution
+          </p>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            {item.solution}
+          </p>
         </div>
       </div>
-
-      {/* Challenge */}
-      <div
-        className="rounded px-3 py-2.5"
-        style={{ background: 'rgba(255,59,48,0.06)', border: '1px solid rgba(255,59,48,0.20)' }}
-      >
-        <p
-          className="font-mono-data text-sm mb-1 tracking-wider uppercase"
-          style={{ color: 'var(--danger)' }}
-        >
-          Challenge
-        </p>
-        <p className="font-sans text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-          {item.challenge}
-        </p>
-      </div>
-
-      {/* Solution */}
-      <div
-        className="rounded px-3 py-2.5"
-        style={{ background: 'rgb(var(--accent-rgb) / 0.06)', border: '1px solid rgb(var(--accent-rgb) / 0.20)' }}
-      >
-        <p
-          className="font-mono-data text-sm mb-1 tracking-wider uppercase"
-          style={{ color: 'var(--accent)' }}
-        >
-          Solution
-        </p>
-        <p className="font-sans text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-          {item.solution}
-        </p>
-      </div>
-    </div>
+    </article>
   )
 }
 
@@ -145,8 +127,7 @@ function DigitalTwinPanel({ src, label, caption, icon, poster }) {
   return (
     <>
       <div
-        className={`flex flex-col overflow-hidden group${video ? '' : ' cursor-zoom-in'}`}
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgb(var(--accent-rgb) / 0.12)', borderRadius: 'var(--radius)' }}
+        className={`panel flex flex-col overflow-hidden group${video ? '' : ' cursor-zoom-in'}`}
         /* Video panels do not open the lightbox -- it renders an <img>, and the
            clip is already playing at the size it is worth seeing. */
         onClick={() => src && !video && setOpen(true)}
@@ -170,7 +151,7 @@ function DigitalTwinPanel({ src, label, caption, icon, poster }) {
         <div
           className="relative flex items-center justify-center overflow-hidden"
           style={{
-            background: video ? '#f4f5f8' : 'rgba(2,13,26,0.6)',
+            background: video ? '#f4f5f8' : 'var(--display-bg)',
             aspectRatio: '4/3',
             minHeight: '160px',
           }}
@@ -238,9 +219,9 @@ function DigitalTwinPanel({ src, label, caption, icon, poster }) {
             and 1.32:1 against the light palette, where AA wants 4.5. The
             captions over photographs elsewhere on the site keep their white,
             because those have a dark scrim under them. */}
-        <div className="px-3 py-2">
-          <p className="font-mono-data text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{label}</p>
-          <p className="font-mono-data text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>{caption}</p>
+        <div className="px-3 py-2" style={{ borderTop: '1px solid var(--seam)' }}>
+          <p className="legend" style={{ color: 'var(--text-primary)' }}>{label}</p>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>{caption}</p>
         </div>
       </div>
 
@@ -255,21 +236,30 @@ export default function MotorLab() {
   return (
     <div className="mt-10">
       {/* Section header */}
-      <div
-        className="flex items-center gap-2 mb-6"
-      >
-        <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>settings</span>
-        <h3
-          className="font-mono-data text-base tracking-widest uppercase"
-          style={{ color: 'var(--accent)' }}
-        >
-          BLDC Motor · Technical Deep Dive
-        </h3>
-        <div className="flex-1 h-px ml-2" style={{ background: 'rgb(var(--accent-rgb) / 0.12)' }} />
-        <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
-          $94.92 / $100 CAD
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 mb-5">
+        <h2 className="legend legend-rule flex-1 min-w-[16rem] legend-module">
+          BLDC Motor · ENGR 320
+        </h2>
+        <span className="legend" style={{ color: 'var(--text-muted)' }}>
+          Budget <span className="font-readout" style={{ color: 'var(--text-primary)', letterSpacing: 0 }}>$94.92 / $100 CAD</span>
         </span>
       </div>
+
+      {/* The machine first: topology, winding and the one calculated figure,
+          read as a data plate before any of the story. */}
+      {/* gap-px over a seam-coloured ground draws the cell dividers at every
+          column count without per-index border logic. */}
+      <dl className="grid grid-cols-2 lg:grid-cols-4 gap-px mb-4 overflow-hidden" style={{ background: 'var(--seam)', border: '1px solid var(--seam)', borderRadius: 'var(--radius-panel)' }}>
+        {MOTOR_SPECS.map(({ label, value, evidence }) => (
+          <div key={label} className="px-4 py-3" style={{ background: 'var(--panel-raised)' }}>
+            <dt className="legend" style={{ color: 'var(--text-muted)' }}>{label}</dt>
+            <dd className="font-readout text-base mt-1" style={{ color: 'var(--text-primary)' }}>
+              {value}
+              {evidence && <Evidence kind={evidence} className="ml-2" />}
+            </dd>
+          </div>
+        ))}
+      </dl>
 
       {/* Digital Twin: CAD cross-section + physical prototype */}
       <div className="grid grid-cols-2 gap-4 mb-4">
@@ -298,8 +288,7 @@ export default function MotorLab() {
           the caption strip underneath, where light-mode text tokens then sat
           near-black on a dark panel and failed contrast. */}
       <div
-        className="overflow-hidden mb-6"
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgb(var(--accent-rgb) / 0.12)', borderRadius: 'var(--radius)' }}
+        className="panel overflow-hidden mb-6"
       >
         <video
           src="/motor_cmp.mp4"
@@ -329,9 +318,9 @@ export default function MotorLab() {
           className="w-full block"
           style={{ maxHeight: '420px', objectFit: 'cover' }}
         />
-        <div className="px-3 py-2">
-          <p className="font-mono-data text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Motor Demo</p>
-          <p className="font-mono-data text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>First spin-up · AaABbBCCC winding sequence · Hobbywing Skywalker 30A V2 ESC</p>
+        <div className="px-3 py-2" style={{ borderTop: '1px solid var(--seam)' }}>
+          <p className="legend" style={{ color: 'var(--text-primary)' }}>Motor Demo</p>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>First spin-up · AaABbBCCC winding sequence · Hobbywing Skywalker 30A V2 ESC</p>
         </div>
       </div>
 
@@ -342,24 +331,6 @@ export default function MotorLab() {
         ))}
       </div>
 
-      {/* Spec footer */}
-      <div
-        className="flex flex-wrap gap-x-6 gap-y-2 mt-5"
-      >
-        {[
-          { label: 'Topology',  value: '9S / 8P Inrunner' },
-          { label: 'Winding',   value: '~200 T/pole · 24 AWG' },
-          { label: 'Rₚₕ',       value: '2.02 Ω, calculated' },
-          { label: 'Control',   value: 'Arduino + Hobbywing 30A' },
-        ].map(({ label, value }) => (
-          <div key={label} className="flex items-center gap-1.5">
-            {/* on the page background, so it has to be a theme token -- white
-                measured 1.33:1 in light mode */}
-            <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{label}</span>
-            <span className="font-mono-data text-sm" style={{ color: 'var(--accent)' }}>{value}</span>
-          </div>
-        ))}
-      </div>
     </div>
   )
 }

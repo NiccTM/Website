@@ -400,14 +400,14 @@ export const feeblePresenceArch = {
       id: 'plugin',
       label: 'Feeble Presence Plugin',
       type: 'plugin',
-      specs: { Language: 'Python', Polling: '2s interval', Data: 'Track, Artist, Album, Progress' },
+      specs: { Language: 'Python', Polling: '5 s default, configurable', Data: 'Track, Artist, Album, Progress' },
       position: { x: 280, y: 60 },
     },
     {
       id: 'rpc',
       label: 'Discord IPC',
       type: 'ipc',
-      specs: { Protocol: 'Local Named Pipe', Library: 'pypresence', Latency: '<50ms' },
+      specs: { Protocol: 'Local Named Pipe', Library: 'pypresence' },
       position: { x: 560, y: 0 },
     },
     {
@@ -464,7 +464,7 @@ export const projects = [
     title: 'FireSense: Wildfire Detection',
     course: 'APSC 171',
     description:
-      'Early warning for remote wildfires. Gas, thermal and wind sensors have to agree before it raises an alarm, which is what keeps false positives down.',
+      'A design study for early warning of remote wildfires. Gas, thermal and wind sensors have to agree before it raises an alarm, which is meant to keep false positives down.',
     tags: ['Systems Design', 'Sensor Fusion', 'Embedded Systems', 'Satellite Comms', 'Technical Writing'],
     github: null,
     awards: [
@@ -488,7 +488,7 @@ export const projects = [
     course: 'APSC 171',
     role: 'Mechanical Team',
     description:
-      'A SolidWorks recreation of the Back to the Future DeLorean: over 200 unique parts, a full V6 engine assembly, and an interactive exploded view.',
+      'A SolidWorks recreation of the Back to the Future DeLorean: over 200 unique parts, a full V6 engine assembly, and an animated exploded view.',
     tags: ['SolidWorks', 'SolidWorks Visualize', 'CAD', 'V6 Engine', 'Research'],
     github: null,
     awards: [
@@ -515,7 +515,7 @@ export const projects = [
     course: 'CIRC',
     role: 'Electrical Engineer',
     description:
-      'Electrical Engineer on UBCO’s entry to the Canadian International Rover Challenge. A 24 V LiFePO4 power-distribution architecture -- battery management system, main fuse, contactor and fused branch circuits -- plus the vehicle’s inter-subsystem telemetry interfaces.',
+      'Electrical Engineer on UBCO’s entry to the Canadian International Rover Challenge. A 24 V LiFePO4 power-distribution architecture (battery management system, main fuse, contactor and fused branch circuits) plus the vehicle’s inter-subsystem telemetry interfaces.',
     tags: ['LiFePO4', 'Power Distribution', 'Battery Management', 'Telemetry', 'CIRC'],
     github: null,
     awards: [],
@@ -546,7 +546,7 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'Head researcher for the club’s first-person-view video system: comparing analog and digital FPV architectures for a helicopter platform, then assembling and diagnosing the analog video chain -- transmitters, antennas, cameras -- down to component-level soldering and troubleshooting.\n\nThe technical side only mattered if it was funded. I authored the FPV technical proposal and presented its budget directly to the CEO of Sanmina Corporation, securing CAD 5,000 in sponsorship for avionics hardware.',
+        'Head researcher for the club’s first-person-view video system: comparing analog and digital FPV architectures for a helicopter platform, then assembling and diagnosing the analog video chain (transmitters, antennas, cameras) down to component-level soldering and troubleshooting.\n\nThe technical side only mattered if it was funded. I wrote the FPV technical proposal and presented its budget directly to the CEO of Sanmina Corporation, securing CAD 5,000 in sponsorship for avionics hardware.',
       technicalSpecs: [
         { label: 'Date',        value: 'Sep 2023 – Sep 2025' },
         { label: 'Role',        value: 'Electrical Engineer · FPV Head Researcher' },
@@ -599,7 +599,7 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'A Universal Design audit and retrofit proposal for a multi-purpose performing arts theatre in Whistler, BC. The project evaluated the existing facility against Canadian accessibility standards (CSA B651, BC Building Code) across twelve categories: entrances, seating, washrooms, wayfinding, acoustics, and emergency egress.\n\nThe final report proposed spatially specific design interventions: wider aisle clearances, distributed assistive listening system (ALS) coverage, tactile guide paths, and accessible service counter heights.',
+        'A Universal Design audit and retrofit proposal for a multi-purpose performing arts theatre in Whistler, BC. The project evaluated the existing facility against Canadian accessibility standards (CSA B651, BC Building Code) across twelve categories, including entrances, seating, washrooms, wayfinding, acoustics and emergency egress.\n\nThe final report proposed spatially specific design interventions: wider aisle clearances, distributed assistive listening system (ALS) coverage, tactile guide paths, and accessible service counter heights.',
       technicalSpecs: [
         { label: 'Standards',    value: 'CSA B651, BC Building Code Part 3' },
         { label: 'Audit scope',  value: '12 accessibility categories' },
@@ -622,13 +622,12 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'Feeble Presence is a MediaMonkey 5 plugin that bridges the desktop music player to Discord\'s Rich Presence API, letting your server see exactly what you\'re listening to in real time: track title, artist, album, and elapsed progress.\n\nThe plugin hooks into MediaMonkey\'s COM/SDK interface, polls playback state on a 2-second interval, and pushes updates over a local named pipe to the Discord IPC endpoint using the pypresence library. Round-trip latency from track change to visible Discord update is typically under 50 ms.',
+        'Feeble Presence is a MediaMonkey 5 plugin that bridges the desktop music player to Discord\'s Rich Presence API, so Discord shows what is playing: track title, artist, album and elapsed progress.\n\nThe plugin hooks into MediaMonkey\'s COM/SDK interface, polls playback state on a configurable interval (5 seconds by default), and pushes updates over a local named pipe to the Discord IPC endpoint using the pypresence library.',
       technicalSpecs: [
         { label: 'Language',    value: 'Python' },
         { label: 'Player',      value: 'MediaMonkey 5 (COM/SDK hooks)' },
         { label: 'IPC',         value: 'Discord local named pipe · pypresence' },
-        { label: 'Polling',     value: '2s interval' },
-        { label: 'Latency',     value: '<50ms track-change → Discord update' },
+        { label: 'Polling',     value: '5 s default, configurable' },
         { label: 'Fields',      value: 'State, Details, Timestamps, Cover Art' },
       ],
       links: [
@@ -641,7 +640,7 @@ export const projects = [
     category: 'software',
     title: 'EcoSort',
     course: 'CMPE 246',
-    description: 'CMPE 246 final project. A YOLOv8 model sorts waste in real time and drives a servo flap that diverts each item to the right bin.',
+    description: 'CMPE 246 final project. A YOLOv8 model classifies an item held still for about 1.5 s, and the result drives a servo flap towards compost, recycling or landfill. Shown working over one sorting run; accuracy was not formally measured.',
     tags: ['Raspberry Pi', 'Python', 'YOLOv8', 'Roboflow', 'Computer Vision', 'React', 'Vercel', 'PWM', 'Servo'],
     github: 'https://github.com/NiccTM/CMPE246_G16_Trash_Organizer',
     awards: [],
@@ -668,7 +667,7 @@ export const projects = [
           id:          'vision',
           title:       'Sub-System 1: Vision & ML Pipeline',
           icon:        'visibility',
-          description: 'Integration of Roboflow API for real-time bounding box detection and classification.',
+          description: 'Integration of Roboflow API for bounding box detection and classification.',
           images: [],
         },
         {
@@ -708,13 +707,13 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'A three-phase brushless inrunner built without buying a single motor part. The 9-slot stator and 8-pole rotor were drawn in CAD and printed, first in PLA and later in PETG HF, once it was clear the 30 A needed for target torque would take the windings close to PLA+’s glass transition at 55°C. A stator that softens while it is running has stopped being a stator.\n\nThe winding took two attempts. ABCABCABC put opposing polarities on adjacent teeth, so the phases worked against each other and the motor oscillated instead of spinning up. Regrouping to AaABbBCCC put each phase on neighbouring teeth and it turned cleanly. The printed stator teeth were also swapped for iron bolts partway through: PLA has a relative permeability of about 1, which is to say it is magnetically indistinguishable from air, and no amount of current fixes that.\n\nThe finished bill of materials came to $94.92 CAD against a $100 budget.',
+        'A three-phase brushless inrunner with a custom 3D-printed stator, rotor and housing. The magnets, copper wire, iron bolts and ESC were bought. The 9-slot stator and 8-pole rotor were drawn in CAD and printed, first in PLA and later in PETG HF, once it was clear the 30 A needed for target torque would take the windings close to PLA+’s glass transition at 55°C. A stator that softens while it is running has stopped being a stator.\n\nThe winding took two attempts. ABCABCABC put opposing polarities on adjacent teeth, so the phases worked against each other and the motor oscillated instead of spinning up. Regrouping to AaABbBCCC put each phase on neighbouring teeth and it turned cleanly. The printed stator teeth were also swapped for iron bolts partway through: PLA has a relative permeability of about 1, which is to say it is magnetically indistinguishable from air, and no amount of current fixes that.\n\nThe finished bill of materials came to $94.92 CAD against a $100 budget.',
       technicalSpecs: [
         { label: 'Topology',         value: '3-phase inrunner · 9-slot stator / 8-pole rotor (16 magnets, N-N-S-S pairs)' },
         { label: 'Connection',       value: 'Wye (Star)' },
         { label: 'Winding',          value: '24 AWG enamelled copper · ~200 turns/pole' },
         { label: 'Phase resistance', value: '2.02 Ω, calculated (3 × 0.672 Ω in series)' },
-        { label: 'Stator teeth',     value: 'Iron bolts (replaced PLA, μᵣ ≈ 1 → high flux density)' },
+        { label: 'Stator teeth',     value: 'Iron bolts, μᵣ ≈ 200 (replaced PLA, μᵣ ≈ 1)' },
         { label: 'Rotor / base',     value: 'PETG HF (Tg ≈ 70°C, upgraded from PLA+ Tg 55°C)' },
         { label: 'Control MCU',      value: 'Arduino Uno · PWM via Servo.h' },
         { label: 'ESC',              value: 'Hobbywing Skywalker 30A V2' },
@@ -729,7 +728,7 @@ export const projects = [
     id: 'algotraderos',
     category: 'software',
     title: 'AlgoTraderOS: Algorithmic Trading System',
-    description: 'An event-driven trading system for the TSX. It runs a long-only volatility breakout strategy on a Rust execution core, with a React dashboard on top.',
+    description: 'An event-driven trading system for the TSX: a Python asyncio pipeline runs a long-only volatility breakout strategy, a Rust (PyO3) extension handles the limit-order price-walk maths, and a React dashboard sits on top.',
     tags: ['Python', 'asyncio', 'Rust', 'PyO3', 'React', 'FastAPI', 'IBKR', 'Anthropic'],
     github: null,
     icon: 'electric_bolt',
@@ -775,7 +774,7 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'Tracesight is a Congressional and SEC trading tracker. Scrapers pull House PTRs, Senate PTRs, and SEC Form 4 insider filings into a PostgreSQL corpus (12,000+ SEC rows, 11,000+ House rows), where a signal engine scores recent trades by source (SEC weighted 1.0, Senate 0.6, House 0.4) with time decay, then assigns conviction labels such as Institutional Swarm, SEC Opportunistic, Cross-Source Corroboration, and Political Lead.\n\nA large part of the work is being honest about what is not a signal. Pre-scheduled 10b5-1 plans and sell-to-cover tax liquidations carry zero idiosyncratic alpha by construction, so they are mechanically zeroed out of scoring, around 12.8% of the SEC corpus, while still being preserved for audit rather than deleted. A per-transaction footnote classifier pins tax-withholding precision at 1.000 by design, because a single false zero on a discretionary trade silently destroys a real signal.\n\nOn top sits the analytics layer: a fixed-horizon backtester (T+20 / T+60 / T+90) computes beta-adjusted alpha against sector-ETF benchmarks, a filer leaderboard ranks individuals by raw mean alpha with a stale-while-revalidate cache, and a strict-FIFO tax-lot ledger tracks realized, fee-net paper-trading P&L. A React dashboard fronts it, with Discord and email alerting behind dispatch deduplication.',
+        'Tracesight is a Congressional and SEC trading tracker. Scrapers pull House PTRs, Senate PTRs, and SEC Form 4 insider filings into a PostgreSQL corpus (12,000+ SEC rows, 11,000+ House rows), where a signal engine scores recent trades by source (SEC weighted 1.0, Senate 0.6, House 0.4) with time decay, then assigns conviction labels such as Institutional Swarm, SEC Opportunistic, Cross-Source Corroboration, and Political Lead.\n\nA large part of the work is deciding what is not a signal. Pre-scheduled 10b5-1 plans and sell-to-cover tax liquidations carry zero idiosyncratic alpha by construction, so they are mechanically zeroed out of scoring, around 12.8% of the SEC corpus, while still being preserved for audit rather than deleted. A per-transaction footnote classifier pins tax-withholding precision at 1.000 by design, because a single false zero on a discretionary trade silently destroys a real signal.\n\nOn top sits the analytics layer: a fixed-horizon backtester (T+20 / T+60 / T+90) computes beta-adjusted alpha against sector-ETF benchmarks, a filer leaderboard ranks individuals by raw mean alpha with a stale-while-revalidate cache, and a strict-FIFO tax-lot ledger tracks realized, fee-net paper-trading P&L. A React dashboard fronts it, with Discord and email alerting behind dispatch deduplication.',
       technicalSpecs: [
         { label: 'Backend',       value: 'Flask + SQLAlchemy + PostgreSQL' },
         { label: 'Frontend',      value: 'React trades dashboard' },
@@ -814,7 +813,7 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'SignalVault is a long-running headless pipeline for institutional-grade audio preservation. It ingests high-resolution transfers (24-bit/96 kHz vinyl rips, plus DSD/FLAC/MP3 via a universal decoder) and applies forensic restoration, segmentation, metadata enrichment, and analysis, then emits a tiered archival package following IASA-TC 04 and FADGI-aligned conventions. Before any DSP runs, a bit-exact raw copy of the source is sealed, and every transformation from that point on is logged as a PREMIS event, so the whole chain is defensible after the fact.\n\nThe preservation philosophy is that archival math must be static, never dynamic. Loudness normalisation is always a single linear scalar, 10^((target − measured)/20) broadcast across the array, never a compressor, limiter, or envelope shaper, because any envelope alteration would disqualify the file as a preservation derivative. That rule shapes the output tiers: a forensic raw copy, an unsegmented full-side BWF preservation master with no DSP, per-track restoration BWF masters, and access-tier FLACs.\n\nEvery run produces an A–F conformance score (labelled an Audio Preservation Conformance Score, FADGI-aligned; audio FADGI is pass/fail aim points, not a star rating), SHA-256 fixity manifests, and METS + PBCore repository XML. A PySide6 operator console fronts the pipeline with a local SQLite job history that is explicitly not treated as preservation truth, alongside scheduled fixity audits, BagIt transfer export, and experimental C2PA provenance signing.',
+        'SignalVault is a long-running headless pipeline for audio preservation. It ingests high-resolution transfers (24-bit/96 kHz vinyl rips, plus DSD/FLAC/MP3 via a universal decoder) and applies forensic restoration, segmentation, metadata enrichment, and analysis, then emits a tiered archival package following IASA-TC 04 and FADGI-aligned conventions. Before any DSP runs, a bit-exact raw copy of the source is sealed, and every transformation from that point on is logged as a PREMIS event, so the whole chain is defensible after the fact.\n\nThe preservation philosophy is that archival math must be static, never dynamic. Loudness normalisation is always a single linear scalar, 10^((target − measured)/20) broadcast across the array, never a compressor, limiter, or envelope shaper, because any envelope alteration would disqualify the file as a preservation derivative. That rule shapes the output tiers: a forensic raw copy, an unsegmented full-side BWF preservation master with no DSP, per-track restoration BWF masters, and access-tier FLACs.\n\nEvery run produces an A–F conformance score (labelled an Audio Preservation Conformance Score, FADGI-aligned; audio FADGI is pass/fail aim points, not a star rating), SHA-256 fixity manifests, and METS + PBCore repository XML. A PySide6 operator console fronts the pipeline with a local SQLite job history that is explicitly not treated as preservation truth, alongside scheduled fixity audits, BagIt transfer export, and experimental C2PA provenance signing.',
       technicalSpecs: [
         { label: 'Language',    value: 'Python · headless pipeline + PySide6 console' },
         { label: 'Target',      value: '24-bit / 96 kHz analog preservation (PCM_24/32/Float)' },
@@ -853,7 +852,7 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'LiquidAudio Pro is a desktop application, not a pile of scripts, for pulling audio out of optical-disc sources and turning it into a clean archival result. It handles Blu-ray, DVD and SACD alongside PCM, WAV, FLAC, ALAC and DSD, which means dealing with the container and filesystem structures needed to find the right stream in the first place.\n\nMost of the work is in the parsers: Blu-ray MPLS playlists, MPEG transport-stream PAT/PMT tables, DVD IFO structures, DSF/DFF headers, WAV and WAV Extensible, and Blu-ray LPCM. On top of that sits demuxing, decoding, encoding, source inspection, candidate-file scanning, batch processing and metadata handling, with FFmpeg used where a mature codec implementation is the safer choice.\n\nThat last point drove one of the decisions I am most comfortable defending. An internal FLAC encoder was not standards-safe enough to trust, so rather than leave it enabled because it made the feature list longer, I disabled it and fell back to a known-good path. A shorter feature list that is correct beats a longer one that quietly is not.\n\nExtractions produce a report rather than just a file: source and destination hashes, payload CRCs, metadata, warnings and actions taken. Job state persists so an interrupted run can recover. The UI is a frameless, translucent Windows shell with high-DPI support, drag and drop, tray integration and a context-menu extraction command, and the project is packaged with PyInstaller behind release-ZIP validation and system checks.',
+        'LiquidAudio Pro is a desktop application, not a pile of scripts, for pulling audio out of optical-disc sources and turning it into a clean archival result. It handles Blu-ray, DVD and SACD alongside PCM, WAV, FLAC, ALAC and DSD, which means dealing with the container and filesystem structures needed to find the right stream in the first place.\n\nMost of the work is in the parsers: Blu-ray MPLS playlists, MPEG transport-stream PAT/PMT tables, DVD IFO structures, DSF/DFF headers, WAV and WAV Extensible, and Blu-ray LPCM. On top of that sits demuxing, decoding, encoding, source inspection, candidate-file scanning, batch processing and metadata handling, with FFmpeg used where a mature codec implementation is the safer choice.\n\nThat last point drove one of the decisions I am most comfortable defending. An internal FLAC encoder was not standards-safe enough to trust, so rather than leave it enabled because it made the feature list longer, I disabled it and fell back to a known-good path.\n\nExtractions produce a report rather than just a file: source and destination hashes, payload CRCs, metadata, warnings and actions taken. Job state persists so an interrupted run can recover. The UI is a frameless, translucent Windows shell with high-DPI support, drag and drop, tray integration and a context-menu extraction command, and the project is packaged with PyInstaller behind release-ZIP validation and system checks.',
       technicalSpecs: [
         { label: 'Language',   value: 'Python · PySide6 / Qt desktop app' },
         { label: 'Sources',    value: 'Blu-ray, DVD, SACD, PCM, WAV, FLAC, ALAC, DSD' },
@@ -871,14 +870,14 @@ export const projects = [
     id: 'rigpilot',
     category: 'software',
     title: 'RigPilot: Windows Hardware Control Suite',
-    description: 'A Windows desktop suite for GPU fan, power and clock control. Every change goes through a signed driver, and any failed change rolls back.',
+    description: 'A Windows desktop suite for GPU fan, power and clock control. Every change goes through a signed driver or a documented vendor API, and any failed change rolls back.',
     tags: ['.NET 10', 'WPF', 'C#', 'Windows Service', 'PawnIO', 'NVAPI/NVML', 'Hardware'],
     github: 'https://github.com/NiccTM/rigpilot',
     icon: 'memory',
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'RigPilot is a Windows desktop control suite inspired by G-Helper\'s low-friction workflow. Because desktop hardware has no universal control interface, every read or write is mediated by a capability-gated hardware adapter using a signed PawnIO path or a documented vendor API, never WinRing0 or a vulnerable-driver bypass. A boot-capable Windows service owns the hardware; the WPF dashboard, CLI, and crash-isolated adapter, automation, and effect hosts all talk to it over versioned, length-prefixed JSON on secured named pipes.\n\nSafety is the architecture, not a feature. Profiles apply transactionally: a rollback snapshot is persisted before the first write, each control domain is verified by read-back, and any failure or cancellation rolls back every attempted domain in reverse safety order. Voltage is never raised automatically and never applied at startup; a stale cooling sensor fails toward maximum cooling and firmware control; and capability labels (Verified, Experimental, Read-only, Blocked) are treated as evidence claims that are never widened for UI convenience.\n\nThe implemented surface includes NVAPI/NVML GPU fan, power-limit, and clock-offset control (arm-gated and Experimental, run out-of-process in a recyclable helper that fails safe to firmware if it dies), fan commissioning with bounded identification pulses, LibreHardwareMonitor telemetry through a signed PawnIO driver, and RGB routing across Windows Dynamic Lighting, an OpenRGB bridge, and verified adapters. It is extensible through Ed25519-signed .pcha adapter packs with a public SDK. Built on .NET 10 and WPF as a framework-dependent x64 deployment.',
+        'RigPilot is a Windows desktop control suite inspired by G-Helper\'s low-friction workflow. Because desktop hardware has no universal control interface, every read or write is mediated by a capability-gated hardware adapter using a signed PawnIO path or a documented vendor API, never WinRing0 or a vulnerable-driver bypass. A boot-capable Windows service owns the hardware; the WPF dashboard, CLI, and crash-isolated adapter, automation, and effect hosts all talk to it over versioned, length-prefixed JSON on secured named pipes.\n\nProfiles apply transactionally: a rollback snapshot is persisted before the first write, each control domain is verified by read-back, and any failure or cancellation rolls back every attempted domain in reverse safety order. Voltage is never raised automatically and never applied at startup; a stale cooling sensor fails toward maximum cooling and firmware control; and capability labels (Verified, Experimental, Read-only, Blocked) are treated as evidence claims that are never widened for UI convenience.\n\nThe implemented surface includes NVAPI/NVML GPU fan, power-limit, and clock-offset control (arm-gated and Experimental, run out-of-process in a recyclable helper that fails safe to firmware if it dies), fan commissioning with bounded identification pulses, LibreHardwareMonitor telemetry through a signed PawnIO driver, and RGB routing across Windows Dynamic Lighting, an OpenRGB bridge, and verified adapters. It is extensible through Ed25519-signed .pcha adapter packs with a public SDK. Built on .NET 10 and WPF as a framework-dependent x64 deployment.',
       technicalSpecs: [
         { label: 'Framework',     value: '.NET 10, WPF · Windows service + isolated hosts' },
         { label: 'IPC',           value: 'Versioned length-prefixed JSON over secured named pipes' },
@@ -964,7 +963,7 @@ export const archiveData = [
     id:         'workshop',
     module:     6,
     title:      'Workshop Infrastructure',
-    descriptor: 'Collaborative mechanical fabrication and workstation infrastructure.',
+    descriptor: 'A heavy-duty workbench for mechanical and electronics work.',
     spec:       'Built with a housemate over a weekend.',
     icon:       'handyman',
     images: [
@@ -992,11 +991,11 @@ export const hardwareDiagnostics = {
         { src: '/ASUS_gaming_laptop.jpg', note:
           'In for thermal throttling under load. Stripped to the board, cleared the fan and fin stack, and replaced the factory compound with Thermal Grizzly PhaseSheet PTM. A phase-change sheet rather than a paste is the right answer on a die that runs this hot in a chassis this thin: ordinary paste pumps out from under the cold plate over a couple of years of heat cycling, which is the failure that puts a machine like this back on the bench. SSD and OS-level repair while it was open.', label: 'ASUS ROG Gaming Laptop', caption: 'Full disassembly · Thermal Grizzly PhaseSheet PTM reapplication · software repair · SSD repair' },
         { src: '/MSI_gaming_laptop.jpg', note:
-          'One of three mid-range laptops in for the same complaint and given the same job: thermal throttling caused by dried-out factory paste. Full clean, fan and fin stack cleared, fresh Arctic MX-6 on the die, plus SSD and software repair. Worth doing before assuming anything is wrong with the silicon -- on a machine of this age it usually is just the interface material, and the notes on these three are near-identical because the work was.',  label: 'MSI Gaming Laptop',      caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
+          'One of three mid-range laptops in for the same complaint and given the same job: thermal throttling caused by dried-out factory paste. Full clean, fan and fin stack cleared, fresh Arctic MX-6 on the die, plus SSD and software repair. It is worth doing before assuming anything is wrong with the silicon. On a machine of this age it usually is just the interface material, and the notes on these three are near-identical because the work was.',  label: 'MSI Gaming Laptop',      caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
         { src: '/ASUS_laptop.jpg', note:
-          'One of three mid-range laptops in for the same complaint and given the same job: thermal throttling caused by dried-out factory paste. Full clean, fan and fin stack cleared, fresh Arctic MX-6 on the die, plus SSD and software repair. Worth doing before assuming anything is wrong with the silicon -- on a machine of this age it usually is just the interface material, and the notes on these three are near-identical because the work was.',        label: 'ASUS Laptop',            caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
+          'One of three mid-range laptops in for the same complaint and given the same job: thermal throttling caused by dried-out factory paste. Full clean, fan and fin stack cleared, fresh Arctic MX-6 on the die, plus SSD and software repair. It is worth doing before assuming anything is wrong with the silicon. On a machine of this age it usually is just the interface material, and the notes on these three are near-identical because the work was.',        label: 'ASUS Laptop',            caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
         { src: '/Acer_laptop.jpg', note:
-          'One of three mid-range laptops in for the same complaint and given the same job: thermal throttling caused by dried-out factory paste. Full clean, fan and fin stack cleared, fresh Arctic MX-6 on the die, plus SSD and software repair. Worth doing before assuming anything is wrong with the silicon -- on a machine of this age it usually is just the interface material, and the notes on these three are near-identical because the work was.',        label: 'Acer Laptop',            caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
+          'One of three mid-range laptops in for the same complaint and given the same job: thermal throttling caused by dried-out factory paste. Full clean, fan and fin stack cleared, fresh Arctic MX-6 on the die, plus SSD and software repair. It is worth doing before assuming anything is wrong with the silicon. On a machine of this age it usually is just the interface material, and the notes on these three are near-identical because the work was.',        label: 'Acer Laptop',            caption: 'Full clean · Arctic MX-6 thermal paste reapplication · software repair · SSD repair' },
         { src: '/Zotac_RTX3090_v2.jpg', note:
           'Thermal throttling, same underlying cause as the laptops. Full teardown, fin stack and fans cleaned out, and Thermal Grizzly PhaseSheet PTM in place of the factory compound, for the same reason as the ROG: a phase-change sheet stays where it is put on a die this hot instead of pumping out. Software repair alongside it.',      label: 'Zotac RTX 3090',         caption: 'Full card clean · Thermal Grizzly PhaseSheet PTM reapplication · software repair' },
       ],
@@ -1019,7 +1018,7 @@ export const hardwareDiagnostics = {
       images: [
         { src: '/20260907_151337.jpg', to: '/hobbies/cd-player', label: 'Musical Fidelity A3.2 CD', caption: 'Transport service · sled rail and gear train · KSS-213B pickup traced as the marginal part' },
         { src: '/DVD_player.jpg', note:
-          'The tray and transport mechanism were the whole problem here. A full teardown, a clean and fresh lubrication fixed it outright -- which is exactly what the same service on the Musical Fidelity A3.2 did not do. Two optical drives, the same first move, two different answers, and that is the argument for doing the mechanical work before touching anything optical: when it works you are finished, and when it does not you have ruled something out.', label: 'DVD Player', caption: 'Internal inspection · full disc drive disassembly · laser sled cleaning · mechanism lubrication' },
+          'The tray and transport mechanism were the whole problem here. A full teardown, a clean and fresh lubrication fixed it outright, which the same service on the Musical Fidelity A3.2 did not do. That is the case for doing the mechanical work before touching anything optical: when it works you are finished, and when it does not you have ruled something out.', label: 'DVD Player', caption: 'Internal inspection · full disc drive disassembly · laser sled cleaning · mechanism lubrication' },
       ],
     },
   ],

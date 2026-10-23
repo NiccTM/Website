@@ -1,38 +1,22 @@
-/* The eyebrow / display title / intro block that opens a route.
+/* The section code / title / intro block that opens a route.
 
-   NO ENTER ANIMATION, and that is the point of this component's rewrite.
+   NO ENTER ANIMATION. This block is the top of every route, so its <h1> or its
+   intro paragraph is the Largest Contentful Paint element on most of them.
+   Chrome refuses an element as an LCP candidate while its first paint is at
+   opacity 0, and prerendered HTML carrying opacity:0 would show a blank page
+   until the bundle arrived. Elements further down may animate; this may not.
 
-   This block is the top of every route, so its <h1> or its intro paragraph is
-   the Largest Contentful Paint element on most of them. It used to be three
-   framer-motion elements with initial={{ opacity: 0 }}, which meant the very
-   first thing painted on every page was invisible until JavaScript had
-   downloaded, parsed, hydrated and started animating.
-
-   That is bad twice over. Chrome refuses an element as an LCP candidate while
-   its first paint is at opacity 0, so the metric could not even start until
-   hydration; and it makes build-time prerendering pointless, because the
-   prerendered HTML would carry style="opacity:0" and show a blank page until
-   the bundle arrived.
-
-   The same reasoning is why the hero's first slide has no animation either --
-   see the note in styles/index.css. Elements further down the page can still
-   use .anim-rise; the first screenful cannot.
-   Extracted from HobbiesPage, which had the only full version of it -- the
-   other routes each had a partial copy or, in the case of /projects, no page
-   heading at all (and therefore no h1, which is an accessibility and search
-   problem, not a cosmetic one).
+   Swiss hierarchy: a small legend (the section code), then the title set in a
+   bold grotesk, then a rule, then the intro in body type. The size is carried
+   by the type, not by decoration.
 
    Two scales, because the pages genuinely differ:
      display -- gallery and lab routes running the full grid width
-     article -- /about and /hardware/reference, capped at a 72rem measure,
-                where the display size overwhelms a column that narrow
-   The intro width comes from `introClassName` alone. It used to also need
-   `[&_p]:max-w-none` to escape a global `p { max-width: 72ch }`; that rule is
-   now opt-in via `.prose-measure`, so the class here is the only thing setting
-   the measure. */
+     article -- /about and /hardware/reference, capped at a 72rem measure
+   The intro width comes from `introClassName` alone. */
 const SIZES = {
-  display: 'clamp(2.75rem, 2rem + 4vw, 7rem)',
-  article: 'clamp(2.25rem, 1.7rem + 3vw, 4.5rem)',
+  display: 'clamp(2.5rem, 1.8rem + 3.4vw, 5.5rem)',
+  article: 'clamp(2.1rem, 1.6rem + 2.6vw, 4rem)',
 }
 
 export default function PageHeader({
@@ -46,10 +30,7 @@ export default function PageHeader({
   return (
     <>
       {eyebrow && (
-        <p
-          className="font-mono-data tracking-[0.18em] uppercase mb-4"
-          style={{ color: 'var(--accent)', fontSize: '0.875rem' }}
-        >
+        <p className="legend legend-rule mb-5" style={{ color: 'var(--text-muted)' }}>
           {eyebrow}
         </p>
       )}
@@ -58,8 +39,8 @@ export default function PageHeader({
         className="font-display mb-6"
         style={{
           fontSize: SIZES[size] ?? SIZES.display,
-          fontWeight: 900,
-          lineHeight: size === 'article' ? 1.02 : 0.95,
+          fontWeight: 700,
+          lineHeight: 1.02,
           color: 'var(--text-primary)',
         }}
       >
@@ -68,8 +49,8 @@ export default function PageHeader({
 
       {intro && (
         <p
-          className={`font-sans mb-8 ${introClassName}`}
-          style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.75 }}
+          className={`mb-8 ${introClassName}`}
+          style={{ color: 'var(--text-secondary)', fontSize: '1.0625rem', lineHeight: 1.65 }}
         >
           {intro}
         </p>

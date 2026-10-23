@@ -22,6 +22,14 @@ import PHOTO_DIMS from '../data/photoDimensions.json' with { type: 'json' }
 export const hasThumb = (src) =>
   typeof src === 'string' && Object.prototype.hasOwnProperty.call(PHOTO_DIMS, src)
 
+/**
+ * The original's intrinsic { w, h } from the same generator output, or
+ * undefined. Every derivative tier keeps the original's aspect, so these work
+ * as <img width height> on a thumb: the browser reserves the right box before a
+ * lazy image has loaded, instead of a zero-height one.
+ */
+export const photoDims = (src) => (hasThumb(src) ? PHOTO_DIMS[src] : undefined)
+
 export const thumbSrc = (src) =>
   hasThumb(src) ? src.replace(/\/([^/]+)$/, '/thumbs/$1') : src
 

@@ -30,7 +30,7 @@ const DEFAULT_TAB = 'audio'
 function SectionFallback() {
   return (
     <div className="px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
-      <div className="h-64 rounded-xl border-subtle animate-pulse" style={{ background: 'var(--bg-surface-1)' }} />
+      <div className="h-64 panel-recessed animate-pulse" />
     </div>
   )
 }
@@ -144,13 +144,12 @@ export default function HobbiesPage() {
                 aria-controls={`panel-${t.id}`}
                 tabIndex={isActive ? 0 : -1}
                 onClick={() => select(t.id)}
-                className="font-mono-data text-sm px-4 py-2 rounded-lg transition-colors duration-150"
-                style={{
-                  color:      isActive ? 'var(--text-primary)' : 'var(--text-muted)',
-                  background: isActive ? 'var(--bg-surface-2)'  : 'transparent',
-                  border:     `1px solid ${isActive ? 'var(--border-accent)' : 'var(--border)'}`,
-                }}
+                /* A source-selector key: latched (depressed, lamp lit) when it
+                   is the selected tab. The latch is drawn from aria-selected,
+                   so the visual state is the accessible state. */
+                className="key"
               >
+                <span aria-hidden="true" className={`lamp${isActive ? ' lamp-ok' : ''}`} />
                 {t.label}
               </button>
             )

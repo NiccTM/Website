@@ -16,16 +16,6 @@ https://fonts.google.com/specimen/Exo+2
 Files: exo2-400.woff2 (variable, weights 100-900), exo2-400i.woff2 (italic)
 
 
-Playfair Display
-----------------
-Copyright (c) Claus Eggers Sorensen
-SIL Open Font License, Version 1.1
-https://openfontlicense.org/
-https://fonts.google.com/specimen/Playfair+Display
-
-Files: playfair-700.woff2 (variable, weights 700-900), playfair-700i.woff2 (italic)
-
-
 Material Symbols Rounded
 ------------------------
 Copyright (c) Google

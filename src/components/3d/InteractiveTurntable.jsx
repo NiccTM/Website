@@ -1264,18 +1264,19 @@ export default function InteractiveTurntable({ release, onClose }) {
   return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex flex-col"
-      style={{ background: 'rgba(3,7,18,0.94)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+      style={{ background: 'var(--display-bg)' }}
       role="dialog"
       aria-modal="true"
     >
-      {/* ── Header bar ── */}
+      {/* ── Header bar ── Dark in both themes, like the scene beneath it, so the
+          text uses the display tokens and the controls are ordinary keys. */}
       <div className="flex items-center justify-between px-6 py-4 sm:px-10 shrink-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        style={{ borderBottom: '1px solid rgb(var(--display-phosphor-rgb) / 0.18)', background: 'var(--display-raised)' }}>
         <div>
-          <p className="font-sans text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+          <p className="font-sans text-sm font-medium" style={{ color: 'var(--display-text)' }}>
             {release.title}
           </p>
-          <p className="font-mono-data text-xs" style={{ color: 'var(--accent)' }}>
+          <p className="font-mono-data text-xs" style={{ color: 'var(--display-phosphor)' }}>
             {release.artist}{release.year ? ` · ${release.year}` : ''}
           </p>
         </div>
@@ -1288,10 +1289,7 @@ export default function InteractiveTurntable({ release, onClose }) {
           <button
             onClick={() => setIsPlaying((p) => !p)}
             aria-label={isPlaying ? 'Cue the arm up and stop the platter' : 'Lower the arm and start the platter'}
-            className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-2 rounded-lg border-subtle transition-colors duration-150"
-            style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+            className="key key-sm"
           >
             <span aria-hidden="true" className="material-symbols-rounded text-sm">
               {isPlaying ? 'pause' : 'play_arrow'}
@@ -1306,10 +1304,7 @@ export default function InteractiveTurntable({ release, onClose }) {
           <button
             onClick={() => setLidOpen((o) => !o)}
             aria-label={lidOpen ? 'Lower the dust cover' : 'Lift the dust cover'}
-            className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-2 rounded-lg border-subtle transition-colors duration-150"
-            style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+            className="key key-sm"
           >
             <span aria-hidden="true" className="material-symbols-rounded text-sm">
               {lidOpen ? 'fullscreen_exit' : 'fullscreen'}
@@ -1319,10 +1314,7 @@ export default function InteractiveTurntable({ release, onClose }) {
           <button
             onClick={onClose}
             aria-label="Close"
-            className="flex items-center gap-1.5 font-mono-data text-xs px-3 py-2 rounded-lg border-subtle transition-colors duration-150"
-            style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+            className="key key-sm"
           >
             <span aria-hidden="true" className="material-symbols-rounded text-sm">close</span>
             ESC
@@ -1377,8 +1369,8 @@ export default function InteractiveTurntable({ release, onClose }) {
       </div>
 
       {/* ── Footer hint ── */}
-      <div className="shrink-0 py-3 text-center">
-        <p className="font-mono-data text-xs" style={{ color: 'var(--text-muted)' }}>
+      <div className="shrink-0 py-3 text-center" style={{ background: 'var(--display-raised)', borderTop: '1px solid rgb(var(--display-phosphor-rgb) / 0.18)' }}>
+        <p className="font-mono-data text-xs" style={{ color: 'var(--display-dim)' }}>
           Drag to orbit · Scroll to zoom
         </p>
       </div>
