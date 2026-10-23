@@ -138,23 +138,24 @@ export default function ImageLightbox({ src, label, caption, note, onClose }) {
       aria-modal="true"
       aria-label={label ? `${label}. Image viewer.` : 'Image viewer'}
       className="anim-fade fixed inset-0 z-[9999] flex flex-col"
-      style={{ background: 'rgba(3,7,18,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', willChange: 'opacity' }}
+      style={{ background: 'var(--display-bg)', willChange: 'opacity' }}
     >
+      {/* The viewer is dark in both themes, like a monitor bezel, so its text
+          uses the display tokens and its controls are ordinary keys. */}
       {/* ── Top bar ── */}
       <div
         className="flex items-center justify-between px-6 py-4 shrink-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(10,8,18,0.98)' }}
+        style={{ borderBottom: '1px solid rgb(var(--display-phosphor-rgb) / 0.18)', background: 'var(--display-raised)' }}
       >
         <div className="min-w-0">
-          <p className="font-mono-data text-sm font-medium truncate" style={{ color: '#ede8ff' }}>{label}</p>
+          <p className="font-mono-data text-sm font-medium truncate" style={{ color: 'var(--display-text)' }}>{label}</p>
           {caption && (
-            <p className="font-mono-data text-sm truncate mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>{caption}</p>
+            <p className="font-mono-data text-sm truncate mt-1" style={{ color: 'var(--display-dim)' }}>{caption}</p>
           )}
         </div>
         <button
           onClick={onClose}
-          className="flex items-center justify-center w-9 h-9 ml-4 shrink-0"
-          style={{ color: 'rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.07)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}
+          className="key key-sm ml-4 shrink-0"
           aria-label="Close"
         >
           <span aria-hidden="true" className="material-symbols-rounded text-base">close</span>
@@ -193,48 +194,44 @@ export default function ImageLightbox({ src, label, caption, note, onClose }) {
         {hiResPending && (
           <div
             className="absolute top-4 left-4 flex items-center gap-2 font-mono-data text-xs px-2.5 py-1.5 pointer-events-none"
-            style={{ background: '#17100a', border: '1px solid #281c10', borderRadius: 'var(--radius)', color: 'rgba(255,255,255,0.6)' }}
+            style={{ background: 'var(--display-raised)', border: '1px solid #000', borderRadius: 'var(--radius-control)', color: 'var(--display-dim)' }}
           >
-            <span aria-hidden="true" className="material-symbols-rounded animate-spin" style={{ fontSize: '0.95rem', color: 'var(--accent-on-dark)' }}>
+            <span aria-hidden="true" className="material-symbols-rounded animate-spin" style={{ fontSize: '0.95rem', color: 'var(--display-phosphor)' }}>
               progress_activity
             </span>
             Loading full resolution…
           </div>
         )}
 
-        {/* ── Floating vertical button group ── */}
+        {/* ── Floating vertical key group ── */}
         <div
-          className="absolute right-4 bottom-4 flex flex-col overflow-hidden"
-          style={{ background: '#17100a', border: '1px solid #281c10', borderRadius: 'var(--radius)' }}
+          className="absolute right-4 bottom-4 flex flex-col gap-1 p-1"
+          style={{ background: 'var(--display-raised)', border: '1px solid #000', borderRadius: 'var(--radius-control)' }}
         >
           <button
             onClick={() => zoomBy(0.5)}
             disabled={scale >= MAX_SCALE}
-            className="flex items-center justify-center w-9 h-9"
-            style={{ color: scale >= MAX_SCALE ? '#444' : 'var(--text-primary)' }}
+            className="key"
+            style={{ width: 36, height: 36, padding: 0, opacity: scale >= MAX_SCALE ? 0.45 : 1 }}
             aria-label="Zoom in"
           >
             <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>add</span>
           </button>
 
-          <div style={{ height: '1px', background: '#281c10' }} />
-
           <button
             onClick={() => zoomBy(-0.5)}
             disabled={scale <= MIN_SCALE}
-            className="flex items-center justify-center w-9 h-9"
-            style={{ color: scale <= MIN_SCALE ? '#444' : 'var(--text-primary)' }}
+            className="key"
+            style={{ width: 36, height: 36, padding: 0, opacity: scale <= MIN_SCALE ? 0.45 : 1 }}
             aria-label="Zoom out"
           >
             <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>remove</span>
           </button>
 
-          <div style={{ height: '1px', background: '#281c10' }} />
-
           <button
             onClick={reset}
-            className="flex items-center justify-center w-9 h-9"
-            style={{ color: scale > 1 ? 'var(--accent-on-dark)' : 'var(--text-muted)' }}
+            className="key"
+            style={{ width: 36, height: 36, padding: 0 }}
             aria-label="Fit to screen"
           >
             <span aria-hidden="true" className="material-symbols-rounded" style={{ fontSize: '1.1rem' }}>fit_screen</span>
@@ -244,8 +241,7 @@ export default function ImageLightbox({ src, label, caption, note, onClose }) {
         {/* Scale badge */}
         {scale > 1 && (
           <div
-            className="absolute left-4 bottom-4 font-mono-data text-xs px-2 py-1"
-            style={{ background: '#17100a', border: '1px solid #281c10', borderRadius: 'var(--radius)', color: 'var(--accent-on-dark)' }}
+            className="display readout absolute left-4 bottom-4 text-xs px-2 py-1"
           >
             {Math.round(scale * 100)}%
           </div>
@@ -259,9 +255,9 @@ export default function ImageLightbox({ src, label, caption, note, onClose }) {
       {note && (
         <div
           className="shrink-0 px-6 py-4 overflow-y-auto"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.1)', background: 'rgba(10,8,18,0.98)', maxHeight: '32vh' }}
+          style={{ borderTop: '1px solid rgb(var(--display-phosphor-rgb) / 0.18)', background: 'var(--display-raised)', maxHeight: '32vh' }}
         >
-          <p className="font-sans text-sm max-w-[78ch]" style={{ color: 'rgba(255,255,255,0.78)', lineHeight: 1.75 }}>
+          <p className="font-sans text-sm max-w-[78ch]" style={{ color: 'var(--display-text)', lineHeight: 1.75 }}>
             {note}
           </p>
         </div>

@@ -5,6 +5,7 @@ import { renderToPipeableStream } from 'react-dom/server'
    'react-router-dom/server' path fails to resolve. */
 import { StaticRouter } from 'react-router'
 import { AppRoutes } from './App'
+import { joinStreamChunks } from './ssr/joinStreamChunks'
 
 /**
  * Build-time entry. Renders a route to static HTML so the shell in dist/ ships
@@ -46,7 +47,15 @@ export function render(url) {
           const sink = new Writable({
             write(chunk, _enc, cb) { chunks.push(Buffer.from(chunk)); cb() },
           })
-          sink.on('finish', () => resolve({ html: Buffer.concat(chunks).toString('utf8'), errors }))
+          /* joinStreamChunks, not Buffer.concat: react-dom 18.3.1 can end a
+             written chunk with one unused 0x00 byte when the next character
+             is multi-byte -- seen here as "Tg: 55\u0000°C" in hardware.html,
+             and reproduced from clean input by
+             scripts/repro-react-stream-nul.mjs. Left in, it is a hydration
+             text mismatch, and React 18 recovers from that by discarding the
+             prerendered DOM. Only that exact byte pattern is dropped; any
+             other NUL survives to fail tests/prerender.test.mjs. */
+          sink.on('finish', () => resolve({ html: joinStreamChunks(chunks), errors }))
           stream.pipe(sink)
         },
         /* onError fires for errors React RECOVERS from as well as fatal ones,

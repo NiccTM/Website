@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { usePageMeta } from '../hooks/usePageMeta'
 import PageHeader from '../components/layout/PageHeader'
 import { profile, contact, bio } from '../data/config'
+import DocSection from '../components/layout/DocSection'
 
 const FACTS = [
   { label: 'Program',    value: bio.program },
@@ -28,12 +29,12 @@ const AWARDS = [
   { year: '2022', text: 'Second place, Top Academics · St. Mary Catholic High School' },
 ]
 
+/* Side-column module legend: small, tracked, ruled. */
 function Heading({ children, id }) {
   return (
     <h2
       id={id}
-      className="font-mono-data text-base tracking-widest uppercase mb-3"
-      style={{ color: 'var(--accent)' }}
+      className="legend legend-rule mb-3 legend-module"
     >
       {children}
     </h2>
@@ -48,18 +49,10 @@ function Body({ children }) {
   )
 }
 
-function Section({ title, children }) {
-  /* Static, not a scroll reveal. These sections used to fade and rise as they
-     entered the viewport, which meant their content started at opacity 0 --
-     invisible to a prerendered page and to anything that reads the HTML
-     without running it. Reading down a page of prose should not require
-     JavaScript to have finished. */
-  return (
-    <section className="mb-11">
-      <Heading>{title}</Heading>
-      {children}
-    </section>
-  )
+/* Swiss document section: a hairline rule, the section number in the legend
+   face, then a bold grotesk title and the prose beneath it. */
+function Section({ n, title, children }) {
+  return <DocSection id={`about-${n}`} n={n} title={title} className="mb-11">{children}</DocSection>
 }
 
 export default function AboutPage() {
@@ -82,7 +75,7 @@ export default function AboutPage() {
       <div className="grid gap-10 lg:gap-14 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] items-start">
         {/* ── Main column ── */}
         <div>
-          <Section title="How I work">
+          <Section n="01" title="How I work">
             <Body>
               A schematic predicts how a circuit should behave, a simulation models it, and a
               datasheet defines what a part is supposed to do. The interesting part starts once
@@ -103,7 +96,7 @@ export default function AboutPage() {
             </Body>
           </Section>
 
-          <Section title="Experience">
+          <Section n="02" title="Experience">
             <Body>
               I worked as a Hardware Engineering Intern at Measurements International Ltd., a
               precision electrical metrology company, across summer terms in 2024, 2025 and
@@ -124,7 +117,7 @@ export default function AboutPage() {
             </Body>
           </Section>
 
-          <Section title="Selected work">
+          <Section n="03" title="Selected work">
             <Body>
               A <Link to="/hardware/reference" style={{ color: 'var(--accent)' }}>10 V buried-Zener
               voltage reference</Link>, trimmed with a fixed metal-foil resistor network instead
@@ -137,7 +130,7 @@ export default function AboutPage() {
             </Body>
           </Section>
 
-          <Section title="Teams">
+          <Section n="04" title="Teams">
             <Body>
               I work on power architecture for Okanagan Rover Craft, UBCO&rsquo;s entry to the
               Canadian International Rover Challenge. It is a 24 V LiFePO₄ system running battery →
@@ -150,13 +143,11 @@ export default function AboutPage() {
               Before that I was on the electrical team for UBCO&rsquo;s Aerial Robotics and
               Rocketry Club as head researcher for a helicopter FPV system, covering analog and
               digital video, transmitters, antennas and cameras. I also presented the project
-              plan and budget to the CEO of Sanmina and secured platinum sponsorship for it,
-              a reminder that a technically sound project still needs someone able to explain
-              why it is worth funding.
+              plan and budget to the CEO of Sanmina and secured platinum sponsorship for it.
             </Body>
           </Section>
 
-          <Section title="Software and AI">
+          <Section n="05" title="Software and AI">
             <Body>
               I write a fair amount of software, but I treat it as another instrument rather than
               a separate career. A script that processes characterisation data or an application
@@ -168,66 +159,51 @@ export default function AboutPage() {
               taking provider claims at face value. What I think actually matters is the
               workflow around them: specifications, bounded milestones, test suites, regression
               checks and explicit approval gates for anything irreversible. AI is very good at
-              producing confident errors, so the value is not in generating code quickly. It is
-              in being able to tell whether what came out is right.
+              producing confident errors, so the useful skill is being able to tell whether what
+              came out is right.
             </Body>
           </Section>
         </div>
 
         {/* ── Side column ── */}
         <div className="flex flex-col gap-8">
-          <div className="rounded-xl overflow-hidden w-full" style={{ border: '1px solid var(--border)', background: 'var(--bg-surface-1)' }}>
-            {FACTS.map(({ label, value }, i) => (
-              <div
-                key={label}
-                className="flex flex-col gap-0.5 px-4 py-3"
-                style={{ borderBottom: i < FACTS.length - 1 ? '1px solid var(--border)' : 'none' }}
-              >
-                <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{label}</span>
-                <span className="font-mono-data text-sm" style={{ color: 'var(--text-primary)' }}>{value}</span>
+          <dl className="spec-grid text-sm">
+            {FACTS.map(({ label, value }) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
               </div>
             ))}
-          </div>
+          </dl>
 
           <div>
             <Heading>Toolset</Heading>
-            <div className="flex flex-col gap-4">
+            <dl className="spec-grid text-sm">
               {TOOLSET.map(({ group, items }) => (
                 <div key={group}>
-                  <p className="font-mono-data text-sm mb-2" style={{ color: 'var(--text-muted)' }}>{group}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {items.map((t) => (
-                      <span
-                        key={t}
-                        className="font-mono-data px-2 py-0.5 rounded text-sm"
-                        style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface-3)' }}
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
+                  <dt>{group}</dt>
+                  <dd>{items.join(', ')}</dd>
                 </div>
               ))}
-            </div>
+            </dl>
           </div>
 
           <div>
             <Heading>Awards</Heading>
-            <ul className="flex flex-col gap-2.5">
+            <dl className="spec-grid text-sm">
               {AWARDS.map(({ year, text }) => (
-                <li key={text} className="flex gap-3">
-                  <span className="font-mono-data text-sm shrink-0" style={{ color: 'var(--accent)' }}>{year}</span>
-                  <span className="font-sans text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>{text}</span>
-                </li>
+                <div key={text} style={{ gridTemplateColumns: 'minmax(3rem, 3.5rem) minmax(0, 1fr)' }}>
+                  <dt className="font-readout">{year}</dt>
+                  <dd style={{ lineHeight: 1.6 }}>{text}</dd>
+                </div>
               ))}
-            </ul>
+            </dl>
           </div>
 
           <div>
             <Heading>Outside engineering</Heading>
             <p className="font-sans text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              Vinyl and high-fidelity audio, including digitisation and archival workflows,
-              where measurable engineering meets entirely subjective preference.{' '}
+              Vinyl and high-fidelity audio, including digitisation and archival workflows.{' '}
               <Link to="/hobbies?tab=photography" style={{ color: 'var(--accent)' }}>Photography</Link>,
               drones and helicopters, custom PC builds and home networking.
             </p>
@@ -237,8 +213,8 @@ export default function AboutPage() {
             <Heading>Contact</Heading>
             <a
               href={`mailto:${contact.email}`}
-              className="font-mono-data text-sm"
-              style={{ color: 'var(--accent)' }}
+              className="inline-block py-1 font-mono-data text-sm underline underline-offset-4"
+              style={{ color: 'var(--text-primary)' }}
             >
               {contact.email}
             </a>

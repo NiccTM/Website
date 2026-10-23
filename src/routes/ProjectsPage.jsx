@@ -9,7 +9,7 @@ import ErrorBoundary  from '../components/ui/ErrorBoundary'
 function SectionFallback() {
   return (
     <div className="px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
-      <div className="h-64 rounded-xl border-subtle animate-pulse" style={{ background: 'var(--bg-surface-1)' }} />
+      <div className="h-64 panel-recessed animate-pulse" />
     </div>
   )
 }
@@ -30,7 +30,7 @@ const EcoSortDemo  = lazyWithReload(() => import('../components/ml/EcoSortDemo')
 const SystemArchitecture = lazyWithReload(() => import('../components/diagrams/SystemArchitecture'))
 
 export default function ProjectsPage() {
-  usePageMeta('Projects', 'Competitive design, professional practice, and software projects, from award-winning UBC Engineering teams to embedded systems and full-stack applications.')
+  usePageMeta('Projects', 'Competitive design, professional practice and software projects: UBC Okanagan coursework, engineering team work and personal software.')
   return (
     <>
       {/* This route had no page heading at all, and so no h1 -- it opened
@@ -39,7 +39,7 @@ export default function ProjectsPage() {
         <PageHeader
           eyebrow="Competition · Coursework · Software"
           title="Projects"
-          intro="Competition hardware, coursework that outgrew the assignment, and the software I write around it. Each entry states the constraint it was built against and what was actually measured. Where a figure is calculated rather than measured, it says so."
+          intro="Competition hardware, coursework that outgrew the assignment, and the software I write around it. Where a figure is calculated rather than measured, the entry says so."
         />
       </section>
 

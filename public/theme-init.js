@@ -11,7 +11,7 @@
  * Must stay render-blocking (no defer/async) and load before the app bundle.
  */
 try {
-  var t = localStorage.getItem('theme') || 'dark'
+  var t = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'
   document.documentElement.setAttribute('data-theme', t)
 } catch (e) {
   /* private mode / storage disabled -- fall through to the CSS default */

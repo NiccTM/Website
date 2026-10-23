@@ -234,7 +234,10 @@ function replaceTag(html, pattern, replacement, label) {
 const shell = readFileSync(join(ROOT, 'dist/index.html'), 'utf8')
 let written = 0
 
-for (const [route, file] of Object.entries(ROUTES)) {
+/* One shell per route. `renderPath` and `outName` default to the route
+   itself; a query VARIANT (below) renders the same route with a query string
+   into its own file, keeping the route's meta and canonical. */
+async function writeShell(route, file, { renderPath = `/${route}`, outName = route } = {}) {
   const { title, description } = readRouteMeta(file)
   const fullTitle = title ? `Nic Piraino | ${title}` : DEFAULT_TITLE
   const url = `${SITE}/${route}`
@@ -253,14 +256,38 @@ for (const [route, file] of Object.entries(ROUTES)) {
 
   html = injectPreloads(html, route)
   html = injectSchema(html, route, { title: fullTitle, description, url })
-  html = await injectMarkup(html, `/${route}`)
+  html = await injectMarkup(html, renderPath)
 
-  const outFile = join(ROOT, `dist/${route}.html`)
+  const outFile = join(ROOT, `dist/${outName}.html`)
   mkdirSync(dirname(outFile), { recursive: true })
   writeFileSync(outFile, html)
-  console.log(`  prerendered /${route}  ->  ${fullTitle}`)
+  console.log(`  prerendered ${renderPath}  ->  ${fullTitle}`)
   written++
 }
+
+for (const [route, file] of Object.entries(ROUTES)) await writeShell(route, file)
+
+/*
+ * QUERY VARIANTS
+ *
+ * /hobbies has two tabs chosen by ?tab=. With only one shell, a link to
+ * /hobbies?tab=photography (which is where /photography redirects) was served
+ * markup prerendered with the Audio tab, so hydration mismatched: React
+ * re-rendered the panel and the photo grid appeared, but it does not patch
+ * attributes in production, so the tab bar kept Audio as aria-selected and
+ * latched while Photography was on screen -- wrong to look at and wrong to a
+ * screen reader. It shipped that way on production.
+ *
+ * Rendering the variant here means the HTML already matches what the client
+ * renders: no mismatch, no flash, correct state from the first paint.
+ * vercel.json serves this file when the query asks for it (a `has` rewrite
+ * placed before the plain /hobbies one). Same title and canonical as /hobbies:
+ * the query picks a tab, it is not a different page.
+ */
+const VARIANTS = [
+  { route: 'hobbies', file: 'HobbiesPage.jsx', renderPath: '/hobbies?tab=photography', outName: 'hobbies-photography' },
+]
+for (const v of VARIANTS) await writeShell(v.route, v.file, v)
 
 /*
  * THE 404 SHELL

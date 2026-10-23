@@ -66,88 +66,62 @@ function useCollection() {
   return { data, loading, error, isMock, retry, useMock }
 }
 
-// ─── Stagger config ───────────────────────────────────────────────────────────
-
-const gridContainer = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.04 } },
-}
-const gridItem = {
-  hidden: { opacity: 0, scale: 0.92, y: 10 },
-  show:   { opacity: 1, scale: 1,    y: 0, transition: { duration: 0.3, ease: 'easeOut' } },
-}
-
 // ─── Album card ───────────────────────────────────────────────────────────────
-
+/* The sleeve sits in a recessed window with nothing over it; artist and title
+   are printed on the panel beneath, always visible (the hover-only gradient
+   caption it replaces was invisible on a touch screen). */
 function AlbumCard({ release, onClick }) {
   const [imgError, setImgError] = useState(false)
 
   return (
     <button
       onClick={() => onClick(release)}
-      className="tile-lift group relative aspect-square rounded-lg overflow-hidden border-subtle text-left focus:outline-none focus-visible:ring-2"
-      style={{ background: 'var(--bg-surface-2)', '--tw-ring-color': 'var(--accent)', '--tile-lift': 1.04 }}
+      className="panel flex flex-col text-left overflow-hidden"
       aria-label={`${release.artist} -- ${release.title}`}
     >
-      {release.cover_image && !imgError ? (
-        <img
-          src={release.cover_image}
-          alt={`${release.artist} -- ${release.title}`}
-          loading="lazy"
-          decoding="async"
-          onError={() => setImgError(true)}
-          className="w-full h-full object-cover"
-        />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center">
-          <span aria-hidden="true" className="material-symbols-rounded text-3xl" style={{ color: 'var(--text-muted)' }}>album</span>
-        </div>
-      )}
-
-      <div
-        className="absolute inset-0 flex flex-col justify-end p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-        style={{ background: 'linear-gradient(to top, rgba(0,20,60,0.75) 0%, transparent 60%)' }}
-      >
-        <p className="font-sans text-sm font-medium leading-tight truncate" style={{ color: 'var(--text-primary)' }}>
-          {release.title}
-        </p>
-        <p className="font-mono-data truncate" style={{ color: 'var(--accent)', fontSize: '0.875rem' }}>
-          {release.artist}{release.year ? ` · ${release.year}` : ''}
-        </p>
-      </div>
-
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>
-          radio_button_checked
+      {/* Spans, not divs/ps: a button may only contain phrasing content. */}
+      <span className="panel-recessed block p-1 m-1.5 mb-0">
+        <span className="block aspect-square overflow-hidden">
+          {release.cover_image && !imgError ? (
+            <img
+              src={release.cover_image}
+              alt={`${release.artist} -- ${release.title}`}
+              loading="lazy"
+              decoding="async"
+              onError={() => setImgError(true)}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="w-full h-full flex items-center justify-center">
+              <span aria-hidden="true" className="material-symbols-rounded text-3xl" style={{ color: 'var(--text-muted)' }}>album</span>
+            </span>
+          )}
         </span>
-      </div>
+      </span>
+
+      <span className="block px-2 py-1.5 min-w-0">
+        <span className="block font-sans text-sm font-semibold leading-tight truncate" style={{ color: 'var(--text-primary)' }}>
+          {release.title}
+        </span>
+        <span className="block font-mono-data truncate" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+          {release.artist}{release.year ? ` · ${release.year}` : ''}
+        </span>
+      </span>
     </button>
   )
 }
 
-// ─── Skeleton grid -- matches AlbumCard dimensions exactly ─────────────────────
+// ─── Skeleton grid -- matches AlbumCard proportions ───────────────────────────
 
 function SkeletonGrid() {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6" aria-hidden="true">
       {Array.from({ length: 12 }).map((_, i) => (
-        <div
-          key={i}
-          className="aspect-square rounded-lg relative overflow-hidden border-subtle"
-          style={{ background: 'var(--bg-surface-2)', animationDelay: `${i * 40}ms` }}
-        >
-          {/* Shimmer sweep */}
-          <div
-            className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite]"
-            style={{
-              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%)',
-              animationDelay: `${i * 80}ms`,
-            }}
-          />
-          {/* Fake title bar at bottom */}
-          <div className="absolute bottom-0 left-0 right-0 p-2 space-y-1">
-            <div className="h-1.5 rounded-full w-3/4" style={{ background: 'var(--bg-surface-3)' }} />
-            <div className="h-1 rounded-full w-1/2" style={{ background: 'var(--bg-surface-3)' }} />
+        <div key={i} className="panel-recessed animate-pulse" style={{ animationDelay: `${i * 80}ms` }}>
+          <div className="aspect-square" />
+          <div className="p-2 space-y-1.5">
+            <div className="h-2 w-3/4" style={{ background: 'var(--panel-plate)' }} />
+            <div className="h-2 w-1/2" style={{ background: 'var(--panel-plate)' }} />
           </div>
         </div>
       ))}
@@ -159,9 +133,9 @@ function SkeletonGrid() {
 
 function ErrorState({ message, onRetry, onMock }) {
   return (
-    <div className="rounded-xl border-subtle p-6 flex flex-col gap-4" style={{ background: 'var(--bg-surface-1)' }}>
+    <div className="panel-recessed p-6 flex flex-col gap-4">
       <div>
-        <p className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
+        <p className="font-mono-data text-sm" style={{ color: 'var(--text-secondary)' }}>
           {/* Deliberately does not name the server-side env var: that is an
               operator detail, and it shipped in the client bundle where it told
               visitors nothing useful and disclosed internals. */}
@@ -170,20 +144,12 @@ function ErrorState({ message, onRetry, onMock }) {
             : `Collection error: ${message}`}
         </p>
       </div>
-      <div className="flex gap-3">
-        <button
-          onClick={onRetry}
-          className="flex items-center gap-1.5 font-mono-data text-sm px-3 py-1.5 rounded-lg border-subtle transition-colors duration-150"
-          style={{ color: 'var(--accent)', background: 'var(--bg-surface-2)' }}
-        >
+      <div className="flex flex-wrap gap-3">
+        <button onClick={onRetry} className="key key-sm">
           <span aria-hidden="true" className="material-symbols-rounded text-sm">refresh</span>
           Retry
         </button>
-        <button
-          onClick={onMock}
-          className="flex items-center gap-1.5 font-mono-data text-sm px-3 py-1.5 rounded-lg border-subtle transition-colors duration-150"
-          style={{ color: 'var(--text-muted)', background: 'var(--bg-surface-2)' }}
-        >
+        <button onClick={onMock} className="key key-sm">
           <span aria-hidden="true" className="material-symbols-rounded text-sm">library_music</span>
           Load sample records
         </button>
@@ -206,7 +172,7 @@ export default function VinylArchive() {
       {/* Header */}
       <div className="flex items-end justify-between flex-wrap gap-3 mb-6">
         <div>
-          <h2 className="font-mono-data tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
+          <h2 className="legend legend-module">
             Vinyl Archive
           </h2>
           <p className="font-mono-data mt-1" style={{ color: 'var(--text-muted)' }}>
@@ -223,10 +189,7 @@ export default function VinylArchive() {
           href="https://www.discogs.com/user/NiccTM/collection"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 font-mono-data text-sm transition-colors duration-150"
-          style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+          className="key key-sm"
         >
           <span aria-hidden="true" className="material-symbols-rounded text-sm">open_in_new</span>
           Discogs

@@ -7,6 +7,7 @@
  *   theme     -- dark/light, persisted to localStorage
  */
 import { create } from 'zustand'
+import { initialDarkMode } from './theme'
 
 export const useAppStore = create((set) => ({
   // ── BPM ──────────────────────────────────────────────────────────────────
@@ -24,15 +25,13 @@ export const useAppStore = create((set) => ({
   setPcbCommand:   (c) => set({ pcbCommand: c }),
   setPcbXray:      (v) => set({ pcbXray: v }),
 
-  // ── Theme ─────────────────────────────────────────────────────────────────
-  // dark is the default; light activates Dreamcore pastels
-  darkMode: typeof window !== 'undefined'
-    ? window.localStorage.getItem('theme') !== 'light'
-    : true,
-  toggleDarkMode: () =>
-    set((s) => {
-      const next = !s.darkMode
-      try { window.localStorage.setItem('theme', next ? 'dark' : 'light') } catch (_) {}
-      return { darkMode: next }
-    }),
+  // ── Display mode ──────────────────────────────────────────────────────────
+  // LAB (light) is the default; NIGHT (dark) is opt-in. See store/theme.js.
+  darkMode: (() => {
+    try { return initialDarkMode(window.localStorage.getItem('theme')) } catch (_) { return false }
+  })(),
+  setDarkMode: (next) => {
+    try { window.localStorage.setItem('theme', next ? 'dark' : 'light') } catch (_) {}
+    set({ darkMode: next })
+  },
 }))

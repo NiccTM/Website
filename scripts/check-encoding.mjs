@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 const FIX = process.argv.includes('--fix');
 
-const EXTS = new Set(['.js', '.jsx', '.ts', '.tsx', '.css', '.html', '.json', '.md', '.txt', '.xml', '.svg']);
+const EXTS = new Set(['.js', '.jsx', '.mjs', '.ts', '.tsx', '.css', '.html', '.json', '.md', '.txt', '.xml', '.svg']);
 // Dotfiles have no extension as far as path.extname is concerned, so they need
 // an explicit allowlist -- .gitignore had mojibake that an ext-only scan missed.
 const EXTLESS = new Set([
@@ -26,8 +26,10 @@ const EXTLESS = new Set([
   '.env.example', '.prettierrc', '.eslintrc', 'LICENSE', 'Dockerfile',
 ]);
 const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', 'build', '.vercel', '.next']);
-// Never read real secrets, and never rewrite a lockfile.
-const SKIP_FILES = new Set(['package-lock.json', '.env', '.env.local']);
+// Never read real secrets, and never rewrite a lockfile. This script is skipped
+// too: its header documents mojibake by quoting it ("Â°C"), so scanning itself
+// would always flag -- and --fix would "repair" its own documentation.
+const SKIP_FILES = new Set(['package-lock.json', '.env', '.env.local', 'check-encoding.mjs']);
 
 const isScannable = (name) =>
   !SKIP_FILES.has(name) && (EXTS.has(extname(name).toLowerCase()) || EXTLESS.has(name));
@@ -89,6 +91,16 @@ for (const file of walk(ROOT)) {
     bad++;
     continue;
   }
+  /* A literal U+0000 has no business in source or content. The prerender works
+     around one React 18.3 artefact that emits NULs from clean input
+     (src/ssr/joinStreamChunks.js); this makes sure that workaround is never
+     the thing hiding a NUL that came from the files themselves. Not
+     auto-fixed: where it came from matters more than removing it. */
+  const nul = text.indexOf('\u0000');
+  if (nul !== -1) {
+    console.error(`✗ ${relative(ROOT, file)} -- contains U+0000 at character ${nul}`);
+    bad++;
+  }
   const { text: fixed, hits } = repair(text);
   if (!hits.length) continue;
 
@@ -103,7 +115,7 @@ for (const file of walk(ROOT)) {
 }
 
 if (bad === 0) {
-  console.log('✓ encoding clean -- no mojibake found');
+  console.log('✓ encoding clean -- no mojibake or U+0000 found');
   process.exit(0);
 }
 console.error(

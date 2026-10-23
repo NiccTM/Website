@@ -3,242 +3,139 @@
 @tailwind utilities;
 
 /* ════════════════════════════════════════════════════════════════════════════
-   DARK MODE -- default (:root)
-   Liminal Dusk: deep purple-indigo night, muted cyan throughout.
-   The palette used to pair that cyan with a warm amber, for buttons and for
-   one background blob. Both are gone: the button amber failed label contrast
-   and was the loudest object in a cool scheme, and the blob was the last warm
-   patch in the ambient layer. The scheme is now cool end to end, and the only
-   warmth on the site comes from the photographs, which is where it belongs.
+   DISPLAY MODES -- LAB (default, :root) and NIGHT ([data-theme="dark"])
+
+   The site is modelled as a piece of bench equipment: a CHASSIS (the page),
+   PANELS set into it (raised modules or recessed wells), and DISPLAYS -- dark
+   windows that exist only where the content is a measurement or a state.
+   LAB is beige/grey ABS under bench light; NIGHT is the same instrument in a
+   dark room. Displays are dark in both, because a real readout window does not
+   change colour when you switch the room lights off.
+
+   Colour is semantic and scarce, the way it is on an HP or Fluke front panel:
+     green  -- normal / active / selected / valid
+     amber  -- caution / alternate / development state
+     red    -- a real fault only
+   Everything else is chassis, graphite and paper.
+
+   Every text pairing below was measured, not eyeballed (WCAG 2.2 AA, 4.5:1):
+     LAB   text-muted #4A4B45  on recessed #C9C1B1  5.03:1 (worst case)
+     LAB   accent     #245030  on recessed #C9C1B1  5.2:1
+     NIGHT text-muted #A39D8E  on plate    #2D2F2A  5.01:1 (worst case)
+     DISPLAY dim      #5E9A6B  on display  #07100C  5.8:1
+
+   The semantic tokens come first. The block after them maps the names the
+   components were written against (--accent, --bg-surface-1, --flow-*, ...)
+   onto the semantic ones, so a component nobody has touched yet still picks
+   up the instrument palette rather than a leftover from the old one.
    ════════════════════════════════════════════════════════════════════════════ */
 :root {
-  /* ── Liquid Glass tokens ────────────────────────────────────────────────── */
-  --lg-bg:       rgba(255, 255, 255, 0.06);
-  --lg-specular: rgba(255, 255, 255, 0.18);
-  --lg-irid: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.65) 0%,
-    rgba(190, 110, 255, 0.55) 18%,
-    rgba(0,   229, 255, 0.55) 36%,
-    rgba(255, 200,  60, 0.45) 54%,
-    rgba(255,  90, 185, 0.45) 72%,
-    rgba(255, 255, 255, 0.60) 100%
-  );
+  color-scheme: light;
 
-  /* Palette */
-  --bg-base:        #0c0814;
-  --bg-surface-1:   #130d1f;
-  --bg-surface-2:   #1a1229;
-  --bg-surface-3:   #221832;
-  --text-primary:   #ede8ff;
-  --text-secondary: #c0b4e0;
-  --text-muted:     #9080b8;
-  /* Muted rather than maximally saturated. The old #00E5FF is 100% saturation, which
-     serves the Frutiger Aero / Y2K half of the brief and fights the Gen X /
-     Gen Z Soft Club half, whose whole character is low-saturation cool. This
-     keeps the hue and drops the neon. Contrast against --bg-base is 11.1:1,
-     so nothing regresses on legibility.
-     --accent-rgb exists so alpha variants can be written as
-     rgb(var(--accent-rgb) / 0.3) instead of hardcoding the channels, which is
-     how 28 copies of the old cyan ended up scattered through the components
-     and stayed neon in light mode. */
-  --accent:         #5FD2E0;
-  --accent-rgb:     95 210 224;
+  /* ── Chassis and panels ─────────────────────────────────────────────────── */
+  --chassis-bg:      #D8D1C3;
+  --chassis-border:  #B3AB9A;
+  --panel-bg:        #E0D9CC;
+  --panel-raised:    #E6E0D4;
+  --panel-recessed:  #C9C1B1;
+  --panel-plate:     #EFEBE3;
+  /* The 1px light/dark pair that makes a flat rectangle read as a moulded
+     edge: highlight on the top lip, shade on the bottom. */
+  --bevel-hi:        rgba(255, 255, 255, 0.55);
+  --bevel-lo:        rgba(60, 50, 30, 0.18);
+  --seam:            rgba(60, 50, 30, 0.22);
 
-  /* "Challenge" labels and anything else that has to read as a fault. It was
-     hardcoded #FF3B30 at the call site, which is right on a dark surface and
-     3.28:1 on the light one -- the light theme overrides it below. */
-  --danger:         #FF3B30;
+  /* ── Ink ────────────────────────────────────────────────────────────────── */
+  --text-primary:    #1C1E1B;
+  --text-secondary:  #34362F;
+  --text-muted:      #4A4B45;
 
-  /* For surfaces that are dark in BOTH themes -- the lightbox, award badges,
-     the spec overlay on project cards. These cannot follow --accent, because
-     in light mode that is a mid-blue and would sit on near-black at roughly
-     3:1. */
-  --accent-on-dark:     #5FD2E0;
-  --accent-on-dark-rgb: 95 210 224;
-  --border:         rgba(180, 140, 255, 0.18);
-  --border-accent:  rgb(var(--accent-rgb) / 0.35);
-  --radius:         16px;
+  /* ── Status ─────────────────────────────────────────────────────────────── */
+  --status-ok:       #245030;
+  --status-ok-rgb:   36 80 48;
+  --status-caution:  #6B4400;
+  --status-fault:    #8A291D;
 
-  /* Navigation */
-  --nav-bg:           rgba(12, 8, 20, 0.92);
-  --nav-border:       rgba(180, 140, 255, 0.15);
-  --nav-shadow:       0 2px 20px rgba(0,0,0,0.55);
-  --nav-mobile-bg:    rgba(12, 8, 20, 0.98);
-  --nav-mobile-border: rgba(180, 140, 255, 0.15);
+  /* ── Displays (identical in both modes) ─────────────────────────────────── */
+  --display-bg:       #07100C;
+  --display-raised:   #0D1A13;
+  --display-text:     #D9E6DC;
+  --display-phosphor: #79C98B;
+  --display-phosphor-rgb: 121 201 139;
+  --display-dim:      #5E9A6B;
+  --display-amber:    #D8A441;
+  --display-fault:    #E0705F;
 
-  /* Hero panel */
-  --hero-panel-bg:    rgba(12, 8, 20, 0.86);
-  --hero-panel-glow:  none;
-  --hero-gradient-to: #0c0814;
+  /* ── Controls ───────────────────────────────────────────────────────────── */
+  --control-face:     #EDE8DE;
+  --control-edge:     #8F8778;
+  --control-selected: #CFC7B7;
+  --control-ink:      #1C1E1B;
+  --lamp-off:         #9C9585;
+  --focus-ring:       #1F5FA8;
 
-  /* Glass containers */
-  --glass-bg:         rgba(255, 255, 255, 0.04);
-  --glass-border:     rgba(180, 140, 255, 0.16);
-  --glass-inset:      rgba(255, 255, 255, 0.06);
-  --glass-outer:      0 8px 32px rgba(0,0,0,0.45);
-
-  /* Aurora ribbon -- cyan, sea green, violet. Muted rather than saturated:
-     Gen X / Gen Z Soft Club is the restraint that keeps Aero from turning into
-     costume, and a bright aurora over a portfolio reads as a screensaver. */
-  --aurora-1: rgb(var(--accent-rgb) / 0.20);
-  --aurora-2: rgba(70, 220, 180, 0.16);
-  --aurora-3: rgba(150, 110, 235, 0.20);
-
-  /* Mesh blobs -- cyan left, sea green right, deep purple centre, lavender
-     hint. blob-2 was an amber wash, the last warm object in the scheme. It is
-     now the same sea green as the aurora's middle stop, so the ambient layer
-     reads as one system rather than a cool wash with a warm patch in the
-     bottom-right corner. Alpha nudged 0.08 -> 0.10 because a green at this
-     opacity carries less against the purple base than the amber did. */
-  --blob-1: rgb(var(--accent-rgb) / 0.07);
-  --blob-2: rgba(70, 220, 180, 0.10);
-  --blob-3: rgba(90, 40, 160, 0.55);
-  --blob-4: rgba(200, 160, 255, 0.04);
-
-  /* Flow diagram */
-  --flow-bg:           rgba(12, 8, 20, 0.65);
-  --flow-bg-border:    rgba(180, 140, 255, 0.14);
-  --flow-node-bg:      rgba(255, 255, 255, 0.04);
-  --flow-node-border:  rgb(var(--accent-rgb) / 0.22);
-  --flow-node-inset:   rgba(255, 255, 255, 0.06);
-  --flow-panel-bg:     rgba(19, 13, 31, 0.92);
-  --flow-panel-border: rgb(var(--accent-rgb) / 0.2);
-  --flow-controls-bg:  rgba(19, 13, 31, 0.88);
-  --flow-edge:         var(--accent);
-  --flow-edge-glow:    rgb(var(--accent-rgb) / 0.7);
-
-  /* Buttons -- cool teal gel, in the accent family rather than against it.
-     This was a warm amber, which made the primary CTA the loudest and only
-     warm object in a cool palette. It also failed contrast: the label is
-     #fff at 14px/600, and white on the old #d4820a mid stop was 3.00:1,
-     under the 4.5:1 AA floor for normal text. The mid stop here is 4.99:1,
-     and the text sits below it where the gradient is darker still.
-     The Aero gel shape is unchanged: bright lip, saturated middle, deep
-     bottom, so it still reads as a moulded button rather than a flat fill. */
-  --btn-primary-grad:   linear-gradient(to bottom, #5BC4D4 0%, #1E7A8A 38%, #0C424D 100%);
-  --btn-primary-top:    rgba(190, 240, 250, 0.70);
-  --btn-primary-shadow: 0 4px 18px rgb(var(--accent-rgb) / 0.38);
-  --btn-primary-hover:  0 6px 24px rgb(var(--accent-rgb) / 0.55);
-  --btn-outline-bg:     rgba(180, 140, 255, 0.06);
-  --btn-outline-border: rgba(180, 140, 255, 0.28);
-  --btn-outline-color:  var(--text-secondary);
+  /* ── Radii: moulded plastic still has radii, just small ones ────────────── */
+  --radius-control: 3px;
+  --radius-panel:   4px;
+  --radius-shell:   8px;
 }
 
-/* ════════════════════════════════════════════════════════════════════════════
-   LIGHT MODE -- Dreamcore Verdant: vivid sky, mint grass, lavender dusk haze
-   ════════════════════════════════════════════════════════════════════════════ */
-[data-theme="light"] {
-  /* Specular highlight. White at 0.18 is the dark-mode value and it vanishes
-     against a pale glass panel, so the gloss only existed on one theme until
-     this was added. */
-  --lg-specular: rgba(255, 255, 255, 0.85);
+[data-theme="dark"] {
+  color-scheme: dark;
 
-  /* Aurora ribbon -- daylight sky version: the same sweep, warmer and fainter
-     so it never fights the pale background. */
-  --aurora-1: rgba(90, 190, 255, 0.28);
-  --aurora-2: rgba(120, 225, 190, 0.22);
-  --aurora-3: rgba(180, 150, 245, 0.24);
+  --chassis-bg:      #1A1B19;
+  --chassis-border:  #3A3C36;
+  --panel-bg:        #20221F;
+  --panel-raised:    #252723;
+  --panel-recessed:  #131412;
+  --panel-plate:     #2D2F2A;
+  --bevel-hi:        rgba(255, 255, 255, 0.06);
+  --bevel-lo:        rgba(0, 0, 0, 0.45);
+  --seam:            rgba(0, 0, 0, 0.5);
 
-  /* Palette */
-  --bg-base:        #c2d8f2;
-  --bg-surface-1:   #d6eaf8;
-  --bg-surface-2:   #e6f3fb;
-  --bg-surface-3:   #f3f9fe;
-  --text-primary:   #0e1828;
-  --text-secondary: #1e3550;
-  --text-muted:     #3d5870;
-  /* Darkened from #2a7cc8, which failed WCAG AA against every light surface --
-     2.99:1 on --bg-base, 3.53 on surface-1, 3.86 on surface-2, 4.11 on
-     surface-3, against a 4.5 requirement. Because --accent is what every
-     section heading, eyebrow, inline link and icon is painted with, that single
-     value was the whole of the light theme's legibility: 6 failing elements on
-     /, 12 on /colophon, 14 on /about and /projects.
+  --text-primary:    #ECE6D8;
+  --text-secondary:  #CEC7B6;
+  --text-muted:      #A39D8E;
 
-     Same hue (209deg) and same saturation (65%), walked down in lightness only
-     until the WORST surface cleared the bar -- so it is the closest colour to
-     the original that passes, not a new one. Verified:
+  --status-ok:       #86CF97;
+  --status-ok-rgb:   134 207 151;
+  --status-caution:  #E0AE4F;
+  --status-fault:    #E07A6B;
 
-         on a tinted card  #b7d2ef   4.76:1
-         on --bg-base      #c2d8f2   5.08:1
-         on --bg-surface-1 #d6eaf8   6.00:1
-         on --bg-surface-2 #e6f3fb   6.56:1
-         on --bg-surface-3 #f3f9fe   6.99:1
+  --control-face:     #2F312C;
+  --control-edge:     #50534B;
+  --control-selected: #171816;
+  --control-ink:      #ECE6D8;
+  --lamp-off:         #4B4D46;
+  --focus-ring:       #8FB8F0;
+}
 
-     Two things that a naive solve gets wrong, both learned by measuring:
-     the worst surface is NOT a palette token -- translucent panels composite
-     DARKER than --bg-base, and the tinted card at #b7d2ef on /hobbies is the
-     real floor. And solving for exactly 4.5 then rounding to a hex triplet
-     lands fractionally UNDER it, so every heading on the site fails by a
-     thousandth; this targets 4.75 to leave the rounding somewhere to go.
+/* ── Legacy token names, mapped onto the semantic set ─────────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg-base:        var(--chassis-bg);
+  --bg-surface-1:   var(--panel-raised);
+  --bg-surface-2:   var(--panel-recessed);
+  --accent:         var(--status-ok);
+  --accent-rgb:     var(--status-ok-rgb);
+  --accent-on-dark:     var(--display-phosphor);
+  --accent-on-dark-rgb: var(--display-phosphor-rgb);
+  --border:         var(--seam);
+  --border-accent:  rgb(var(--status-ok-rgb) / 0.55);
 
-     It also fixes the inverse case, where --accent is the BACKGROUND and
-     bg-base-coloured text sits on it (the "More about me" button): also 2.99:1
-     before, 5.08:1 now.
+  --nav-bg:            var(--chassis-bg);
+  --nav-border:        var(--chassis-border);
+  --nav-shadow:        0 1px 0 var(--bevel-hi) inset, 0 1px 0 var(--seam);
+  --nav-mobile-bg:     var(--chassis-bg);
+  --nav-mobile-border: var(--chassis-border);
 
-     --accent-rgb must be kept in step: components build translucent tints with
-     rgb(var(--accent-rgb) / 0.3), and a mismatch would leave those tinted with
-     the old colour. */
-  --accent:         #1e588e;
-  --accent-rgb:     30 88 142;
 
-  /* Same hue as the dark-mode #FF3B30, darkened until it clears the light
-     Challenge panel. That panel is rgba(255,59,48,0.06) over the page, so it
-     composites to #c6cfe6..#f4eef2 depending on the surface under it, and the
-     original red measured 2.27:1 there. This is 4.79:1 at worst. */
-  --danger:         #ac0900;
 
-  /* Unchanged across themes on purpose -- see the dark-mode note. */
-  --accent-on-dark:     #5FD2E0;
-  --accent-on-dark-rgb: 95 210 224;
-  --border:         rgba(255, 255, 255, 0.60);
-  --border-accent:  rgb(var(--accent-rgb) / 0.40);
+  --flow-bg:           var(--panel-recessed);
+  --flow-bg-border:    var(--seam);
+  --flow-controls-bg:  var(--panel-raised);
+  --flow-edge:         var(--status-ok);
 
-  /* Navigation */
-  --nav-bg:           rgba(255, 255, 255, 0.58);
-  --nav-border:       rgba(255, 255, 255, 0.75);
-  --nav-shadow:       0 2px 16px rgba(0,0,0,0.06), inset 0 -1px 0 rgba(255,255,255,0.5);
-  --nav-mobile-bg:    rgba(255, 255, 255, 0.90);
-  --nav-mobile-border: rgba(255, 255, 255, 0.65);
-
-  /* Hero panel */
-  --hero-panel-bg:    rgba(255, 255, 255, 0.82);
-  --hero-panel-glow:  inset 0 0 30px rgba(255,255,255,0.5);
-  --hero-gradient-to: rgba(194, 216, 242, 0.55);
-
-  /* Glass containers */
-  --glass-bg:         rgba(255, 255, 255, 0.22);
-  --glass-border:     rgba(255, 255, 255, 0.58);
-  --glass-inset:      rgba(255, 255, 255, 0.62);
-  --glass-outer:      0 8px 32px rgba(0,0,0,0.10);
-
-  /* Mesh blobs -- sky blue, vivid mint green, soft lavender-mauve */
-  --blob-1: rgba(155, 205, 245, 0.65);
-  --blob-2: rgba(160, 230, 175, 0.55);
-  --blob-3: rgba(210, 175, 240, 0.50);
-  --blob-4: rgba(155, 205, 245, 0.42);
-
-  /* Flow diagram */
-  --flow-bg:           rgba(255, 255, 255, 0.22);
-  --flow-bg-border:    rgba(255, 255, 255, 0.52);
-  --flow-node-bg:      rgba(255, 255, 255, 0.38);
-  --flow-node-border:  rgba(255, 255, 255, 0.68);
-  --flow-node-inset:   rgba(255, 255, 255, 0.58);
-  --flow-panel-bg:     rgba(255, 255, 255, 0.42);
-  --flow-panel-border: rgba(255, 255, 255, 0.68);
-  --flow-controls-bg:  rgba(255, 255, 255, 0.58);
-  --flow-edge:         #2a7cc8;
-  --flow-edge-glow:    rgba(42, 124, 200, 0.55);
-
-  /* Buttons -- sky blue gel. Deepened for the same reason as dark mode: the
-     old #5cb0e8 mid stop put white label text at 2.38:1, the worst contrast
-     on the site. #24689F is 5.91:1. */
-  --btn-primary-grad:   linear-gradient(to bottom, #7FC4EE 0%, #24689F 40%, #10456F 100%);
-  --btn-primary-top:    rgba(255, 255, 255, 0.85);
-  --btn-primary-shadow: 0 4px 14px rgb(var(--accent-rgb) / 0.40);
-  --btn-primary-hover:  0 6px 22px rgb(var(--accent-rgb) / 0.55);
-  --btn-outline-bg:     rgba(255, 255, 255, 0.30);
-  --btn-outline-border: rgba(255, 255, 255, 0.68);
-  --btn-outline-color:  var(--text-secondary);
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -251,15 +148,19 @@ html { scroll-behavior: smooth; }
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
-  /* 'Exo 2 Fallback' sits second in every Exo 2 stack, including this one and
-     .font-mono-data below, which are hardcoded here and bypass
-     tailwind.config. Omitting it from these two would leave body copy
-     re-wrapping on swap -- which is most of the text on the site. */
-  font-family: 'Exo 2', 'Exo 2 Fallback', 'Segoe UI', Tahoma, system-ui, sans-serif;
-  font-size: clamp(0.9rem, 0.82rem + 0.35vw, 1.05rem);
+  /* Body copy is the platform's own grotesk -- Segoe UI, San Francisco,
+     Roboto -- rather than a webfont. That is the Swiss half of the brief (a
+     neutral sans that gets out of the way of long engineering prose) and it is
+     also free: nothing to download, nothing to swap, no reflow when a font
+     lands. Exo 2 used to set every paragraph on the site; it is now kept for
+     what its squared, Eurostile-like shapes are actually good at, which is
+     short uppercase legends. Keep in step with tailwind.config `sans`. */
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Segoe UI Symbol', 'Apple Symbols', 'Noto Sans Symbols 2', sans-serif;
+  font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.0625rem);
   font-weight: 400;
-  line-height: 1.75;
-  letter-spacing: 0.015em;
+  line-height: 1.65;
+  letter-spacing: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -316,6 +217,18 @@ p a {
   text-decoration-color: rgb(var(--accent-rgb) / 0.55);
 }
 p a:hover { text-decoration-color: var(--accent); }
+
+/* Standalone text links (social row, footer plate). Hover is CSS rather than
+   the onMouseEnter colour swaps these used to carry, so keyboard focus and
+   touch get the same treatment and nothing runs in JS. */
+.social-link,
+.plate-link { color: var(--text-secondary); text-decoration: none; }
+.social-link:hover,
+.plate-link:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
 
 /* Smooth transitions on interactive elements */
 button, input, select, textarea {
@@ -394,20 +307,6 @@ canvas, img, video, .no-theme-transition {
   font-display: swap;
   src: url('/fonts/exo2-400i.woff2') format('woff2');
 }
-@font-face {
-  font-family: 'Playfair Display';
-  font-style: normal;
-  font-weight: 700 900;
-  font-display: swap;
-  src: url('/fonts/playfair-700.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Playfair Display';
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/playfair-700i.woff2') format('woff2');
-}
 /* Variable across weight 100-700, which is why the icon class can set
    'wght' 300 through font-variation-settings.
 
@@ -469,48 +368,6 @@ canvas, img, video, .no-theme-transition {
   font-family: 'Exo 2 Fallback';
   src: local('Segoe UI'), local('Helvetica Neue'), local('Arial');
   size-adjust: 102.6%;
-  font-weight: 100 900;
-  font-style: normal;
-}
-
-/* ── Metric-matched fallbacks for Playfair Display ────────────────────────────
-   Exo 2 got one of these and Playfair never did, which left the single largest
-   piece of text on every route -- the PageHeader <h1>, weight 900 -- swapping
-   from a serif that is 10% wider. That reflows the heading, which changes the
-   height of everything under it, and it was the whole of /colophon's 0.0352
-   CLS: the heading and the paragraph below it both moved.
-
-   TWO faces, not one, because the candidates need corrections in OPPOSITE
-   directions. Measured with canvas measureText against this site's own Playfair
-   file, summed over the seven h1 strings the site actually renders:
-
-       Georgia            4470.6px    Playfair is 90.4% of it  (89.2% at wght 700)
-       Times New Roman    3721.0px    Playfair is 108.6% of it (107.1% at 700)
-
-   Exo 2's three candidates sit within 2.9% of each other so one size-adjust
-   covers them all. Georgia and Times are 20% apart, so a single value would fix
-   one platform and make the other materially worse. Georgia is on Windows and
-   macOS; Android has neither Georgia nor a Times metric-clone under that name,
-   and falls through to the generic serif, which is why the second face exists.
-
-   A @font-face whose only sources are local() and which resolves to nothing is
-   simply unavailable, and the browser continues down the family list -- so the
-   ordering in tailwind.config (Playfair, then these two, then Georgia, serif)
-   picks the right correction per platform on its own.
-
-   The 900 figure is the one used: the h1 is the element that shifts, and the
-   1.2% spread against weight 700 is far below the width of a word. */
-@font-face {
-  font-family: 'Playfair Fallback';
-  src: local('Georgia');
-  size-adjust: 90.4%;
-  font-weight: 100 900;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Playfair Fallback Serif';
-  src: local('Times New Roman'), local('Times'), local('Liberation Serif'), local('Tinos');
-  size-adjust: 108.6%;
   font-weight: 100 900;
   font-style: normal;
 }
@@ -588,12 +445,15 @@ canvas, img, video, .no-theme-transition {
   nav a { padding-top: 0.75rem; padding-bottom: 0.75rem; }
 }
 
-/* ── Focus-visible -- cyan glow matching accent, no browser default blue ──── */
+/* ── Focus-visible ───────────────────────────────────────────────────────────
+   A blue ring, deliberately outside the green/amber/red status vocabulary so
+   "this has focus" can never be misread as "this is selected" or "this is a
+   fault". 2px solid at >= 3:1 against both chassis colours (WCAG 2.4.13). No
+   border-radius here: forcing one onto the element rounded the corners of
+   every square key the moment it took focus. */
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 6px;
-  box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.18);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 /* Suppress focus ring on mouse click -- only show on keyboard */
 :focus:not(:focus-visible) { outline: none; }
@@ -631,12 +491,6 @@ main:focus { outline: none; }
 /* ── Prevent horizontal overflow on mobile ───────────────────────────────── */
 html, body { overflow-x: hidden; max-width: 100vw; }
 
-/* ── Hardware-accelerate animated glass containers ───────────────────────── */
-.glass-card, .glass, .glass-liquid {
-  will-change: transform;
-  transform: translateZ(0);
-}
-
 /* ── Hover-gated transforms ───────────────────────────────────────────────── */
 @media (hover: hover) and (pointer: fine) {
   .img-hover-scale { transition: transform 400ms ease-out; will-change: transform; }
@@ -645,117 +499,21 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   .card-hover-scale .card-img { transition: transform 500ms ease-in-out; will-change: transform; }
   .card-hover-scale:hover .card-img { transform: scale(1.05); }
 
-  .hover-overlay { transform: translateY(100%); transition: transform 380ms ease-out; }
-  .card-hover-scale:hover .hover-overlay { transform: translateY(0); }
-
   .hover-caption { opacity: 0; transition: opacity 300ms ease; }
   .img-hover-scale:hover .hover-caption { opacity: 1; }
+  /* Keyboard users get the caption on focus, as mouse users do on hover. On a
+     touch screen it is NOT forced on: there is no hover to dismiss it, and a
+     permanent strip would sit on every photograph. The caption is in the
+     lightbox and in each image's alt text. */
+  .img-hover-scale:focus-visible .hover-caption { opacity: 1; }
 
-  /* Heavy Aero glass card -- 500ms float-up */
-  .glass-card {
-    transition:
-      transform 500ms ease-in-out,
-      box-shadow 500ms ease-in-out,
-      filter 500ms ease-in-out,
-      background-color 0.35s ease,
-      border-color 0.35s ease;
-  }
-  .glass-card:hover {
-    transform: translateY(-8px);
-    filter: brightness(1.04);
-    box-shadow:
-      inset 0 0 22px rgba(255, 255, 255, 0.5),
-      0 20px 50px rgba(0, 0, 0, 0.25) !important;
-  }
+  /* Modules do not float. A hovered card only firms up its edge, the way a
+     bay in a rack is picked out by its frame rather than lifted off it. */
+  .card-hover-scale:hover { border-color: var(--control-edge); }
 }
 
 @media (hover: none) {
-  .hover-overlay { transform: translateY(0) !important; }
-  .hover-caption { opacity: 1 !important; }
   .card-img      { transform: scale(1) !important; }
-}
-
-/* ── Mesh gradient blob animations ───────────────────────────────────────── */
-@keyframes blob-drift-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%  { transform: translate(8%, 12%) scale(1.08); }
-  66%  { transform: translate(-4%, 6%) scale(0.96); }
-}
-@keyframes blob-drift-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%  { transform: translate(-10%, -8%) scale(1.12); }
-  66%  { transform: translate(6%, -4%) scale(0.92); }
-}
-@keyframes blob-drift-3 {
-  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  50%  { transform: translate(-10%, 8%) scale(1.15) rotate(140deg); }
-}
-@keyframes blob-drift-4 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  40%  { transform: translate(12%, -6%) scale(1.06); }
-  80%  { transform: translate(-8%, 10%) scale(0.94); }
-}
-
-/* Aurora band. The one Frutiger Aero motif the background was missing: the
-   blobs give ambient colour but nothing sweeps. This is a wide, heavily
-   blurred multi-hue ribbon skewed across the upper third, drifting far slower
-   than the blobs so it reads as atmosphere rather than animation. Kept under
-   0.5 opacity and behind everything -- it should be noticed on the second
-   look, not the first. */
-.aurora {
-  position: absolute;
-  top: -18%;
-  left: -25%;
-  width: 150%;
-  height: 62%;
-  pointer-events: none;
-  transform: rotate(-8deg);
-  filter: blur(90px);
-  opacity: 0.42;
-  background: linear-gradient(
-    100deg,
-    transparent 0%,
-    var(--aurora-1) 22%,
-    var(--aurora-2) 44%,
-    var(--aurora-3) 64%,
-    transparent 88%
-  );
-  animation: aurora-drift 48s ease-in-out infinite;
-}
-
-@keyframes aurora-drift {
-  0%, 100% { transform: rotate(-8deg) translateX(0)     scaleY(1);    }
-  50%      { transform: rotate(-6deg) translateX(-4vw)  scaleY(1.12); }
-}
-
-.mesh-blob { position: absolute; border-radius: 50%; pointer-events: none; }
-.mesh-blob-1 {
-  width: 70vw; height: 70vw;
-  background: radial-gradient(circle, var(--blob-1) 0%, transparent 68%);
-  top: -25%; left: -15%;
-  animation: blob-drift-1 22s ease-in-out infinite;
-  filter: blur(55px);
-}
-.mesh-blob-2 {
-  width: 55vw; height: 55vw;
-  background: radial-gradient(circle, var(--blob-2) 0%, transparent 68%);
-  bottom: -20%; right: -10%;
-  animation: blob-drift-2 28s ease-in-out infinite;
-  filter: blur(65px);
-}
-.mesh-blob-3 {
-  width: 50vw; height: 50vw;
-  background: radial-gradient(circle, var(--blob-3) 0%, transparent 65%);
-  top: 30%; left: 35%;
-  animation: blob-drift-3 35s ease-in-out infinite;
-  filter: blur(75px);
-}
-.mesh-blob-4 {
-  width: 40vw; height: 40vw;
-  background: radial-gradient(circle, var(--blob-4) 0%, transparent 70%);
-  top: 60%; left: 5%;
-  animation: blob-drift-4 18s ease-in-out infinite;
-  filter: blur(50px);
 }
 
 /* ── React Flow ───────────────────────────────────────────────────────────── */
@@ -765,21 +523,17 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 .react-flow__edge-path {
   stroke: var(--flow-edge) !important;
   stroke-width: 2 !important;
-  filter: drop-shadow(0 0 4px var(--flow-edge-glow)) !important;
 }
 .react-flow__handle {
   background: var(--accent) !important;
   border-color: var(--bg-base) !important;
   width: 8px !important; height: 8px !important;
-  box-shadow: 0 0 5px var(--flow-edge-glow) !important;
 }
 .react-flow__controls {
   background: var(--flow-controls-bg) !important;
   border: 1px solid var(--flow-bg-border) !important;
-  border-radius: 14px !important;
+  border-radius: var(--radius-panel) !important;
   overflow: hidden;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
 }
 .react-flow__controls-button {
   background: transparent !important;
@@ -794,12 +548,15 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 .react-flow__minimap {
   background: var(--flow-controls-bg) !important;
   border: 1px solid var(--flow-bg-border) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
 }
-.react-flow__node.selected > div,
-.react-flow__node:focus > div {
+/* Selected is green (a latched state); keyboard focus is the site-wide blue
+   ring, so "selected" and "has focus" can never be mistaken for each other. */
+.react-flow__node.selected > div {
   outline: 2px solid var(--accent) !important;
+  outline-offset: 2px;
+}
+.react-flow__node:focus-visible > div {
+  outline: 2px solid var(--focus-ring) !important;
   outline-offset: 2px;
 }
 
@@ -816,118 +573,311 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   .border-subtle { border: 1px solid var(--border); }
   .border-accent { border: 1px solid var(--border-accent); }
 
-  /* Base glass */
-  .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(16px) saturate(120%);
-    -webkit-backdrop-filter: blur(16px) saturate(120%);
-    border: 1px solid var(--glass-border);
-    box-shadow: inset 0 1px 1px var(--glass-inset);
+  /* ══ INSTRUMENT PRIMITIVES ════════════════════════════════════════════════
+     CSS composition, not a component tree. A module is `.panel`; a well set
+     into it is `.panel-recessed`; a readout window is `.display`. That is the
+     whole vocabulary -- everything else is layout. */
+
+  /* A raised module: moulded face, light top lip, dark bottom edge. */
+  .panel {
+    background: var(--panel-raised);
+    border: 1px solid var(--seam);
+    border-radius: var(--radius-panel);
+    box-shadow: inset 0 1px 0 var(--bevel-hi), 0 1px 0 var(--bevel-lo);
+  }
+  /* A well sunk into the chassis: shade falls on the TOP inside edge. */
+  .panel-recessed {
+    background: var(--panel-recessed);
+    border: 1px solid var(--seam);
+    border-radius: var(--radius-panel);
+    box-shadow: inset 0 1px 2px var(--bevel-lo);
   }
 
-  /* Heavy Aero glass card.
-     The top-edge specular is the thing that reads as glass rather than as a
-     translucent rectangle: real glass catches a hard line of light on its
-     upper lip. --lg-specular was defined for exactly this and then never
-     referenced by anything, so every panel on the site was flat fill plus a
-     border. One inset highlight is enough; a full gloss sweep across the card
-     would wash out the photography these cards are mostly made of. */
-  .glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(24px) saturate(120%);
-    -webkit-backdrop-filter: blur(24px) saturate(120%);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    box-shadow:
-      inset 0 1px 0 var(--lg-specular),
-      inset 0 0 15px var(--glass-inset),
-      var(--glass-outer);
-  }
 
-  /* Gloss sweep for panels with no photograph underneath -- spec tables, the
-     facts panel, the legal notice. This is the Aero highlight proper: light
-     falling across the top third of a curved surface. Sits behind content via
-     a negative z-index on the pseudo-element rather than an overlay, so text
-     never dims. */
-  .aero-gloss {
+  /* ── Display window ────────────────────────────────────────────────────────
+     Dark in BOTH modes. The only place on the site that may carry a CRT hint:
+     a 3% scanline and a 2px phosphor bloom, both inside `.display-crt`. If
+     either is ever noticed as an effect, it is too strong. */
+  .display {
+    background: var(--display-bg);
+    color: var(--display-text);
+    border: 1px solid #000;
+    border-radius: var(--radius-control);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6), 0 1px 0 var(--bevel-hi);
+  }
+  .display-crt {
     position: relative;
-    isolation: isolate;
+    background-image: repeating-linear-gradient(
+      to bottom, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 3px);
   }
-  .aero-gloss::before {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto 0;
-    /* Capped, not a bare percentage: on a ten-row spec table 38% is nearly
-       300px, which stops reading as light on a curved lip and starts reading
-       as a background wash. */
-    height: min(38%, 140px);
-    border-radius: inherit;
-    background: linear-gradient(to bottom, var(--lg-specular) 0%, transparent 100%);
-    opacity: 0.55;
-    pointer-events: none;
-    z-index: -1;
-  }
+  .display-crt .readout,
+  .display-crt .glow { text-shadow: 0 0 2px rgb(var(--display-phosphor-rgb) / 0.55); }
 
-  /* Typography */
+  /* ── Type roles ────────────────────────────────────────────────────────────
+     .legend       Exo 2, uppercase, tracked: the printed legend above a control.
+     .font-mono-data  kept name, same Exo 2 face in sentence case, for the
+                   ~180 short labels and captions already written against it.
+     .font-readout true fixed-pitch, tabular. Numbers only -- never prose. */
+  .legend {
+    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  /* The heading of a module on a page (Hardware Diagnostics, Vinyl Archive,
+     BLDC Motor ...): a legend one step larger, in the muted ink. */
+  .legend-module {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
   .font-mono-data {
-    /* NOTE: despite the name this is a proportional stack, not a monospace one.
-       Fine for readouts. Anything that must column-align (box-drawing frames,
-       padded tables) needs a genuine fixed-pitch stack with letter-spacing: 0
-       -- there is no such class in use now that the terminal console is gone. */
-    font-family: 'Exo 2', 'Exo 2 Fallback', 'Segoe UI', Tahoma, system-ui, 'Segoe UI Symbol',
+    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, 'Segoe UI Symbol',
       'Apple Symbols', 'Noto Sans Symbols 2', 'DejaVu Sans', sans-serif;
     /* No font-size override -- let Tailwind text-xs/sm/base classes control size */
-    line-height: 1.6;
-    letter-spacing: 0.025em;
+    line-height: 1.55;
+    letter-spacing: 0.02em;
     font-weight: 500;
   }
-  /* Legibility aid for text over glass/hazy surfaces (WCAG contrast assist) */
-  .text-on-glass {
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  .font-readout {
+    font-family: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas,
+      'Liberation Mono', monospace;
+    font-variant-numeric: tabular-nums slashed-zero;
+    letter-spacing: 0;
   }
-  /* Must stay in step with tailwind.config's `display` stack -- this rule is
-     what actually applies, and leaving the metric-matched fallbacks out of it
-     would silently undo them. */
-  .font-display { font-family: 'Playfair Display', 'Playfair Fallback', 'Playfair Fallback Serif', Georgia, serif; }
+  .readout {
+    font-family: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas,
+      'Liberation Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    color: var(--display-phosphor);
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+  /* Units sit smaller and lower than the figure, as on a DMM. */
+  .readout .unit { font-size: 0.45em; margin-left: 0.35em; letter-spacing: 0.08em; }
+
+  .font-display {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  /* A legend broken into a rule -- how instruments label a group of controls:
+     ──── RANGE ────────── */
+  .legend-rule {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .legend-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--seam);
+  }
+
+  /* ── Keys ──────────────────────────────────────────────────────────────────
+     A rectangular key that reads as a website button first: a visible face,
+     a visible edge, a label in plain words. Pressing it depresses it by 1px.
+     aria-pressed/aria-current drive the latched state, so the visual state is
+     always the accessible state. */
+  .key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 1rem;
+    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--control-ink);
+    background: var(--control-face);
+    border: 1px solid var(--control-edge);
+    border-radius: var(--radius-control);
+    box-shadow: inset 0 1px 0 var(--bevel-hi), 0 1px 0 var(--bevel-lo);
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 80ms ease-out, box-shadow 80ms ease-out, background-color 150ms ease;
+  }
+  .key:hover { background: var(--panel-plate); }
+  .key:active,
+  .key[aria-pressed='true'],
+  .key[aria-selected='true'],
+  .key[aria-current='page'],
+  .key[aria-current='true'] {
+    transform: translateY(1px);
+    background: var(--control-selected);
+    box-shadow: inset 0 1px 2px var(--bevel-lo);
+  }
+  /* The primary key is the one dark key on the panel, as the power or
+     measure key is on a bench meter. */
+  .key-primary {
+    color: var(--display-text);
+    background: #2A2C28;
+    border-color: #0E0F0D;
+  }
+  .key-primary:hover { background: #363833; }
+  [data-theme='dark'] .key-primary {
+    color: #10120F;
+    background: var(--display-phosphor);
+    border-color: #3E7A4B;
+  }
+  [data-theme='dark'] .key-primary:hover { background: #8FD6A0; }
+  .key-sm { min-height: 2rem; padding: 0.3rem 0.7rem; font-size: 0.75rem; }
+
+  /* A key bank: keys mounted edge to edge in one recessed tray, the way a
+     selector row is moulded on a front panel, instead of loose buttons with
+     gaps between them. Only the outer corners are rounded. A focused key is
+     lifted above its neighbours so the overlapping 1px edge cannot clip the
+     focus ring. */
+  .key-bank {
+    display: inline-flex;
+    padding: 3px;
+    background: var(--panel-recessed);
+    border: 1px solid var(--seam);
+    border-radius: calc(var(--radius-control) + 2px);
+    box-shadow: inset 0 1px 2px var(--bevel-lo);
+  }
+  .key-bank > .key { border-radius: 0; }
+  .key-bank > .key + .key { margin-left: -1px; }
+  .key-bank > .key:first-child { border-radius: var(--radius-control) 0 0 var(--radius-control); }
+  .key-bank > .key:last-child  { border-radius: 0 var(--radius-control) var(--radius-control) 0; }
+  .key-bank > .key:focus-visible { position: relative; z-index: 1; }
+
+  /* The LAB/NIGHT switch draws its latched position from the theme attribute
+     that theme-init.js sets before first paint, so the prerendered page shows
+     the right position before React has even loaded. */
+  html:not([data-theme='dark']) .mode-lab,
+  [data-theme='dark'] .mode-night {
+    transform: translateY(1px);
+    background: var(--control-selected);
+    box-shadow: inset 0 1px 2px var(--bevel-lo);
+  }
+  html:not([data-theme='dark']) .mode-lab .lamp,
+  [data-theme='dark'] .mode-night .lamp {
+    background: #4FB365;
+    box-shadow: 0 0 4px rgba(79, 179, 101, 0.7);
+  }
+
+  /* The period signature: a two-colour pinstripe along the bottom of the top
+     rail, the way 1980s equipment ran a thin stripe across its fascia. Amber
+     over green, both muted, 2px each. It is the only purely graphic element
+     on the site; it carries no meaning and so claims none. */
+  .stripe-rail {
+    background-image: linear-gradient(to bottom,
+      transparent calc(100% - 5px),
+      #C08A38 calc(100% - 5px), #C08A38 calc(100% - 3px),
+      #4F8A5B calc(100% - 3px), #4F8A5B calc(100% - 1px),
+      transparent calc(100% - 1px));
+  }
+
+  /* ── Status lamps ──────────────────────────────────────────────────────────
+     A lamp is never the only carrier of a state -- it always sits next to a
+     word -- so it is aria-hidden at the call site. */
+  .lamp {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--lamp-off);
+    box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.35);
+    transition: background-color 150ms ease, box-shadow 150ms ease;
+  }
+  .lamp-ok      { background: #4FB365; box-shadow: 0 0 4px rgba(79, 179, 101, 0.7); }
+  .lamp-caution { background: #E0A43A; box-shadow: 0 0 4px rgba(224, 164, 58, 0.7); }
+  .lamp-fault   { background: #D2513F; box-shadow: 0 0 4px rgba(210, 81, 63, 0.7); }
+
+  /* ── Evidence mark ─────────────────────────────────────────────────────────
+     How a figure was obtained, printed beside it: MEAS, CALC, OBS. Used
+     only where the page's own text already states the provenance -- the mark
+     restates a fact, it never asserts one. Shape, ink and word all differ, so
+     no single channel carries the meaning. See components/ui/Evidence.jsx. */
+  .evidence {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.05rem 0.35rem;
+    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+  }
+  .evidence-meas { color: var(--status-ok); }
+  .evidence-calc { color: var(--status-caution); }
+  .evidence-obs  { color: var(--text-muted); border-style: dashed; }
+
+  /* ── Spec grid: label / value rows, Swiss-aligned ──────────────────────── */
+  .spec-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    border-top: 1px solid var(--seam);
+  }
+  .spec-grid > div,
+  .spec-grid > span {
+    display: grid;
+    grid-template-columns: minmax(5.5rem, 9rem) minmax(0, 1fr);
+    gap: 0.25rem 1rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--seam);
+  }
+  .spec-grid dt,
+  .spec-grid .spec-label {
+    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding-top: 0.15em;
+  }
+  .spec-grid dd,
+  .spec-grid .spec-value { color: var(--text-primary); }
+  @media (max-width: 479px) {
+    .spec-grid > div, .spec-grid > span { grid-template-columns: minmax(0, 1fr); }
+  }
+
+
+  /* ── Register: an index table, ruled like a parts list ─────────────────── */
+  .register { border-collapse: collapse; }
+  .register th,
+  .register td {
+    text-align: left;
+    vertical-align: baseline;
+    padding: 0.45rem 0.9rem;
+    border-bottom: 1px solid var(--seam);
+    color: var(--text-primary);
+  }
+  .register thead th,
+  .register .register-group {
+    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .register .register-group { padding-top: 1rem; }
+  .register tbody:last-child tr:last-child td { border-bottom: 0; }
+  /* inline-block with padding: a 24px-tall target (WCAG 2.2 2.5.8) even
+     before the spacing exception, without changing the row rhythm much. */
+  .register-link { display: inline-block; padding: 0.2rem 0; text-decoration: underline; text-decoration-color: var(--text-muted); text-underline-offset: 0.2em; }
+  .register-link:hover { text-decoration-color: currentColor; }
 
   .px-safe {
     padding-left:  max(1.25rem, env(safe-area-inset-left));
     padding-right: max(1.25rem, env(safe-area-inset-right));
   }
 
-  /* Glossy gel CTA -- themed via CSS vars */
-  .btn-primary {
-    background: var(--btn-primary-grad);
-    border: 1px solid var(--btn-primary-top);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), var(--btn-primary-shadow);
-    color: #ffffff;
-    font-weight: 600;
-    text-decoration: none;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-    border-radius: 9999px;
-    transition: transform 500ms ease-in-out, box-shadow 500ms ease-in-out, filter 500ms ease-in-out;
-  }
-  .btn-primary:hover {
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), var(--btn-primary-hover);
-    transform: translateY(-2px);
-    filter: brightness(1.08);
-  }
-
-  .btn-outline {
-    border-radius: 9999px;
-    border: 1px solid var(--btn-outline-border);
-    background: var(--btn-outline-bg);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: var(--btn-outline-color);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
-    transition: all 500ms ease-in-out;
-  }
-  .btn-outline:hover {
-    filter: brightness(1.1);
-    transform: translateY(-2px);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 4px 14px rgba(0,0,0,0.1);
-  }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -946,11 +896,6 @@ html, body { overflow-x: hidden; max-width: 100vw; }
    collapses every animation and transition on the page to 0.01ms.
    ════════════════════════════════════════════════════════════════════════════ */
 
-@keyframes rise-in {
-  from { opacity: 0; transform: translateY(var(--rise-from, 16px)); }
-  to   { opacity: 1; transform: none; }
-}
-
 @keyframes fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -958,7 +903,6 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 
 /* backwards fill so the element is already at opacity 0 during any delay,
    rather than flashing at full opacity for the length of the delay first. */
-.anim-rise { animation: rise-in var(--anim-dur, 0.7s) ease-out var(--anim-delay, 0s) backwards; }
 .anim-fade { animation: fade-in var(--anim-dur, 0.4s) ease-out var(--anim-delay, 0s) backwards; }
 
 /* Modal/lightbox panel entrance: the scale-and-rise that AnimatePresence used
@@ -1014,8 +958,8 @@ html, body { overflow-x: hidden; max-width: 100vw; }
    and because it is a discrete property it holds until the transition ends
    rather than cutting the close animation short.
 
-   No `display` here on purpose: setting it would fight Tailwind's md:hidden on
-   the same element. The element carries `grid md:hidden` instead, so the
+   No `display` here on purpose: setting it would fight Tailwind's lg:hidden on
+   the same element. The element carries `grid lg:hidden` instead, so the
    breakpoint still wins. */
 .nav-drawer {
   /* minmax(0, ...), not a bare 0fr. A bare `0fr` track is `minmax(auto, 0fr)`,
@@ -1046,30 +990,27 @@ html, body { overflow-x: hidden; max-width: 100vw; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  /* Blob and aurora drifts are purely decorative -- stop them entirely */
-  .mesh-blob { animation: none !important; }
-  .aurora    { animation: none !important; }
+  /* Entrances and hover lifts are removed outright rather than shortened:
+     a 0.01ms animation still runs its keyframes, and a scaled tile still
+     jumps. What stays is state -- a key still shows it is latched, a lamp
+     still changes colour -- because that is information, not motion. */
+  .anim-fade, .anim-pop { animation: none !important; }
+  .tile-lift:hover, .tile-lift:active,
+  .img-hover-scale:hover, .card-hover-scale:hover .card-img { transform: none !important; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   HIGH CONTRAST -- boost glass opacity and legibility
+   HIGH CONTRAST -- darker ink, harder edges, no bevel subtlety
    ════════════════════════════════════════════════════════════════════════════ */
 @media (prefers-contrast: more) {
   :root {
-    --glass-bg:     rgba(0, 0, 0, 0.88);
-    --glass-border: rgba(255, 255, 255, 0.80);
-    --text-muted:   #c4b8e8;
-    --border:       rgba(210, 185, 255, 0.55);
+    --text-muted:  #2E2F2A;
+    --seam:        rgba(0, 0, 0, 0.6);
+    --control-edge: #3A3730;
   }
-  [data-theme="light"] {
-    --glass-bg:     rgba(255, 255, 255, 0.96);
-    --glass-border: rgba(0, 0, 0, 0.65);
-    --text-muted:   #1a2e48;
-    --border:       rgba(0, 0, 0, 0.45);
-  }
-  /* Remove frosted blur -- solid background passes WCAG 4.5:1 contrast */
-  .glass, .glass-card {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+  [data-theme="dark"] {
+    --text-muted:  #D5CFC1;
+    --seam:        rgba(255, 255, 255, 0.45);
+    --control-edge: #A8A395;
   }
 }

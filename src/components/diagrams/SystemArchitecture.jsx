@@ -18,19 +18,12 @@ function ArchNode({ data }) {
   return (
     <div
       ref={ref}
-      className="px-3 py-2 rounded-xl cursor-pointer select-none min-w-[130px]"
-      style={{
-        background: 'var(--flow-node-bg)',
-        backdropFilter: 'blur(16px) saturate(120%)',
-        WebkitBackdropFilter: 'blur(16px) saturate(120%)',
-        border: '1px solid var(--flow-node-border)',
-        boxShadow: 'inset 0 0 10px var(--flow-node-inset), 0 4px 12px rgba(0,0,0,0.07)',
-        color: 'var(--text-primary)',
-      }}
+      className="panel px-3 py-2 cursor-pointer select-none min-w-[130px]"
+      style={{ color: 'var(--text-primary)' }}
       onClick={() => data.onSelect(data)}
     >
       <Handle type="target" position={Position.Left} />
-      <div className="font-sans font-semibold leading-snug text-sm" style={{ color: 'var(--accent)' }}>{data.label}</div>
+      <div className="font-sans font-semibold leading-snug text-sm" style={{ color: 'var(--text-primary)' }}>{data.label}</div>
       <div className="font-sans mt-0.5" style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
         {data.type?.toUpperCase()}
       </div>
@@ -44,7 +37,6 @@ const nodeTypes = { archNode: ArchNode }
 const edgeStyle = {
   stroke: 'var(--flow-edge)',
   strokeWidth: 2,
-  filter: 'drop-shadow(0 0 4px var(--flow-edge-glow)) drop-shadow(0 0 2px var(--flow-edge))',
 }
 
 const initialEdges = feeblePresenceArch.edges.map((e) => ({
@@ -59,16 +51,8 @@ const initialEdges = feeblePresenceArch.edges.map((e) => ({
 function SpecPanel({ node, onClose }) {
   if (!node) return null
   return (
-        <div
-          className="hidden sm:flex items-start gap-6 mt-2 px-4 py-3 rounded-xl"
-          style={{
-            background: 'var(--flow-panel-bg)',
-            backdropFilter: 'blur(20px) saturate(120%)',
-            WebkitBackdropFilter: 'blur(20px) saturate(120%)',
-            border: '1px solid var(--flow-panel-border)',
-          }}
-        >
-          <span className="font-sans text-sm font-medium shrink-0 pt-0.5" style={{ color: 'var(--accent)', minWidth: '160px' }}>
+        <div className="panel hidden sm:flex items-start gap-6 mt-2 px-4 py-3">
+          <span className="font-sans text-sm font-semibold shrink-0 pt-0.5" style={{ color: 'var(--text-primary)', minWidth: '160px' }}>
             {node.label}
           </span>
           <div className="flex flex-wrap gap-x-8 gap-y-1 flex-1">
@@ -79,7 +63,7 @@ function SpecPanel({ node, onClose }) {
               </div>
             ))}
           </div>
-          <button onClick={onClose} style={{ color: 'var(--text-muted)' }} aria-label="Close">
+          <button onClick={onClose} className="key key-sm" aria-label="Close">
             <span aria-hidden="true" className="material-symbols-rounded text-sm">close</span>
           </button>
         </div>
@@ -102,8 +86,7 @@ export default function SystemArchitecture() {
   return (
     <section className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
       <h2
-        className="font-mono-data tracking-widest uppercase mb-2"
-        style={{ color: 'var(--accent)' }}
+        className="legend legend-rule mb-2 legend-module"
       >
         Feeble Presence · Architecture
       </h2>
@@ -112,15 +95,8 @@ export default function SystemArchitecture() {
       </p>
 
       <div
-        className="relative hidden sm:block rounded-xl overflow-hidden"
-        style={{
-          height: '240px',
-          background: 'var(--flow-bg)',
-          backdropFilter: 'blur(16px) saturate(120%)',
-          WebkitBackdropFilter: 'blur(16px) saturate(120%)',
-          border: '1px solid var(--flow-bg-border)',
-          boxShadow: 'inset 0 0 12px var(--flow-node-inset), 0 4px 16px rgba(0,0,0,0.06)',
-        }}
+        className="panel-recessed relative hidden sm:block overflow-hidden"
+        style={{ height: '240px' }}
       >
         {/* See AudioSignalChain: both diagrams render on the home page, and an
             unset id makes React Flow number every instance "1". */}
@@ -142,17 +118,15 @@ export default function SystemArchitecture() {
           edgesFocusable={false}
           edgesUpdatable={false}
         >
-          <Background id="dots" color="#1f2937" gap={24} />
-          <Controls
-            showInteractive={false}
-            style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
-          />
+          {/* Graphite dots: readable on both the beige and the night chassis. */}
+          <Background id="dots" color="#8F8778" gap={24} />
+          <Controls showInteractive={false} />
         </ReactFlow>
       </div>
 
       <SpecPanel node={selected} onClose={() => setSelected(null)} />
 
-      <div className="sm:hidden rounded-xl border-subtle p-4" style={{ background: 'var(--bg-surface-1)' }}>
+      <div className="sm:hidden panel-recessed p-4">
         <p className="font-mono-data text-center text-sm" style={{ color: 'var(--text-muted)' }}>
           Architecture diagram available on desktop.
         </p>

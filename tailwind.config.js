@@ -32,45 +32,31 @@ export default {
         'tv':      '2400px',
       },
 
+      // Moulded-instrument radii: small, never zero. Every rounded-xl card and
+      // rounded-lg control on the site picks these up without being touched.
       borderRadius: {
-        DEFAULT: '8px',
-        sm: '6px',
-        md: '8px',
-        lg: '10px',
-        xl: '12px',
-        '2xl': '16px',
+        DEFAULT: '3px',
+        sm: '2px',
+        md: '3px',
+        lg: '3px',
+        xl: '4px',
+        '2xl': '8px',
       },
 
-      // Exo 2 ships only latin/latin-ext/cyrillic/vietnamese — it has NO Greek
-      // subset, and no math, arrow, or box-drawing glyphs. So μ π Ω ≈ → ← ─ all
-      // fall through to a fallback. The symbol families below make that fallback
-      // explicit and consistent across platforms instead of OS-dependent.
+      // Three roles (see docs/redesign/DESIGN.md):
+      //   sans    -- body and headings: the platform grotesk, no download
+      //   legend  -- Exo 2, short uppercase legends only
+      //   mono    -- genuine fixed-pitch, for readouts
+      // `display` points at the same grotesk as `sans`: Playfair is gone, and
+      // the 16 existing font-display headings become bold Swiss sans unchanged.
+      // The symbol families cover µ Ω ± ≈ → and subscripts on every platform.
       fontFamily: {
-        // "Exo 2 Fallback" is a size-adjusted @font-face in styles/index.css, so
-        // text laid out before the webfont arrives takes the width it will take
-        // afterwards. See the comment over that rule, including why it has to be
-        // verified at 412px rather than 390px.
-        sans:    ['"Exo 2"', '"Exo 2 Fallback"', '"Segoe UI"', 'Tahoma', 'system-ui', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', '"DejaVu Sans"', 'sans-serif'],
-        mono:    ['"Exo 2"', '"Exo 2 Fallback"', '"Segoe UI"', 'system-ui', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', '"DejaVu Sans"', 'sans-serif'],
-        // Two metric-matched fallbacks, in this order: Georgia needs Playfair
-        // scaled DOWN to 90.4% and Times needs it scaled UP to 108.6%, so one
-        // face cannot serve both. See the @font-face pair in styles/index.css.
-        display: ['"Playfair Display"', '"Playfair Fallback"', '"Playfair Fallback Serif"', 'Georgia', 'serif'],
+        sans:    ['system-ui', '-apple-system', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', 'sans-serif'],
+        display: ['system-ui', '-apple-system', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+        legend:  ['"Exo 2"', '"Exo 2 Fallback"', 'system-ui', 'sans-serif'],
+        mono:    ['ui-monospace', '"Cascadia Mono"', '"SF Mono"', 'Menlo', 'Consolas', '"Liberation Mono"', 'monospace'],
       },
 
-      colors: {
-        surface: {
-          DEFAULT: '#111111',
-          1: '#1a1a1a',
-          2: '#242424',
-          3: '#2e2e2e',
-        },
-        accent: {
-          DEFAULT: '#58b8e0',
-          dim: '#3a90b8',
-        },
-        crimson: '#FF3B30',
-      },
     },
   },
   plugins: [],

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { hardwareDiagnostics } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
@@ -6,125 +6,71 @@ import { thumbSrc } from '../../utils/thumbs'
 import { gridColsFor } from '../../utils/gridCols'
 import Picture from '../ui/Picture'
 
-// ─── Data-decode scramble (same logic as ProjectGallery) ─────────────────────
-const SCRAMBLE_CHARS = '0123456789ABCDEF#&%$@!?<>[]{}|'
-function useScramble(text, active) {
-  const [display, setDisplay] = useState(text)
-  const timerRef = useRef(null)
-  useEffect(() => {
-    if (timerRef.current) clearInterval(timerRef.current)
-    if (!active) { setDisplay(text); return }
-    const total = 300 / 16
-    let frame = 0
-    timerRef.current = setInterval(() => {
-      frame++
-      const progress = frame / total
-      if (progress >= 1) { setDisplay(text); clearInterval(timerRef.current); return }
-      const resolved = Math.floor(progress * text.length)
-      setDisplay(text.split('').map((ch, i) => {
-        if (ch === ' ') return ' '
-        if (i < resolved) return ch
-        return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
-      }).join(''))
-    }, 16)
-    return () => clearInterval(timerRef.current)
-  }, [active, text])
-  return display
-}
-
 // ─── Image card ──────────────────────────────────────────
 /* Most tiles open their own photo in the lightbox, because the photo IS the
    content. A tile carrying `to` is a doorway to a full write-up instead, so it
    navigates on click and says so on its face -- a tile that behaves differently
-   from its neighbours has to announce that before the click, not after it. */
-function DiagnosticImage({ image, index }) {
-  const [hovered,  setHovered]  = useState(false)
+   from its neighbours has to announce that before the click, not after it.
+
+   The caption sits BELOW the photograph, on the panel, rather than over it on
+   a gradient. These captions run 80-95 characters and used to need a scrim
+   that grew with the text; a caption beside the picture needs no scrim and
+   leaves the photograph untouched. */
+function DiagnosticImage({ image, eager = false, priority = false }) {
   const [lightbox, setLightbox] = useState(false)
   const linked = Boolean(image.to)
 
-  /* onHoverStart/onHoverEnd are framer-motion props, and this has been a plain
-     <div> since the motion wrapper came out -- so they bound nothing, `hovered`
-     was stuck at false, and neither the zoom cue nor the scale has run since. */
-  const shellProps = {
-    className: `relative overflow-hidden group block ${linked ? 'cursor-pointer' : 'cursor-zoom-in'}`,
-    style: {
-      background: 'rgba(255,255,255,0.22)',
-      border: '1px solid rgba(255,255,255,0.45)',
-      borderRadius: 'var(--radius)',
-      aspectRatio: '4/3',
-    },
-    onMouseEnter: () => setHovered(true),
-    onMouseLeave: () => setHovered(false),
-  }
+  const shellClass = `panel flex flex-col overflow-hidden text-left w-full ${linked ? 'cursor-pointer' : 'cursor-zoom-in'}`
 
   const inner = (
     <>
-      <Picture
-        src={thumbSrc(image.src)}
-        alt={image.label}
-        loading="lazy"
-        decoding="async"
-        className="w-full h-full object-cover transition-all duration-500"
-        /* Three of these are portrait (the hi-fi rack, the RTX 3090, the
-           Beats headphone) rendered into a 4:3 landscape box. Centred
-           cover-cropping cut the subject out of the middle; top-anchoring
-           keeps it. See ArchiveModules for the same fix. */
-        style={{ objectPosition: 'top', transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s' }}
-      />
+      {/* Spans, not divs/ps: this markup is the content of a <button> (or a
+          link), and a button may only contain phrasing content. */}
+      <span className="panel-recessed block p-1 m-2 mb-0">
+        <span className="block overflow-hidden" style={{ aspectRatio: '4/3' }}>
+          <Picture
+            src={thumbSrc(image.src)}
+            alt={image.label}
+            /* The first tiles sit inside the first screen on a phone, and the
+               first one is the route's LCP element there (measured: 344x258
+               at y=712 in a 412x823 viewport, larger than the intro text).
+               Lazy-loading it delayed LCP from 1.39s to 2.65s, so the leading
+               tiles load eagerly and the very first is prioritised. Everything
+               below stays lazy. */
+            loading={eager ? 'eager' : 'lazy'}
+            fetchpriority={priority ? 'high' : 'auto'}
+            decoding="async"
+            className="w-full h-full object-cover"
+            /* Three of these are portrait (the hi-fi rack, the RTX 3090, the
+               Beats headphone) rendered into a 4:3 landscape box. Centred
+               cover-cropping cut the subject out of the middle; top-anchoring
+               keeps it. See ArchiveModules for the same fix. */
+            style={{ objectPosition: 'top' }}
+          />
+        </span>
+      </span>
 
-      {/* Always-visible caption scrim.
-          This was `inset-0` with `justify-end` and a gradient that is fully
-          transparent above 75% -- so the scrim covered a fixed quarter of the
-          card while the text block grew upward with its content. Captions
-          like the DVD player's ("Internal inspection · full disc drive
-          disassembly · laser sled cleaning · mechanism lubrication") run to
-          four lines and ended up sitting on bare photo, white-on-white in
-          places and unreadable.
-
-          Anchoring to the bottom edge instead lets the box hug its own text,
-          so the gradient always spans exactly the height the caption needs,
-          whatever the caption length. The extra top padding gives the fade
-          somewhere to happen above the first line. */}
-      <div
-        className="absolute inset-x-0 bottom-0 px-3 pb-2.5 pt-4"
-        style={{
-          background:
-            'linear-gradient(to top, rgba(0,20,60,0.92) 0%, rgba(0,20,60,0.86) 55%, rgba(0,20,60,0.55) 85%, rgba(0,20,60,0) 100%)',
-        }}
-      >
-        {/* No line-clamp. These captions run 80-95 characters and were being
-            cut mid-item -- "software repair - SSD..." -- which loses the last
-            thing in a list that is nothing but items. They are terse work
-            notes, not padding, so the scrim grows by a line instead. */}
-        <p className="font-mono-data text-sm font-medium" style={{ color: '#ffffff' }}>{image.label}</p>
-        <p className="font-mono-data mt-0.5" style={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.875rem' }}>{image.caption}</p>
-      </div>
-
-      {/* The link badge does NOT fade in on hover the way the zoom cue does:
-          it is the only thing saying this tile leaves the page, and a touch
-          screen has no hover to reveal it with. */}
-      {linked ? (
-        <div
-          className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded"
-          style={{ background: 'rgba(3,7,18,0.72)', border: '1px solid rgb(var(--accent-on-dark-rgb) / 0.35)' }}
-        >
-          <span aria-hidden="true" className="material-symbols-rounded" style={{ color: 'var(--accent-on-dark)', fontSize: '0.9rem' }}>open_in_new</span>
-          <span className="font-mono-data text-sm" style={{ color: 'var(--accent-on-dark)' }}>Repair log</span>
-        </div>
-      ) : (
-        <div
-          className="absolute top-2 right-2 transition-opacity duration-200"
-          style={{ opacity: hovered ? 1 : 0 }}
-        >
-          <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>zoom_in</span>
-        </div>
-      )}
+      <span className="flex flex-col items-start gap-0.5 px-3 pt-2.5 pb-3 flex-1">
+        {/* No line-clamp. These captions are terse work notes, not padding, and
+            cutting one mid-item loses the last thing in a list that is nothing
+            but items. The panel grows by a line instead. */}
+        <span className="block font-mono-data text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{image.label}</span>
+        <span className="block font-mono-data" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{image.caption}</span>
+        {/* The link cue is always visible: it is the only thing saying this
+            tile leaves the page, and a touch screen has no hover to reveal it. */}
+        {linked && (
+          <span className="key key-sm mt-2" aria-hidden="true">
+            Repair log
+            <span className="material-symbols-rounded text-sm">open_in_new</span>
+          </span>
+        )}
+      </span>
     </>
   )
 
   if (linked) {
     return (
-      <Link to={image.to} aria-label={`${image.label}: read the full repair write-up`} {...shellProps}>
+      <Link to={image.to} aria-label={`${image.label}: read the full repair write-up`} className={shellClass}>
         {inner}
       </Link>
     )
@@ -132,14 +78,21 @@ function DiagnosticImage({ image, index }) {
 
   return (
     <>
-      <div onClick={() => setLightbox(true)} {...shellProps}>{inner}</div>
+      <button
+        type="button"
+        aria-label={`Open ${image.label} full size`}
+        onClick={() => setLightbox(true)}
+        className={shellClass}
+      >
+        {inner}
+      </button>
       {lightbox && <ImageLightbox src={image.src} label={image.label} caption={image.caption} note={image.note} onClose={() => setLightbox(false)} />}
     </>
   )
 }
 
 // ─── Category section ─────────────────────────────────────────────────────────
-function CategorySection({ category, sectionIndex }) {
+function CategorySection({ category, first = false }) {
   // Columns capped to the tile count; see utils/gridCols for why the width is
   // capped alongside them. ArchiveModules renders the sections directly below
   // these and uses the same helper, so a one-photo category looks the same
@@ -150,23 +103,20 @@ function CategorySection({ category, sectionIndex }) {
   )
   return (
     <div className="mb-8">
-      <div
-        className="flex items-center gap-2 mb-4"
-      >
-        {category.icon === '_sacd'
-          ? <span className="font-mono-data text-sm font-bold leading-none" style={{ color: 'var(--accent)', letterSpacing: '0.05em' }}>SACD</span>
-          : <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>{category.icon}</span>
-        }
-        <span className="font-mono-data text-sm tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
+        <h3 className="legend legend-rule flex-1 legend-module">
+          {category.icon === '_sacd'
+            ? <span aria-hidden="true" className="font-readout font-bold">SACD</span>
+            : <span aria-hidden="true" className="material-symbols-rounded text-sm">{category.icon}</span>
+          }
           {category.label}
-        </span>
-        <div className="flex-1 h-px ml-1" style={{ background: 'rgba(255,255,255,0.45)' }} />
+        </h3>
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{category.description}</span>
       </div>
 
       <div className={`grid gap-3 ${gridCols}`}>
         {category.images.map((img, i) => (
-          <DiagnosticImage key={img.src} image={img} index={i} />
+          <DiagnosticImage key={img.src} image={img} eager={first && i < 2} priority={first && i === 0} />
         ))}
       </div>
     </div>
@@ -175,9 +125,6 @@ function CategorySection({ category, sectionIndex }) {
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export default function HardwareDiagnostics() {
-  const [hovered, setHovered] = useState(false)
-  const scrambled = useScramble(hardwareDiagnostics.title, hovered)
-
   return (
     <section
       className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
@@ -185,13 +132,8 @@ export default function HardwareDiagnostics() {
       {/* Header */}
       <div className="flex items-end justify-between flex-wrap gap-3 mb-6">
         <div>
-          <h2
-            className="font-mono-data text-base tracking-widest uppercase cursor-default"
-            style={{ color: 'var(--accent)' }}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-          >
-            {scrambled}
+          <h2 className="legend legend-module">
+            {hardwareDiagnostics.title}
           </h2>
           <p className="font-mono-data mt-1" style={{ color: 'var(--text-muted)' }}>
             {hardwareDiagnostics.descriptor}
@@ -199,16 +141,16 @@ export default function HardwareDiagnostics() {
         </div>
         <div
           className="flex items-center gap-2 px-3 py-1.5"
-          style={{ background: 'rgba(58,143,204,0.08)', border: '1px solid rgba(58,143,204,0.3)', borderRadius: 'var(--radius)' }}
+          style={{ background: 'var(--panel-plate)', border: '1px solid var(--seam)', borderRadius: '2px' }}
         >
-          <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--accent)' }}>build_circle</span>
-          <span className="font-mono-data text-sm" style={{ color: 'var(--accent)' }}>{hardwareDiagnostics.spec}</span>
+          <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--text-muted)' }}>build_circle</span>
+          <span className="font-mono-data text-sm" style={{ color: 'var(--text-primary)' }}>{hardwareDiagnostics.spec}</span>
         </div>
       </div>
 
       {/* Categories */}
       {hardwareDiagnostics.categories.map((cat, i) => (
-        <CategorySection key={cat.key} category={cat} sectionIndex={i} />
+        <CategorySection key={cat.key} category={cat} first={i === 0} />
       ))}
     </section>
   )

@@ -71,8 +71,11 @@ function BoundingBox({ pred, crop, imgEl, confThreshold }) {
   if (!imgEl) return null
   const { left, top, width, height } = mapBox(pred, crop, imgEl)
   const above       = pred.confidence >= confThreshold
-  const borderColor = above ? 'var(--accent)' : 'rgba(255,59,48,0.70)'
-  const labelBg     = above ? 'rgba(58,144,184,0.92)' : 'rgba(140,20,15,0.88)'
+  // Phosphor for detections that pass the threshold, amber for sub-threshold
+  // ones (the debug caption below calls them "amber boxes"). The label is a
+  // small display window so it reads on any photograph.
+  const borderColor = above ? 'var(--display-phosphor)' : 'var(--display-amber)'
+  const labelBg     = 'var(--display-bg)'
   // If the box is too close to the top, flip the label inside instead of above
   const labelAbove  = top > 22
 
@@ -104,7 +107,7 @@ function BoundingBox({ pred, crop, imgEl, confThreshold }) {
           maxWidth:   `${width + 60}px`,
         }}
       >
-        <span style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '11px', color: '#f9fafb' }}>
+        <span className="font-readout" style={{ fontSize: '11px', color: borderColor }}>
           {pred.class}&nbsp;&nbsp;{(pred.confidence * 100).toFixed(0)}%
         </span>
       </div>
@@ -112,7 +115,7 @@ function BoundingBox({ pred, crop, imgEl, confThreshold }) {
   )
 }
 
-// ── Terminal-style spinner ─────────────────────────────────────────────────────
+// ── Processing indicator ──────────────────────────────────────────────────────
 const SPINNER_FRAMES = [
   '[ PROCESSING DATA...   ]',
   '[ PROCESSING DATA..  . ]',
@@ -120,20 +123,19 @@ const SPINNER_FRAMES = [
   '[ PROCESSING DATA   ... ]',
 ]
 
-function TerminalSpinner() {
+function InferenceSpinner() {
   const [frame, setFrame] = useState(0)
   useEffect(() => {
     const id = setInterval(() => setFrame((f) => (f + 1) % SPINNER_FRAMES.length), 180)
     return () => clearInterval(id)
   }, [])
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border-subtle"
-      style={{ height: '220px', background: 'var(--bg-surface-1)' }}>
-      <span className="font-mono-data text-sm tabular-nums"
-        style={{ color: 'var(--accent)', letterSpacing: '0.05em' }}>
+    <div className="display display-crt flex flex-col items-center justify-center gap-3"
+      style={{ height: '220px' }}>
+      <span className="readout text-sm" style={{ letterSpacing: '0.05em' }}>
         {SPINNER_FRAMES[frame]}
       </span>
-      <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
+      <span className="font-mono-data text-sm" style={{ color: 'var(--display-dim)' }}>
         Running Roboflow inference · model v{MODEL_VERSION}
       </span>
     </div>
@@ -232,7 +234,7 @@ export default function EcoSortDemo({ sectionId }) {
     >
       {/* ── Header ── */}
       <div className="flex flex-wrap items-start justify-between gap-3 mb-1">
-        <h2 className="font-mono-data text-lg tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
+        <h2 className="legend legend-module">
           EcoSort · Waste Classifier
         </h2>
         {status === 'done' && (
@@ -252,8 +254,8 @@ export default function EcoSortDemo({ sectionId }) {
                   style={{ accentColor: 'var(--accent)', width: '100px' }}
                 />
                 <span
-                  className="font-mono-data text-sm tabular-nums"
-                  style={{ color: 'var(--accent)', minWidth: '2.5rem' }}
+                  className="display font-readout text-sm px-2 py-0.5 text-center"
+                  style={{ color: 'var(--display-phosphor)', minWidth: '3.25rem' }}
                 >
                   {(confThreshold * 100).toFixed(0)}%
                 </span>
@@ -264,11 +266,7 @@ export default function EcoSortDemo({ sectionId }) {
                 setDebugMode((d) => !d)
                 if (debugMode) setConfThreshold(CONF_THRESHOLD)
               }}
-              className="font-mono-data text-sm px-2.5 py-1 rounded-md border-subtle flex items-center gap-1.5 transition-colors duration-150"
-              style={{
-                color:      debugMode ? 'var(--accent)'      : 'var(--text-muted)',
-                background: debugMode ? 'rgba(58,144,184,0.18)' : 'var(--bg-surface-2)',
-              }}
+              className="key key-sm"
               aria-pressed={debugMode}
             >
               <span aria-hidden="true" className="material-symbols-rounded text-sm">bug_report</span>
@@ -278,13 +276,15 @@ export default function EcoSortDemo({ sectionId }) {
         )}
       </div>
 
-      <p className="font-mono-data text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
+      {/* The model's configuration, as a readout line: the values are the
+          real constants above, shown in phosphor against dim labels. */}
+      <p className="display font-mono-data text-sm px-3 py-2 mb-6" style={{ color: 'var(--display-dim)' }}>
         Roboflow object detection · CMPE 246 · model&nbsp;
-        <span style={{ color: 'var(--accent)' }}>{MODEL_ID} v{MODEL_VERSION}</span>
-        &nbsp;· conf&nbsp;<span style={{ color: 'var(--accent)' }}>{INFER_CONF}%</span>
-        &nbsp;· overlap&nbsp;<span style={{ color: 'var(--accent)' }}>{INFER_OVERLAP}%</span>
-        &nbsp;· threshold&nbsp;<span style={{ color: 'var(--accent)' }}>{(confThreshold * 100).toFixed(0)}%</span>
-        &nbsp;· center-crop&nbsp;<span style={{ color: 'var(--accent)' }}>640×640</span>
+        <span className="font-readout" style={{ color: 'var(--display-phosphor)' }}>{MODEL_ID} v{MODEL_VERSION}</span>
+        &nbsp;· conf&nbsp;<span className="font-readout" style={{ color: 'var(--display-phosphor)' }}>{INFER_CONF}%</span>
+        &nbsp;· overlap&nbsp;<span className="font-readout" style={{ color: 'var(--display-phosphor)' }}>{INFER_OVERLAP}%</span>
+        &nbsp;· threshold&nbsp;<span className="font-readout" style={{ color: 'var(--display-phosphor)' }}>{(confThreshold * 100).toFixed(0)}%</span>
+        &nbsp;· center-crop&nbsp;<span className="font-readout" style={{ color: 'var(--display-phosphor)' }}>640×640</span>
       </p>
 
         {/* ── Drop zone ── */}
@@ -299,8 +299,8 @@ export default function EcoSortDemo({ sectionId }) {
               type="button"
               onDrop={onDrop} onDragOver={onDragOver}
               onClick={() => inputRef.current?.click()}
-              className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed cursor-pointer w-full focus:outline-none focus-visible:ring-2"
-              style={{ height: '220px', borderColor: 'var(--border)', background: 'var(--bg-surface-1)', '--tw-ring-color': 'var(--accent)' }}
+              className="panel-recessed flex flex-col items-center justify-center gap-3 cursor-pointer w-full"
+              style={{ height: '220px', border: '2px dashed var(--control-edge)' }}
             >
               <span aria-hidden="true" className="material-symbols-rounded text-4xl" style={{ color: 'var(--text-muted)' }}>upload_file</span>
               <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>Drop image or click to browse</span>
@@ -316,18 +316,21 @@ export default function EcoSortDemo({ sectionId }) {
         {status === 'loading' && (
           <div key="loading"
            >
-            <TerminalSpinner />
+            <InferenceSpinner />
           </div>
         )}
 
         {/* ── Error ── */}
         {status === 'error' && (
           <div key="error"
-            className="rounded-xl border-subtle p-4 flex items-center justify-between gap-3"
-            style={{ background: 'var(--bg-surface-1)', borderColor: '#7f1d1d' }}
+            className="panel-recessed p-4 flex items-center justify-between gap-3"
+            style={{ borderColor: 'var(--status-fault)' }}
           >
-            <span className="font-mono-data text-sm text-red-400">{errorMsg}</span>
-            <button onClick={reset} className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
+            <span className="font-mono-data text-sm flex items-center gap-2" style={{ color: 'var(--status-fault)' }}>
+              <span aria-hidden="true" className="lamp lamp-fault" />
+              {errorMsg}
+            </span>
+            <button onClick={reset} className="key key-sm">
               Retry
             </button>
           </div>
@@ -343,10 +346,11 @@ export default function EcoSortDemo({ sectionId }) {
                 Boxes are absolute-positioned within the same container.
                 Coordinates are mapped from RF 640-space through the crop
                 back to the original image, then scaled to displayed size. */}
-            <div
-              className="relative rounded-xl border-subtle overflow-hidden"
-              style={{ background: 'var(--bg-surface-1)' }}
-            >
+            {/* The relative box wraps the <img> directly, with no padding:
+                the boxes are positioned against it. The recessed rim is the
+                outer element. */}
+            <div className="panel-recessed p-1">
+            <div className="relative overflow-hidden">
               <img
                 ref={imgRef}
                 src={previewSrc}
@@ -366,15 +370,16 @@ export default function EcoSortDemo({ sectionId }) {
                 />
               ))}
             </div>
+            </div>
 
             {/* ── Prediction table ── */}
             {visiblePreds.length > 0 ? (
-              <div className="rounded-xl border-subtle p-4" style={{ background: 'var(--bg-surface-1)' }}>
+              <div className="display p-4">
                 <table className="w-full">
                   <thead>
                     <tr>
-                      <th className="font-mono-data text-sm text-left pb-2" style={{ color: 'var(--text-muted)' }}>Class</th>
-                      <th className="font-mono-data text-sm text-left pb-2" style={{ color: 'var(--text-muted)' }}>Confidence</th>
+                      <th className="legend text-left pb-2" style={{ color: 'var(--display-dim)' }}>Class</th>
+                      <th className="legend text-left pb-2" style={{ color: 'var(--display-dim)' }}>Confidence</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -383,11 +388,11 @@ export default function EcoSortDemo({ sectionId }) {
                       return (
                         <tr key={i}>
                           <td className="font-mono-data text-sm py-1"
-                            style={{ color: above ? 'var(--text-primary)' : 'var(--text-muted)' }}>
+                            style={{ color: above ? 'var(--display-text)' : 'var(--display-dim)' }}>
                             {p.class}
                           </td>
-                          <td className="font-mono-data text-sm py-1 tabular-nums"
-                            style={{ color: above ? 'var(--accent)' : 'rgb(var(--accent-rgb) / 0.4)' }}>
+                          <td className="font-readout text-sm py-1"
+                            style={{ color: above ? 'var(--display-phosphor)' : 'var(--display-amber)' }}>
                             {(p.confidence * 100).toFixed(1)}%
                           </td>
                         </tr>
@@ -396,22 +401,22 @@ export default function EcoSortDemo({ sectionId }) {
                   </tbody>
                 </table>
                 {debugMode && subThreshCount > 0 && (
-                  <p className="font-mono-data text-sm mt-2" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>
+                  <p className="font-mono-data text-sm mt-2" style={{ color: 'var(--display-dim)' }}>
                     ← {subThreshCount} sub-threshold detection(s) shown (amber boxes)
                   </p>
                 )}
               </div>
             ) : (
-              <div className="rounded-xl border-subtle p-4" style={{ background: 'var(--bg-surface-1)' }}>
-                <p className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>
+              <div className="panel-recessed p-4">
+                <p className="font-mono-data text-sm" style={{ color: 'var(--text-secondary)' }}>
                   No objects detected above {(confThreshold * 100).toFixed(0)}% confidence.
                   {subThreshCount > 0 && (
                     <> Enable <strong>Debug Mode</strong> to see {subThreshCount} low-confidence detection(s).</>
                   )}
                 </p>
                 {rawData && (
-                  <pre className="font-mono-data mt-3 overflow-x-auto"
-                    style={{ color: 'rgba(110,231,183,0.40)', fontSize: '0.8rem', lineHeight: 1.6 }}>
+                  <pre className="display font-readout mt-3 p-3 overflow-x-auto"
+                    style={{ color: 'var(--display-dim)', fontSize: '0.8rem', lineHeight: 1.6 }}>
                     {JSON.stringify({ predictions: rawData.predictions ?? [], time: rawData.time }, null, 2)}
                   </pre>
                 )}
@@ -420,10 +425,7 @@ export default function EcoSortDemo({ sectionId }) {
 
             <button
               onClick={reset}
-              className="self-start font-mono-data text-sm flex items-center gap-1.5"
-              style={{ color: 'var(--text-muted)' }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+              className="key key-sm self-start"
             >
               <span aria-hidden="true" className="material-symbols-rounded text-sm">refresh</span>
               Classify another
