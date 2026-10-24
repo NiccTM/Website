@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { projects } from '../../data/config'
+import { SKILLS, ELSEWHERE, skillsFor } from '../../data/skills'
 import ProjectModal from './ProjectModal'
 import { thumbSrc } from '../../utils/thumbs'
 import Picture from './Picture'
@@ -38,6 +40,67 @@ const entryNo = (id) => pad2(ORDERED.findIndex((p) => p.id === id) + 1)
    so it does not belong in a Result column. */
 const results = (p) => (p.awards ?? []).filter((a) => a.tier !== 'practice')
 
+/* Skill filter. One selected skill narrows the register and the cards; the
+   entry numbers do not change, because they are catalogue ordinals and not row
+   counts (a gap in the sequence is the filter working, not a bug). The state
+   lives in ProjectGallery and not in the URL: the prerendered shell and the
+   first client render are always the unfiltered page, so nothing can mismatch.
+
+   Single-select. Pressing the selected key again returns to All. The labels
+   never change; aria-pressed carries the state, and .key[aria-pressed='true']
+   draws the latched key. */
+const matchesSkill = (skill, id) => skill === 'all' || skillsFor(id).includes(skill)
+
+function SkillFilter({ skill, onSelect, shown }) {
+  const elsewhere = skill === 'all' ? [] : ELSEWHERE.filter((e) => e.skills.includes(skill))
+  return (
+    <div className="mb-8">
+      <div role="group" aria-labelledby="skill-filter-legend" className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <span id="skill-filter-legend" className="legend" style={{ color: 'var(--text-muted)' }}>
+          Filter by skill
+        </span>
+        <span className="key-bank flex-wrap gap-y-[3px] max-w-full">
+          <button type="button" className="key key-sm" aria-pressed={skill === 'all'} onClick={() => onSelect('all')}>
+            All
+          </button>
+          {SKILLS.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              className="key key-sm"
+              aria-pressed={skill === s.id}
+              onClick={() => onSelect(skill === s.id ? 'all' : s.id)}
+            >
+              {s.label}
+            </button>
+          ))}
+        </span>
+      </div>
+
+      {/* Polite live region, rendered on the server too so it is a stable node
+          that screen readers already know about when its text changes. */}
+      <p aria-live="polite" className="font-mono-data text-sm mt-3" style={{ color: 'var(--text-secondary)' }}>
+        Showing {shown} of {ORDERED.length} entries
+        {elsewhere.length > 0 && ` · ${elsewhere.length} more on other pages`}
+      </p>
+
+      {elsewhere.length > 0 && (
+        <div className="mt-3">
+          <p className="legend" style={{ color: 'var(--text-muted)' }}>Also documented on other pages</p>
+          <ul className="mt-1 flex flex-col gap-1">
+            {elsewhere.map((e) => (
+              <li key={e.id} className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                <Link to={e.to} className="underline underline-offset-[0.2em]" style={{ color: 'var(--accent)' }}>{e.title}</Link>
+                {' '}<span style={{ color: 'var(--text-muted)' }}>{e.note}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
+
 /* The register: every entry on one table before any of the cards -- an index
    of the work, read like a parts list, rather than a wall of equal tiles.
    Each row jumps to its card. Values are the cards' own (course code, award
@@ -50,7 +113,7 @@ const results = (p) => (p.awards ?? []).filter((a) => a.tier !== 'practice')
    the table always shows, so the desktop register is exactly as it was. It
    stays open after a jump, because closing it would shrink the page above the
    card you just jumped to and move it out from under you. */
-function ProjectIndex() {
+function ProjectIndex({ skill }) {
   const [open, setOpen] = useState(false)
   return (
     <div className="grid gap-4 lg:gap-14 lg:grid-cols-[minmax(0,3fr)_minmax(0,9fr)] mb-14">
@@ -86,15 +149,37 @@ function ProjectIndex() {
               <th scope="col" className="hidden md:table-cell">Result</th>
             </tr>
           </thead>
-          {SECTIONS.map((section) => (
+          {ORDERED.every((p) => !matchesSkill(skill, p.id)) && (
+            <tbody>
+              <tr>
+                <td colSpan={4} style={{ color: 'var(--text-secondary)' }}>
+                  No register entries match this skill. See the pages listed above.
+                </td>
+              </tr>
+            </tbody>
+          )}
+          {SECTIONS.map((section) => {
+            const rows = ORDERED.filter((p) => p.category === section.key && matchesSkill(skill, p.id))
+            if (!rows.length) return null
+            return (
             <tbody key={section.key}>
               <tr>
                 <th scope="rowgroup" colSpan={4} className="register-group">{section.label}</th>
               </tr>
-              {ORDERED.filter((p) => p.category === section.key).map((p) => (
+              {rows.map((p) => (
                 <tr key={p.id}>
                   <td className="font-readout" style={{ color: 'var(--text-muted)' }}>{entryNo(p.id)}</td>
-                  <td><a href={`#project-${p.id}`} className="register-link">{p.title}</a></td>
+                  <td>
+                    <a href={`#project-${p.id}`} className="register-link">{p.title}</a>
+                    {p.caseStudy && (
+                      <>
+                        {' '}
+                        <Link to={p.caseStudy} className="register-link text-xs ml-2" style={{ color: 'var(--text-secondary)' }}>
+                          Case study<span className="sr-only"> for {p.title}</span>
+                        </Link>
+                      </>
+                    )}
+                  </td>
                   <td className="hidden sm:table-cell whitespace-nowrap">{p.course ?? '—'}</td>
                   <td className="hidden md:table-cell">
                     {results(p).length ? results(p).map((a) => <span key={a.id} className="block">{a.label}</span>) : '—'}
@@ -102,7 +187,8 @@ function ProjectIndex() {
                 </tr>
               ))}
             </tbody>
-          ))}
+            )
+          })}
         </table>
       </div>
     </div>
@@ -273,6 +359,8 @@ function SectionHeading({ label, index }) {
 
 export default function ProjectGallery() {
   const [activeProject, setActiveProject] = useState(null)
+  const [skill, setSkill] = useState('all')
+  const shown = ORDERED.filter((p) => matchesSkill(skill, p.id)).length
 
   return (
     /* pt-0: ProjectsPage renders the page header (eyebrow, h1, intro) directly
@@ -280,11 +368,14 @@ export default function ProjectGallery() {
        a second <h1>Projects</h1>, which duplicated the page title and put two
        h1s on the route. The page owns the heading; this owns the grid. */
     <section className="relative z-10 px-5 pt-0 pb-12 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full">
-      <ProjectIndex />
+      <SkillFilter skill={skill} onSelect={setSkill} shown={shown} />
+      <ProjectIndex skill={skill} />
 
       <div className="flex flex-col gap-14">
         {SECTIONS.map((section, si) => {
-          const sectionProjects = projects.filter((p) => p.category === section.key)
+          /* Filtered before the span arithmetic below, so the wide lead card
+             is decided by the cards actually on screen. */
+          const sectionProjects = projects.filter((p) => p.category === section.key && matchesSkill(skill, p.id))
           if (!sectionProjects.length) return null
           return (
             <div key={section.key}>

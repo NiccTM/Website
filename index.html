@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Nic Piraino: Precision analog, PCB design, and embedded systems. Electrical Engineering at UBC Okanagan." />
 
+    <!-- theme-init.js blocks the first paint (it runs at the top of <body>),
+         but the parser only finds it after every route preload in the head.
+         On a connection-limited link those preloads queued ahead of it and
+         pushed first paint back. Requesting it first removes that queue. -->
+    <link rel="preload" href="/theme-init.js" as="script" />
+
     <!-- The site shipped with no favicon and no icon link, so every page load
          requested /favicon.ico and took a 404, and the browser tab was blank.
          Declaring the icon explicitly both fixes the tab and stops the implicit

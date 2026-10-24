@@ -28,6 +28,10 @@
       "destination": "/api/$1"
     },
     {
+      "source": "/projects/bldc-motor",
+      "destination": "/projects/bldc-motor.html"
+    },
+    {
       "source": "/projects",
       "destination": "/projects.html"
     },

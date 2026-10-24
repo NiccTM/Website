@@ -25,7 +25,7 @@ export default function DocSection({ id, n, title, split = false, className = ''
     return (
       <section aria-labelledby={id} className={`grid gap-x-10 gap-y-3 md:grid-cols-[13rem_minmax(0,1fr)] py-8 ${className}`} style={{ borderTop: '1px solid var(--seam)' }}>
         <div>{label}</div>
-        <div className="max-w-[68ch]">{children}</div>
+        <div className="max-w-[68ch] min-w-0">{children}</div>
       </section>
     )
   }

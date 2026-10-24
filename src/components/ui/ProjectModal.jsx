@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDialog } from '../../hooks/useDialog'
 import { createPortal } from 'react-dom'
+import { Link } from 'react-router-dom'
 import { thumbSrc } from '../../utils/thumbs'
 import Picture from './Picture'
 import ImageLightbox from './ImageLightbox'
@@ -199,11 +200,19 @@ export default function ProjectModal({ project, onClose }) {
         </div>
 
         {/* ── Footer links ── */}
-        {(links.length > 0 || project.github) && (
+        {(links.length > 0 || project.github || project.caseStudy) && (
           <div
             className="flex flex-wrap gap-3 px-6 py-4"
             style={{ borderTop: '1px solid var(--seam)' }}
           >
+            {/* Navigation unmounts the gallery and with it this modal; the
+                scroll lock above is released by that effect's cleanup. */}
+            {project.caseStudy && (
+              <Link to={project.caseStudy} className="key key-sm">
+                Read the full case study
+                <span aria-hidden="true" className="material-symbols-rounded text-sm">chevron_right</span>
+              </Link>
+            )}
             {links.length > 0
               ? links.map(({ label, url, icon }) => (
                   <a
