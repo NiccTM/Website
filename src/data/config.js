@@ -25,7 +25,7 @@ export const bio = {
   role:          'Hardware Engineering Intern',
   employer:      'Measurements International Ltd.',
   employerYears: '2024, 2025, 2026',
-  seeking:       'Seeking a hardware / PCB design co-op, winter or summer 2027',
+  seeking:       'Seeking a hardware / PCB design internship, winter or summer 2027',
   heroLine:      'Electrical Engineering, UBC Okanagan · Precision analog and PCB design',
   program:       'BASc Electrical Engineering + Master of Management',
   school:        'UBC Okanagan',
@@ -925,7 +925,7 @@ export const waterSenseAerospace = {
     pcb: {
       src:     '/Water_Sense_AerospaceTeam_PCB.jpg',
       label:   'PCB Layout',
-      caption: 'Altium PCB layout · component placement and routing',
+      caption: 'KiCad 7.0 PCB layout · component placement and routing',
     },
   },
   technicalSpecs: [
