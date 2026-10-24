@@ -4,9 +4,31 @@ import { lazyWithReload } from './utils/lazyWithReload'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 
+/* Scrolls to the top on a route change -- or, when the URL carries a hash, to
+   that element. Every route is a lazy chunk, so on a cross-page link such as
+   /projects#project-rover-craft the target does not exist yet when this effect
+   first runs. It starts at the top, then polls once per frame for up to ~2 s
+   and gives up (the page simply stays at the top). scrollIntoView() honours
+   the cards' scroll-mt-20, so the target clears the sticky header. */
 function ScrollToTop() {
-  const { pathname } = useLocation()
-  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  const { pathname, hash } = useLocation()
+  useEffect(() => {
+    if (!hash) { window.scrollTo(0, 0); return undefined }
+    let frame
+    let cancelled = false
+    let target = hash.slice(1)
+    try { target = decodeURIComponent(target) } catch { /* use it as written */ }
+    window.scrollTo(0, 0)
+    const deadline = performance.now() + 2000
+    const seek = () => {
+      if (cancelled) return
+      const el = document.getElementById(target)
+      if (el) { el.scrollIntoView(); return }
+      if (performance.now() < deadline) frame = requestAnimationFrame(seek)
+    }
+    seek()
+    return () => { cancelled = true; cancelAnimationFrame(frame) }
+  }, [pathname, hash])
   return null
 }
 
@@ -37,6 +59,7 @@ import AppShell          from './components/layout/AppShell'
 const HomePage        = lazyWithReload(() => import('./routes/HomePage'))
 const ProjectsPage    = lazyWithReload(() => import('./routes/ProjectsPage'))
 const HardwarePage    = lazyWithReload(() => import('./routes/HardwarePage'))
+const BLDCMotorPage   = lazyWithReload(() => import('./routes/BLDCMotorPage'))
 const HobbiesPage     = lazyWithReload(() => import('./routes/HobbiesPage'))
 const ReferencePage   = lazyWithReload(() => import('./routes/ReferencePage'))
 const CDPlayerPage    = lazyWithReload(() => import('./routes/CDPlayerPage'))
@@ -61,6 +84,7 @@ export function AppRoutes() {
               <Route element={<AppShell />}>
                 <Route index                element={<HomePage />}        />
                 <Route path="projects"      element={<ProjectsPage />}    />
+                <Route path="projects/bldc-motor" element={<BLDCMotorPage />} />
                 <Route path="hardware"           element={<HardwarePage />}  />
                 <Route path="hardware/reference" element={<ReferencePage />} />
                 <Route path="hobbies"            element={<HobbiesPage />}   />

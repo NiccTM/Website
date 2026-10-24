@@ -15,15 +15,16 @@ const QUERY = '(prefers-reduced-motion: reduce)'
  * matchMedia is unavailable.
  */
 export function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia
-      ? window.matchMedia(QUERY).matches
-      : false,
-  )
+  /* Starts false on the client too, and reads the query in the effect. Every
+     route is prerendered with false, so reading matchMedia during the first
+     render gave a reduced-motion visitor different markup from the shell
+     (autoplay, transition times, labels) and a hydration error. */
+  const [reduced, setReduced] = useState(false)
 
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return
     const mq = window.matchMedia(QUERY)
+    setReduced(mq.matches)
     const onChange = (e) => setReduced(e.matches)
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)

@@ -792,7 +792,8 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   .lamp-fault   { background: #D2513F; box-shadow: 0 0 4px rgba(210, 81, 63, 0.7); }
 
   /* ── Evidence mark ─────────────────────────────────────────────────────────
-     How a figure was obtained, printed beside it: MEAS, CALC, OBS. Used
+     How a figure was obtained, printed beside it: MEAS, CALC, OBS, NOM
+     (nominal, from material data). Used
      only where the page's own text already states the provenance -- the mark
      restates a fact, it never asserts one. Shape, ink and word all differ, so
      no single channel carries the meaning. See components/ui/Evidence.jsx. */
@@ -815,6 +816,66 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   .evidence-meas { color: var(--status-ok); }
   .evidence-calc { color: var(--status-caution); }
   .evidence-obs  { color: var(--text-muted); border-style: dashed; }
+  .evidence-nom  { color: var(--text-secondary); border-style: dotted; }
+
+  /* The openable mark (components/ui/EvidenceNote.jsx). Same face as the
+     plain mark, plus a +/- state glyph, a 24px-tall target (WCAG 2.2 2.5.8)
+     and a focus ring. The panel is an ordinary recessed block in the flow:
+     opening it moves the text below, but only on the reader's own action. */
+  .evidence-button {
+    min-height: 24px;
+    cursor: pointer;
+    background: transparent;
+  }
+  .evidence-button:hover { background: var(--panel-plate); }
+  .evidence-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .evidence-button-state { margin-left: 0.15rem; letter-spacing: 0; }
+  .evidence-panel {
+    display: block;
+    margin-top: 0.6rem;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    background: var(--panel-recessed);
+    border: 1px solid var(--seam);
+    border-radius: var(--radius-control);
+    text-align: left;
+    white-space: normal;
+  }
+  .evidence-panel[hidden] { display: none; }
+  .evidence-panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.6rem;
+    margin-bottom: 0.35rem;
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  .evidence-panel-kind {
+    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  /* Label column plus a hanging text column, so a wrapped line stays under
+     its own text instead of running back beneath the label. */
+  .evidence-panel-row {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    column-gap: 0.5rem;
+  }
+  .evidence-panel-row + .evidence-panel-row { margin-top: 0.25rem; }
+  .evidence-panel-label {
+    padding-top: 0.2em;
+    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
 
   /* ── Spec grid: label / value rows, Swiss-aligned ──────────────────────── */
   .spec-grid {

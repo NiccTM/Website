@@ -3,14 +3,15 @@
    it. The glyph fills with the strength of the evidence (a reading taken,
    a figure derived, a behaviour seen); the word is what a
    screen reader hears. */
-const KINDS = {
+export const EVIDENCE_KINDS = {
   meas: { glyph: '●', short: 'Meas', full: 'Measured' },
   calc: { glyph: '◐', short: 'Calc', full: 'Calculated' },
   obs:  { glyph: '○', short: 'Obs',  full: 'Observed, not measured' },
+  nom:  { glyph: '◇', short: 'Nom',  full: 'Nominal, from material data' },
 }
 
 export default function Evidence({ kind, className = '' }) {
-  const k = KINDS[kind]
+  const k = EVIDENCE_KINDS[kind]
   if (!k) return null
   return (
     <span className={`evidence evidence-${kind} ${className}`} title={k.full}>

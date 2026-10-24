@@ -34,7 +34,8 @@ const DEFAULT_TITLE = 'Nic Piraino | Hardware Engineering & System Design'
 // as needed so a sub-route still gets its own shell and its own meta.
 const ROUTES = {
   projects:              'ProjectsPage.jsx',
-  hardware:              'HardwarePage.jsx',
+  'projects/bldc-motor': 'BLDCMotorPage.jsx',
+  hardware:             'HardwarePage.jsx',
   'hardware/reference':  'ReferencePage.jsx',
   hobbies:               'HobbiesPage.jsx',
   'hobbies/cd-player':   'CDPlayerPage.jsx',
@@ -47,6 +48,7 @@ const ROUTES = {
 const PRELOAD_SRC = {
   '':                    'src/routes/HomePage.jsx',
   projects:              'src/routes/ProjectsPage.jsx',
+  'projects/bldc-motor': 'src/routes/BLDCMotorPage.jsx',
   hardware:              'src/routes/HardwarePage.jsx',
   'hardware/reference':  'src/routes/ReferencePage.jsx',
   hobbies:               'src/routes/HobbiesPage.jsx',
@@ -109,7 +111,7 @@ function injectPreloads(html, routeKey) {
   const tags = preloadTags(routeKey)
   if (!tags) return html
   if (!html.includes('</head>')) throw new Error('prerender-meta: </head> not found in dist/index.html')
-  return html.replace('</head>', tags + '</head>')
+  return html.replace('</head>', () => tags + '</head>')
 }
 
 /** Pulls the ('Title', 'description') pair out of a route's usePageMeta call. */
@@ -160,7 +162,7 @@ async function injectMarkup(html, routePath, minText = 200) {
   if (!html.includes(ROOT_DIV))
     throw new Error(`prerender-meta: could not find ${ROOT_DIV} in the shell`)
 
-  return html.replace(ROOT_DIV, `<div id="root">${rendered}</div>`)
+  return html.replace(ROOT_DIV, () => `<div id="root">${rendered}</div>`)
 }
 
 /*
@@ -212,6 +214,20 @@ const ROUTE_SCHEMA = {
     isPartOf: { '@type': 'WebSite', name: 'Nic Piraino', url: `${SITE}/` },
     about: ['CD player repair', 'Sony KSS-213B', 'Optical pickup', 'Musical Fidelity A3.2'],
   }),
+  /* The BLDC motor case study: a technical write-up of a failed first build and
+     its diagnosis, reached from the project register and the hardware page. */
+  'projects/bldc-motor': ({ title, description, url }) => ({
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: title,
+    description,
+    url,
+    inLanguage: 'en',
+    author: { '@type': 'Person', name: 'Nic Piraino', url: `${SITE}/` },
+    publisher: { '@type': 'Person', name: 'Nic Piraino', url: `${SITE}/` },
+    isPartOf: { '@type': 'WebSite', name: 'Nic Piraino', url: `${SITE}/` },
+    about: ['Brushless DC motor', 'Motor design', 'Magnetic circuit', 'Winding'],
+  }),
 }
 
 function injectSchema(html, routeKey, meta) {
@@ -222,10 +238,14 @@ function injectSchema(html, routeKey, meta) {
      would close the block early and dump the rest as markup. */
   const safe = json.replace(/<\//g, '<\\/')
   const tag = `    <script type="application/ld+json">\n${safe}\n    </script>\n`
-  return html.replace('</head>', tag + '</head>')
+  return html.replace('</head>', () => tag + '</head>')
 }
 
-/** Swaps one tag's content/href, erroring if the tag is missing from the shell. */
+/** Swaps one tag's content/href, erroring if the tag is missing from the shell.
+    Replacements are functions, never strings: in a replacement string `$1`,
+    `$&` and friends are patterns, so a description containing "$100" came out
+    as the captured prefix followed by "00". Every html.replace in this file
+    with page text in the replacement takes a function for the same reason. */
 function replaceTag(html, pattern, replacement, label) {
   if (!pattern.test(html)) throw new Error(`prerender-meta: ${label} not found in dist/index.html`)
   return html.replace(pattern, replacement)
@@ -245,14 +265,14 @@ async function writeShell(route, file, { renderPath = `/${route}`, outName = rou
   const d = esc(description)
 
   let html = shell
-  html = replaceTag(html, /<title>[\s\S]*?<\/title>/, `<title>${t}</title>`, '<title>')
-  html = replaceTag(html, /(<meta\s+name="description"\s+content=")[^"]*(")/, `$1${d}$2`, 'description')
-  html = replaceTag(html, /(<meta\s+property="og:title"\s+content=")[^"]*(")/, `$1${t}$2`, 'og:title')
-  html = replaceTag(html, /(<meta\s+property="og:description"\s+content=")[^"]*(")/, `$1${d}$2`, 'og:description')
-  html = replaceTag(html, /(<meta\s+property="og:url"\s+content=")[^"]*(")/, `$1${url}$2`, 'og:url')
-  html = replaceTag(html, /(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, `$1${t}$2`, 'twitter:title')
-  html = replaceTag(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${d}$2`, 'twitter:description')
-  html = replaceTag(html, /(<link\s+rel="canonical"\s+href=")[^"]*(")/, `$1${url}$2`, 'canonical')
+  html = replaceTag(html, /<title>[\s\S]*?<\/title>/, () => `<title>${t}</title>`, '<title>')
+  html = replaceTag(html, /(<meta\s+name="description"\s+content=")[^"]*(")/, (_, a, b) => a + d + b, 'description')
+  html = replaceTag(html, /(<meta\s+property="og:title"\s+content=")[^"]*(")/, (_, a, b) => a + t + b, 'og:title')
+  html = replaceTag(html, /(<meta\s+property="og:description"\s+content=")[^"]*(")/, (_, a, b) => a + d + b, 'og:description')
+  html = replaceTag(html, /(<meta\s+property="og:url"\s+content=")[^"]*(")/, (_, a, b) => a + url + b, 'og:url')
+  html = replaceTag(html, /(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, (_, a, b) => a + t + b, 'twitter:title')
+  html = replaceTag(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, (_, a, b) => a + d + b, 'twitter:description')
+  html = replaceTag(html, /(<link\s+rel="canonical"\s+href=")[^"]*(")/, (_, a, b) => a + url + b, 'canonical')
 
   html = injectPreloads(html, route)
   html = injectSchema(html, route, { title: fullTitle, description, url })
@@ -316,12 +336,12 @@ for (const v of VARIANTS) await writeShell(v.route, v.file, v)
   const d = esc(description)
 
   let html = shell
-  html = replaceTag(html, /<title>[\s\S]*?<\/title>/, `<title>${t}</title>`, '<title>')
-  html = replaceTag(html, /(<meta\s+name="description"\s+content=")[^"]*(")/, `$1${d}$2`, 'description')
-  html = replaceTag(html, /(<meta\s+property="og:title"\s+content=")[^"]*(")/, `$1${t}$2`, 'og:title')
-  html = replaceTag(html, /(<meta\s+property="og:description"\s+content=")[^"]*(")/, `$1${d}$2`, 'og:description')
-  html = replaceTag(html, /(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, `$1${t}$2`, 'twitter:title')
-  html = replaceTag(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${d}$2`, 'twitter:description')
+  html = replaceTag(html, /<title>[\s\S]*?<\/title>/, () => `<title>${t}</title>`, '<title>')
+  html = replaceTag(html, /(<meta\s+name="description"\s+content=")[^"]*(")/, (_, a, b) => a + d + b, 'description')
+  html = replaceTag(html, /(<meta\s+property="og:title"\s+content=")[^"]*(")/, (_, a, b) => a + t + b, 'og:title')
+  html = replaceTag(html, /(<meta\s+property="og:description"\s+content=")[^"]*(")/, (_, a, b) => a + d + b, 'og:description')
+  html = replaceTag(html, /(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, (_, a, b) => a + t + b, 'twitter:title')
+  html = replaceTag(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, (_, a, b) => a + d + b, 'twitter:description')
   html = replaceTag(html, /\s*<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/, '', 'canonical')
   html = replaceTag(html, /\s*<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/, '', 'og:url')
   html = replaceTag(html, /<\/title>/, '</title>\n    <meta name="robots" content="noindex" />', 'robots insertion point')

@@ -698,6 +698,7 @@ export const projects = [
   },
   {
     id: 'bldc-motor',
+    caseStudy: '/projects/bldc-motor',
     category: 'software',
     title: 'Custom 3-Phase High-Speed BLDC Inrunner',
     course: 'ENGR 320',
@@ -707,16 +708,16 @@ export const projects = [
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'A three-phase brushless inrunner with a custom 3D-printed stator, rotor and housing. The magnets, copper wire, iron bolts and ESC were bought. The 9-slot stator and 8-pole rotor were drawn in CAD and printed, first in PLA and later in PETG HF, once it was clear the 30 A needed for target torque would take the windings close to PLA+’s glass transition at 55°C. A stator that softens while it is running has stopped being a stator.\n\nThe winding took two attempts. ABCABCABC put opposing polarities on adjacent teeth, so the phases worked against each other and the motor oscillated instead of spinning up. Regrouping to AaABbBCCC put each phase on neighbouring teeth and it turned cleanly. The printed stator teeth were also swapped for iron bolts partway through: PLA has a relative permeability of about 1, which is to say it is magnetically indistinguishable from air, and no amount of current fixes that.\n\nThe finished bill of materials came to $94.92 CAD against a $100 budget.',
+        'A three-phase brushless inrunner with a custom 3D-printed stator, rotor and housing. The magnets, copper wire, steel bolts and ESC were bought. The 9-slot stator and 8-pole rotor were drawn in CAD and printed in PLA and PLA+; the base, rotor and magnet holders were later reprinted in PETG HF. Resistive heating in the windings meant continuous runs had to be kept short so the PLA+ stator (glass transition ≈ 55°C) would not soften and warp into the rotor. No temperature was measured. A stator that softens while it is running has stopped being a stator.\n\nThe winding took two attempts. With 9 teeth and 8 rotor poles, ABCABCABC left each phase’s three coils 120° apart electrically, so their torque cancelled and the motor oscillated instead of rotating. Regrouping to AaABbBCcC put each phase on three neighbouring teeth, the middle coil wound the opposite way, and it turned cleanly. The printed stator teeth were also replaced with steel bolts, alongside a move from 50 to about 200 turns per pole: PLA has a relative permeability of about 1, which is to say it is magnetically indistinguishable from air.\n\nThe finished bill of materials came to $94.92 CAD against a $100 budget.',
       technicalSpecs: [
         { label: 'Topology',         value: '3-phase inrunner · 9-slot stator / 8-pole rotor (16 magnets, N-N-S-S pairs)' },
         { label: 'Connection',       value: 'Wye (Star)' },
         { label: 'Winding',          value: '24 AWG enamelled copper · ~200 turns/pole' },
         { label: 'Phase resistance', value: '2.02 Ω, calculated (3 × 0.672 Ω in series)' },
-        { label: 'Stator teeth',     value: 'Iron bolts, μᵣ ≈ 200 (replaced PLA, μᵣ ≈ 1)' },
-        { label: 'Rotor / base',     value: 'PETG HF (Tg ≈ 70°C, upgraded from PLA+ Tg 55°C)' },
+        { label: 'Stator teeth',     value: 'Steel bolts, μᵣ ≈ 200 nominal (replaced PLA, μᵣ ≈ 1)' },
+        { label: 'Rotor / base',     value: 'PETG HF (Tg 66°C per datasheet; was PLA / PLA+, Tg ≈ 55°C)' },
         { label: 'Control MCU',      value: 'Arduino Uno · PWM via Servo.h' },
-        { label: 'ESC',              value: 'Hobbywing Skywalker 30A V2' },
+        { label: 'ESC',              value: 'Hobbywing Skywalker 30A V2 (rated 30 A)' },
         { label: 'BOM total',        value: '$94.92 CAD (budget: $100)' },
         { label: 'Date',             value: 'Jan 2026 – Apr 2026' },
         { label: 'Course',           value: 'ENGR 320 · motor design project, UBC Okanagan' },

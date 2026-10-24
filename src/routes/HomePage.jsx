@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { Link } from 'react-router-dom'
-import { profile, bio } from '../data/config'
+import { profile, bio, contact } from '../data/config'
 import SocialLinks from '../components/ui/SocialLinks'
+import FeaturedWork from '../components/ui/FeaturedWork'
 import { thumbSrc, displaySrc } from '../utils/thumbs'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 
@@ -192,7 +193,19 @@ function StatusStrip({ className = '' }) {
         <span className="legend" style={{ color: 'var(--text-muted)' }}>Status</span>
         <span>{bio.seeking}</span>
       </p>
-      <SocialLinks />
+      {/* Email sits beside the social links and matches them. SocialLinks.jsx
+          is shared, so the address is added here rather than inside it. */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+        <a
+          href={`mailto:${contact.email}`}
+          className="social-link flex items-center gap-1.5 py-1 font-mono-data text-sm"
+        >
+          <span aria-hidden="true" className="material-symbols-rounded text-base">mail</span>
+          Email
+          <span className="sr-only">: {contact.email}</span>
+        </a>
+        <SocialLinks />
+      </div>
     </div>
   )
 }
@@ -290,6 +303,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      <FeaturedWork />
       <About />
     </>
   )

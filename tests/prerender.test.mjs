@@ -26,7 +26,8 @@ const DIST = join(ROOT, 'dist')
 const ROUTES = [
   { file: 'index.html',             path: '/',                   title: 'Nic Piraino | Hardware Engineering & System Design' },
   { file: 'projects.html',          path: '/projects',           title: 'Nic Piraino | Projects' },
-  { file: 'hardware.html',          path: '/hardware',           title: 'Nic Piraino | Hardware Lab' },
+  { file: 'projects/bldc-motor.html', path: '/projects/bldc-motor', title: 'Nic Piraino | BLDC Motor Case Study' },
+  { file: 'hardware.html',          path: '/hardware',          title: 'Nic Piraino | Hardware Lab' },
   { file: 'hardware/reference.html', path: '/hardware/reference', title: 'Nic Piraino | Voltage Reference' },
   { file: 'hobbies.html',           path: '/hobbies',            title: 'Nic Piraino | Hobbies' },
   { file: 'hobbies/cd-player.html', path: '/hobbies/cd-player',  title: 'Nic Piraino | CD Player Repair' },
@@ -71,6 +72,39 @@ test('each route carries its own title, canonical and og:url', opts, () => {
     const expected = `https://nicpiraino.com${path === '/' ? '/' : path}`
     assert.equal(html.match(/<link rel="canonical" href="([^"]+)"/)?.[1], expected, `${file} canonical`)
     assert.equal(html.match(/<meta property="og:url"\s+content="([^"]+)"/)?.[1], expected, `${file} og:url`)
+  }
+})
+
+/* The shell's descriptions are written by String.replace, where "$1" or "$&"
+   in the replacement is a pattern. A description containing "$100" once
+   shipped as the captured tag prefix followed by "00". Compare every shell's
+   three description tags with the usePageMeta source text, character for
+   character. */
+test('each shell description is its route source text, unmangled', opts, () => {
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  const sources = new Set()
+  for (const f of ['HomePage', 'ProjectsPage', 'BLDCMotorPage', 'HardwarePage', 'ReferencePage', 'HobbiesPage', 'CDPlayerPage', 'AboutPage', 'ColophonPage']) {
+    const p = join(ROOT, 'src/routes', `${f}.jsx`)
+    if (!existsSync(p)) continue
+    const m = readFileSync(p, 'utf8').match(/usePageMeta\(\s*'(?:[^'\\]|\\.)*'\s*,\s*'((?:[^'\\]|\\.)*)'/)
+    if (m) sources.add(esc(m[1].replace(/\\'/g, "'").replace(/\\\\/g, '\\')))
+  }
+  assert.ok(sources.size >= 5, `only ${sources.size} usePageMeta descriptions found in src/routes`)
+  for (const { file } of ROUTES) {
+    const html = read(file)
+    const tags = [
+      /<meta\s+name="description"\s+content="([^"]*)"/g,
+      /<meta\s+property="og:description"\s+content="([^"]*)"/g,
+      /<meta\s+name="twitter:description"\s+content="([^"]*)"/g,
+    ].map((re) => [...html.matchAll(re)].map((m) => m[1]))
+    for (const found of tags) assert.equal(found.length, 1, `${file}: expected one of each description tag`)
+    // Home keeps index.html's own tags, where the search description is
+    // deliberately prefixed with the name and the social ones are not.
+    if (file === 'index.html') continue
+    const [d, og, tw] = tags.map((t) => t[0])
+    assert.equal(og, d, `${file}: og:description differs from description`)
+    assert.equal(tw, d, `${file}: twitter:description differs from description`)
+    assert.ok(sources.has(d), `${file}: description "${d.slice(0, 70)}..." is not any route's usePageMeta text`)
   }
 })
 
@@ -170,4 +204,98 @@ test('CD-page photo buttons reserve their image box before the lazy image loads'
     assert.match(img, /width="\d+"/, `photo without width: ${img.slice(0, 80)}`)
     assert.match(img, /height="\d+"/, `photo without height: ${img.slice(0, 80)}`)
   }
+})
+
+test('the home shell carries the selected-work index with all three entries', opts, async () => {
+  const { FEATURED } = await import('../src/data/featured.js')
+  const text = bodyText(read('index.html'))
+  assert.ok(text.includes('Selected engineering work'), 'index.html is missing the featured heading')
+  for (const f of FEATURED) assert.ok(text.includes(f.title), `index.html is missing "${f.title}"`)
+})
+
+test('the BLDC motor case study shell is complete and has one h1', opts, async () => {
+  const { MOTOR_CASE_STUDY } = await import('../src/data/bldcCaseStudy.js')
+  assert.ok(existsSync(join(DIST, 'projects/bldc-motor.html')), 'dist/projects/bldc-motor.html missing')
+  const html = read('projects/bldc-motor.html')
+  assert.equal(html.match(/<title>([^<]*)<\/title>/)?.[1], 'Nic Piraino | BLDC Motor Case Study')
+  assert.equal(html.match(/<link rel="canonical" href="([^"]+)"/)?.[1], 'https://nicpiraino.com/projects/bldc-motor')
+  assert.equal(html.match(/<meta property="og:url"\s+content="([^"]+)"/)?.[1], 'https://nicpiraino.com/projects/bldc-motor')
+  assert.match(html, /<script type="application\/ld\+json">[\s\S]*"@type": "TechArticle"/, 'no TechArticle JSON-LD')
+  const text = bodyText(html)
+  for (const s of ['What went wrong', 'Engineering changes', 'Outcome and limitations', 'AaABbBCcC', ...MOTOR_CASE_STUDY.notReported])
+    assert.ok(text.includes(s), `bldc-motor.html is missing "${s}"`)
+  assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1, 'expected exactly one <h1>')
+})
+
+test('vercel.json rewrites /projects/bldc-motor before /projects, and the sitemap lists it', () => {
+  const cfg = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8'))
+  const i = cfg.rewrites.findIndex((r) => r.source === '/projects/bldc-motor')
+  const plain = cfg.rewrites.findIndex((r) => r.source === '/projects')
+  assert.ok(i >= 0 && i < plain, 'the case-study rewrite must exist and precede /projects')
+  assert.equal(cfg.rewrites[i].destination, '/projects/bldc-motor.html')
+  assert.ok(readFileSync(join(ROOT, 'public/sitemap.xml'), 'utf8').includes('<loc>https://nicpiraino.com/projects/bldc-motor</loc>'))
+})
+
+test('MotorLab reads the shared motor record instead of defining its own', () => {
+  const src = readFileSync(join(ROOT, 'src/components/hardware/MotorLab.jsx'), 'utf8')
+  assert.ok(!src.includes('const CHALLENGES'), 'MotorLab still defines CHALLENGES')
+  assert.ok(!src.includes('const MOTOR_SPECS'), 'MotorLab still defines MOTOR_SPECS')
+  assert.match(src, /data\/bldcMotor/)
+})
+
+test('the projects shell ships the skill filter with All pressed', opts, () => {
+  const html = read('projects.html')
+  assert.match(html, /role="group"[^>]*aria-labelledby="skill-filter-legend"|aria-labelledby="skill-filter-legend"[^>]*role="group"/)
+  const all = [...html.matchAll(/<button[^>]*aria-pressed="[^"]*"[^>]*>All<\/button>/g)].map((m) => m[0])
+  assert.equal(all.length, 1, 'expected one All key')
+  assert.match(all[0], /aria-pressed="true"/)
+  assert.equal((html.match(/aria-pressed="true"/g) ?? []).length, 1, 'only All may be pressed on first render')
+})
+
+test('the case study ships every evidence mark as a closed disclosure with its note', opts, async () => {
+  const { MOTOR_EVIDENCE } = await import('../src/data/bldcCaseStudy.js')
+  const html = read('projects/bldc-motor.html')
+  const buttons = [...html.matchAll(/<button[^>]*class="evidence evidence-[a-z]+ evidence-button[^"]*"[^>]*>/g)].map((m) => m[0])
+  // Phase resistance in the spec rail, three table rows, the spin-up outcome.
+  assert.equal(buttons.length, 5, `expected 5 evidence buttons, found ${buttons.length}`)
+  for (const b of buttons) {
+    assert.match(b, /aria-expanded="false"/, 'a mark is prerendered open')
+    const controls = b.match(/aria-controls="([^"]+)"/)?.[1]
+    assert.ok(controls, 'a mark has no aria-controls')
+    assert.match(html, new RegExp(`id="${controls.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*hidden`), `panel ${controls} missing or not hidden`)
+  }
+  /* Each rendered mark opens onto the right note, in page order: the CALC
+     phase resistance in the spec rail, the three table rows, the OBS spin-up
+     in the outcome. A wrong key in the page would show one kind of mark with
+     another kind's explanation behind it. */
+  const keys = [...html.matchAll(/data-evidence-note="([^"]+)"[^>]*>\s*<button[^>]*class="evidence evidence-([a-z]+)/g)].map((m) => [m[1], m[2]])
+  assert.deepEqual(keys, [
+    ['phaseResistance', 'calc'], ['permeability', 'nom'], ['glassTransition', 'nom'], ['spinUp', 'obs'], ['spinUp', 'obs'],
+  ])
+  const text = bodyText(html)
+  for (const n of Object.values(MOTOR_EVIDENCE)) {
+    assert.ok(text.includes(n.quantity), `note "${n.quantity}" is not in the shell`)
+  }
+})
+
+/* /hardware loads the shared motor record but not the case study's prose or
+   evidence notes; those live in bldcCaseStudy.js so the hardware chunk graph
+   does not carry text it never shows. */
+test('the hardware chunks do not carry the case-study text', opts, async () => {
+  const { readdirSync } = await import('node:fs')
+  const { MOTOR_CASE_STUDY } = await import('../src/data/bldcCaseStudy.js')
+  const assets = join(DIST, 'assets')
+  const files = readdirSync(assets)
+  const hardware = files.find((f) => /^HardwarePage-.*\.js$/.test(f))
+  assert.ok(hardware, 'no HardwarePage chunk in dist/assets')
+  const seen = new Set()
+  const walk = (f) => {
+    if (seen.has(f) || /^(vendor|index-)/.test(f)) return
+    seen.add(f)
+    const src = readFileSync(join(assets, f), 'utf8')
+    for (const m of src.matchAll(/from"\.\/([^"]+\.js)"/g)) walk(m[1])
+  }
+  walk(hardware)
+  const probe = MOTOR_CASE_STUDY.wentWrong.slice(0, 40)
+  for (const f of seen) assert.ok(!readFileSync(join(assets, f), 'utf8').includes(probe), `${f} (loaded by /hardware) carries case-study prose`)
 })
