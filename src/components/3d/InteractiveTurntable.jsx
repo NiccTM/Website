@@ -670,9 +670,9 @@ function P2Badge() {
     g.fillStyle = '#c8ccd2'
     g.textAlign = 'center'
     g.textBaseline = 'alphabetic'
-    /* Geometric first, Exo 2 last: Exo 2 is self-hosted so it is the one face
-       guaranteed to be there, and it is close enough in character. */
-    g.font = '500 150px "Century Gothic", "Futura", "Avenir Next", "Exo 2", sans-serif'
+    /* Geometric first, Archivo last: Archivo is self-hosted so it is the one
+       face guaranteed to be there once the page has rendered a heading. */
+    g.font = '500 150px "Century Gothic", "Futura", "Avenir Next", "Archivo", sans-serif'
     g.fillText('P2', 256, 170)
     g.fillStyle = 'rgba(200,204,210,0.55)'
     g.fillRect(150, 192, 212, 5)

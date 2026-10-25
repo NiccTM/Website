@@ -70,11 +70,11 @@ function ArchiveModule({ mod }) {
       {/* Single column under 480px. At 2 columns a phone card is ~182x136, which
           is too small for a label plus a full caption.
           Above that, columns are capped to the number of images, and the width
-          capped with them, for the reason given over GRID_FOR_COUNT in
-          HardwareDiagnostics: these modules hold one or two photos each, and a
-          lone thumbnail in a four-column track reads as a grid that failed to
-          fill. Both files need the same treatment because they render adjacent
-          sections of the same page -- fixing only one made the mismatch worse. */}
+          capped with them, for the reason given in utils/gridCols: these
+          modules hold one or two photos each, and a lone thumbnail in a
+          four-column track reads as a grid that failed to fill. The repairs
+          above are a service log rather than a grid (HardwareDiagnostics);
+          these stay a grid because here the photograph is the whole entry. */}
       <div className={`grid gap-3 ${gridColsFor(mod.images.length, 'grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4')}`}>
         {mod.images.map((img) => (
           <ArchiveImage key={img.src} image={img} />

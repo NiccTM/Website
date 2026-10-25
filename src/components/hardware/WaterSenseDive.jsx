@@ -58,7 +58,7 @@ function DigitalTwinPanel({ src, label, caption, icon }) {
 
 export default function WaterSenseDive() {
   return (
-    <div className="mt-10">
+    <div id="water-sensor" className="mt-10 scroll-mt-20">
       {/* Section header */}
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 mb-3">
         <h2 className="legend legend-rule flex-1 min-w-[16rem] legend-module">

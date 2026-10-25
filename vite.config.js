@@ -1,4 +1,5 @@
 import { defineConfig, loadEnv } from 'vite'
+import { execSync } from 'node:child_process'
 import react from '@vitejs/plugin-react'
 import { validateImageUrl, fetchUpstreamImage } from './api/_lib/upstream-image.js'
 
@@ -134,11 +135,45 @@ function localApiPlugin(env) {
   }
 }
 
+/**
+ * What the colophon's imprint line prints: the commit this copy was built
+ * from, that commit's date, and where it was built. Taken from git and from
+ * Vercel's build environment, never from the clock, because the client and
+ * SSR bundles are two separate `vite build` runs and must agree exactly or the
+ * prerendered colophon fails to hydrate. The date is the COMMIT date -- when
+ * the code last changed, not when any page's content was last reviewed -- and
+ * the page labels it as such. Anything unavailable (no .git in the build
+ * environment) comes through as null and the line leaves it out.
+ *
+ * On Vercel the commit is VERCEL_GIT_COMMIT_SHA, the revision actually being
+ * deployed. A local build of a working tree with uncommitted edits says so,
+ * because then the named commit is not exactly what was built.
+ */
+function buildInfo() {
+  const git = (args) => {
+    try { return execSync(`git ${args}`, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim() || null }
+    catch { return null }
+  }
+  const sha = (process.env.VERCEL_GIT_COMMIT_SHA || git('rev-parse HEAD') || '').slice(0, 7) || null
+  const owner = process.env.VERCEL_GIT_REPO_OWNER
+  const slug = process.env.VERCEL_GIT_REPO_SLUG
+  const dirty = !process.env.VERCEL_ENV && !!git('status --porcelain --untracked-files=no')
+  return {
+    sha,
+    date: git('log -1 --format=%cs'),
+    where: process.env.VERCEL_ENV
+      ? `Vercel ${process.env.VERCEL_ENV}`
+      : dirty ? 'local build, with uncommitted changes' : 'local build',
+    repo: owner && slug ? `${owner}/${slug}` : null,
+  }
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')   // load .env without VITE_ prefix filter
 
   return {
     plugins: [react(), localApiPlugin(env)],
+    define: { __BUILD_INFO__: JSON.stringify(buildInfo()) },
     server: {
       port: 4000,
       open: true,

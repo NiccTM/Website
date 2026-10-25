@@ -70,7 +70,7 @@ function ReferenceGalleryStrip({ onSyncView }) {
   }
 
   return (
-    <div className="mt-6">
+    <div id="altium-gallery" className="mt-6 scroll-mt-20">
       {/* Strip header */}
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-3">
         <p className="legend legend-rule flex-1 min-w-[14rem]" style={{ color: 'var(--text-muted)' }}>
@@ -218,6 +218,30 @@ function ReferenceGalleryStrip({ onSyncView }) {
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
+/* Bench index: the stations on this page, in the order they appear, each
+   linked to its own section. It shares a row with the route keys instead of
+   taking a panel of its own, because this page's first screen belongs to the
+   inspection panel itself -- the header here is kept short on purpose so the
+   board rises into view. Names match the section legends below. */
+const BENCH = [
+  { label: `Reference renders (${REFERENCE_IMAGES.length})`, href: '#altium-gallery' },
+  { label: 'BLDC motor', href: '#motor' },
+  { label: 'Water-contact sensor', href: '#water-sensor' },
+]
+
+function BenchIndex() {
+  return (
+    <nav aria-label="On this bench" className="bench-index hidden md:flex">
+      <span className="legend" style={{ color: 'var(--text-muted)' }}>On this bench</span>
+      <ul>
+        {BENCH.map((b) => (
+          <li key={b.href}><a href={b.href} className="register-link text-sm">{b.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
 export default function HardwarePage() {
   usePageMeta('Hardware Lab', 'An Altium PCB you can inspect in 3D, a hand-wound three-phase BLDC motor, and a water-contact sensor for a UAS team. Altium Designer and embedded C.')
   const [canvasActive, setCanvasActive] = useState(false)
@@ -241,16 +265,22 @@ export default function HardwarePage() {
       <PageHeader
         eyebrow="Altium · Embedded C · WebGL"
         title="Hardware Lab"
-        intro="Boards, motors and sensors: an Altium PCB you can orbit in 3D, a three-phase motor wound from scratch, and a water-contact sensor built for a UAS. In the gallery below the board, clicking a reference image swings the 3D view round to the orientation it was captured from."
+        intro="Boards, motors and sensors: an Altium PCB you can orbit in 3D, a three-phase motor wound from scratch, and a water-contact sensor built for a UAS."
       />
 
-      <HardwareTabs />
+      {/* The sentence about the gallery syncing the 3D view moved out of the
+          intro: the gallery strip's own hint ("Click to sync 3D view") says it
+          where it applies, and a shorter intro lifts the board. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 mb-8">
+        <HardwareTabs className="" />
+        <BenchIndex />
+      </div>
 
       {/* ── PCB inspection: the instrument ──
           One panel holds the whole station: its legend, the control bank, the
           viewing window and the key. Controls are grouped the way a bench
           instrument groups them, each group named by a legend above it. */}
-      <section aria-labelledby="pcb-heading" className="panel p-3 sm:p-4">
+      <section id="pcb" aria-labelledby="pcb-heading" className="panel p-3 sm:p-4 scroll-mt-20">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-4">
         <h2 id="pcb-heading" className="legend" style={{ color: 'var(--text-primary)', fontSize: '0.8125rem' }}>
           PCB Inspection · Assembly View

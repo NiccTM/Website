@@ -435,7 +435,7 @@ export const projects = [
     title: 'UnBox: Sustainable Smart Packaging',
     course: 'APSC 169',
     description:
-      'Compostable, impact-resistant packaging for electronics, shaped as an elongated rhombic dodecahedron with an NFC tag in place of a shipping label.',
+      'Reusable, impact-resistant PLA packaging for electronics, compostable at end of life, shaped as an elongated rhombic dodecahedron with an NFC tag in place of a shipping label.',
     tags: ['3D Printing', 'PLA', 'NFC', 'Circular Design', 'Structural Analysis'],
     github: null,
     awards: [
@@ -444,13 +444,14 @@ export const projects = [
     ],
     expandedDetails: {
       extendedDescription:
-        'Compostable packaging for shipping electronics, meant to go back and be used again rather than thrown away. The shell is PLA, printed as an elongated rhombic dodecahedron because that shape tiles without gaps, so boxes pack against each other in transit instead of shipping air. It took over 680 N (60 kg) of vertical load without permanent deformation. Printed edge clips hold it shut, so it needs no tape.\n\nThe shipping label is a passive NFC tag rather than paper. Return address, recipient, tracking number and routing are written to the tag and can be read or rewritten from a phone, which is what lets the same box be readdressed for its next trip instead of relabelled.',
+        'Packaging for shipping electronics, meant to go back and be used again rather than thrown away, and composted at the end of its life. The shell is PLA, printed as an elongated rhombic dodecahedron because that shape tiles without gaps, so boxes pack against each other in transit instead of shipping air. In the team\'s crush testing the full-scale box took more than 680 N of vertical force without permanent deformation; an earlier, smaller PLA model held more than 60 kg stacked on top before its seams began to bend. Printed edge clips hold it shut, so it needs no tape.\n\nThe shipping label is a passive NFC tag rather than paper. Return address, recipient, tracking number and routing are written to the tag and can be read or rewritten from a phone, which is what lets the same box be readdressed for its next trip instead of relabelled.',
       technicalSpecs: [
         { label: 'Material',           value: 'Polylactic Acid (PLA)' },
         { label: 'Geometry',           value: 'Elongated Rhombic Dodecahedron' },
         { label: 'Data integration',   value: 'Passive NFC Tag · NXP NTAG® 215 · 504 bytes user memory' },
-        { label: 'Load capacity',      value: '> 680 N (> 60 kg) vertical crush resistance' },
-        { label: 'Circularity',        value: '100% compostable · designed for 100–115 use cycles' },
+        { label: 'Load capacity',      value: '> 680 N vertical crush force without permanent deformation (full-scale box, team test)' },
+        { label: 'Stacking test',      value: '> 60 kg on the earlier PLA model before its seams began to bend' },
+        { label: 'Circularity',        value: 'PLA mono-material, compostable at end of life (industrial composting) · 100–115 shipping cycles assumed in the life-cycle analysis, not tested' },
         { label: 'Closure mechanism',  value: 'Integrated 3D-printed edge clips' },
         { label: 'Date',               value: 'Sep 2023 – Dec 2023' },
         { label: 'Course',             value: 'APSC 169' },
@@ -988,7 +989,6 @@ export const archiveData = [
 export const hardwareDiagnostics = {
   title:      'Hardware Diagnostics & Repair',
   descriptor: 'Full teardowns, thermal compound replacement, drive servicing, and OS-level software repair.',
-  spec:       'Component-level repair: thermal, mechanical, storage, OS.',
   categories: [
     {
       key:         'compute',

@@ -78,6 +78,11 @@
   --radius-control: 3px;
   --radius-panel:   4px;
   --radius-shell:   8px;
+
+  /* ── Type: one grotesque at two widths (see the Archivo note below) ────── */
+  --font-grotesk: 'Archivo', 'Archivo Fallback', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-legend:  'Archivo', 'Archivo Legend Fallback', system-ui, sans-serif;
+  --legend-stretch: 82%;
 }
 
 [data-theme="dark"] {
@@ -152,9 +157,9 @@ body {
      Roboto -- rather than a webfont. That is the Swiss half of the brief (a
      neutral sans that gets out of the way of long engineering prose) and it is
      also free: nothing to download, nothing to swap, no reflow when a font
-     lands. Exo 2 used to set every paragraph on the site; it is now kept for
-     what its squared, Eurostile-like shapes are actually good at, which is
-     short uppercase legends. Keep in step with tailwind.config `sans`. */
+     lands. Exo 2 used to set every paragraph on the site. Headings and
+     legends are Archivo now (see the Archivo note further down); long prose
+     stays here. Keep in step with tailwind.config `sans`. */
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Segoe UI Symbol', 'Apple Symbols', 'Noto Sans Symbols 2', sans-serif;
   font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.0625rem);
@@ -168,6 +173,7 @@ body {
 
 /* Heading hierarchy */
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-grotesk);
   line-height: 1.2;
   letter-spacing: -0.01em;
   font-weight: 700;
@@ -292,20 +298,30 @@ canvas, img, video, .no-theme-transition {
    weight the site requests -- font-weight declares the RANGE, same pattern
    Material Symbols already used below. Regenerate per family, never combined;
    the request URLs are recorded in public/fonts/LICENSES.txt.
+
+   ARCHIVO REPLACED EXO 2 (October 2026). Exo 2 is a 2012 techno face in the
+   Eurostile line -- the same shorthand as Orbitron and every "retro-futurist"
+   template -- and the equipment this site borrows from was not lettered in it:
+   Braun, HP, Revox and Sony panels used neo-grotesques (Akzidenz, Helvetica,
+   Univers), condensed where the legend had to fit a key. Archivo (Omnibus-Type,
+   SIL OFL 1.1) is a grotesque with a width axis, so one file now sets both
+   jobs: headings at normal width, legends condensed. Body copy stays on the
+   platform sans (see body above), readouts on the platform monospace.
+
+   The file is not Google's download. It is Fontsource's latin variable file
+   (@fontsource-variable/archivo 5.3.0), cut with fontTools to what the site
+   uses: wght 400-800, wdth 75-100, Basic Latin + Latin-1 + the punctuation
+   and arrows the copy contains, features kern/liga/tnum/case. 90 KB -> 47.7 KB.
+   Recipe in public/fonts/LICENSES.txt. No italic: nothing set in this face is
+   italic, and the browser's oblique covers an accident.
    ──────────────────────────────────────────────────────────────────────────── */
 @font-face {
-  font-family: 'Exo 2';
+  font-family: 'Archivo';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400 800;
+  font-stretch: 75% 100%;
   font-display: swap;
-  src: url('/fonts/exo2-400.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Exo 2';
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/exo2-400i.woff2') format('woff2');
+  src: url('/fonts/archivo-var.woff2') format('woff2');
 }
 /* Variable across weight 100-700, which is why the icon class can set
    'wght' 300 through font-variation-settings.
@@ -337,26 +353,24 @@ canvas, img, video, .no-theme-transition {
   src: url('/fonts/material-symbols-rounded.woff2') format('woff2');
 }
 
-/* ── Metric-matched fallback for Exo 2 ────────────────────────────────────────
-   Exo 2 loads with font-display: swap, so text paints first in a local font and
-   is re-laid-out when the webfont arrives. The two are not the same width, so
-   paragraphs re-wrap and everything below them jumps.
+/* ── Metric-matched fallbacks for Archivo ─────────────────────────────────────
+   Archivo loads with font-display: swap, so text paints first in a local font
+   and is re-laid-out when the webfont arrives. If the two are not the same
+   width, lines re-wrap and everything below them jumps.
 
-   Exo 2 is wider than every local candidate: 2.87% over Segoe UI, 2.15% over
-   Arial and Helvetica, measured with canvas measureText over this site's own
-   copy rather than taken from a table. size-adjust scales the fallback up to
-   meet it, so text occupies the space the real font will need and the swap
-   stops changing line counts.
-
-   102.6% splits those two candidates, keeping the error under half a percent
-   whichever a machine has. Roboto is deliberately not in the src list: it is
-   12.3% narrower, too far off to match with the same number. Where none of the
-   locals exist the face does not resolve and the stack falls through to its
-   next entry unadjusted, exactly as before.
+   Two fallbacks, because Archivo is set at two widths and no local font is
+   condensed everywhere. Measured in Chrome over this site's own headings and
+   legends (docs/redesign/prototypes/measure.html), not taken from a table:
+     headings, wght 700, wdth 100   99.4% of Arial, 101.3% of Segoe UI
+     legends,  wght 600, wdth 82    ~84% of Arial uppercase
+   Arial is the only src: it is on Windows and macOS, and Segoe UI needs a
+   different number for each width. Where Arial is missing (Android) the face
+   does not resolve and the stack falls through unadjusted.
 
    No ascent/descent overrides: line-height is set explicitly almost everywhere
-   here, so vertical metrics barely affect wrapping, and guessing Exo 2's real
-   vertical metrics could easily make things worse.
+   here, so vertical metrics barely affect wrapping.
+
+   (History: the same technique matched Exo 2 at 102.6% before the switch.)
 
    MEASURE AT 412px, NOT 390px. This was built, tested at 390x844, found to
    change nothing, and reverted -- then Lighthouse kept reporting CLS 0.019 on
@@ -365,9 +379,16 @@ canvas, img, video, .no-theme-transition {
    everything under it drop 29px. At 390px it already wraps either way, so the
    shift is invisible. A single viewport is not evidence. */
 @font-face {
-  font-family: 'Exo 2 Fallback';
-  src: local('Segoe UI'), local('Helvetica Neue'), local('Arial');
-  size-adjust: 102.6%;
+  font-family: 'Archivo Fallback';
+  src: local('Arial'), local('ArialMT');
+  size-adjust: 99.5%;
+  font-weight: 100 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Archivo Legend Fallback';
+  src: local('Arial'), local('ArialMT');
+  size-adjust: 84%;
   font-weight: 100 900;
   font-style: normal;
 }
@@ -614,16 +635,20 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   .display-crt .glow { text-shadow: 0 0 2px rgb(var(--display-phosphor-rgb) / 0.55); }
 
   /* ── Type roles ────────────────────────────────────────────────────────────
-     .legend       Exo 2, uppercase, tracked: the printed legend above a control.
-     .font-mono-data  kept name, same Exo 2 face in sentence case, for the
-                   ~180 short labels and captions already written against it.
+     .legend       Archivo condensed (--legend-stretch), uppercase, lightly
+                   tracked: the printed legend above a control.
+     .font-mono-data  kept name, Archivo at full width in sentence case, for
+                   the ~180 short labels and captions written against it.
+     .font-display Archivo at full width: titles. Same family as the legends,
+                   so a page has one voice in two widths, not three faces.
      .font-readout true fixed-pitch, tabular. Numbers only -- never prose. */
   .legend {
-    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-family: var(--font-legend);
+    font-stretch: var(--legend-stretch);
     font-weight: 600;
     font-size: 0.75rem;
     line-height: 1.3;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
   }
   /* The heading of a module on a page (Hardware Diagnostics, Vinyl Archive,
@@ -633,12 +658,13 @@ html, body { overflow-x: hidden; max-width: 100vw; }
     color: var(--text-muted);
   }
   .font-mono-data {
-    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, 'Segoe UI Symbol',
+    font-family: 'Archivo', 'Archivo Fallback', system-ui, 'Segoe UI Symbol',
       'Apple Symbols', 'Noto Sans Symbols 2', 'DejaVu Sans', sans-serif;
     /* No font-size override -- let Tailwind text-xs/sm/base classes control size */
     line-height: 1.55;
-    letter-spacing: 0.02em;
-    font-weight: 500;
+    letter-spacing: 0.005em;
+    /* 460, not Exo 2's 500: Archivo carries more weight per step. */
+    font-weight: 460;
   }
   .font-readout {
     font-family: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas,
@@ -658,8 +684,10 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   .readout .unit { font-size: 0.45em; margin-left: 0.35em; letter-spacing: 0.08em; }
 
   .font-display {
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    letter-spacing: -0.02em;
+    font-family: var(--font-grotesk);
+    /* Archivo is already close-set at heavy weights; -0.02em (the value the
+       platform sans needed) pinched the 1.5rem card titles. */
+    letter-spacing: -0.012em;
   }
 
   /* A legend broken into a rule -- how instruments label a group of controls:
@@ -688,10 +716,11 @@ html, body { overflow-x: hidden; max-width: 100vw; }
     gap: 0.5rem;
     min-height: 2.5rem;
     padding: 0.5rem 1rem;
-    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-family: var(--font-legend);
+    font-stretch: var(--legend-stretch);
     font-weight: 600;
     font-size: 0.8125rem;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--control-ink);
     background: var(--control-face);
@@ -802,11 +831,12 @@ html, body { overflow-x: hidden; max-width: 100vw; }
     align-items: center;
     gap: 0.3rem;
     padding: 0.05rem 0.35rem;
-    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-family: var(--font-legend);
+    font-stretch: var(--legend-stretch);
     font-weight: 600;
     font-size: 0.6875rem;
     line-height: 1.4;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     white-space: nowrap;
     vertical-align: middle;
@@ -854,9 +884,10 @@ html, body { overflow-x: hidden; max-width: 100vw; }
     font-weight: 600;
   }
   .evidence-panel-kind {
-    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-family: var(--font-legend);
+    font-stretch: var(--legend-stretch);
     font-size: 0.6875rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
   /* Label column plus a hanging text column, so a wrapped line stays under
@@ -869,10 +900,11 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   .evidence-panel-row + .evidence-panel-row { margin-top: 0.25rem; }
   .evidence-panel-label {
     padding-top: 0.2em;
-    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-family: var(--font-legend);
+    font-stretch: var(--legend-stretch);
     font-size: 0.6875rem;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text-muted);
   }
@@ -893,10 +925,11 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   }
   .spec-grid dt,
   .spec-grid .spec-label {
-    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-family: var(--font-legend);
+    font-stretch: var(--legend-stretch);
     font-weight: 600;
     font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text-muted);
     padding-top: 0.15em;
@@ -920,10 +953,11 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   }
   .register thead th,
   .register .register-group {
-    font-family: 'Exo 2', 'Exo 2 Fallback', system-ui, sans-serif;
+    font-family: var(--font-legend);
+    font-stretch: var(--legend-stretch);
     font-weight: 600;
     font-size: 0.6875rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--text-muted);
   }
@@ -933,6 +967,146 @@ html, body { overflow-x: hidden; max-width: 100vw; }
      before the spacing exception, without changing the row rhythm much. */
   .register-link { display: inline-block; padding: 0.2rem 0; text-decoration: underline; text-decoration-color: var(--text-muted); text-underline-offset: 0.2em; }
   .register-link:hover { text-decoration-color: currentColor; }
+
+  /* ── Route headers: one vocabulary, five compositions ────────────────────
+     Projects, Hardware, Hobbies, About and Colophon used to open with the
+     same block. Each now adds one element of its own under or beside the
+     title, built from the page's real data (CASSETTE-DESIGN-CONTRACT.md,
+     "Page-specific treatments"). Keep them different: a second route copying
+     one of these is how the template comes back. */
+
+  /* Hobbies -- logbook plate: a recessed well beside the title. Rows are a
+     ruled list, legend left and value right, the way a rating plate pairs a
+     quantity with its figure. Linked rows keep the 2.5rem key height. */
+  .header-plate { padding: 0.85rem 1rem 0.6rem; }
+  .header-plate-rows { list-style: none; margin: 0; padding: 0; }
+  .header-plate-rows > li + li { border-top: 1px solid var(--seam); }
+  .header-plate-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-height: 2.5rem;
+    padding: 0.55rem 0;
+    color: var(--text-primary);
+  }
+  .header-plate-label { color: var(--text-muted); flex: none; }
+  .header-plate-value { font-size: 0.875rem; line-height: 1.4; text-align: right; min-width: 0; }
+  .header-plate-link { text-decoration: none; }
+  .header-plate-link .header-plate-value {
+    text-decoration: underline;
+    text-decoration-color: var(--text-muted);
+    text-underline-offset: 0.2em;
+  }
+  .header-plate-link:hover .header-plate-value { text-decoration-color: currentColor; }
+
+  /* Projects -- catalogue strip: the label band on an archive drawer. One
+     ruled row across the full width, a cell per section, counts in the
+     readout face. Cells wrap at narrow widths rather than shrinking. */
+  .catalogue-strip {
+    grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+    border-top: 1px solid var(--seam);
+    border-bottom: 1px solid var(--seam);
+  }
+  .catalogue-cell {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    min-height: 2.5rem;
+    padding: 0.45rem 0.9rem;
+    border-left: 1px solid var(--seam);
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .catalogue-cell:first-child { border-left: 0; padding-left: 0; }
+  .catalogue-label { color: var(--text-secondary); }
+  .catalogue-count { margin-left: auto; font-size: 1.25rem; line-height: 1; }
+  /* The results cell is a count, not a jump: no hover, and it reads quieter
+     than the section keys beside it. */
+  .catalogue-fact .catalogue-label { color: var(--text-muted); }
+  .catalogue-link:hover { background: var(--panel-plate); }
+  .catalogue-link:hover .catalogue-label { color: var(--text-primary); text-decoration: underline; text-underline-offset: 0.2em; }
+
+  /* Hardware -- bench index: the stations on the page, sharing the row of
+     route keys so the header stays short and the inspection panel rises. */
+  .bench-index { align-items: baseline; gap: 0.9rem; flex-wrap: wrap; }
+  .bench-index ul { display: flex; flex-wrap: wrap; gap: 0.1rem 1.25rem; list-style: none; margin: 0; padding: 0; }
+
+  /* Colophon -- imprint: the edition line under a book's title. Small, ruled
+     above only (the System table below brings its own rule; a second one here
+     stuttered), values in the readout face, parts set off by middots. */
+  .colophon-imprint {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.6rem;
+    padding: 0.55rem 0 0;
+    border-top: 1px solid var(--seam);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  /* ── Hobbies service log (HardwareDiagnostics) ─────────────────────────
+     Repairs as ruled entries, photographs left and the work and note right,
+     instead of a grid of equal tiles. One entry per job: three laptops given
+     the same job share an entry and a strip of three windows. */
+  .service-log { list-style: none; margin: 0; padding: 0; }
+  /* The DOM runs text, photos, key (see LogEntry); the areas put the photos
+     first on screen and the key under the text, so the Tab order matches the
+     page. Row gaps are margins, because the key row is empty on most entries
+     and a grid row-gap would still be drawn around it. */
+  .service-entry {
+    display: grid;
+    grid-template-areas: "photos" "text" "actions";
+    align-items: start;
+    padding: 1.25rem 0;
+  }
+  .service-entry + .service-entry { border-top: 1px solid var(--seam); }
+  .service-text { grid-area: text; }
+  .service-photos { grid-area: photos; margin-bottom: 1rem; }
+  .service-actions { grid-area: actions; margin-top: 1rem; }
+  @media (min-width: 768px) {
+    .service-entry {
+      /* A third for the photographs: at 5/12 a lone photo stood taller than
+         its own note and left the text column half empty. */
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      grid-template-areas: "photos text" "photos actions";
+      grid-template-rows: auto 1fr;
+      column-gap: 2rem;
+    }
+    .service-entry .service-photos { margin-bottom: 0; }
+    .service-entry.service-entry-brief { grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); }
+    /* Shared entries (one job, several photos) stack until xl, so the strip
+       runs the full width; from xl the row splits evenly. */
+    .service-entry.service-entry-shared {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "photos" "text" "actions";
+      grid-template-rows: none;
+    }
+    .service-entry.service-entry-shared .service-photos { margin-bottom: 1rem; }
+  }
+  @media (min-width: 1280px) {
+    .service-entry.service-entry-shared {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+      grid-template-areas: "photos text" "photos actions";
+      grid-template-rows: auto 1fr;
+    }
+    .service-entry.service-entry-shared .service-photos { margin-bottom: 0; }
+  }
+  /* Items start-aligned, so a label that wraps does not shift its window. */
+  .service-photos {
+    display: grid;
+    grid-template-columns: repeat(var(--n, 1), minmax(0, 1fr));
+    gap: 0.5rem;
+    align-items: start;
+  }
+  .service-note {
+    margin-top: 0.75rem;
+    max-width: 64ch;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
 
   .px-safe {
     padding-left:  max(1.25rem, env(safe-area-inset-left));

@@ -46,10 +46,11 @@
       in the site's own stylesheet, so the files are same-origin and can be
       preloaded from the HTML instead of being discovered two round trips later.
 
-      One text face is preloaded: Exo 2, now used only for the uppercase
-      legends (navigation, section codes, keys), which are on the first screen
-      of every route. Body copy and headings use the platform grotesk and need
-      nothing. Playfair Display was removed in the instrument redesign.
+      One text face is preloaded: Archivo (one variable file, 48 KB), which
+      sets the headings and the uppercase legends (navigation, section codes,
+      keys), all on the first screen of every route. Body copy uses the
+      platform grotesk and needs nothing. Exo 2 was replaced by Archivo in
+      October 2026; Playfair Display went in the instrument redesign.
       Material Symbols is deliberately NOT preloaded even though it
       is the largest file at 67 KB -- icons are boxed at 1em in index.css, so a
       late icon font cannot shift the layout, and putting it ahead of the text
@@ -63,7 +64,7 @@
       subset in public/fonts will not contain it and it renders as its literal
       ligature text. See public/fonts/LICENSES.txt for how to regenerate.
     -->
-    <link rel="preload" href="/fonts/exo2-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- schema.org Person. This is a name-based domain, so the highest-value
          structured data is telling search engines that "Nic Piraino" is a

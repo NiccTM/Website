@@ -43,17 +43,19 @@ export default {
         '2xl': '8px',
       },
 
-      // Three roles (see docs/redesign/DESIGN.md):
-      //   sans    -- body and headings: the platform grotesk, no download
-      //   legend  -- Exo 2, short uppercase legends only
+      // Roles (see docs/redesign/CASSETTE-DESIGN-CONTRACT.md):
+      //   sans    -- body copy: the platform grotesk, no download
+      //   display -- headings: Archivo at full width
+      //   legend  -- Archivo condensed, short uppercase legends only (the
+      //              .legend class also sets the width; this token does not)
       //   mono    -- genuine fixed-pitch, for readouts
-      // `display` points at the same grotesk as `sans`: Playfair is gone, and
-      // the 16 existing font-display headings become bold Swiss sans unchanged.
+      // Keep display/legend in step with --font-grotesk / --font-legend in
+      // index.css: this utility outranks the .font-display component rule.
       // The symbol families cover µ Ω ± ≈ → and subscripts on every platform.
       fontFamily: {
         sans:    ['system-ui', '-apple-system', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Segoe UI Symbol"', '"Apple Symbols"', '"Noto Sans Symbols 2"', 'sans-serif'],
-        display: ['system-ui', '-apple-system', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
-        legend:  ['"Exo 2"', '"Exo 2 Fallback"', 'system-ui', 'sans-serif'],
+        display: ['Archivo', '"Archivo Fallback"', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'Arial', 'sans-serif'],
+        legend:  ['Archivo', '"Archivo Legend Fallback"', 'system-ui', 'sans-serif'],
         mono:    ['ui-monospace', '"Cascadia Mono"', '"SF Mono"', 'Menlo', 'Consolas', '"Liberation Mono"', 'monospace'],
       },
 

@@ -50,7 +50,7 @@ function OpticalModule() {
   return (
     <figure className="flex flex-col h-full p-3 sm:p-4" aria-label="Photographs by Nic Piraino">
       <div className="flex items-center justify-between gap-3 mb-3">
-        <span className="legend" style={{ color: 'var(--text-muted)' }}>Optical · Cam 01</span>
+        <span className="legend" style={{ color: 'var(--text-muted)' }}>Photographs</span>
         <span className="legend font-readout" style={{ color: 'var(--text-muted)' }} aria-hidden="true">
           {pad2(current + 1)} / {pad2(HERO_PHOTOS.length)}
         </span>
