@@ -511,24 +511,31 @@ export const projects = [
   {
     id: 'rover-craft',
     category: 'competitive',
-    title: 'Okanagan Rover Craft: Power Distribution',
+    title: 'Okanagan Rover Craft: Rover Power System',
     course: 'CIRC',
     role: 'Electrical Engineer',
     description:
-      'Electrical Engineer on UBCO’s entry to the Canadian International Rover Challenge. A 24 V LiFePO4 power-distribution architecture (battery management system, main fuse, contactor and fused branch circuits) plus the vehicle’s inter-subsystem telemetry interfaces.',
-    tags: ['LiFePO4', 'Power Distribution', 'Battery Management', 'Telemetry', 'CIRC'],
+      'Electrical Engineer on UBCO’s Canadian International Rover Challenge team: power-system requirements, LiFePO4 battery selection, protection architecture, and computing and telemetry planning for the rover. Ongoing.',
+    tags: ['LiFePO4', 'Power Distribution', 'Battery Selection', 'Electrical Safety', 'Telemetry', 'CIRC'],
     github: null,
     awards: [],
     expandedDetails: {
       extendedDescription:
-        'A 24 V lithium iron phosphate power architecture for a rover competing in the Canadian International Rover Challenge, running battery through a main fuse, a contactor and out to individually fused branch circuits, so a single faulted branch can be isolated without taking the rest of the vehicle down with it. The same architecture carries the telemetry interfaces between subsystems.\n\nOngoing role; specific pack capacity and branch current ratings are not published here yet.',
+        'Okanagan Rover Craft is UBC Okanagan’s team for the Canadian International Rover Challenge (CIRC). In its first competition, the 10th CIRC in Drumheller, Alberta, the team placed 14th of 27; that is a team result. I joined as an electrical engineer in September 2025, and most of my work has been on the rover’s power system: what the battery has to deliver, how that energy is protected and distributed, and what the electronics should be able to measure. The photo on this entry’s card is the team’s rover at that competition (photo: Okanagan Rover Craft); the battery selection described below came after it.\n\n' +
+        'In 2025 I worked on the requirements and architecture for a 24 V-class LiFePO4 system. The battery had to be an off-the-shelf pack with an integrated battery management system rather than an undocumented custom build. From it, the design runs through protection close to the battery, a contactor for controlled disconnect, and individually fused branches for the drivetrain, the arm, computing and auxiliary loads, with DC-DC converters for the lower-voltage electronics. The intent is that a fault in one branch opens that branch’s protection rather than the main fuse; whether it actually does depends on fuse coordination that has not been tested.\n\n' +
+        'In May 2026, safety-documentation feedback on the battery-to-distribution path turned up a connector problem. CIRC sizes each circuit’s protection to the smallest connector or conductor in it (Req. 4.1.2), and the XT90 proposed for a 50 A-class battery path is rated at about 40–45 A continuous in its datasheets. I looked at higher-rated interconnects, including Anderson-type connectors, along with main-fuse placement, the contactor and disconnect arrangement, busbar distribution and fusing after the DC-DC outputs. Which connector the rover ends up with is still open.\n\n' +
+        'By autumn 2026 the battery requirements had narrowed: LiFePO4, 25.6 V nominal (8S), at least 50 A continuous with headroom for short peaks, a mass the chassis can carry, and a BMS with undervoltage lockout on every individual cell, which CIRC requires (Req. 3.3). I compared commercial packs from several suppliers on continuous and peak current, capacity, mass, BMS behaviour, UN38.3 and UL 2271 test documentation, lead time and delivery to Canada, and asked suppliers to confirm figures their listings left vague. In October 2026 the team chose a pack, and I assembled its supplier documentation for the safety package, noting where the lab reports name a generic model rather than the exact part number, and that a UL 2271 test report is not a UL certification. The team also settled on one main battery instead of adding a separate 12 V pack for the electronics, so the low-voltage loads will run from the main pack through protected DC-DC converters. The pack has not been installed or tested on the rover yet.\n\n' +
+        'Also in October 2026 I helped choose a BeagleBone AI-64 to sit beside the rover’s NVIDIA Jetson: the Jetson keeps vision and other compute-heavy work, and the BeagleBone takes GPIO, I²C, SPI and UART interfacing, sensor acquisition and low-level monitoring. I have also been defining what the electrical system should report: battery voltage and current, power and transients, drive and arm motor current, the supply rails of both computers, and temperature and humidity near the battery and electronics (a BME688 is under consideration). These are requirements and selections; the boards, wiring and telemetry are still being designed and divided among the team.',
       technicalSpecs: [
-        { label: 'Date',       value: 'Sep 2025 – Present' },
-        { label: 'Role',       value: 'Electrical Engineer' },
-        { label: 'Chemistry',  value: 'LiFePO4 (Lithium Iron Phosphate) · 24 V' },
-        { label: 'Protection', value: 'Main fuse · contactor · individually fused branch circuits' },
-        { label: 'Telemetry',  value: 'Inter-subsystem telemetry interfaces' },
-        { label: 'Team',       value: 'Okanagan Rover Craft, UBC Okanagan · CIRC' },
+        { label: 'Date',        value: 'Sep 2025 – Present' },
+        { label: 'Role',        value: 'Electrical Engineer' },
+        { label: 'Team',        value: 'Okanagan Rover Craft, UBC Okanagan · CIRC' },
+        { label: 'Team result', value: '14th of 27, CIRC 2026, Drumheller, AB' },
+        { label: 'Battery',     value: 'One LiFePO4 pack, 25.6 V nominal (8S) · selected Oct 2026, not yet installed' },
+        { label: 'BMS',         value: 'Integrated, with per-cell undervoltage lockout (CIRC Req. 3.3)' },
+        { label: 'Protection',  value: 'Protection at the battery · contactor · individually fused branches (design)' },
+        { label: 'Computing',   value: 'NVIDIA Jetson + BeagleBone AI-64 for I/O and sensors (selected)' },
+        { label: 'Telemetry',   value: 'Pack V/I, motor currents, supply rails, temperature and humidity (requirements)' },
       ],
       links: [],
     },

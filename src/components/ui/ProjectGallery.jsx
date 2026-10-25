@@ -23,6 +23,13 @@ const PROJECT_IMAGES = {
   tracesight:         '/project-heroes/tracesight.png',
   signalvault:        '/project-heroes/signalvault.png',
   rigpilot:           '/project-heroes/rigpilot.png',
+  // Portrait team photo (photo: Okanagan Rover Craft).
+  'rover-craft':      '/okanagan-rover-craft-circ-2026.jpg',
+}
+
+// Crop anchors for images whose subject is not centred in a wide tile.
+const PROJECT_IMAGE_POSITION = {
+  'rover-craft':      'center 75%',
 }
 
 const SECTIONS = [
@@ -271,6 +278,7 @@ function ProjectCard({ project, categoryLabel, featured = false, onExpand }) {
               loading="lazy"
               decoding="async"
               className="card-img absolute inset-0 w-full h-full object-cover"
+              style={heroImage && PROJECT_IMAGE_POSITION[project.id] ? { objectPosition: PROJECT_IMAGE_POSITION[project.id] } : undefined}
             />
           </div>
         </div>

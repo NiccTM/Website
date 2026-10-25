@@ -19,7 +19,9 @@ export const PROJECT_SKILLS = {
   unbox:              ['mechanical'],
   // 200+ constrained SolidWorks parts incl. the gullwing mechanism and V6.
   'delorean-apsc171': ['mechanical'],
-  // 24 V LiFePO4 architecture: BMS, main fuse, contactor, fused branches.
+  // Battery requirements and selection, protection at the pack, contactor,
+  // fused branches. Computing and telemetry are selections and requirements
+  // so far, not built embedded work, so no 'embedded' tag yet.
   'rover-craft':      ['power'],
   // Raspberry Pi + camera, classification driving a servo flap over PWM;
   // browser crop/back-mapping and the rate-limited serverless proxy.
