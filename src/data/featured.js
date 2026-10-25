@@ -40,15 +40,22 @@ export const FEATURED = [
   },
   {
     id: 'rover-craft',
-    title: 'Rover power distribution',
+    title: 'Rover power system',
     context: 'Okanagan Rover Craft · CIRC · Sep 2025 – present',
     role: 'Electrical engineer',
     decision:
-      'A 24 V LiFePO4 pack through a main fuse and a contactor to individually fused branches, so one faulted branch can be isolated without taking the rest of the rover down.',
-    result: 'Ongoing. Pack capacity and branch current ratings are not published yet.',
+      'An XT90 rated about 40–45 A sat on a 50 A-class battery path, and CIRC sizes each circuit’s protection to its smallest connector. That fed the revised requirements: one 25.6 V LiFePO4 pack with per-cell undervoltage lockout, protected at the battery and feeding individually fused branches and DC-DC converters.',
+    result: 'Ongoing. Battery selected in October 2026; not yet installed or tested.',
+    resultNote: 'Team result: 14th of 27 at CIRC 2026, before this battery was chosen.',
     evidence: null,
     to: '/projects#project-rover-craft',
     linkLabel: 'See the entry',
-    media: null,
+    // Portrait photo in a 4:3 tile: anchored low so the crop keeps the rover,
+    // not the sky.
+    media: {
+      src: '/okanagan-rover-craft-circ-2026.jpg',
+      alt: 'Okanagan Rover Craft’s rover on rough ground at CIRC 2026: copper-clad electronics box, antenna mast, arm and four yellow printed wheels',
+      position: 'center 75%',
+    },
   },
 ]

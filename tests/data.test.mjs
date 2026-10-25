@@ -110,6 +110,31 @@ test('motor text uses the documented winding, steel bolts and no measured 30 A',
   assert.doesNotMatch(text, /30 ?A (needed|draw|current)|drew 30|needed for (the )?target torque/i)
 })
 
+/* Rover: details Nic has kept internal (the battery's identity, price and BMS
+   settings, supplier names) must not reach the public text. The term list
+   lives in docs/redesign/, which never ships to the public repository, so
+   this check runs only where that file exists. */
+const PRIVATE_TERMS = join(ROOT, 'docs/redesign/private-terms.txt')
+test('rover text keeps internal details private', { skip: !existsSync(PRIVATE_TERMS) && 'term list is kept outside the public repository' }, () => {
+  const files = ['src/data/config.js', 'src/data/featured.js', 'src/routes/AboutPage.jsx', 'src/data/skills.js']
+  const text = files.map((f) => readFileSync(join(ROOT, f), 'utf8')).join('\n').toLowerCase()
+  const terms = readFileSync(PRIVATE_TERMS, 'utf8').split(/\r?\n/).map((t) => t.trim().toLowerCase()).filter((t) => t && !t.startsWith('#'))
+  assert.ok(terms.length > 0, 'empty term list')
+  for (const t of terms) assert.ok(!text.includes(t), 'an internal detail appears in the public text')
+})
+
+/* Rover status: the selected pack, the computing split and the telemetry list
+   are not to be described as installed, tested or operating, and the AR2C
+   sponsorship is not credited to the rover team. */
+test('rover text claims no completed hardware', () => {
+  const files = ['src/data/config.js', 'src/data/featured.js', 'src/routes/AboutPage.jsx']
+  const text = files.map((f) => readFileSync(join(ROOT, f), 'utf8')).join('\n')
+  assert.doesNotMatch(text, /Sanmina[^.]*Rover|Rover[^.]*Sanmina/)
+  const rover = readFileSync(join(ROOT, 'src/data/config.js'), 'utf8').split("id: 'rover-craft'")[1].split("id: 'ar2c-fpv'")[0]
+  assert.match(rover, /not been installed or tested/)
+  assert.doesNotMatch(rover, /passed (the |its )?safety|certified|is operational|telemetry is running|fully integrated/i)
+})
+
 /* Nic's role on the motor was Research & Presentation Lead (the presentation's
    contributions slide), not team lead, and the diagnosis and fixes were the
    team's. */

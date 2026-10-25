@@ -49,6 +49,7 @@ export default function FeaturedWork() {
                     loading="lazy"
                     decoding="async"
                     className="absolute inset-0 w-full h-full object-cover"
+                    style={f.media.position ? { objectPosition: f.media.position } : undefined}
                   />
                 </div>
               </div>

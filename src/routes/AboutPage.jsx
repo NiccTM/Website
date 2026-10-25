@@ -132,12 +132,13 @@ export default function AboutPage() {
 
           <Section n="04" title="Teams">
             <Body>
-              I work on power architecture for Okanagan Rover Craft, UBCO&rsquo;s entry to the
-              Canadian International Rover Challenge. It is a 24 V LiFePO₄ system running battery →
-              main fuse → contactor → high-current connector → individually fused branches, and it
-              sits at the opposite end of the scale from a voltage reference: instead of microvolts,
-              the questions are fault current, conductor sizing and whether every connection in the
-              path can carry the load safely.
+              I work on the power system for Okanagan Rover Craft, UBCO&rsquo;s team for the
+              Canadian International Rover Challenge: the battery&rsquo;s requirements and selection,
+              protection at the pack, a contactor and individually fused branches, and what the
+              electronics should measure. It sits at the opposite end of the scale from a voltage
+              reference: instead of microvolts, the questions are fault current, conductor sizing
+              and whether every connection in the path can carry the load safely. One of them
+              didn&rsquo;t: a connector rated below the current its path was being sized for.
             </Body>
             <Body>
               Before that I was on the electrical team for UBCO&rsquo;s Aerial Robotics and
