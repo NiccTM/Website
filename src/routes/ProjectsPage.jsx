@@ -2,7 +2,8 @@ import { Suspense } from 'react'
 import { lazyWithReload } from '../utils/lazyWithReload'
 import { usePageMeta } from '../hooks/usePageMeta'
 import PageHeader     from '../components/layout/PageHeader'
-import ProjectGallery from '../components/ui/ProjectGallery'
+import ProjectGallery, { SECTIONS, results } from '../components/ui/ProjectGallery'
+import { projects }   from '../data/config'
 import WhenVisible from '../components/ui/WhenVisible'
 import ErrorBoundary  from '../components/ui/ErrorBoundary'
 
@@ -29,6 +30,36 @@ const EcoSortDemo  = lazyWithReload(() => import('../components/ml/EcoSortDemo')
    landing page's main content. */
 const SystemArchitecture = lazyWithReload(() => import('../components/diagrams/SystemArchitecture'))
 
+/* Catalogue strip: the header of an archive drawer. One ruled band across the
+   full width, a cell per section with its count, then the competition
+   results. Counted from the same list the register and the cards render, so
+   it cannot disagree with them. "Results" are the register's Result column
+   (course tags excluded); one of them is a finalist listing, not a placing, so
+   the cell does not say "placings". There is no total cell: "15 entries" is
+   already printed twice on this screen. The section cells are the only jumps
+   to the card sections, which is what earns the strip its height (contract
+   section 15). Drawn from lg up only: on a tablet it wraps into two ragged
+   rows, and on a phone the "Jump to a project" key already does its job. */
+const RESULTS = projects.reduce((n, p) => n + results(p).length, 0)
+
+function CatalogueStrip() {
+  return (
+    <nav aria-label="Project catalogue" className="catalogue-strip hidden lg:grid -mt-2 mb-6">
+      {SECTIONS.map((s, i) => (
+        <a key={s.key} href={`#projects-${s.key}`} className="catalogue-cell catalogue-link">
+          <span className="legend font-readout" style={{ color: 'var(--text-muted)' }}>{String(i + 1).padStart(2, '0')}</span>
+          <span className="legend catalogue-label">{s.label}</span>
+          <span className="font-readout catalogue-count">{projects.filter((p) => p.category === s.key).length}</span>
+        </a>
+      ))}
+      <p className="catalogue-cell catalogue-fact">
+        <span className="legend catalogue-label">Competition results</span>
+        <span className="font-readout catalogue-count">{RESULTS}</span>
+      </p>
+    </nav>
+  )
+}
+
 export default function ProjectsPage() {
   usePageMeta('Projects', 'Competitive design, professional practice and software projects: UBC Okanagan coursework, engineering team work and personal software.')
   return (
@@ -40,7 +71,9 @@ export default function ProjectsPage() {
           eyebrow="Competition · Coursework · Software"
           title="Projects"
           intro="Competition hardware, coursework that outgrew the assignment, and the software I write around it. Where a figure is calculated rather than measured, the entry says so."
-        />
+        >
+          <CatalogueStrip />
+        </PageHeader>
       </section>
 
       <ProjectGallery />

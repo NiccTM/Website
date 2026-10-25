@@ -1,19 +1,25 @@
 Fonts served from this directory
 ===============================
 
-These files are redistributed with the site rather than loaded from Google's
+These files are redistributed with the site rather than loaded from a font
 CDN. Both licences below permit that; both also require that the licence
 travels with the files, which is what this file is for.
 
 
-Exo 2
------
-Copyright (c) Natanael Gama (www.ndiscovered.com)
-SIL Open Font License, Version 1.1
+Archivo
+-------
+Copyright 2020 The Archivo Project Authors (https://github.com/Omnibus-Type/Archivo)
+SIL Open Font License, Version 1.1 -- full text in Archivo-OFL.txt, which
+must travel with the font file.
 https://openfontlicense.org/
-https://fonts.google.com/specimen/Exo+2
 
-Files: exo2-400.woff2 (variable, weights 100-900), exo2-400i.woff2 (italic)
+File: archivo-var.woff2 (variable: wght 400-800, wdth 75-100, upright only)
+
+This is a MODIFIED (subsetted and instanced) copy, which the OFL permits. It
+keeps the family name: the OFL's Reserved Font Name clause applies only to
+names the copyright notice reserves, and Archivo's notice reserves none.
+
+Replaced Exo 2 (Natanael Gama, OFL 1.1) in October 2026.
 
 
 Material Symbols Rounded
@@ -33,57 +39,29 @@ font is 5,220 KB; this is 67 KB.
 Regenerating
 ============
 
-FETCH EACH FAMILY SEPARATELY. NEVER combine Exo 2 / Playfair Display /
-Material Symbols in one css2 URL.
+Archivo
+-------
+Source: the npm package @fontsource-variable/archivo@5.3.0 (OFL-1.1), file
+files/archivo-latin-standard-normal.woff2 (wght 100-900, wdth 62-125, 90 KB).
+Unpack it in its own empty folder. Then, with fontTools + brotli:
 
-Google serves a combined multi-family request through a different endpoint
-(fonts.gstatic.com/l/font, one file per face, no unicode-range) than a
-single-family request (fonts.gstatic.com/s/..., split into 'latin',
-'latin-ext', 'cyrillic', 'vietnamese', etc. by script). The combined endpoint
-is the one the &icon_names= subsetting needs -- that part is intentional and
-correct. But requesting the TEXT families through the same combined URL
-silently reduced them to whatever narrow subset that endpoint happened to
-compute: this repo's Exo 2 and Playfair files once carried 27 glyphs each --
-space, underscore, and the lowercase alphabet minus 'q' -- with no uppercase,
-no digits, no punctuation. Nothing errors when a glyph is missing; the browser
-just falls through to the next font in the stack for that one character. Every
-capital letter on the site was silently rendering in Georgia (or the Exo 2
-fallback) sitting next to true Playfair or Exo 2 lowercase, which looked like
-inconsistent bolding.
+  python -m fontTools.varLib.instancer archivo-latin-standard-normal.woff2 wght=400:800 wdth=75:100 -o inst.ttf
 
-Correct procedure, per family:
+  python -m fontTools.subset inst.ttf --flavor=woff2 --output-file=archivo-var.woff2 --layout-features="kern,liga,tnum,case" --unicodes="U+0020-007E,U+00A0-00FF,U+0131,U+0152-0153,U+2013-2014,U+2018-201E,U+2022,U+2026,U+2032-2033,U+2190-2193,U+2197,U+2212,U+20AC,U+2122"
 
-  1. Fetch with a current desktop browser user-agent (an old or absent UA
-     gets ttf instead of woff2):
+Result: 47,720 bytes. If a weight outside 400-800 or a width outside 75-100%
+is ever used in CSS, widen the instancer ranges, or the browser clamps
+silently. Ω, µ, ≈ and subscripts are not in the face and fall through to the
+symbol families in the font stacks, as they did with Exo 2.
 
-     https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap
+Verify coverage before committing (fontTools: TTFont(path).getBestCmap() must
+contain A-Z, a-z, 0-9 and the punctuation above), and check the axes
+(TTFont(path)['fvar'].axes).
 
-     https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap
-
-  2. The response is several @font-face blocks per weight/style, each preceded
-     by a `/* rangename */` comment. Keep ONLY the blocks commented `/* latin */`
-     -- unicode-range U+0000-00FF plus general punctuation (en/em dash, curly
-     quotes, ellipsis, trademark, arrows, minus sign). That covers everything
-     this site's English body copy and spec tables use. Discard 'latin-ext',
-     'cyrillic', 'cyrillic-ext', 'vietnamese', 'greek' -- nothing here is
-     written in those scripts. Genuinely exotic characters this site DOES use
-     (Ω, μ, subscript digits in specs like "μᵣ") are out of scope on purpose:
-     they fall through to the symbol families already in tailwind.config.
-
-  3. Both families are variable fonts -- multiple requested weights in the
-     same style often resolve to the IDENTICAL url(), because the file already
-     spans the whole weight axis. Download that file once and point every
-     matching @font-face rule at it, declaring font-weight as a RANGE (e.g.
-     `font-weight: 100 900;`) rather than a fixed number -- same pattern
-     Material Symbols already uses below for its opsz/wght/FILL/GRAD range.
-     Verify with a font tool that the axis actually covers what you're
-     declaring before trusting it (fontTools: TTFont(path)['fvar'].axes).
-
-  4. Verify glyph coverage before committing: open the file with fontTools and
-     confirm 'N', 'A'-'Z', '0'-'9', and common punctuation are present in
-     getBestCmap(). A 6-8 KB file for a Latin text face is a red flag, not a
-     win -- the 'latin' block for these families runs 17-40 KB depending on
-     weight and style.
+Google Fonts lesson, kept because it cost a lot to learn: never request text
+families combined with Material Symbols in one css2 URL. The combined endpoint
+once cut Exo 2 and Playfair Display to a 27-glyph subset with no capitals, and
+nothing errors when a glyph is missing.
 
 Material Symbols regenerates the same way it always did -- combined request,
 icon_names subset intentional:

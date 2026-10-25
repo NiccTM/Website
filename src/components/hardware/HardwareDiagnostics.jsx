@@ -1,109 +1,142 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { hardwareDiagnostics } from '../../data/config'
 import ImageLightbox from '../ui/ImageLightbox'
 import { thumbSrc } from '../../utils/thumbs'
-import { gridColsFor } from '../../utils/gridCols'
 import Picture from '../ui/Picture'
+import { serviceEntries } from '../../utils/serviceLog'
 
-// ─── Image card ──────────────────────────────────────────
-/* Most tiles open their own photo in the lightbox, because the photo IS the
-   content. A tile carrying `to` is a doorway to a full write-up instead, so it
-   navigates on click and says so on its face -- a tile that behaves differently
-   from its neighbours has to announce that before the click, not after it.
+/* A service log, not a tile grid.
 
-   The caption sits BELOW the photograph, on the panel, rather than over it on
-   a gradient. These captions run 80-95 characters and used to need a scrim
-   that grew with the text; a caption beside the picture needs no scrim and
-   leaves the photograph untouched. */
-function DiagnosticImage({ image, eager = false, priority = false }) {
+   This section used to open the page on five equal teardown tiles -- the
+   closest thing on the site to a stock portfolio grid -- and the part worth
+   reading, each repair's note (what the fault was, what was done, and why that
+   order or that material), was only reachable by opening a photo. Three of the
+   five tiles carried word-for-word the same caption and note, because the work
+   was the same.
+
+   So each repair is now one ruled entry: its photographs on the left, the work
+   done and the note on the right, in the open. Consecutive photos whose note
+   is identical are one job and share one entry, which is exactly what that
+   note says ("one of three mid-range laptops ... given the same job"). Nothing
+   is rewritten: every word comes from config.hardwareDiagnostics. */
+
+// ─── Photograph window ──────────────────────────────────────────────────────
+/* Every photo opens full size in the lightbox, including the CD player's: the
+   way to its write-up is the labelled key in the text column, so a photo never
+   behaves differently from its neighbours. */
+function PhotoWindow({ image, labelled, eager, priority, deferred = false, onSettled }) {
   const [lightbox, setLightbox] = useState(false)
-  const linked = Boolean(image.to)
-
-  const shellClass = `panel flex flex-col overflow-hidden text-left w-full ${linked ? 'cursor-pointer' : 'cursor-zoom-in'}`
-
-  const inner = (
-    <>
-      {/* Spans, not divs/ps: this markup is the content of a <button> (or a
-          link), and a button may only contain phrasing content. */}
-      <span className="panel-recessed block p-1 m-2 mb-0">
-        <span className="block overflow-hidden" style={{ aspectRatio: '4/3' }}>
-          <Picture
-            src={thumbSrc(image.src)}
-            alt={image.label}
-            /* The first tiles sit inside the first screen on a phone, and the
-               first one is the route's LCP element there (measured: 344x258
-               at y=712 in a 412x823 viewport, larger than the intro text).
-               Lazy-loading it delayed LCP from 1.39s to 2.65s, so the leading
-               tiles load eagerly and the very first is prioritised. Everything
-               below stays lazy. */
-            loading={eager ? 'eager' : 'lazy'}
-            fetchpriority={priority ? 'high' : 'auto'}
-            decoding="async"
-            className="w-full h-full object-cover"
-            /* Three of these are portrait (the hi-fi rack, the RTX 3090, the
-               Beats headphone) rendered into a 4:3 landscape box. Centred
-               cover-cropping cut the subject out of the middle; top-anchoring
-               keeps it. See ArchiveModules for the same fix. */
-            style={{ objectPosition: 'top' }}
-          />
-        </span>
-      </span>
-
-      <span className="flex flex-col items-start gap-0.5 px-3 pt-2.5 pb-3 flex-1">
-        {/* No line-clamp. These captions are terse work notes, not padding, and
-            cutting one mid-item loses the last thing in a list that is nothing
-            but items. The panel grows by a line instead. */}
-        <span className="block font-mono-data text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{image.label}</span>
-        <span className="block font-mono-data" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{image.caption}</span>
-        {/* The link cue is always visible: it is the only thing saying this
-            tile leaves the page, and a touch screen has no hover to reveal it. */}
-        {linked && (
-          <span className="key key-sm mt-2" aria-hidden="true">
-            Repair log
-            <span className="material-symbols-rounded text-sm">open_in_new</span>
-          </span>
-        )}
-      </span>
-    </>
-  )
-
-  if (linked) {
-    return (
-      <Link to={image.to} aria-label={`${image.label}: read the full repair write-up`} className={shellClass}>
-        {inner}
-      </Link>
-    )
-  }
-
+  const boxRef = useRef(null)
+  /* A lead photo that finished before hydration fired its load event before
+     React was listening, so check once on mount as well. */
+  useEffect(() => {
+    if (onSettled && boxRef.current?.querySelector('img')?.complete) onSettled()
+  }, [onSettled])
   return (
     <>
       <button
         type="button"
         aria-label={`Open ${image.label} full size`}
         onClick={() => setLightbox(true)}
-        className={shellClass}
+        className="block w-full text-left cursor-zoom-in service-photo"
       >
-        {inner}
+        {/* Spans, not divs: this is the content of a <button>. */}
+        <span className="panel-recessed block p-1">
+          <span ref={boxRef} className="block overflow-hidden" style={{ aspectRatio: '4/3' }}>
+            {!deferred && <Picture
+              src={thumbSrc(image.src)}
+              alt={image.label}
+              /* The first entry's photo is in the first screen at every width
+                 and is the route's LCP candidate on a phone; lazy-loading it
+                 delayed LCP from 1.39 s to 2.65 s when these were tiles. The
+                 first entry loads eagerly and its first photo is prioritised.
+                 Everything below stays lazy, and waits for this one (see the
+                 load-order note above HardwareDiagnostics). */
+              loading={eager ? 'eager' : 'lazy'}
+              fetchpriority={priority ? 'high' : 'auto'}
+              decoding="async"
+              className="w-full h-full object-cover"
+              /* Two of these are portrait (the RTX 3090, the Beats headphone) in
+                 a 4:3 box; centred cover-cropping cut the subject out. */
+              style={{ objectPosition: 'top' }}
+              onLoad={onSettled}
+              onError={onSettled}
+            />}
+          </span>
+        </span>
+        {/* In a shared entry the title lists several devices, so each window
+            names its own. A single photo needs no label: the title is it. */}
+        {labelled && (
+          <span className="legend block mt-1.5" style={{ color: 'var(--text-muted)' }}>{image.label}</span>
+        )}
       </button>
       {lightbox && <ImageLightbox src={image.src} label={image.label} caption={image.caption} note={image.note} onClose={() => setLightbox(false)} />}
     </>
   )
 }
 
-// ─── Category section ─────────────────────────────────────────────────────────
-function CategorySection({ category, first = false }) {
-  // Columns capped to the tile count; see utils/gridCols for why the width is
-  // capped alongside them. ArchiveModules renders the sections directly below
-  // these and uses the same helper, so a one-photo category looks the same
-  // whichever component drew it.
-  const gridCols = gridColsFor(
-    category.images.length,
-    'grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5',
-  )
+// ─── One repair ─────────────────────────────────────────────────────────────
+function LogEntry({ entry, first, deferred, onLeadSettled }) {
+  const { images, note } = entry
+  const shared = images.length > 1
+  // Photos that share a note share a caption too (tests/data.test.mjs), so
+  // the lead's caption is the whole job's work line.
+  const work = images[0].caption
+  const record = images.find((i) => i.to)
+  /* Source order: heading and text, then the photos, then the Service
+     record key. A screen reader or a heading jump meets the device before its
+     photo buttons, and the Tab order (photo, then key) matches what is on
+     screen, where grid areas put the photos first (or left) and the key under
+     the text. Moving the photos with `order` alone put the key ahead of the
+     photo it sits beside. A shared entry stacks until xl, so its strip of three is not
+     squeezed into a third of the row; an entry with no note gets a narrower
+     photo, so the photo does not stand three times taller than its text. */
+  const variant = shared ? ' service-entry-shared' : note ? '' : ' service-entry-brief'
   return (
-    <div className="mb-8">
-      <div className="flex items-center gap-3 mb-4 flex-wrap">
+    <li className={`service-entry${variant}`}>
+      <div className="service-text min-w-0">
+        <h4 className="font-display font-bold leading-snug" style={{ color: 'var(--text-primary)', fontSize: 'clamp(1rem, 0.92rem + 0.35vw, 1.2rem)' }}>
+          {images.map((i) => i.label).join(' · ')}
+        </h4>
+        {/* Legend in its own column, so a long work line wraps under itself
+            and never pushes the legend onto a line of its own. */}
+        <p className="mt-2 grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3">
+          <span className="legend" style={{ color: 'var(--text-muted)' }}>Work</span>
+          <span className="font-mono-data text-sm" style={{ color: 'var(--text-primary)' }}>{work}</span>
+        </p>
+        {note && <p className="service-note">{note}</p>}
+      </div>
+      <div className="service-photos" style={{ '--n': images.length }}>
+        {images.map((img, i) => (
+          <PhotoWindow
+            key={img.src}
+            image={img}
+            labelled={shared}
+            eager={first}
+            priority={first && i === 0}
+            deferred={deferred}
+            onSettled={first && i === 0 ? onLeadSettled : undefined}
+          />
+        ))}
+      </div>
+      {record && (
+        <div className="service-actions">
+          <Link to={record.to} className="key key-sm">
+            Service record<span className="sr-only">: {record.label}</span>
+            <span aria-hidden="true" className="material-symbols-rounded text-sm">chevron_right</span>
+          </Link>
+        </div>
+      )}
+    </li>
+  )
+}
+
+// ─── Category ───────────────────────────────────────────────────────────────
+function CategorySection({ category, first = false, leadSettled, onLeadSettled }) {
+  return (
+    <div className="mb-10">
+      <div className="flex items-center gap-3 mb-1 flex-wrap">
         <h3 className="legend legend-rule flex-1 legend-module">
           {category.icon === '_sacd'
             ? <span aria-hidden="true" className="font-readout font-bold">SACD</span>
@@ -113,44 +146,51 @@ function CategorySection({ category, first = false }) {
         </h3>
         <span className="font-mono-data text-sm" style={{ color: 'var(--text-muted)' }}>{category.description}</span>
       </div>
-
-      <div className={`grid gap-3 ${gridCols}`}>
-        {category.images.map((img, i) => (
-          <DiagnosticImage key={img.src} image={img} eager={first && i < 2} priority={first && i === 0} />
+      <ul className="service-log">
+        {serviceEntries(category.images).map((entry, i) => (
+          <LogEntry
+            key={entry.images[0].src}
+            entry={entry}
+            first={first && i === 0}
+            deferred={!(first && i === 0) && !leadSettled}
+            onLeadSettled={onLeadSettled}
+          />
         ))}
-      </div>
+      </ul>
     </div>
   )
 }
 
-// ─── Main export ──────────────────────────────────────────────────────────────
+// ─── Main export ────────────────────────────────────────────────────────────
+/* Load order. The first entry's photo is the route's LCP element at every
+   width. On a throttled link the log's other photos, inside the browser's
+   lazy-load margin, were downloading alongside it: with them blocked, desktop
+   LCP fell from about 2.6 s to 1.85 s over HTTP/1.1 and from 2.1 s to 1.65 s
+   over HTTP/2 (DESIGN-EVOLUTION section 15). So the other photos are not put
+   in the page until the lead photo has loaded or failed; then they load
+   lazily as before. Their windows keep the 4:3 box meanwhile, so nothing
+   moves, and the server-rendered page and the first client render agree
+   (both start with only the lead photo). */
 export default function HardwareDiagnostics() {
+  const [leadSettled, setLeadSettled] = useState(false)
+  const onLeadSettled = useCallback(() => setLeadSettled(true), [])
   return (
     <section
       className="relative z-10 px-5 py-10 sm:px-8 md:px-14 lg:px-20 xl:px-28 tv:px-40 max-w-[1600px] tv:max-w-[2400px] mx-auto w-full"
     >
-      {/* Header */}
-      <div className="flex items-end justify-between flex-wrap gap-3 mb-6">
-        <div>
-          <h2 className="legend legend-module">
-            {hardwareDiagnostics.title}
-          </h2>
-          <p className="font-mono-data mt-1" style={{ color: 'var(--text-muted)' }}>
-            {hardwareDiagnostics.descriptor}
-          </p>
-        </div>
-        <div
-          className="flex items-center gap-2 px-3 py-1.5"
-          style={{ background: 'var(--panel-plate)', border: '1px solid var(--seam)', borderRadius: '2px' }}
-        >
-          <span aria-hidden="true" className="material-symbols-rounded text-sm" style={{ color: 'var(--text-muted)' }}>build_circle</span>
-          <span className="font-mono-data text-sm" style={{ color: 'var(--text-primary)' }}>{hardwareDiagnostics.spec}</span>
-        </div>
+      {/* The boxed "spec" chip that sat opposite this heading is gone: it
+          restated the descriptor beneath the title in other words. */}
+      <div className="mb-6">
+        <h2 className="legend legend-module">
+          {hardwareDiagnostics.title}
+        </h2>
+        <p className="font-mono-data mt-1" style={{ color: 'var(--text-muted)' }}>
+          {hardwareDiagnostics.descriptor}
+        </p>
       </div>
 
-      {/* Categories */}
       {hardwareDiagnostics.categories.map((cat, i) => (
-        <CategorySection key={cat.key} category={cat} first={i === 0} />
+        <CategorySection key={cat.key} category={cat} first={i === 0} leadSettled={leadSettled} onLeadSettled={onLeadSettled} />
       ))}
     </section>
   )

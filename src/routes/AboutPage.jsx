@@ -7,7 +7,6 @@ import DocSection from '../components/layout/DocSection'
 const FACTS = [
   { label: 'Program',    value: bio.program },
   { label: 'School',     value: `${bio.school}, expected ${bio.expected}` },
-  { label: 'Currently',  value: bio.seeking },
   { label: 'Previously', value: `${bio.role}, ${bio.employer} (${bio.employerYears})` },
   { label: 'Team',       value: 'Okanagan Rover Craft · CIRC' },
   { label: 'Affiliate',  value: bio.affiliation },
@@ -28,6 +27,35 @@ const AWARDS = [
   { year: '2023', text: 'Third place, Project Design · APSC 169 Sustainable Design Competition' },
   { year: '2022', text: 'Second place, Top Academics · St. Mary Catholic High School' },
 ]
+
+/* The About header is editorial rather than instrumented: the intro is set
+   as a standfirst, and under it one status line says what Nic is looking for
+   and how to reach Nic. That line replaced the "Currently" row in the facts
+   column, so the fact appears once, on the first screen, where a recruiter
+   reads it. */
+function StatusLine() {
+  return (
+    <p className="flex flex-wrap items-baseline gap-x-6 gap-y-2 mb-10">
+      {/* Lamp and legend stay together on the first line; only the status
+          text wraps, so the lamp never centres between two lines. */}
+      <span className="flex items-baseline gap-2">
+        <span className="flex flex-none items-center gap-2 self-baseline">
+          <span aria-hidden="true" className="lamp lamp-ok" />
+          <span className="legend" style={{ color: 'var(--text-muted)' }}>Status</span>
+        </span>
+        <span style={{ color: 'var(--text-primary)' }}>{bio.seeking}</span>
+      </span>
+      <span className="flex items-baseline gap-x-5">
+        <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="register-link">
+          Résumé<span className="sr-only"> (PDF, opens in a new tab)</span>
+        </a>
+        <a href={`mailto:${contact.email}`} className="register-link">
+          Email<span className="sr-only">: {contact.email}</span>
+        </a>
+      </span>
+    </p>
+  )
+}
 
 /* Side-column module legend: small, tracked, ruled. */
 function Heading({ children, id }) {
@@ -68,9 +96,12 @@ export default function AboutPage() {
         eyebrow="About"
         title="Nic Piraino"
         size="article"
-        introClassName="mb-10"
+        lede
+        introClassName="max-w-[46rem]"
         intro="Electrical Engineering student at UBC Okanagan, working mainly in precision analog, PCB design, embedded systems and electrical metrology. I like engineering problems where the disagreement can eventually be settled by a measurement."
-      />
+      >
+        <StatusLine />
+      </PageHeader>
 
       <div className="grid gap-10 lg:gap-14 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] items-start">
         {/* ── Main column ── */}

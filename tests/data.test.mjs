@@ -12,7 +12,7 @@ import assert from 'node:assert/strict'
 import { readFileSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { projects } from '../src/data/config.js'
+import { projects, hardwareDiagnostics } from '../src/data/config.js'
 import { SKILLS, PROJECT_SKILLS, ELSEWHERE } from '../src/data/skills.js'
 import { FEATURED } from '../src/data/featured.js'
 import { thumbSrc } from '../src/utils/thumbs.js'
@@ -144,3 +144,40 @@ test('motor text gives the documented role and no personal diagnosis credit', ()
   assert.match(text, /Research & Presentation Lead/)
   assert.doesNotMatch(text, /team lead|I led|I traced|I diagnosed|how I found/i)
 })
+
+/* The Hobbies service log (HardwareDiagnostics) shows each repair's reasoning
+   in the open and merges consecutive photos that share a note into one entry.
+   So every repair needs a note or a link to its own write-up, and photos that
+   share a note must sit together, or the same note would print twice. They
+   must share a caption as well, since the entry prints one work line. */
+test('every logged repair carries a note or a write-up, and shared notes are adjacent', () => {
+  const images = hardwareDiagnostics.categories.flatMap((c) => c.images)
+  for (const img of images) {
+    assert.ok(img.note || img.to, `${img.label} has neither a note nor a write-up`)
+    if (img.to) assert.ok(ROUTES.has(img.to), `${img.label} links to ${img.to}, which is not a route`)
+  }
+  for (const c of hardwareDiagnostics.categories) {
+    const seen = new Set()
+    c.images.forEach((img, i) => {
+      if (!img.note) return
+      if (seen.has(img.note)) assert.equal(c.images[i - 1]?.note, img.note, `${img.label} repeats an earlier note but is not next to it`)
+      // One entry prints one work line, so a shared job needs one caption.
+      if (c.images[i - 1]?.note === img.note) assert.equal(img.caption, c.images[i - 1].caption, `${img.label} shares a note but not the caption`)
+      seen.add(img.note)
+    })
+  }
+})
+
+/* UnBox figures come from the team's APSC 169 report: > 680 N in the full-scale
+   crush test (p. 4) and > 60 kg stacked on an earlier, smaller PLA model
+   (p. 30) are two different tests, not one figure in two units; 115 cycles is
+   the life-cycle analysis's planning figure (p. 38), not a test result; and
+   the report models end-of-life composting, not "100%" compostability. */
+test('UnBox claims stay as the team report states them', () => {
+  const unbox = projects.find((p) => p.id === 'unbox')
+  const text = JSON.stringify(unbox)
+  assert.doesNotMatch(text, /680 N \(>? ?60 kg\)/, '680 N and 60 kg are separate tests, not an equivalence')
+  assert.doesNotMatch(text, /100% compostable/i)
+  assert.match(text, /assumed in the life-cycle analysis, not tested/)
+})
+

@@ -8,15 +8,13 @@ import DocSection from '../components/layout/DocSection'
    the person writing it actually built the thing and remembers what went wrong.
    That is the point of it being here. */
 
+/* How it is put together. The inventory (versions) is SYSTEM below; this
+   list only carries what SYSTEM does not, so the two tables never repeat. */
 const STACK = [
-  { label: 'Framework',  value: 'React 18, react-router 7' },
-  { label: 'Build',      value: 'Vite 8 (rolldown)' },
-  { label: 'Styling',    value: 'Tailwind 3 + hand-written CSS variables' },
+  { label: 'Styling',    value: 'Tailwind utilities + hand-written CSS variables' },
   { label: 'Motion',     value: 'CSS animations, no motion library' },
-  { label: '3D',         value: 'three.js via react-three-fiber' },
-  { label: 'Diagrams',   value: 'React Flow' },
-  { label: 'Type',       value: 'System sans for body and headings, Exo 2 for uppercase legends, a system monospace for readouts, Material Symbols for icons. Exo 2 and Material Symbols are self-hosted' },
-  { label: 'Hosting',    value: 'Vercel, with serverless functions in /api' },
+  { label: 'Type',       value: 'Archivo for headings and legends (condensed for legends), system sans for body, system monospace for readouts, Material Symbols for icons. Archivo and Material Symbols are self-hosted' },
+  { label: 'Functions',  value: 'Vercel serverless functions in /api' },
   { label: 'Images',     value: 'PowerShell + System.Drawing, no npm dependency' },
   { label: 'Tests',      value: 'node:test, on the serverless code and the build output' },
 ]
@@ -33,6 +31,31 @@ const SYSTEM = [
   { label: 'Diagrams', value: 'React Flow 11' },
   { label: 'Host',     value: 'Vercel' },
 ]
+
+/* The imprint: which build of the site this is, set the way a book prints its
+   edition line under the title. Values come from vite.config.js (buildInfo),
+   so they describe this exact copy. The commit links only when it lives in the
+   public repository; the redesign preview builds from a private one, and a
+   link there would be a 404 for every visitor. The date is labelled
+   "committed" because that is what it is -- not a content-review date. */
+/* global __BUILD_INFO__ */
+const BUILD = typeof __BUILD_INFO__ !== 'undefined' ? __BUILD_INFO__ : {}
+
+function Imprint() {
+  if (!BUILD.sha) return null
+  const commit = BUILD.repo === 'NiccTM/Website'
+    ? <a href={`https://github.com/NiccTM/Website/commit/${BUILD.sha}`} target="_blank" rel="noopener noreferrer" className="register-link font-readout">{BUILD.sha}</a>
+    : <span className="font-readout">{BUILD.sha}</span>
+  return (
+    <p className="colophon-imprint -mt-2 mb-8">
+      <span className="legend mr-2" style={{ color: 'var(--text-muted)' }}>This copy</span>
+      <span>Commit {commit}</span>
+      {BUILD.date && <><span aria-hidden="true" className="hidden sm:inline">·</span><span>committed <span className="font-readout">{BUILD.date}</span></span></>}
+      <span aria-hidden="true" className="hidden sm:inline">·</span>
+      <span>{BUILD.where}</span>
+    </p>
+  )
+}
 
 /* Side-column module legend: small, tracked, ruled. */
 function Heading({ children }) {
@@ -72,7 +95,9 @@ export default function ColophonPage() {
         title="How this site is built"
         size="article"
         intro="Every page here argues that a design should be judged by what it measures, so it would be strange not to say what this one is made of. This is the stack, the decisions behind it, and the parts I got wrong."
-      />
+      >
+        <Imprint />
+      </PageHeader>
 
       {/* ── System inventory ── */}
       <section aria-labelledby="system-heading" className="grid gap-x-10 gap-y-3 md:grid-cols-[13rem_minmax(0,1fr)] pb-10">

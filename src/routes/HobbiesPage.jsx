@@ -3,6 +3,9 @@ import { lazyWithReload } from '../utils/lazyWithReload'
 import { useSearchParams } from 'react-router-dom'
 import { usePageMeta } from '../hooks/usePageMeta'
 import PageHeader from '../components/layout/PageHeader'
+import HeaderPlate from '../components/layout/HeaderPlate'
+import { hardwareDiagnostics, audioChain } from '../data/config'
+import { serviceEntries } from '../utils/serviceLog'
 import WhenVisible from '../components/ui/WhenVisible'
 import ErrorBoundary from '../components/ui/ErrorBoundary'
 
@@ -26,6 +29,23 @@ const TABS = [
    an explicit ?tab=, which is why the links that used to point at
    /photography carry it. */
 const DEFAULT_TAB = 'audio'
+
+/* Logbook plate. Hobbies is the one route whose header gets a recessed plate:
+   the page is a collection of unrelated things (repairs, listening rooms,
+   records, photographs), and a logbook is the honest summary of that. Counts
+   come from the same data the sections render. Repairs are counted the way
+   the service log shows them -- entries, with the photographs beside -- so
+   the plate cannot say 8 over a log of 6. */
+const SERVICE_RECORDS = hardwareDiagnostics.categories.reduce((n, c) => n + serviceEntries(c.images).length, 0)
+const REPAIR_PHOTOS = hardwareDiagnostics.categories.reduce((n, c) => n + c.images.length, 0)
+const LOGBOOK = [
+  /* Each count stays with its noun, so a narrow plate breaks at the middot
+     rather than stranding the "8" from "photographs". */
+  { label: 'Repairs', value: <><span className="whitespace-nowrap">{SERVICE_RECORDS} service records</span> · <span className="whitespace-nowrap">{REPAIR_PHOTOS} photographs</span></> },
+  { label: 'Listening rooms', value: audioChain.rooms.length },
+  { label: 'Vinyl', value: 'Discogs collection' },
+  { label: 'CD player', value: 'Service record', to: '/hobbies/cd-player' },
+]
 
 function SectionFallback() {
   return (
@@ -123,38 +143,40 @@ export default function HobbiesPage() {
           eyebrow="Outside engineering"
           title="Hobbies"
           intro="Photography, hi-fi audio and vinyl, and the hardware I pull apart on weekends. None of it is professional work. It is where the same curiosity goes when there is no specification to meet."
-        />
-
-        {/* ── Tabs ── */}
-        <div
-          role="tablist"
-          aria-label="Hobbies sections"
-          onKeyDown={onKeyDown}
-          className="flex flex-wrap gap-2 mb-10"
+          plateFrom="lg"
+          plate={<HeaderPlate legend="Logbook" label="Hobbies logbook" rows={LOGBOOK} />}
         >
-          {TABS.map((t, i) => {
-            const isActive = t.id === active
-            return (
-              <button
-                key={t.id}
-                ref={(el) => { tabRefs.current[i] = el }}
-                role="tab"
-                id={`tab-${t.id}`}
-                aria-selected={isActive}
-                aria-controls={`panel-${t.id}`}
-                tabIndex={isActive ? 0 : -1}
-                onClick={() => select(t.id)}
-                /* A source-selector key: latched (depressed, lamp lit) when it
-                   is the selected tab. The latch is drawn from aria-selected,
-                   so the visual state is the accessible state. */
-                className="key"
-              >
-                <span aria-hidden="true" className={`lamp${isActive ? ' lamp-ok' : ''}`} />
-                {t.label}
-              </button>
-            )
-          })}
-        </div>
+          {/* ── Tabs ── (inside the header, so they sit beside the logbook) */}
+          <div
+            role="tablist"
+            aria-label="Hobbies sections"
+            onKeyDown={onKeyDown}
+            className="flex flex-wrap gap-2 mb-10"
+          >
+            {TABS.map((t, i) => {
+              const isActive = t.id === active
+              return (
+                <button
+                  key={t.id}
+                  ref={(el) => { tabRefs.current[i] = el }}
+                  role="tab"
+                  id={`tab-${t.id}`}
+                  aria-selected={isActive}
+                  aria-controls={`panel-${t.id}`}
+                  tabIndex={isActive ? 0 : -1}
+                  onClick={() => select(t.id)}
+                  /* A source-selector key: latched (depressed, lamp lit) when it
+                     is the selected tab. The latch is drawn from aria-selected,
+                     so the visual state is the accessible state. */
+                  className="key"
+                >
+                  <span aria-hidden="true" className={`lamp${isActive ? ' lamp-ok' : ''}`} />
+                  {t.label}
+                </button>
+              )
+            })}
+          </div>
+        </PageHeader>
       </section>
 
       {/* ── Panel ──

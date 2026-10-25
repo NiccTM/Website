@@ -32,7 +32,7 @@ const PROJECT_IMAGE_POSITION = {
   'rover-craft':      'center 75%',
 }
 
-const SECTIONS = [
+export const SECTIONS = [
   { key: 'competitive', label: 'Competitive Design' },
   { key: 'practice',    label: 'Professional Practice' },
   { key: 'software',    label: 'Software & Personal' },
@@ -45,7 +45,7 @@ const ORDERED = SECTIONS.flatMap((s) => projects.filter((p) => p.category === s.
 const entryNo = (id) => pad2(ORDERED.findIndex((p) => p.id === id) + 1)
 /* A 'practice' award is the course tag on a coursework entry, not a placing,
    so it does not belong in a Result column. */
-const results = (p) => (p.awards ?? []).filter((a) => a.tier !== 'practice')
+export const results = (p) => (p.awards ?? []).filter((a) => a.tier !== 'practice')
 
 /* Skill filter. One selected skill narrows the register and the cards; the
    entry numbers do not change, because they are catalogue ordinals and not row
@@ -354,10 +354,11 @@ function ProjectCard({ project, categoryLabel, featured = false, onExpand }) {
   )
 }
 
-function SectionHeading({ label, index }) {
+function SectionHeading({ label, index, id }) {
   return (
     <h2
-      className="legend legend-rule mb-5 legend-module"
+      id={id}
+      className="legend legend-rule mb-5 legend-module scroll-mt-20"
     >
       <span aria-hidden="true" className="font-readout">{String(index + 1).padStart(2, '0')}</span>
       {label}
@@ -387,7 +388,7 @@ export default function ProjectGallery() {
           if (!sectionProjects.length) return null
           return (
             <div key={section.key}>
-              <SectionHeading label={section.label} index={si} />
+              <SectionHeading label={section.label} index={si} id={`projects-${section.key}`} />
               {/* Every section is three columns from lg up, so cards always sit
                   several to a row. Dropping a section to two columns to make it
                   tile -- which is what this did before -- meant its feature ran

@@ -12,9 +12,9 @@ const TABS = [
   { to: '/hardware/reference', end: false, label: 'Voltage Reference' },
 ]
 
-export default function HardwareTabs() {
+export default function HardwareTabs({ className = 'mb-10' }) {
   return (
-    <nav aria-label="Hardware sections" className="flex flex-wrap items-center gap-2 mb-10">
+    <nav aria-label="Hardware sections" className={`flex flex-wrap items-center gap-2 ${className}`}>
       {TABS.map(({ to, end, label }) => (
         <NavLink key={to} to={to} end={end} className="key key-sm whitespace-nowrap">
           {({ isActive }) => (
