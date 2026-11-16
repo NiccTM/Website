@@ -9,7 +9,7 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { projects, hardwareDiagnostics } from '../src/data/config.js'
@@ -228,4 +228,85 @@ test('the NuPower photographs carry no EXIF or XMP metadata', () => {
     assert.ok(!bytes.includes('Exif' + String.fromCharCode(0, 0)), `${f} carries an EXIF block`)
     assert.ok(!bytes.includes('http://ns.adobe.com/xap/'), `${f} carries XMP`)
   }
+})
+
+/* originals/ is never deployed, but it is committed to both repos, and the
+   public one is world-readable. Phone and camera photos arrive with an EXIF
+   GPS IFD and an XMP packet (Lightroom also copies the location into XMP), so
+   a new original can leak where it was taken. Strip metadata losslessly before
+   committing one; keep only the ICC profile and, where it is not 1, an
+   Orientation-only EXIF block.
+
+   Every "Exif\0\0" + TIFF header in the file is checked, not just the first
+   APP1: Samsung shots append MPF secondary JPEGs after the main image's EOI,
+   each with its own EXIF. A PNG eXIf chunk is raw TIFF with no prefix. */
+const IMAGE_EXT = /\.(jpe?g|png|webp|tiff?|heic|avif|gif)$/i
+const XMP_MARKERS = ['http://ns.adobe.com/xap/1.0/', '<x:xmpmeta']
+
+function tiffHasGpsIfd(buf, at) {
+  const le = buf.toString('latin1', at, at + 2) === 'II'
+  if (!le && buf.toString('latin1', at, at + 2) !== 'MM') return false
+  const u16 = (o) => (le ? buf.readUInt16LE(o) : buf.readUInt16BE(o))
+  const u32 = (o) => (le ? buf.readUInt32LE(o) : buf.readUInt32BE(o))
+  if (at + 8 > buf.length || u16(at + 2) !== 42) return false
+  const ifd = at + u32(at + 4)
+  if (ifd + 2 > buf.length) return false
+  const count = u16(ifd)
+  for (let e = 0; e < count && ifd + 2 + e * 12 + 2 <= buf.length; e++) {
+    if (u16(ifd + 2 + e * 12) === 0x8825) return true
+  }
+  return false
+}
+
+function metadataLeaks(buf) {
+  const found = []
+  if (XMP_MARKERS.some((m) => buf.includes(m, 0, 'latin1'))) found.push('XMP block')
+  const exif = Buffer.from('Exif\0\0', 'latin1')
+  for (let i = buf.indexOf(exif); i !== -1; i = buf.indexOf(exif, i + 1)) {
+    if (tiffHasGpsIfd(buf, i + 6)) { found.push('EXIF GPS IFD'); break }
+  }
+  if (!found.includes('EXIF GPS IFD') && buf.readUInt32BE(0) === 0x89504e47) {
+    for (let i = 8; i + 8 <= buf.length; ) {
+      const len = buf.readUInt32BE(i)
+      const type = buf.toString('latin1', i + 4, i + 8)
+      if (type === 'eXIf' && tiffHasGpsIfd(buf, i + 8)) { found.push('EXIF GPS IFD'); break }
+      if (type === 'IEND') break
+      i += 12 + len
+    }
+  }
+  return found
+}
+
+function exifJpeg(tag) {
+  // SOI + APP1 Exif with a one-entry big-endian IFD0, + EOI.
+  const tiff = Buffer.alloc(8 + 2 + 12 + 4)
+  tiff.write('MM', 0, 'latin1'); tiff.writeUInt16BE(42, 2); tiff.writeUInt32BE(8, 4)
+  tiff.writeUInt16BE(1, 8); tiff.writeUInt16BE(tag, 10); tiff.writeUInt16BE(4, 12); tiff.writeUInt32BE(1, 14)
+  const payload = Buffer.concat([Buffer.from('Exif\0\0', 'latin1'), tiff])
+  const len = Buffer.alloc(2); len.writeUInt16BE(payload.length + 2)
+  return Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe1]), len, payload, Buffer.from([0xff, 0xd9])])
+}
+
+test('the originals metadata check catches GPS and XMP and passes Orientation', () => {
+  assert.deepEqual(metadataLeaks(exifJpeg(0x8825)), ['EXIF GPS IFD'])
+  assert.deepEqual(metadataLeaks(exifJpeg(0x0112)), [])
+  const trailer = Buffer.concat([exifJpeg(0x0112), exifJpeg(0x8825)])
+  assert.deepEqual(metadataLeaks(trailer), ['EXIF GPS IFD'], 'a GPS IFD in an appended MPF image counts')
+  const xmp = Buffer.concat([exifJpeg(0x0112), Buffer.from('<x:xmpmeta xmlns:x="adobe:ns:meta/">', 'latin1')])
+  assert.deepEqual(metadataLeaks(xmp), ['XMP block'])
+})
+
+const ORIGINALS = join(ROOT, 'originals')
+test('no file under originals/ carries an EXIF GPS IFD or an XMP block', { skip: !existsSync(ORIGINALS) && 'originals/ is not in this checkout' }, () => {
+  const dir = ORIGINALS
+  const files = readdirSync(dir, { recursive: true, withFileTypes: true })
+    .filter((d) => d.isFile() && IMAGE_EXT.test(d.name))
+    .map((d) => join(d.parentPath ?? d.path, d.name))
+  assert.ok(files.length > 100, `only ${files.length} images found under originals/`)
+  const leaks = []
+  for (const f of files) {
+    const found = metadataLeaks(readFileSync(f))
+    if (found.length) leaks.push(`${f.slice(dir.length + 1)}: ${found.join(', ')}`)
+  }
+  assert.deepEqual(leaks, [], `strip metadata from:\n  ${leaks.join('\n  ')}`)
 })
