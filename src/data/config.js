@@ -734,6 +734,33 @@ export const projects = [
     },
   },
   {
+    id: 'nupower-p100',
+    caseStudy: '/projects/nupower-p100',
+    category: 'software',
+    title: 'NuPower P100: Car Display Firmware Investigation',
+    description: 'A read-only firmware backup over USB, offline reverse engineering and a bare-metal display test on an aftermarket Android Auto car display. The display still does not work; the write-up records where software stops.',
+    tags: ['RISC-V', 'Rust', 'Reverse Engineering', 'Allwinner F133', 'FEL', 'Unicorn'],
+    github: null,
+    icon: 'memory',
+    awards: [],
+    expandedDetails: {
+      extendedDescription:
+        'An aftermarket wireless Android Auto display on an Allwinner F133-B. Its 16 MiB flash was backed up over the boot ROM\'s USB mode, read three times with identical results, and taken apart offline: the settings format, the backlight table and the kernel\'s display driver. Night brightness was raised from 25 to 40 through the unit\'s own update path.\n\nAfter a backlight-frequency change the screen went blank, and it stayed uniform grey after the change was reversed byte for byte and the firmware and its settings file were returned to factory. A bare-metal Rust probe, validated under emulation first, then drove the display controller directly from on-chip RAM: frames were generated and every configuration register read back as planned, and the panel showed the same grey for white, black, colour bars and a grid. The display still does not work; the case study sets out what software proved and where it stops.',
+      technicalSpecs: [
+        { label: 'Device',     value: 'Aftermarket 7-inch wireless Android Auto car display' },
+        { label: 'SoC',        value: 'Allwinner F133-B · RISC-V (T-Head C906) · Melis RTOS' },
+        { label: 'Panel',      value: '1024 × 600 parallel RGB · 51 MHz pixel clock' },
+        { label: 'Flash',      value: '16 MiB SPI-NOR (Eon EN25QH128) · read three times, identical' },
+        { label: 'Access',     value: 'USB FEL boot mode via microSD switcher · WinUSB on that one device' },
+        { label: 'Probe',      value: 'Bare-metal Rust, RAM only · emulated (Unicorn) with a register allowlist' },
+        { label: 'Status',     value: 'Display not working · software diagnostics exhausted' },
+        { label: 'Date',       value: 'November 2026' },
+        { label: 'Assistance', value: 'Done with Claude Code (Anthropic) for analysis and tooling; every step that touched the unit was approved by me' },
+      ],
+      links: [],
+    },
+  },
+  {
     id: 'algotraderos',
     category: 'software',
     title: 'AlgoTraderOS: Algorithmic Trading System',

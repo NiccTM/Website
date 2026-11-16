@@ -32,6 +32,10 @@
       "destination": "/projects/bldc-motor.html"
     },
     {
+      "source": "/projects/nupower-p100",
+      "destination": "/projects/nupower-p100.html"
+    },
+    {
       "source": "/projects",
       "destination": "/projects.html"
     },

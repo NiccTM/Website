@@ -27,6 +27,7 @@ const ROUTES = [
   { file: 'index.html',             path: '/',                   title: 'Nic Piraino | Hardware Engineering & System Design' },
   { file: 'projects.html',          path: '/projects',           title: 'Nic Piraino | Projects' },
   { file: 'projects/bldc-motor.html', path: '/projects/bldc-motor', title: 'Nic Piraino | BLDC Motor Case Study' },
+  { file: 'projects/nupower-p100.html', path: '/projects/nupower-p100', title: 'Nic Piraino | NuPower P100 Display Investigation' },
   { file: 'hardware.html',          path: '/hardware',          title: 'Nic Piraino | Hardware Lab' },
   { file: 'hardware/reference.html', path: '/hardware/reference', title: 'Nic Piraino | Voltage Reference' },
   { file: 'hobbies.html',           path: '/hobbies',            title: 'Nic Piraino | Hobbies' },
@@ -83,7 +84,7 @@ test('each route carries its own title, canonical and og:url', opts, () => {
 test('each shell description is its route source text, unmangled', opts, () => {
   const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
   const sources = new Set()
-  for (const f of ['HomePage', 'ProjectsPage', 'BLDCMotorPage', 'HardwarePage', 'ReferencePage', 'HobbiesPage', 'CDPlayerPage', 'AboutPage', 'ColophonPage']) {
+  for (const f of ['HomePage', 'ProjectsPage', 'BLDCMotorPage', 'NuPowerPage', 'HardwarePage', 'ReferencePage', 'HobbiesPage', 'CDPlayerPage', 'AboutPage', 'ColophonPage']) {
     const p = join(ROOT, 'src/routes', `${f}.jsx`)
     if (!existsSync(p)) continue
     const m = readFileSync(p, 'utf8').match(/usePageMeta\(\s*'(?:[^'\\]|\\.)*'\s*,\s*'((?:[^'\\]|\\.)*)'/)
@@ -234,6 +235,28 @@ test('vercel.json rewrites /projects/bldc-motor before /projects, and the sitema
   assert.ok(i >= 0 && i < plain, 'the case-study rewrite must exist and precede /projects')
   assert.equal(cfg.rewrites[i].destination, '/projects/bldc-motor.html')
   assert.ok(readFileSync(join(ROOT, 'public/sitemap.xml'), 'utf8').includes('<loc>https://nicpiraino.com/projects/bldc-motor</loc>'))
+})
+
+test('the NuPower write-up shell is complete, has one h1, and leaks no device data', opts, async () => {
+  const { NUPOWER } = await import('../src/data/nupowerCaseStudy.js')
+  const html = read('projects/nupower-p100.html')
+  assert.equal(html.match(/<link rel="canonical" href="([^"]+)"/)?.[1], 'https://nicpiraino.com/projects/nupower-p100')
+  assert.match(html, /<script type="application\/ld\+json">[\s\S]*"@type": "TechArticle"/, 'no TechArticle JSON-LD')
+  const text = bodyText(html)
+  for (const s of ['Where software stops', 'Bypassing the firmware', 'Not observable', 'Claude Code', NUPOWER.stop.verdict])
+    assert.ok(text.includes(s), `nupower-p100.html is missing "${s}"`)
+  assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1, 'expected exactly one <h1>')
+  assert.doesNotMatch(text, /(?<![0-9a-f])[0-9a-f]{64}(?![0-9a-f])/i)
+  assert.doesNotMatch(text, /\b[a-z]:\\/i)
+})
+
+test('vercel.json rewrites /projects/nupower-p100 before /projects, and the sitemap lists it', () => {
+  const cfg = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8'))
+  const i = cfg.rewrites.findIndex((r) => r.source === '/projects/nupower-p100')
+  const plain = cfg.rewrites.findIndex((r) => r.source === '/projects')
+  assert.ok(i >= 0 && i < plain, 'the write-up rewrite must exist and precede /projects')
+  assert.equal(cfg.rewrites[i].destination, '/projects/nupower-p100.html')
+  assert.ok(readFileSync(join(ROOT, 'public/sitemap.xml'), 'utf8').includes('<loc>https://nicpiraino.com/projects/nupower-p100</loc>'))
 })
 
 test('MotorLab reads the shared motor record instead of defining its own', () => {

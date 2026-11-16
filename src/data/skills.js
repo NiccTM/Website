@@ -29,6 +29,9 @@ export const PROJECT_SKILLS = {
   // Printed stator/rotor/housing, winding and magnetic-circuit fixes;
   // Arduino Uno generating the ESC's PWM.
   'bldc-motor':       ['mechanical', 'embedded'],
+  // A bare-metal RISC-V payload driving the display controller from RAM,
+  // plus the host-side backup and analysis tools around it.
+  'nupower-p100':     ['embedded', 'software'],
   'feeble-presence':  ['software'],
   algotraderos:       ['software'],
   tracesight:         ['software'],

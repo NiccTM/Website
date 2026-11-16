@@ -115,8 +115,12 @@ test('motor text uses the documented winding, steel bolts and no measured 30 A',
    lives in docs/redesign/, which never ships to the public repository, so
    this check runs only where that file exists. */
 const PRIVATE_TERMS = join(ROOT, 'docs/redesign/private-terms.txt')
+/* Everything the NuPower write-up publishes. The private-term check above also
+   reads these, and the shape checks below run everywhere, public repo included. */
+const NUPOWER_FILES = ['src/data/nupowerCaseStudy.js', 'src/routes/NuPowerPage.jsx', 'src/components/diagrams/ProbeChain.jsx']
+
 test('rover text keeps internal details private', { skip: !existsSync(PRIVATE_TERMS) && 'term list is kept outside the public repository' }, () => {
-  const files = ['src/data/config.js', 'src/data/featured.js', 'src/routes/AboutPage.jsx', 'src/data/skills.js']
+  const files = ['src/data/config.js', 'src/data/featured.js', 'src/routes/AboutPage.jsx', 'src/data/skills.js', ...NUPOWER_FILES]
   const text = files.map((f) => readFileSync(join(ROOT, f), 'utf8')).join('\n').toLowerCase()
   const terms = readFileSync(PRIVATE_TERMS, 'utf8').split(/\r?\n/).map((t) => t.trim().toLowerCase()).filter((t) => t && !t.startsWith('#'))
   assert.ok(terms.length > 0, 'empty term list')
@@ -181,3 +185,47 @@ test('UnBox claims stay as the team report states them', () => {
   assert.match(text, /assumed in the life-cycle analysis, not tested/)
 })
 
+/* NuPower: nothing from the device or the workstation. The firmware dump, its
+   hashes, radio addresses and local paths stay in the private research folder;
+   these are the shapes they would take if one leaked into the public text. A
+   private term list, if any, lives with the Rover one outside this repo. */
+function nupowerText() {
+  const entry = readFileSync(join(ROOT, 'src/data/config.js'), 'utf8').split("id: 'nupower-p100'")[1].split("id: 'algotraderos'")[0]
+  return [entry, ...NUPOWER_FILES.map((f) => readFileSync(join(ROOT, f), 'utf8'))].join('\n')
+}
+
+test('the NuPower write-up carries no MAC address, 64-hex hash or Windows path', () => {
+  const text = nupowerText()
+  assert.ok(text.includes('Allwinner F133-B'), 'the NuPower entry was not found')
+  assert.doesNotMatch(text, /\b[0-9a-f]{2}([:-])(?:[0-9a-f]{2}\1){4}[0-9a-f]{2}\b/i, 'a MAC-address pattern')
+  assert.doesNotMatch(text, /(?<![0-9a-f])[0-9a-f]{64}(?![0-9a-f])/i, 'a 64-hex-character hash')
+  assert.doesNotMatch(text, /\b[a-z]:\\/i, 'a Windows path')
+})
+
+/* The records establish no cause: the PWM change and the failure are close in
+   time, nothing more, and nothing says the panel is defective. The write-up
+   must also keep saying plainly that the display does not work. */
+test('the NuPower write-up names no cause and does not claim a fix', () => {
+  const text = nupowerText()
+  assert.doesNotMatch(text, /(panel|display|screen|LCD) (is|was) (defective|faulty|broken|dead|damaged)/i)
+  assert.doesNotMatch(text, /(PWM|20 kHz|frequency) change (caused|broke|killed|damaged)/i)
+  assert.doesNotMatch(text, /caused the (failure|blank|grey)/i)
+  assert.match(text, /does not say what caused it/)
+  assert.match(text, /display still does not work/i)
+  assert.doesNotMatch(text, /no PMIC|PMIC is (not )?fitted|GINT0/i, 'inferred or unconfirmed details stay out')
+})
+
+/* The NuPower photographs ship to a public repository and site. They were
+   re-encoded from pixels only; an EXIF or XMP block (camera, time, GPS) in any
+   tier would undo that, so check every file the site serves and the original. */
+test('the NuPower photographs carry no EXIF or XMP metadata', () => {
+  const files = ['originals', 'public/thumbs', 'public/display'].flatMap((d) =>
+    ['nupower-p100-opened', 'nupower-p100-board'].flatMap((n) => [`${d}/${n}.jpg`, `${d}/${n}.avif`]))
+    .filter((f) => existsSync(join(ROOT, f)))
+  assert.ok(files.length >= 6, `only ${files.length} NuPower photo files found`)
+  for (const f of files) {
+    const bytes = readFileSync(join(ROOT, f)).toString('latin1')
+    assert.ok(!bytes.includes('Exif' + String.fromCharCode(0, 0)), `${f} carries an EXIF block`)
+    assert.ok(!bytes.includes('http://ns.adobe.com/xap/'), `${f} carries XMP`)
+  }
+})

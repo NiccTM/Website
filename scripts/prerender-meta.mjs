@@ -35,6 +35,7 @@ const DEFAULT_TITLE = 'Nic Piraino | Hardware Engineering & System Design'
 const ROUTES = {
   projects:              'ProjectsPage.jsx',
   'projects/bldc-motor': 'BLDCMotorPage.jsx',
+  'projects/nupower-p100': 'NuPowerPage.jsx',
   hardware:             'HardwarePage.jsx',
   'hardware/reference':  'ReferencePage.jsx',
   hobbies:               'HobbiesPage.jsx',
@@ -49,6 +50,7 @@ const PRELOAD_SRC = {
   '':                    'src/routes/HomePage.jsx',
   projects:              'src/routes/ProjectsPage.jsx',
   'projects/bldc-motor': 'src/routes/BLDCMotorPage.jsx',
+  'projects/nupower-p100': 'src/routes/NuPowerPage.jsx',
   hardware:              'src/routes/HardwarePage.jsx',
   'hardware/reference':  'src/routes/ReferencePage.jsx',
   hobbies:               'src/routes/HobbiesPage.jsx',
@@ -227,6 +229,20 @@ const ROUTE_SCHEMA = {
     publisher: { '@type': 'Person', name: 'Nic Piraino', url: `${SITE}/` },
     isPartOf: { '@type': 'WebSite', name: 'Nic Piraino', url: `${SITE}/` },
     about: ['Brushless DC motor', 'Motor design', 'Magnetic circuit', 'Winding'],
+  }),
+  /* The NuPower display investigation: a firmware and display bring-up
+     write-up whose result is a stopping point, not a fix. */
+  'projects/nupower-p100': ({ title, description, url }) => ({
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: title,
+    description,
+    url,
+    inLanguage: 'en',
+    author: { '@type': 'Person', name: 'Nic Piraino', url: `${SITE}/` },
+    publisher: { '@type': 'Person', name: 'Nic Piraino', url: `${SITE}/` },
+    isPartOf: { '@type': 'WebSite', name: 'Nic Piraino', url: `${SITE}/` },
+    about: ['Firmware reverse engineering', 'Allwinner F133', 'RISC-V', 'Display bring-up'],
   }),
 }
 

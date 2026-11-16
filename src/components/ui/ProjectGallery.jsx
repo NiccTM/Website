@@ -10,6 +10,7 @@ import ProjectAward from './ProjectAward'
 // ─── Card-level hero images keyed by project id ───────────────────────────────
 const PROJECT_IMAGES = {
   'bldc-motor':       '/motor-proto.jpg',
+  'nupower-p100':     '/nupower-p100-opened.jpg',
   'water-contact':    '/Water_Sense_AerospaceTeam_PCB.jpg',
   ecosort:            '/20260321_210541.jpg',
   'feeble-presence':  '/Water wavy August 9.jpg',

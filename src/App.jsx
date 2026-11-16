@@ -60,6 +60,7 @@ const HomePage        = lazyWithReload(() => import('./routes/HomePage'))
 const ProjectsPage    = lazyWithReload(() => import('./routes/ProjectsPage'))
 const HardwarePage    = lazyWithReload(() => import('./routes/HardwarePage'))
 const BLDCMotorPage   = lazyWithReload(() => import('./routes/BLDCMotorPage'))
+const NuPowerPage     = lazyWithReload(() => import('./routes/NuPowerPage'))
 const HobbiesPage     = lazyWithReload(() => import('./routes/HobbiesPage'))
 const ReferencePage   = lazyWithReload(() => import('./routes/ReferencePage'))
 const CDPlayerPage    = lazyWithReload(() => import('./routes/CDPlayerPage'))
@@ -85,6 +86,7 @@ export function AppRoutes() {
                 <Route index                element={<HomePage />}        />
                 <Route path="projects"      element={<ProjectsPage />}    />
                 <Route path="projects/bldc-motor" element={<BLDCMotorPage />} />
+                <Route path="projects/nupower-p100" element={<NuPowerPage />} />
                 <Route path="hardware"           element={<HardwarePage />}  />
                 <Route path="hardware/reference" element={<ReferencePage />} />
                 <Route path="hobbies"            element={<HobbiesPage />}   />
