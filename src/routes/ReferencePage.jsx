@@ -12,9 +12,9 @@ const BENCH_PHOTO = '/ltz1000-bench-3458a.jpg'
 const EMPLOYER = 'Measurements International Ltd.'
 
 const SPECS = [
-  { label: 'Reference',    value: 'ADR1000 buried-Zener, ovenized' },
-  { label: 'Raw output',   value: '7.10724428 V, measured after warm-up' },
-  { label: 'Previously',   value: 'LTZ1000 (pin-compatible)' },
+  { label: 'Reference',    value: 'LTZ1000 buried-Zener, ovenized' },
+  { label: 'Raw output',   value: '7.10724428 V, LTZ1000, after about 16 hours' },
+  { label: 'Earlier design', value: 'ADR1000 (pin-compatible)' },
   { label: 'Output stage', value: 'ADA4523-1 zero-drift amplifier' },
   { label: 'Support amp',  value: 'OPA2145' },
   { label: 'Trim',         value: 'Fixed bulk metal foil network' },
@@ -113,7 +113,7 @@ function ReferenceReadout() {
 export default function ReferencePage() {
   usePageMeta(
     'Voltage Reference',
-    'A 10 V DC voltage reference built around an ADR1000 ovenized buried-Zener reference, developed at Measurements International Ltd.'
+    'A 10 V DC voltage reference built around an LTZ1000 ovenized buried-Zener reference, developed at Measurements International Ltd.'
   )
   const [lightbox, setLightbox] = useState(false)
 
@@ -126,12 +126,13 @@ export default function ReferencePage() {
       {/* ── Header ── */}
       <PageHeader
         eyebrow={`Precision Analog · ${EMPLOYER}`}
-        title={<>ADR1000 10&nbsp;V Reference</>}
+        title={<>LTZ1000 10&nbsp;V Reference</>}
         size="article"
         intro={<>
-          A 10&nbsp;V DC reference built around an ADR1000 ovenized buried-Zener
+          A 10&nbsp;V DC reference built around an LTZ1000 ovenized buried-Zener
           reference, scaled to 10&nbsp;V by a zero-drift amplifier and trimmed with fixed
-          precision foil resistors instead of a potentiometer.
+          precision foil resistors instead of a potentiometer. An earlier version of the
+          design used an ADR1000.
         </>}
       />
 
@@ -186,8 +187,8 @@ export default function ReferencePage() {
       {/* ── Write-up ── */}
       <Section n="01" title="Why a buried-Zener reference">
         <Body>
-          The ADR1000 is not a normal reference chip. It puts a buried Zener, a
-          temperature-sensing transistor and a heater on one die. External circuitry holds
+          The LTZ1000, like the ADR1000 it replaced, is not a normal reference chip. It
+          puts a buried Zener, a temperature-sensing transistor and a heater on one die. External circuitry holds
           that die at a constant elevated temperature and controls the Zener current, so the
           reference sits in its own thermal environment regardless of what the room is doing.
         </Body>
@@ -201,21 +202,21 @@ export default function ReferencePage() {
 
       <Section n="02" title="Measured, not assumed">
         <Body>
-          The board originally ran an LTZ1000 and was later changed to an ADR1000. The two are
-          pin-compatible, but they do not sit at the same voltage, so the swap was not a
-          drop-in. The entire 10&nbsp;V scaling network had to be recalculated around the new
-          device.
+          The design started on an ADR1000 and was later changed to an LTZ1000. The two
+          are pin-compatible, but they do not sit at the same voltage, so the swap was
+          not a drop-in. The entire 10&nbsp;V scaling network had to be recalculated around the
+          new device.
         </Body>
         <Body>
           Rather than assume a nominal value, the board was left to stabilise and the gain
-          network was calculated from the voltage it actually produced. These parts are
-          stability references, not factory-trimmed sources; every individual device lands
+          network was calculated from the voltage it actually produced: 7.10724428&nbsp;V from
+          the LTZ1000 after about 16&nbsp;hours. These parts are stability references, not factory-trimmed sources; every individual device lands
           somewhere slightly different. The absolute value can be calibrated later. What
           matters is that it stays put.
         </Body>
         <Body>
-          Two boards were built and characterised this way, assembled about a week apart, with a
-          separate diagnosis session afterward. Building a second unit and comparing it against
+          Two boards were built and characterised during the redesign, assembled about a week
+          apart, with a separate diagnosis session afterward. Building a second unit and comparing it against
           the first matters because a design that only exists once cannot show whether its
           behaviour is repeatable or coincidental.
         </Body>
@@ -238,7 +239,7 @@ export default function ReferencePage() {
         <Body>
           The cost is that changing the reference device means
           recomputing and repopulating resistors rather than turning a screw. That is exactly
-          what the LTZ1000-to-ADR1000 change required. For a board whose whole purpose is
+          what the ADR1000-to-LTZ1000 change required. For a board whose whole purpose is
           holding still, that is the right side of the trade.
         </Body>
       </Section>

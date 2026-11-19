@@ -24,13 +24,13 @@ export const FEATURED = [
     media: { src: '/motor-proto.jpg', alt: 'The revised motor: printed PETG HF base and rotor, steel-bolt stator teeth and hand-wound copper coils' },
   },
   {
-    id: 'adr1000',
-    title: 'ADR1000 10 V reference',
+    id: 'ltz1000',
+    title: 'LTZ1000 10 V reference',
     context: 'Measurements International · May – Aug 2026',
     role: 'Hardware engineering intern: laid out and assembled two boards to a senior engineer’s design direction',
     decision:
-      'The board moved from an LTZ1000 to an ADR1000, which does not sit at the same voltage, so the 10 V gain network was recalculated from what the new reference actually produced.',
-    result: 'First unit read 9.9999927 V on an HP 3458A before calibration.',
+      'The design moved from an ADR1000 to an LTZ1000, which does not sit at the same voltage, so the 10 V gain network was recalculated from what the new reference actually produced.',
+    result: 'An HP 3458A read 9.9999927 V at the 10 V output during pre-calibration testing.',
     resultNote: 'A development reading, not a calibrated specification.',
     evidence: 'meas',
     to: '/hardware/reference',

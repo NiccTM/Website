@@ -272,7 +272,7 @@ export default function BLDCMotorPage() {
           {[
             ['Motor on the Hardware page', '/hardware#motor'],
             ['Project register', '/projects#project-bldc-motor'],
-            ['ADR1000 voltage reference', '/hardware/reference'],
+            ['LTZ1000 voltage reference', '/hardware/reference'],
           ].map(([label, to]) => (
             <li key={to}>
               <Link to={to} className="inline-block py-1 underline underline-offset-[0.2em]" style={{ color: 'var(--accent)' }}>

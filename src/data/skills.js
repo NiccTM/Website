@@ -51,11 +51,12 @@ export const PROJECT_SKILLS = {
    true. Each is a link to where the work is actually documented. */
 export const ELSEWHERE = [
   {
-    id: 'adr1000',
-    title: 'ADR1000 10 V reference',
+    id: 'ltz1000',
+    title: 'LTZ1000 10 V reference',
     note: 'Measurements International · board layout and assembly',
     to: '/hardware/reference',
-    // Résumé: laid out and assembled two ADR1000-based boards.
+    // Résumé: laid out and assembled two ovenized buried-Zener reference
+    // boards during an ADR1000-to-LTZ1000 redesign.
     skills: ['analog', 'pcb'],
   },
   {
